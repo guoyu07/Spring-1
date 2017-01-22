@@ -18,7 +18,7 @@ export default {
 
     // redirect to a specified route
     if (redirect) {
-      router.go(redirect)
+      router.replace(redirect)
     }
     // }).error((err) => {
     //   context.error = err
