@@ -1,3 +1,9 @@
+<style>
+  #app * {
+    text-shadow: none !important;
+  }
+</style>
+
 <template>
   <div id="app">
     <router-view></router-view>
@@ -11,13 +17,6 @@ export default {
 </script>
 
 <style lang="less">
-  body, html {
-    -webkit-font-smoothing: antialiased;
-    width: 100%;
-    height: 100%;
-    margin: 0;
-    padding: 0;
-  }
   #app {
     width: 100%;
     height: 100%;
