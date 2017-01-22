@@ -2,7 +2,19 @@
   <el-menu theme="dark" default-active="1" class="el-menu-demo" mode="horizontal">
     <el-menu-item index="1">春秋航空运维管理系统</el-menu-item>
     <el-menu-item index="2" class="fr">
-      <router-link to="/login">退出</router-link>
+      <a href="" @click="logout">退出</a>
     </el-menu-item>
   </el-menu>
 </template>
+
+<script>
+  import auth from '../../auth'
+  export default {
+    methods: {
+      logout () {
+        auth.logout()
+        this.$router.replace('/login')
+      }
+    }
+  }
+</script>

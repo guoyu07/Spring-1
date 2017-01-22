@@ -6,8 +6,7 @@ import actions from './actions'
 Vue.use(Vuex)
 
 const state = {
-  totalTime: 0,
-  list: []
+  id_token: ''
 }
 
 export default new Vuex.Store({

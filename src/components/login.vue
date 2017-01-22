@@ -38,7 +38,7 @@
 </template>
 
 <script>
-  import Auth from '../auth'
+  import auth from '../auth'
 
   export default {
     data () {
@@ -56,9 +56,9 @@
           username: this.credentials.username,
           password: this.credentials.password
         }
-        // pass the component's this context
-        // to properly make use of http in the auth service
-        Auth.login(this, credentials, '/')
+        // 传入组件的上下文、验证信息及跳转目地
+        // 以便 auth.login 发起登录请求
+        auth.login(this, credentials, '/')
       }
     }
   }

@@ -1,14 +1,15 @@
 import router from './router'
+import eventHub from './utils/eventHub'
 
-// URL and endpoint constants
+// URL 及端点常量
 // const API_URL = 'http://localhost:3001/'
 // const LOGIN_URL = API_URL + 'sessions/create/'
 
 export default {
-  // authentication status
+  // 验证状态
   authenticated: false,
 
-  // send a request to the login URL and save the returned JWT
+  // 往登录 URL 发起请求并保存返回的 token
   login (context, creds, redirect) {
     // context.$http.post(LOGIN_URL, creds, (data) => {
     // window.localStorage.setItem('id_token', data.id_token)
@@ -16,10 +17,13 @@ export default {
 
     this.authenticated = true
 
-    // redirect to a specified route
+    // 跳转至指定目的
     if (redirect) {
       router.replace(redirect)
     }
+
+    // 发射 login 事件
+    eventHub.$emit('login')
     // }).error((err) => {
     //   context.error = err
     // })
@@ -32,6 +36,7 @@ export default {
 
   checkAuth () {
     const jwt = window.localStorage.getItem('id_token')
+    console.log(jwt)
     if (jwt) {
       this.authenticated = true
     } else {
@@ -39,7 +44,7 @@ export default {
     }
   },
 
-  // the object to be passed as a header for authenticated requests
+  // 供需要验证头部的请求使用
   getAuthHeader () {
     return {
       'Authorization': 'Bearer' + window.localStorage.getItem('id_token')
