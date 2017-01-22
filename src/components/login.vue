@@ -1,44 +1,82 @@
 <style lang="less" scoped>
-  .login-warp {
-    display: flex;
-    justify-content: center;
-    padding-top: 200px;
-    // font-family: Microsoft Yahei;
-  }
-  .el-form {
-    border-radius: 10px;
-    padding: 10px 30px;
-    width: 300px;
-    background-color: #f0f0f0;
-    text-align: center;
-    color: #20a0ff;
-    height: auto;
-  }
-  .btn-block {
+  @height: 240px; @width: 280px;
+
+  #canvas {
     width: 100%;
-    border-radius: 20px;
+    height: 100%;
+    overflow: hidden;
+    background-color: #1a252f;
+  }
+
+  .login-warp {
+    width: @width;
+    height: @height;
+    margin: -@height * 0.5 0 0 -@width * 0.5;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+
+    .el-row {
+      margin-bottom: 20px;
+    }
+    
+    .login-btn {
+      width: 100%;
+      font-weight: bold;
+    }
+  }
+
+  h2 {
+    font-weight: normal;
+    font-size: 36px;
+    margin-bottom: 28px;
+    color: #fff;
+    text-align: center;
+
+    b {
+      font-weight: bold;
+    }
   }
 </style>
 
 <template>
-  <div class="login-warp">
-    <el-form label-width="0">
-      <h1>用户登录</h1>
-      <el-form-item prop="pass">
-        <el-input type="text" v-model="credentials.username" auto-complete="off" placeholder="请输入用户名"></el-input>
-      </el-form-item>
-      <el-form-item prop="checkPass">
-        <el-input icon="edit" type="password" v-model="credentials.password" auto-complete="off" placeholder="请输入密码"></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="submit" class="btn-block">登陆</el-button>
-      </el-form-item>
-    </el-form>
+  <div id="canvas">
+    <transition name="zoomInDown">
+      <div class="login-warp">
+        <el-row>
+          <h2><b>春秋航空</b>登录</h2>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-input placeholder="请输入用户名" icon="fa-user-o" auto-complete="off" v-model="credentials.username"></el-input>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col :span="24">
+            <el-input placeholder="请输入密码" type="password" icon="edit" auto-complete="off" v-model="credentials.password"></el-input>
+          </el-col>
+        </el-row>
+        <el-row>
+          <el-col  :span="24">
+            <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 陆</el-button>
+          </el-col>
+        </el-row>
+      </div>
+    </transition>
   </div>
 </template>
 
 <script>
   import auth from '../auth'
+  import ParticleNetwork from '../assets/js/particleNetwork'
+
+  const options = {
+    particleColor: '#888',
+    needBackground: false,
+    interactive: true,
+    speed: 'slow',
+    density: 'low'
+  }
 
   export default {
     data () {
@@ -50,6 +88,7 @@
         error: ''
       }
     },
+
     methods: {
       submit () {
         const credentials = {
@@ -60,6 +99,13 @@
         // 以便 auth.login 发起登录请求
         auth.login(this, credentials, '/')
       }
+    },
+
+    mounted () {
+      this.$nextTick(() => {
+        const canvas = document.getElementById('canvas')
+        new ParticleNetwork(canvas, options)
+      })
     }
   }
 </script>

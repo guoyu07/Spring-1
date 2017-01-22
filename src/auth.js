@@ -11,6 +11,8 @@ export default {
 
   // 往登录 URL 发起请求并保存返回的 token
   login (context, creds, redirect) {
+    // 这里应该发起请求
+    // 暂时去掉
     // context.$http.post(LOGIN_URL, creds, (data) => {
     // window.localStorage.setItem('id_token', data.id_token)
     window.localStorage.setItem('id_token', creds.username)
@@ -36,7 +38,6 @@ export default {
 
   checkAuth () {
     const jwt = window.localStorage.getItem('id_token')
-    console.log(jwt)
     if (jwt) {
       this.authenticated = true
     } else {
