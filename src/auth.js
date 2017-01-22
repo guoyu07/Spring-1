@@ -10,8 +10,6 @@ export default {
 
   // send a request to the login URL and save the returned JWT
   login (context, creds, redirect) {
-    console.log(creds)
-    console.log(redirect)
     // context.$http.post(LOGIN_URL, creds, (data) => {
     // window.localStorage.setItem('id_token', data.id_token)
     window.localStorage.setItem('id_token', creds.username)
@@ -20,7 +18,7 @@ export default {
 
     // redirect to a specified route
     if (redirect) {
-      router.go('redirect')
+      router.go(redirect)
     }
     // }).error((err) => {
     //   context.error = err
