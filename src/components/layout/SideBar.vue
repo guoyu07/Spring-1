@@ -1,6 +1,22 @@
+<style scoped lang="less">
+  .sibebar {
+    position: fixed;
+    top: 60px;
+    left: 0;
+    width: 200px;
+    height: 100%;
+    overflow-y: auto;
+    background-color: #324057;
+
+    .el-menu {
+      height: 100%;
+    }
+  }
+</style>
+
 <template>
   <div class="sibebar">
-    <el-menu default-active="/part1" router="router" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" theme="dark">
+    <el-menu default-active="/part1" router="router" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" theme="light">
       <el-menu-item index="/part0">导航一</el-menu-item>
       <el-submenu index="/part1">
         <template slot="title">导航二</template>
@@ -20,6 +36,7 @@
     </el-menu>
   </div>
 </template>
+
 <script>
   export default {
     data () {
@@ -37,14 +54,3 @@
     }
   }
 </script>
-<style scoped>
-  .sibebar {
-    position: fixed;
-    top: 80px;
-    left: 0;
-    width: 200px;
-    height: 100%;
-    overflow-y: auto;
-    background-color: #324057;
-  }
-</style>

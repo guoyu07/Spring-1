@@ -66,15 +66,6 @@
   }
 </script>
 <style>
-  .demo-dynamic {
-    margin-top: 30px;
-  }
-  .demo-dynamic .el-input {
-    display: inline-block;
-    margin-right: 10px;
-    width: 270px;
-    vertical-align: top;
-  }
   #content {
     /*width: 100%;*/
     /*height: 100%;*/

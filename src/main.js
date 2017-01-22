@@ -6,6 +6,8 @@ import App from './App'
 import router from './router'
 import store from './store'
 
+import 'assets/css/main.less'
+
 Vue.use(ElementUI)
 
 /* eslint-disable no-new */
