@@ -5,9 +5,7 @@ import actions from './actions'
 
 Vue.use(Vuex)
 
-const state = {
-  id_token: ''
-}
+const state = {}
 
 export default new Vuex.Store({
   state,

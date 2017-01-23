@@ -1,13 +1,3 @@
-import * as types from './mutation-types'
-import { logout } from './../auth'
+// import * as types from './mutation-types'
 
-export default {
-  handleLogin ({ commit }, token) {
-    commit(types.LOGIN_USER, token)
-  },
-
-  handleLogout ({ commit }) {
-    logout()
-    commit(types.LOGOUT_USER)
-  }
-}
+export default {}

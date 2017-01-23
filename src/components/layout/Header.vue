@@ -13,7 +13,6 @@
     methods: {
       logout () {
         Auth.logout()
-        this.$router.replace('/login')
       }
     }
   }

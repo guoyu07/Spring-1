@@ -33,6 +33,7 @@ export default {
 
   logout () {
     window.localStorage.removeItem('id_token')
+    router.replace('/login')
     this.authenticated = false
   },
 
