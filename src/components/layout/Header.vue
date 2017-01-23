@@ -8,11 +8,11 @@
 </template>
 
 <script>
-  import auth from '../../auth'
+  import Auth from '../../auth'
   export default {
     methods: {
       logout () {
-        auth.logout()
+        Auth.logout()
         this.$router.replace('/login')
       }
     }

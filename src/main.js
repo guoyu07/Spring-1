@@ -31,7 +31,7 @@ const setConfigs = () => {
   Vue.http.headers.common['Authorization'] = auth.getAuthHeader()['Authorization']
 }
 
-// 当接收到 login 事件时
+// 当收听到 login 事件时
 eventHub.$on('login', () => {
   setConfigs()
 })
