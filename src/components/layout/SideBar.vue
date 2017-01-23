@@ -15,7 +15,7 @@
 </style>
 
 <template>
-  <div class="sibebar">
+  <aside class="sibebar">
     <el-menu default-active="/part1" router="router" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" theme="light">
       <el-menu-item index="/part0">导航一</el-menu-item>
       <el-submenu index="/part1">
@@ -34,7 +34,7 @@
       </el-submenu>
       <el-menu-item index="/part2">导航三</el-menu-item>
     </el-menu>
-  </div>
+  </aside>
 </template>
 
 <script>

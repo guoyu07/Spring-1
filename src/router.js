@@ -16,30 +16,26 @@ const routes = [{
 }, {
   path: '/',
   component: require('./components/Home'),
-  children: [
-    {
-      path: '/part0',
-      component: require('./components/part0/Index')
+  children: [{
+    path: '/part0',
+    component: require('./components/part0/Index')
+  }, {
+    path: '/part1',
+    component: require('./components/part1/Index'),
+    children: [{
+      path: '/part1/part11',
+      component: require('./components/part1/pages/Part11.vue')
     }, {
-      path: '/part1',
-      component: require('./components/part1/Index'),
-      children: [
-        {
-          path: '/part1/part11',
-          component: require('./components/part1/pages/Part11.vue')
-        }, {
-          path: '/part1/part12',
-          component: require('./components/part1/pages/Part12.vue')
-        }, {
-          path: '/part1/part13',
-          component: require('./components/part1/pages/Part13.vue')
-        }
-      ]
+      path: '/part1/part12',
+      component: require('./components/part1/pages/Part12.vue')
     }, {
-      path: '/part2',
-      component: require('./components/part2/Index')
-    }
-  ],
+      path: '/part1/part13',
+      component: require('./components/part1/pages/Part13.vue')
+    }]
+  }, {
+    path: '/part2',
+    component: require('./components/part2/Index')
+  }],
   meta: {
     requiresAuth: true
   }

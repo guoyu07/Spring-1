@@ -1,6 +1,6 @@
 <style lang="less">
   @footerH: 36px;
-  #footer {
+  .footer {
     background-color: #fff;
     width: 100%;
     height: @footerH;
@@ -22,13 +22,13 @@
 </style>
 
 <template>
-  <div id="footer">
+  <footer class="footer">
     <el-row>
       <el-col :span="24">
-        <div class="copy">
-          EasyOps &copy; ICP xxxx  &#9990; <a href="tel:xxx">0755-xxxxxxxx</a>
-        </div>
+        <section class="copy">
+          <b>EasyOps</b> &copy; ICP xxxx  &#9990; <a href="tel:xxx">0755-xxxxxxxx</a>
+        </section>
       </el-col>
     </el-row>
-  </div>
+  </footer>
 </template>
