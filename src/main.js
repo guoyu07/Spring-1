@@ -9,6 +9,7 @@ import store from './store'
 
 import eventHub from './utils/eventHub'
 import auth from './auth'
+import apis from './api.mock'
 
 import 'assets/css/main.less'
 
@@ -30,6 +31,18 @@ auth.checkAuth()
 const setConfigs = () => {
   Vue.http.headers.common['Authorization'] = auth.getAuthHeader()['Authorization']
 }
+
+// Ajax 全局配置
+Vue.http.options.root = 'http://localhost:9090' // dev
+
+// api mocking
+Vue.http.interceptors.push((req, next) => {
+  const body = apis.find(a => a.url === req.url).response
+  next(req.respondWith(body, {
+    status: 200,
+    statusText: 'ok'
+  }))
+})
 
 // 当收听到 login 事件时
 eventHub.$on('login', () => {

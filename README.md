@@ -32,3 +32,4 @@ npm run build
 ### 其他
 
 * `/src/auth.js`: 登录验证机制的脚本，组件可引入并调用其 `login`、`logout`、`checkAuth` 及 `getAuthHeader` 等方法来分别登录、注销、检查验证状态及获取验证头部
+* `/src/main.js`：`Vue.http.interceptors` 拦截器定义 mock data 规则，在 `api.mock.js` 里定义伪请求的 URL 及数据
