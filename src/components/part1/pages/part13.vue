@@ -23,7 +23,10 @@
             <el-select
               v-if="param.type === 'dict'"
               :value="param.value.value">
-              <option value=""></option>
+              <el-option
+                v-for="option in dictOptions[param.value.dictTypeCode]"
+                :label="option.name"
+                :value="option.value"></el-option>
             </el-select>
             <el-input
               v-else
@@ -62,30 +65,56 @@
           type: 'number',
           value: 10
         }, {
+          name: 'some-dict',
+          description: '选择框 1',
+          required: true,
+          type: 'dict',
+          value: {
+            dictTypeCode: 'dictOne',
+            dictTypeName: '字典 1',
+            name: '选项 1-2',
+            value: 'dict-1-2'
+          }
+        }, {
           name: 'some-textarea',
           description: '文本框',
           required: false,
           type: 'textarea',
           value: 'Lorem ipsum dolor sit amet, consectetur.'
         }, {
-          name: 'some-dict',
-          description: '选择框',
-          required: true,
+          name: 'another-dict',
+          description: '选择框 2',
+          required: false,
           type: 'dict',
           value: {
-            dictTypecode: 'ftpConnType',
-            dictTypename: '数据连接模式',
-            description: '表示以被动模式连接 FTP',
-            name: '被动模式',
-            value: 'Pasv'
+            dictTypeCode: 'dictTwo',
+            dictTypeName: '字典 2',
+            name: '选项 2-1',
+            value: 'dict-2-1'
           }
         }]
       }
     },
 
-    computed () {
-      return {
-        // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
+    computed: {
+      // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
+      dictOptions () {
+        return {
+          dictOne: [{
+            name: '选项 1-1',
+            value: 'dict-1-1'
+          }, {
+            name: '选项 1-2',
+            value: 'dict-1-2'
+          }],
+          dictTwo: [{
+            name: '选项 2-1',
+            value: 'dict-2-1'
+          }, {
+            name: '选项 2-2',
+            value: 'dict-2-2'
+          }]
+        }
       }
     },
 
