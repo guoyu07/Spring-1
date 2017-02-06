@@ -99,8 +99,7 @@
       },
 
       getInputParams () {
-        this.$http.get('inputParams/').then((res) => {
-          console.log(res.body)
+        this.$http.get('/inputParams').then((res) => {
           this.inputParams = res.body
         })
       },
