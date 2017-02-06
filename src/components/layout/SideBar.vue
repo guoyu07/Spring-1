@@ -25,7 +25,7 @@
           <el-menu-item index="/part1/part12"><i class="el-icon-message"></i>选项2</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group title="分组2">
-          <el-menu-item index="/part1/part14"><i class="el-icon-message"></i>选项3</el-menu-item>
+          <el-menu-item index="/part1/part13"><i class="el-icon-message"></i>选项3</el-menu-item>
         </el-menu-item-group>
         <!-- <el-submenu index="1-4" style="padding-left: 25px;">
           <template slot="title">选项4</template>

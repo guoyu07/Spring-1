@@ -1,3 +1,18 @@
+<style>
+  #content {
+    /*width: 100%;*/
+    /*height: 100%;*/
+    padding-top: 80px;
+    padding-left: 220px;
+    padding-right: 20px;
+    padding-bottom: 50px;
+    /*overflow: auto;*/
+  }
+  .el-menu-item-group__title {
+    font-size: 12px;
+  }
+</style>
+
 <template>
   <div class="home">
     <header-warp></header-warp>
@@ -8,6 +23,7 @@
     <footer-warp></footer-warp>
   </div>
 </template>
+
 <script>
   import HeaderWarp from './layout/Header'
   import SideWarp from './layout/SideBar'
@@ -65,15 +81,3 @@
     }
   }
 </script>
-<style>
-  #content {
-    /*width: 100%;*/
-    /*height: 100%;*/
-    padding-top: 80px;
-    padding-left: 200px;
-    /*overflow: auto;*/
-  }
-  .el-menu-item-group__title {
-    font-size: 12px;
-  }
-</style>
