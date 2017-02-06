@@ -66,32 +66,10 @@
       return {
         // 获取表单配置数据
         inputParams: [],
-        // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
+        // 获取选择框选项
         dictOptions: {}
       }
     },
-
-    // computed: {
-    //   // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
-    //   dictOptions () {
-    //     return {
-    //       dictOne: [{
-    //         name: '选项 1-1',
-    //         value: 'dict-1-1'
-    //       }, {
-    //         name: '选项 1-2',
-    //         value: 'dict-1-2'
-    //       }],
-    //       dictTwo: [{
-    //         name: '选项 2-1',
-    //         value: 'dict-2-1'
-    //       }, {
-    //         name: '选项 2-2',
-    //         value: 'dict-2-2'
-    //       }]
-    //     }
-    //   }
-    // },
 
     methods: {
       onSubmit () {
@@ -99,17 +77,23 @@
       },
 
       getInputParams () {
-        this.$http.get('inputParams/').then((res) => {
+        this.$http.get('/inputParams').then((res) => {
           console.log(res.body)
           this.inputParams = res.body
+          this.getDictOptions()
         })
       },
 
-      getDictOptions (type) {
-        this.$http.get(`dictData/${type}`).then((res) => {
-          console.log(res.body)
-          this.dictOptions[type] = res.body
-        })
+      getDictOptions () {
+        for (let param in this.inputParams) {
+          if (param.type === 'dict') {
+            let dictType = param.value.dictTypeCode
+            this.$http.get(`dictData/${dictType}`).then((res) => {
+              console.log(res.body)
+              this.dictOptions[dictType] = res.body
+            })
+          }
+        }
       }
     },
 

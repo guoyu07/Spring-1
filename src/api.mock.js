@@ -1,6 +1,6 @@
 const apis = [{
   method: 'GET',
-  url: 'inputParams/',
+  url: '/inputParams',
   response: [{
     name: 'some-text',
     description: '输入框',
