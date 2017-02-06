@@ -50,6 +50,8 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  console.log(to)
+  console.log(!auth.authenticated)
   if (to.matched.some(m => m.meta.requiresAuth) &&
       !auth.authenticated) {  // 如果目的路由需要验证、而用户尚未验证时
     // 跳转至登录页

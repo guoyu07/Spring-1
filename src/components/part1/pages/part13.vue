@@ -15,8 +15,7 @@
         <h3>自订表单客户端测试</h3>
         <el-form
           label-position="right"
-          label-width="80px"
-          :model="formData">
+          label-width="80px">
           <el-form-item
             v-for="param in inputParams"
             :label="param.description"
@@ -33,6 +32,9 @@
               :placeholder="param.description"
               :value="param.value"></el-input>
           </el-form-item>
+          <el-form-item>
+            <el-button type="primary" @click="onSubmit">提交</el-button>
+          </el-form-item>
         </el-form>
       </el-card>
       <el-alert title="表单数据" type="success">
@@ -46,6 +48,7 @@
   export default {
     data () {
       return {
+        // 获取表单配置数据
         inputParams: [{
           name: 'some-text',
           description: '输入框',
@@ -82,7 +85,13 @@
 
     computed () {
       return {
+        // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
+      }
+    },
 
+    methods: {
+      onSubmit () {
+        console.log('submit!')
       }
     }
   }
