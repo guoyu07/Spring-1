@@ -31,6 +31,11 @@
                   :label="option.name"
                   :value="option.value"></el-option>
               </el-select>
+              <el-checkbox-group
+                v-else-if="param.type === 'checkbox'"
+                v-model="param.value.value">
+                <el-checkbox v-for="option in checkboxOptions[param.value.checkboxTypeCode]" :label="option.name"></el-checkbox>
+              </el-checkbox-group>
               <el-input
                 v-else
                 :type="param.type"
@@ -46,14 +51,19 @@
       </el-col>
     </el-row>
     <el-row :gutter="20">
-      <el-col :sm="20" :md="12" :lg="10">
+      <el-col :sm="20" :md="8" :lg="6">
         <el-alert title="表单数据" type="success">
           <pre>{{inputParams}}</pre>
         </el-alert>
       </el-col>
-      <el-col :sm="20" :md="12" :lg="10">
+      <el-col :sm="20" :md="8" :lg="6">
         <el-alert title="字典数据" type="info">
           <pre>{{dictOptions}}</pre>
+        </el-alert>
+      </el-col>
+      <el-col :sm="20" :md="8" :lg="6">
+        <el-alert title="复选框数据" type="warning">
+          <pre>{{checkboxOptions}}</pre>
         </el-alert>
       </el-col>
     </el-row>
@@ -66,32 +76,12 @@
       return {
         // 获取表单配置数据
         inputParams: [],
-        // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
-        dictOptions: {}
+        // 获取选择框选项
+        dictOptions: {},
+        // 获取复选框选项
+        checkboxOptions: {}
       }
     },
-
-    // computed: {
-    //   // 根据 inputParams 中每个 dictType 逐个请求，获得选择框选项
-    //   dictOptions () {
-    //     return {
-    //       dictOne: [{
-    //         name: '选项 1-1',
-    //         value: 'dict-1-1'
-    //       }, {
-    //         name: '选项 1-2',
-    //         value: 'dict-1-2'
-    //       }],
-    //       dictTwo: [{
-    //         name: '选项 2-1',
-    //         value: 'dict-2-1'
-    //       }, {
-    //         name: '选项 2-2',
-    //         value: 'dict-2-2'
-    //       }]
-    //     }
-    //   }
-    // },
 
     methods: {
       onSubmit () {
@@ -101,14 +91,31 @@
       getInputParams () {
         this.$http.get('/inputParams').then((res) => {
           this.inputParams = res.body
+          this.getDictOptions()
+          this.getCheckboxOptions()
         })
       },
 
-      getDictOptions (type) {
-        this.$http.get(`dictData/${type}`).then((res) => {
-          console.log(res.body)
-          this.dictOptions[type] = res.body
-        })
+      getDictOptions () {
+        for (let param of this.inputParams) {
+          if (param.type === 'dict') {
+            let dictType = param.value.dictTypeCode
+            this.$http.get(`/dictData/${dictType}`).then((res) => {
+              this.$set(this.dictOptions, dictType, res.body)
+            })
+          }
+        }
+      },
+
+      getCheckboxOptions () {
+        for (let param of this.inputParams) {
+          if (param.type === 'checkbox') {
+            let checkboxType = param.value.checkboxTypeCode
+            this.$http.get(`/checkboxData/${checkboxType}`).then((res) => {
+              this.$set(this.checkboxOptions, checkboxType, res.body)
+            })
+          }
+        }
       }
     },
 

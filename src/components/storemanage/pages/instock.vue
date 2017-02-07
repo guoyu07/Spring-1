@@ -1,24 +1,7 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <h3 class="form-title">服务资源申请单</h3>
+    <h3 class="form-title">入库管理</h3>
     <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px">
-      <el-row :gutter="10" class="m-top">
-        <el-col :span="8">
-
-          <el-form-item prop="applicant" label="申请人">
-            <el-input v-model="applyForm.applicant"></el-input>
-          </el-form-item>
-
-          <el-form-item prop="project" label="项目组">
-            <el-input v-model="applyForm.project"></el-input>
-          </el-form-item>
-
-          <el-form-item prop="date" label="申请时间">
-            <el-date-picker type="date" placeholder="选择日期" v-model="applyForm.date" style="width: 100%;"></el-date-picker>
-          </el-form-item>
-        </el-col>
-      </el-row>
-
       <el-row class="m-row">
 
         <el-col :span="8" v-for = "(item, index) in applyForm.data">
@@ -90,15 +73,17 @@
           </el-form-item>
         </el-col>
 
-        <el-col :span="2" class="icon-plus" v-if="applyForm.data.length < 5">
-          <el-button type="text" @click="onAdd"><i class="el-icon-plus"></i></el-button>
-        </el-col>
-
       </el-row>
 
       <el-form-item label="备注">
         <el-col :span="12">
           <el-input type="textarea" v-model="applyForm.remark"></el-input>
+        </el-col>
+      </el-form-item>
+
+      <el-form-item>
+        <el-col :span="2" class="icon-plus" v-if="applyForm.data.length < 10">
+          <el-button type="primary" icon="plus" size="small" @click="onAdd">添加</el-button>
         </el-col>
       </el-form-item>
 

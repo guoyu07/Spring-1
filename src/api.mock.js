@@ -14,6 +14,15 @@ const apis = [{
     type: 'number',
     value: 10
   }, {
+    name: 'some-checkbox',
+    description: '多选',
+    required: true,
+    type: 'checkbox',
+    value: {
+      checkboxTypeCode: 'checkboxOne',
+      value: ['选项 1', '选项 3']
+    }
+  }, {
     name: 'some-dict',
     description: '选择框 1',
     required: true,
@@ -44,23 +53,53 @@ const apis = [{
   }]
 }, {
   method: 'GET',
-  url: 'dictData/dictOne',
+  url: '/dictData/dictOne',
   response: [{
     name: '选项 1-1',
-    value: 'dict-1-1'
+    value: 'dict-1-1',
+    children: ['dict-2-1', 'dict-2-2']
   }, {
     name: '选项 1-2',
-    value: 'dict-1-2'
+    value: 'dict-1-2',
+    children: ['dict-2-3', 'dict-2-4']
   }]
 }, {
   method: 'GET',
-  url: 'dictData/dictTwo',
+  url: '/dictData/dictTwo',
+  dependOn: 'dictOne',  // 所依赖的字典的 dictTypeCode
   response: [{
     name: '选项 2-1',
     value: 'dict-2-1'
   }, {
     name: '选项 2-2',
     value: 'dict-2-2'
+  }]
+}, {
+  method: 'GET',
+  url: '/checkboxData/checkboxOne',
+  response: [{
+    name: '选项 1',
+    value: 'check-1'
+  }, {
+    name: '选项 2',
+    value: 'check-2'
+  }, {
+    name: '选项 3',
+    value: 'check-3'
+  }]
+}, {
+  method: 'GET',
+  url: '/deviceData',
+  response: [{
+    id: 1,
+    name: '设备一',
+    number: '1234567890',
+    other: 'xxxx'
+  }, {
+    id: 2,
+    name: '设备二',
+    number: '2345678901',
+    other: 'xxxx'
   }]
 }]
 

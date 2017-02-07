@@ -27,11 +27,20 @@ Vue.http.options.root = 'http://localhost:9090' // dev
 
 // api mocking
 Vue.http.interceptors.push((req, next) => {
-  const body = apis.find(a => a.url === req.url).response
-  next(req.respondWith(body, {
-    status: 200,
-    statusText: 'ok'
-  }))
+  // const body = apis.find(a => a.url === req.url).response
+  // next(req.respondWith(body, {
+  //   status: 200,
+  //   statusText: 'ok'
+  // }))
+  const route = apis.find(a => a.url === req.url)
+  if (!route) {
+    next(req.respondWith({ status: 404, statusText: 'Not found :(' }))
+  } else {
+    next(req.respondWith(route.response, {
+      status: 200,
+      statusText: 'ok'
+    }))
+  }
 })
 
 // 当收听到 login 事件时
