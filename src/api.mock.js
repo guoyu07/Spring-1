@@ -56,14 +56,17 @@ const apis = [{
   url: '/dictData/dictOne',
   response: [{
     name: '选项 1-1',
-    value: 'dict-1-1'
+    value: 'dict-1-1',
+    children: ['dict-2-1', 'dict-2-2']
   }, {
     name: '选项 1-2',
-    value: 'dict-1-2'
+    value: 'dict-1-2',
+    children: ['dict-2-1', 'dict-2-2']
   }]
 }, {
   method: 'GET',
   url: '/dictData/dictTwo',
+  dependOn: 'dictOne',  // 所依赖的字典的 dictTypeCode
   response: [{
     name: '选项 2-1',
     value: 'dict-2-1'
