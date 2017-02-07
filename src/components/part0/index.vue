@@ -186,7 +186,10 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="less" scoped>
+  .el-select {
+    width: 100%;
+  }
   .wrapper {
     padding: 20px;
 
