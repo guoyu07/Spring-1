@@ -6,7 +6,6 @@
     width: 200px;
     height: 100%;
     overflow-y: auto;
-    background-color: #324057;
 
     .el-menu {
       height: 100%;
