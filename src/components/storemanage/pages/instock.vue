@@ -197,9 +197,10 @@
                       </el-select>
                     </el-form-item>
                   </el-card>
-                  
-                  <el-button type="primary" icon="plus" class="margin-top" @click="onAdd">增加</el-button>
+
+                  <el-button type="text" icon="plus" class="margin-top" @click="onAdd">增加</el-button>
                 </el-form>
+                <el-button type="primary" class="margin-top" @click="onConfirm">确认</el-button>
               </div>
             </el-col>
           <!-- </el-col> -->
