@@ -16,16 +16,6 @@ import 'assets/css/main.less'
 Vue.use(ElementUI)
 Vue.use(VueResource)
 
-/* eslint-disable no-new */
-new Vue({
-  el: '#app',
-  // template: '<App/>',
-  // components: { App },
-  router,
-  store,
-  ...App
-})
-
 auth.checkAuth()
 
 const setConfigs = () => {
@@ -42,7 +32,6 @@ Vue.http.interceptors.push((req, next) => {
   //   status: 200,
   //   statusText: 'ok'
   // }))
-  console.log('intercepted')
   const route = apis.find(a => a.url === req.url)
   if (!route) {
     next(req.respondWith({ status: 404, statusText: 'Not found :(' }))
@@ -57,4 +46,14 @@ Vue.http.interceptors.push((req, next) => {
 // 当收听到 login 事件时
 eventHub.$on('login', () => {
   setConfigs()
+})
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  // template: '<App/>',
+  // components: { App },
+  router,
+  store,
+  ...App
 })
