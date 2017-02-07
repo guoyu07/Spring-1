@@ -61,7 +61,7 @@ const apis = [{
   }, {
     name: '选项 1-2',
     value: 'dict-1-2',
-    children: ['dict-2-1', 'dict-2-2']
+    children: ['dict-2-3', 'dict-2-4']
   }]
 }, {
   method: 'GET',
@@ -86,6 +86,20 @@ const apis = [{
   }, {
     name: '选项 3',
     value: 'check-3'
+  }]
+}, {
+  method: 'GET',
+  url: '/deviceData',
+  response: [{
+    id: 1,
+    name: '设备一',
+    number: '1234567890',
+    other: 'xxxx'
+  }, {
+    id: 2,
+    name: '设备二',
+    number: '2345678901',
+    other: 'xxxx'
   }]
 }]
 
