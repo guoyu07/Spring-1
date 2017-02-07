@@ -18,7 +18,27 @@ const routes = [{
   component: require('./components/Home'),
   children: [{
     path: '/part0',
-    component: require('./components/part0/Index')
+    component: require('./components/part0/index')
+  }, {
+    path: '/storemanage',
+    component: require('./components/storemanage/index'),
+    children: [{
+      path: '/storemanage/instock',
+      component: require('./components/storemanage/pages/instock.vue')
+    }, {
+      path: '/storemanage/outstock',
+      component: require('./components/storemanage/pages/outstock.vue')
+    }]
+  }, {
+    path: '/equipment',
+    component: require('./components/equipment/index'),
+    children: [{
+      path: '/equipment/on',
+      component: require('./components/equipment/pages/on.vue')
+    }, {
+      path: '/equipment/off',
+      component: require('./components/equipment/pages/off.vue')
+    }]
   }, {
     path: '/part1',
     component: require('./components/part1/Index'),
