@@ -22,6 +22,15 @@
       width: 200px;
     }
   }
+
+  .device-data-list {
+    margin-top: 0;
+    margin-bottom: 24px;
+
+    li {
+      list-style: disc;
+    }
+  }
 </style>
 
 <template>
@@ -51,7 +60,7 @@
                 </div>
               </div>
               <div class="step step-2" v-show="activeStep === 2">
-                <el-form label-positio="left" label-width="100px">
+                <el-form label-position="left" label-width="100px">
                   <el-form-item label="搜索设备">
                     <el-input
                       placeholder="请在这里搜索设备..."
@@ -64,6 +73,7 @@
                 <el-table
                   :data="deviceTable"
                   border
+                  v-loading.body="deviceLoading"
                   style="width: 100%">
                   <el-table-column
                     prop="name"
@@ -77,7 +87,7 @@
                   <el-table-column
                     inline-template
                     :context="_self"
-                    label="设备">
+                    label="操作">
                     <span>
                       <el-button type="text" @click="onRetrieve(row)">出库</el-button>
                       <el-button type="text" @click="onEdit(row)">变更</el-button>
@@ -94,6 +104,27 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-dialog
+      title="设备详情"
+      v-model="retrieveViewData.visible"
+      size="tiny"
+      :modal="true">
+      <ul class="device-data-list">
+        <li v-for="(value, key) in retrieveViewData.device">{{key}}: {{value}}</li>
+      </ul>
+      <el-row>
+        <el-col :span="14" :offset="5">
+          <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
+          <el-input
+            placeholder="请输入出库指定地点..."
+            v-model="retrieveViewData.location"></el-input>
+        </el-col>
+      </el-row>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="retrieveViewData.visible = false">取消</el-button>
+        <el-button type="primary" @click="onConfirmRetrieve(retrieveViewData.device, retrieveViewData.location)">确认出库</el-button>
+      </span>
+    </el-dialog>
     <device-view :device-view-data="deviceViewData"></device-view>
   </div>
 </template>
@@ -106,6 +137,7 @@
       return {
         activeStep: 1,
         deviceValue: '',
+        deviceLoading: false,
         deviceList: [{
           label: '服务器',
           value: 'server'
@@ -121,36 +153,50 @@
         }],
         deviceSearch: '',
         deviceTable: [],
-        deviceViewData: {
+        retrieveViewData: {
           visible: false,
           device: {}
+        },
+        deviceViewData: {
+          visible: false,
+          location: '',
+          device: {}
         }
+      }
+    },
+
+    watch: {
+      activeStep () {
+        this.deviceTable = []
+        this.deviceSearch = ''
       }
     },
 
     methods: {
       onSearchDevices () {
         console.log(this.deviceSearch)
+        this.deviceLoading = true
         this.$http.get('/deviceData').then((res) => {
-          console.log(res.body)
           this.deviceTable = res.body
+          this.deviceLoading = false
         })
       },
 
       onRetrieve (device) {
-        this.$confirm(`确定对设备「${device.name}」进行出库操作吗？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          console.log(device.id)
-          this.$message({
-            type: 'success',
-            message: '已出库！'
-          })
-        }).catch(() => {
-          console.log(device.id)
+        this.retrieveViewData.visible = true
+        this.retrieveViewData.device = device
+      },
+
+      onConfirmRetrieve (device, location) {
+        if (!location) {
+          this.$message.error('请填写出库地点！')
+          return
+        }
+        this.$message({
+          type: 'success',
+          message: `已成功将设备「${device.name}」出库至${location}！`
         })
+        this.retrieveViewData.visible = false
       },
 
       onEdit (device) {
