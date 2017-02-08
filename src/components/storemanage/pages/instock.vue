@@ -414,14 +414,21 @@
       },
       onAdd () {
         var that = this
-        this.instockForm.data.push({
-          id: that.instockForm.data.length,  // 此处 id 并不唯一
-          ItNo: '',
-          important: 1,
-          uNumber: 1,
-          place: 'warehouse',
-          currentState: 'idle'
-        })
+        if (that.instockForm.data.length < 10) {
+          that.instockForm.data.push({
+            id: that.instockForm.data.length,  // 此处 id 并不唯一
+            ItNo: '',
+            important: 1,
+            uNumber: 1,
+            place: 'warehouse',
+            currentState: 'idle'
+          })
+        } else {
+          that.$alert('最多只能增加10个设备', '提示信息', {
+            confirmButtonText: '确定',
+            type: 'info'
+          })
+        }
       },
       onConfirm () {
         console.log(this.instockForm)
