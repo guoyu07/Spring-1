@@ -45,11 +45,11 @@ const routes = [{
     path: '/part1',
     component: require('./components/part1/Index'),
     children: [{
-      path: '/part1/part11',
-      component: require('./components/part1/pages/Part11.vue')
+      path: '',
+      component: require('./components/part1/pages/list.vue')
     }, {
-      path: '/part1/part12',
-      component: require('./components/part1/pages/Part12.vue')
+      path: '/part1/editor',
+      component: require('./components/part1/pages/editor.vue')
     }, {
       path: '/part1/part13',
       component: require('./components/part1/pages/Part13.vue')
