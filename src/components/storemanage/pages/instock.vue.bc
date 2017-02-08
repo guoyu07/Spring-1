@@ -2,35 +2,35 @@
   <div class="outstock">
     <el-row>
       <el-col :sm="24" :md="24" class="step-card">
-        <el-card class="box-card step-card">
+        <!-- <el-card class="box-card step-card"> -->
           <h3>入库流程</h3>
           <el-steps :space="380" :active="activeStep">
             <el-step title="选择设备类型" :description="deviceValue.label"></el-step>
             <el-step title="设备录入"></el-step>
           </el-steps>
           <el-col>
-            <div class="step step-1" v-show="activeStep === 1">
-              <el-form label-position="left" label-width="100px">
-                <el-form-item label="设备类型">
-                  <el-select v-model="deviceValue">
-                    <el-option v-for="device in deviceList"
-                      :label="device.label"
-                      :value="device"></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-form>
-              <div class="btn-area">
-                <el-button type="primary" @click="activeStep++" class="md">下一步</el-button>
+            <!-- <el-col :span="6"> -->
+              <div class="step step-1" v-show="activeStep === 1">
+                <el-form label-position="left" label-width="100px">
+                  <el-form-item label="设备类型">
+                    <el-select v-model="deviceValue">
+                      <el-option v-for="device in deviceList"
+                        :label="device.label"
+                        :value="device"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
+                <div class="btn-area">
+                  <el-button type="primary" @click="activeStep++" class="md">下一步</el-button>
+                </div>
               </div>
-            </div>
-            <div class="step step-2" v-show="activeStep === 2">
-              <div class="btn-area">
-                <el-button class="md" @click="activeStep--">上一步</el-button>
-              </div>
-              <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-                <el-button size="small" @click="onAdd" class="margin-bottom" icon="plus">增加{{ deviceValue.label }}</el-button>
-                <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
-                  <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
+              <div class="step step-2" v-show="activeStep === 2">
+                <div class="btn-area">
+                  <el-button class="md" @click="activeStep--">上一步</el-button>
+                </div>
+                <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
+                  <el-card class="box-card instock-card" v-for="(item, index) in instockForm.data">
+                    <span class="instock-card-remove" v-if="index !== 0" @click.prevent="onRemove(item)"><i class="el-icon-circle-cross"></i></span>
                     <h4 class="form-title">管理信息</h4>
                     <el-form-item 
                       label="IT资产编号"
@@ -196,14 +196,15 @@
                           :value="currentState.value"></el-option>
                       </el-select>
                     </el-form-item>
-                  </el-tab-pane>
-                </el-tabs>
-                <!-- <el-button type="text" icon="plus" class="margin-top" @click="onAdd">增加</el-button> -->
-              </el-form>
-              <el-button type="primary" class="margin-top" @click="onConfirm">确认</el-button>
-            </div>
-          </el-col>
-        </el-card>
+                  </el-card>
+
+                  <el-button type="text" icon="plus" class="margin-top" @click="onAdd">增加</el-button>
+                </el-form>
+                <el-button type="primary" class="margin-top" @click="onConfirm">确认</el-button>
+              </div>
+            </el-col>
+          <!-- </el-col> -->
+        <!-- </el-card> -->
       </el-col>
     </el-row>
   </div>
@@ -218,7 +219,6 @@
         instockForm: {
           remark: '',
           data: [{
-            id: 0,
             ItNo: '',
             important: 1,
             uNumber: 1,
@@ -405,29 +405,19 @@
     },
 
     methods: {
-      handleRemove (tab) {
-        this.instockForm.data.splice(tab.index, 1)
-        console.log(tab.index, this.instockForm.data)
-      },
-      handleClick (tab, event) {
-        console.log(tab.index, tab, event)
-      },
       onAdd () {
-        var that = this
-        if (that.instockForm.data.length < 10) {
-          that.instockForm.data.push({
-            id: that.instockForm.data.length,  // 此处 id 并不唯一
-            ItNo: '',
-            important: 1,
-            uNumber: 1,
-            place: 'warehouse',
-            currentState: 'idle'
-          })
-        } else {
-          that.$alert('最多只能增加10个设备', '提示信息', {
-            confirmButtonText: '确定',
-            type: 'info'
-          })
+        this.instockForm.data.push({
+          ItNo: '',
+          important: 1,
+          uNumber: 1,
+          place: 'warehouse',
+          currentState: 'idle'
+        })
+      },
+      onRemove (item) {
+        var index = this.instockForm.data.indexOf(item)
+        if (index !== -1) {
+          this.instockForm.data.splice(index, 1)
         }
       },
       onConfirm () {
@@ -449,7 +439,7 @@
     }
 
     .step {
-      margin: 24px 0;
+      margin-top: 24px;
     }
 
     .step-1 {
@@ -475,9 +465,6 @@
   }
   .margin-top {
     margin-top: 15px;
-  }
-  .margin-bottom {
-    margin-bottom: 15px;
   }
   .instock-card {
     margin-bottom: 15px;

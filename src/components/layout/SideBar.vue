@@ -6,6 +6,7 @@
     bottom: 36px;
     width: 200px;
     overflow-y: scroll;
+    background-color: #eff2f7;
   }
 </style>
 
