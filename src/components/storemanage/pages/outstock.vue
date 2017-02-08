@@ -40,7 +40,7 @@
         <el-card class="box-card step-card">
           <h3>出库流程</h3>
           <el-steps :space="380" :active="activeStep">
-            <el-step title="选择设备类型"></el-step>
+            <el-step title="选择设备类型" :description="deviceValue.label"></el-step>
             <el-step title="设备搜索及操作"></el-step>
           </el-steps>
           <el-col>
@@ -51,7 +51,7 @@
                     <el-select v-model="deviceValue">
                       <el-option v-for="device in deviceList"
                         :label="device.label"
-                        :value="device.value"></el-option>
+                        :value="device"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-form>
@@ -63,7 +63,7 @@
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="搜索设备">
                     <el-input
-                      placeholder="请在这里搜索设备..."
+                      :placeholder="'请在这里搜索' + deviceValue.label + '...'"
                       icon="search"
                       v-model="deviceSearch">
                       <el-button slot="append" icon="search" @click="onSearchDevices"></el-button>
@@ -136,7 +136,7 @@
     data () {
       return {
         activeStep: 1,
-        deviceValue: '',
+        deviceValue: {},
         deviceLoading: false,
         deviceList: [{
           label: '服务器',
