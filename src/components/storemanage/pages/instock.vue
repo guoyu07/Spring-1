@@ -20,19 +20,19 @@
                 </el-form-item>
               </el-form>
               <div class="btn-area">
-                <el-button type="primary" @click="activeStep++" class="md">下一步</el-button>
+                <el-button type="primary" @click="activeStep++" :disabled="!deviceValue.value">下一步</el-button>
               </div>
             </div>
             <div class="step step-2" v-show="activeStep === 2">
               <div class="btn-area">
-                <el-button class="md" @click="activeStep--">上一步</el-button>
+                <el-button @click="activeStep--">上一步</el-button>
               </div>
               <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
                 <el-button size="small" @click="onAdd" class="margin-bottom" icon="plus">增加{{ deviceValue.label }}</el-button>
                 <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                   <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                     <h4 class="form-title">管理信息</h4>
-                    <el-form-item 
+                    <el-form-item
                       label="IT资产编号"
                       :prop="'data.' + index + '.ItNo'"
                       :rules="{
@@ -49,22 +49,22 @@
                       <el-select>
                         <el-option v-for="server in serverList"
                           :label="server.label"
-                          :value="server.value"></el-option>
+                          :value="server"></el-option>
                       </el-select>
                     </el-form-item>
-                    
+
                     <el-form-item label="管理部门">
                       <el-select>
                         <el-option v-for="department in departmentList"
                           :label="department.label"
-                          :value="department.value"></el-option>
+                          :value="department"></el-option>
                       </el-select>
                     </el-form-item>
 
                     <el-form-item label="管理人">
                       <el-input></el-input>
                     </el-form-item>
-                    
+
                     <el-form-item label="所属应用服务">
                       <el-input placeholder="所属业务/应用/项目组"></el-input>
                     </el-form-item>
@@ -82,7 +82,7 @@
                       <el-select>
                         <el-option v-for="factory in factoryList"
                           :label="factory.label"
-                          :value="factory.value"></el-option>
+                          :value="factory"></el-option>
                       </el-select>
                     </el-form-item>
 
@@ -110,7 +110,7 @@
                       <el-select>
                         <el-option v-for="raid in raidList"
                           :label="raid.label"
-                          :value="raid.value"></el-option>
+                          :value="raid"></el-option>
                       </el-select>
                     </el-form-item>
 
@@ -144,7 +144,7 @@
                       <el-select>
                         <el-option v-for="state in renewStateList"
                           :label="state.label"
-                          :value="state.value"></el-option>
+                          :value="state"></el-option>
                       </el-select>
                     </el-form-item>
 
@@ -152,7 +152,7 @@
                       <el-select>
                         <el-option v-for="style in renewStyleList"
                           :label="style.label"
-                          :value="style.value"></el-option>
+                          :value="style"></el-option>
                       </el-select>
                     </el-form-item>
 
@@ -172,7 +172,7 @@
                       <el-select>
                         <el-option v-for="maintenance in maintenanceDepartmentList"
                           :label="maintenance.label"
-                          :value="maintenance.value"></el-option>
+                          :value="maintenance"></el-option>
                       </el-select>
                     </el-form-item>
 
@@ -185,7 +185,7 @@
                       <el-select v-model="item.place">
                         <el-option v-for="place in placeList"
                           :label="place.label"
-                          :value="place.value"></el-option>
+                          :value="place"></el-option>
                       </el-select>
                     </el-form-item>
 
@@ -193,12 +193,11 @@
                       <el-select v-model="item.currentState">
                         <el-option v-for="currentState in currentStateList"
                           :label="currentState.label"
-                          :value="currentState.value"></el-option>
+                          :value="currentState"></el-option>
                       </el-select>
                     </el-form-item>
                   </el-tab-pane>
                 </el-tabs>
-                <!-- <el-button type="text" icon="plus" class="margin-top" @click="onAdd">增加</el-button> -->
               </el-form>
               <el-button type="primary" class="margin-top" @click="onConfirm">确认</el-button>
             </div>
@@ -222,8 +221,8 @@
             ItNo: '',
             important: 1,
             uNumber: 1,
-            place: 'warehouse',
-            currentState: 'idle'
+            place: '仓库',
+            currentState: '空闲'
           }]
         },
         currentStateList: [{ // 当前状态
@@ -407,10 +406,10 @@
     methods: {
       handleRemove (tab) {
         this.instockForm.data.splice(tab.index, 1)
-        console.log(tab.index, this.instockForm.data)
+        // console.log(tab.index, this.instockForm.data)
       },
       handleClick (tab, event) {
-        console.log(tab.index, tab, event)
+        // console.log(tab.index, tab, event)
       },
       onAdd () {
         var that = this
@@ -420,8 +419,8 @@
             ItNo: '',
             important: 1,
             uNumber: 1,
-            place: 'warehouse',
-            currentState: 'idle'
+            place: '仓库',
+            currentState: '空闲'
           })
         } else {
           that.$alert('最多只能增加10个设备', '提示信息', {

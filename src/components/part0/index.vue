@@ -4,7 +4,6 @@
     <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px">
       <el-row :gutter="10" class="m-top">
         <el-col :span="8">
-
           <el-form-item prop="applicant" label="申请人">
             <el-input v-model="applyForm.applicant"></el-input>
           </el-form-item>
