@@ -1,4 +1,6 @@
 <style lang="less">
+  @import url("../../../assets/css/variables.less");
+
   .step-card {
 
     .el-select {
@@ -16,39 +18,54 @@
     }
 
     .btn-area {
-      margin-bottom: 24px;
       margin-left: auto;
       margin-right: auto;
       width: 200px;
     }
   }
 
-  .device-data-list {
-    margin-top: 0;
-    margin-bottom: 24px;
+  .device-data-table {
+    border-top: 1px solid @borderColor;
+    border-left: 1px solid @borderColor;
+    margin: 0 auto 18px;
+    width: 66%;
 
-    li {
-      list-style: disc;
+    tr > td:first-child {
+      background-color: lighten(@bgLighter, 3%);
     }
+
+    td {
+      border-bottom: 1px solid @borderColor;
+      border-right: 1px solid @borderColor;
+      padding: 6px;
+      font-size: 13px;
+    }
+  }
+
+  .sub-title {
+    font-size: 13px;
+    color: @textColor;
+    margin-bottom: 12px;
+    white-space: nowrap;
   }
 </style>
 
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="20">
+      <el-col :sm="24" :md="20" :lg="18">
         <el-card class="box-card step-card">
           <h3>出库流程</h3>
           <el-steps :space="380" :active="activeStep">
             <el-step title="选择设备类型"></el-step>
             <el-step title="设备搜索及操作"></el-step>
           </el-steps>
-          <el-col>
+          <el-row>
             <el-col :span="16" :offset="4">
               <div class="step step-1" v-show="activeStep === 1">
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="设备类型">
-                    <el-select v-model="deviceValue">
+                    <el-select v-model="deviceType">
                       <el-option v-for="device in deviceList"
                         :label="device.label"
                         :value="device.value"></el-option>
@@ -56,10 +73,11 @@
                   </el-form-item>
                 </el-form>
                 <div class="btn-area">
-                  <el-button type="primary" @click="activeStep++" class="md">下一步</el-button>
+                  <el-button type="primary" :disabled="!deviceType" @click="activeStep++" class="md">下一步</el-button>
                 </div>
               </div>
               <div class="step step-2" v-show="activeStep === 2">
+                <div class="sub-title">设备类型：{{deviceType}}</div>
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="搜索设备">
                     <el-input
@@ -74,7 +92,7 @@
                   :data="deviceTable"
                   border
                   v-loading.body="deviceLoading"
-                  style="width: 100%">
+                  style="width: 100%; min-width: 460px">
                   <el-table-column
                     prop="name"
                     label="设备"></el-table-column>
@@ -100,18 +118,23 @@
                 </div>
               </div>
             </el-col>
-          </el-col>
+          </el-row>
         </el-card>
       </el-col>
     </el-row>
     <el-dialog
-      title="设备详情"
+      title="出库操作"
       v-model="retrieveViewData.visible"
       size="tiny"
       :modal="true">
-      <ul class="device-data-list">
-        <li v-for="(value, key) in retrieveViewData.device">{{key}}: {{value}}</li>
-      </ul>
+      <table class="device-data-table">
+        <tbody>
+          <tr v-for="(value, key) in retrieveViewData.device">
+            <td><b>{{key}}</b></td>
+            <td>{{value}}</td>
+          </tr>
+        </tbody>
+      </table>
       <el-row>
         <el-col :span="14" :offset="5">
           <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
@@ -136,7 +159,7 @@
     data () {
       return {
         activeStep: 1,
-        deviceValue: '',
+        deviceType: '',
         deviceLoading: false,
         deviceList: [{
           label: '服务器',
@@ -174,7 +197,6 @@
 
     methods: {
       onSearchDevices () {
-        console.log(this.deviceSearch)
         this.deviceLoading = true
         this.$http.get('/deviceData').then((res) => {
           this.deviceTable = res.body

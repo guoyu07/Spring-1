@@ -3,6 +3,8 @@ import VueRouter from 'vue-router'
 
 import auth from './auth'
 
+import NProgress from 'nprogress'
+
 // import Home from './components/Home'
 // import LogTime from './components/LogTime.vue'
 // import TimeEntries from './components/TimeEntries.vue'
@@ -78,6 +80,11 @@ router.beforeEach((to, from, next) => {
   } else {
     next()
   }
+  NProgress.done()
+})
+
+router.afterEach(() => {
+  NProgress.start()
 })
 
 export default router

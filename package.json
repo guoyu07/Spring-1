@@ -2,7 +2,7 @@
   "name": "Spring",
   "version": "1.0.0",
   "description": "A Vue.js project",
-  "author": "赖依婷 <1206327437@qq.com>",
+  "author": "Jason Lam <jasonlam0619@gmail.com> && 赖依婷 <1206327437@qq.com>",
   "private": true,
   "scripts": {
     "dev": "node build/dev-server.js",
@@ -12,6 +12,7 @@
   "dependencies": {
     "animate.css": "^3.5.2",
     "font-awesome": "^4.7.0",
+    "nprogress": "^0.2.0",
     "vue": "^2.1.0",
     "vue-dependon": "^1.0.0",
     "vue-resource": "^1.0.3",

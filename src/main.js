@@ -11,6 +11,9 @@ import eventHub from './utils/eventHub'
 import auth from './auth'
 import apis from './api.mock'
 
+import NProgress from 'nprogress'
+import 'nprogress/nprogress.css'
+
 import 'assets/css/main.less'
 
 Vue.use(ElementUI)
@@ -25,13 +28,16 @@ const setConfigs = () => {
 // Ajax 全局配置
 Vue.http.options.root = 'http://localhost:9090' // dev
 
+// 进度条
+Vue.http.interceptors.unshift((req, next) => {
+  NProgress.start()
+  next(res => {
+    NProgress.done()
+  })
+})
+
 // api mocking
-Vue.http.interceptors.push((req, next) => {
-  // const body = apis.find(a => a.url === req.url).response
-  // next(req.respondWith(body, {
-  //   status: 200,
-  //   statusText: 'ok'
-  // }))
+Vue.http.interceptors.unshift((req, next) => {
   const route = apis.find(a => a.url === req.url)
   if (!route) {
     next(req.respondWith({ status: 404, statusText: 'Not found :(' }))
