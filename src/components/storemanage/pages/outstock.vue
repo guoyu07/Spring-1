@@ -1,29 +1,6 @@
 <style lang="less">
   @import url("../../../assets/css/variables.less");
 
-  .step-card {
-
-    .el-select {
-      width: 100%;
-    }
-
-    .step {
-      margin-top: 24px;
-    }
-
-    .el-steps {
-      width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .btn-area {
-      margin-left: auto;
-      margin-right: auto;
-      width: 200px;
-    }
-  }
-
   .device-data-table {
     border-top: 1px solid @borderColor;
     border-left: 1px solid @borderColor;
@@ -40,13 +17,6 @@
       padding: 6px;
       font-size: 13px;
     }
-  }
-
-  .sub-title {
-    font-size: 13px;
-    color: @textColor;
-    margin-bottom: 12px;
-    white-space: nowrap;
   }
 </style>
 
@@ -197,6 +167,10 @@
 
     methods: {
       onSearchDevices () {
+        if (!this.deviceSearch) {
+          this.$message.error('搜索关键字不能为空！')
+          return
+        }
         this.deviceLoading = true
         this.$http.get('/deviceData').then((res) => {
           this.deviceTable = res.body
