@@ -1,245 +1,478 @@
 <template>
-  <div id="item1-side" class="wrapper">
-    <h3 class="form-title">入库管理</h3>
-    <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px">
-      <el-row class="m-row">
+  <div class="outstock">
+    <el-row>
+      <el-col :sm="24" :md="24" class="step-card">
+        <!-- <el-card class="box-card step-card"> -->
+          <h3>入库流程</h3>
+          <el-steps :space="380" :active="activeStep">
+            <el-step title="选择设备类型"></el-step>
+            <el-step title="设备录入"></el-step>
+          </el-steps>
+          <el-col>
+            <!-- <el-col :span="6"> -->
+              <div class="step step-1" v-show="activeStep === 1">
+                <el-form label-position="left" label-width="100px">
+                  <el-form-item label="设备类型">
+                    <el-select v-model="deviceValue">
+                      <el-option v-for="device in deviceList"
+                        :label="device.label"
+                        :value="device.value"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </el-form>
+                <div class="btn-area">
+                  <el-button type="primary" @click="activeStep++" class="md">下一步</el-button>
+                </div>
+              </div>
+              <div class="step step-2" v-show="activeStep === 2">
+                <div class="btn-area">
+                  <el-button class="md" @click="activeStep--">上一步</el-button>
+                </div>
+                <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
+                  <el-card class="box-card instock-card" v-for="(item, index) in instockForm.data">
+                    <span class="instock-card-remove" v-if="index !== 0" @click.prevent="onRemove(item)"><i class="el-icon-circle-cross"></i></span>
+                    <h4 class="form-title">管理信息</h4>
+                    <el-form-item 
+                      label="IT资产编号"
+                      :prop="'data.' + index + '.ItNo'"
+                      :rules="{
+                        required: true, message: 'IT资产编号不能为空', trigger: 'blur'
+                      }">
+                      <el-input v-model="item.ItNo"></el-input>
+                    </el-form-item>
 
-        <el-col :span="8" v-for = "(item, index) in applyForm.data">
-          <el-button type="text" class="icon-close" v-if="index !== 0" @click.prevent="removeItem(item)">删除</el-button>
+                    <el-form-item label="公司资产编号">
+                      <el-input></el-input>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? '使用环境' : ''"
-            :prop="'data.' + index + '.environment'">
-            <el-select v-model="item.environment" placeholder="请选择使用环境">
-              <el-option label="环境一" value="shanghai"></el-option>
-              <el-option label="环境二" value="beijing"></el-option>
-            </el-select>
-          </el-form-item>
+                    <el-form-item label="所属服务">
+                      <el-select>
+                        <el-option v-for="server in serverList"
+                          :label="server.label"
+                          :value="server.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    
+                    <el-form-item label="管理部门">
+                      <el-select>
+                        <el-option v-for="department in departmentList"
+                          :label="department.label"
+                          :value="department.value"></el-option>
+                      </el-select>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? '用途' : ''"
-            :prop="'data.' + index + '.purpose'"
-            :rules="{
-              required: true, message: '用途不能为空', trigger: 'blur'
-            }">
-            <el-input v-model="item.purpose"></el-input>
-          </el-form-item>
+                    <el-form-item label="管理人">
+                      <el-input></el-input>
+                    </el-form-item>
+                    
+                    <el-form-item label="所属应用服务">
+                      <el-input placeholder="所属业务/应用/项目组"></el-input>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? 'OS' : ''"
-            :prop="'data.' + index + '.operateSystem'">
-            <el-select v-model="item.operateSystem" placeholder="请选择OS">
-              <el-option label="OS1" value="OS1"></el-option>
-              <el-option label="OS2" value="OS2"></el-option>
-            </el-select>
-          </el-form-item>
+                    <el-form-item label="重要度">
+                      <el-input type="number"></el-input>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? '实机IP' : ''"
-            :prop="'data.' + index + '.machineIp'">
-            <el-input v-model="item.machineIp"></el-input>
-          </el-form-item>
+                    <el-form-item label="重要等级">
+                      <el-input-number v-model="item.important" :min="1" :max="10"></el-input-number>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? '服务器类型' : ''"
-            :prop="'data.' + index + '.serverType'">
-            <el-select v-model="item.serverType" placeholder="请选择服务器类型">
-              <el-option label="实体" value="type1"></el-option>
-              <el-option label="虚拟" value="type2"></el-option>
-            </el-select>
-          </el-form-item>
+                    <h4 class="form-title">设备信息</h4>
+                    <el-form-item label="制造商">
+                      <el-select>
+                        <el-option v-for="factory in factoryList"
+                          :label="factory.label"
+                          :value="factory.value"></el-option>
+                      </el-select>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? 'CPU核数' : ''"
-            :prop="'data.' + index + '.cpu'"
-            :rules="{ validator: checkNumber, trigger: 'change' }">
-            <el-input type="number" v-model="item.cpu" placeholder="请输入您需要的cpu核数"></el-input>
-          </el-form-item>
+                    <el-form-item label="设备型号">
+                      <el-input></el-input>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? '内存(G)' : ''"
-            :prop="'data.' + index + '.internalStorage'">
-            <el-input type="number" v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
-          </el-form-item>
+                    <el-form-item label="SN序列号">
+                      <el-input></el-input>
+                    </el-form-item>
 
-          <el-form-item 
-            :label="index === 0 ? '硬盘(G)' : ''"
-            :prop="'data.' + index + '.hardDisk'">
-            <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
-          </el-form-item>
+                    <el-form-item label="CPU性能">
+                      <el-input></el-input>
+                    </el-form-item>
 
-          <el-form-item :label="index === 0 ? '资源分数' : ''">
-            {{ item.score = item.cpu * 1 + item.internalStorage * 1 + item.hardDisk / 20 }}
-          </el-form-item>
-        </el-col>
+                    <el-form-item label="内存性能">
+                      <el-input></el-input>
+                    </el-form-item>
 
-      </el-row>
+                    <el-form-item label="硬盘情况">
+                      <el-input></el-input>
+                    </el-form-item>
 
-      <el-form-item label="备注">
-        <el-col :span="12">
-          <el-input type="textarea" v-model="applyForm.remark"></el-input>
-        </el-col>
-      </el-form-item>
+                    <el-form-item label="RAID方式">
+                      <el-select>
+                        <el-option v-for="raid in raidList"
+                          :label="raid.label"
+                          :value="raid.value"></el-option>
+                      </el-select>
+                    </el-form-item>
 
-      <el-form-item>
-        <el-col :span="2" class="icon-plus" v-if="applyForm.data.length < 10">
-          <el-button type="primary" icon="plus" size="small" @click="onAdd">添加</el-button>
-        </el-col>
-      </el-form-item>
+                    <el-form-item label="U数">
+                      <el-input-number v-model="item.uNumber" :min="1" :max="10"></el-input-number>
+                    </el-form-item>
 
-      <el-form-item>
-        <el-button type="primary" @click="onSubmit">立即创建</el-button>
-        <el-button>取消</el-button>
-      </el-form-item>
-    </el-form>
+                    <el-form-item label="IP">
+                      <!-- ip的正则表达式验证 -->
+                      <el-input type="number"></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="OS操作系统">
+                      <el-input></el-input>
+                    </el-form-item>
+
+                    <h4 class="form-title">维保相关</h4>
+                    <el-form-item prop="date" label="出厂日期">
+                      <el-date-picker type="date" placeholder="选择日期"></el-date-picker>
+                    </el-form-item>
+
+                    <el-form-item prop="date" label="维保到期日">
+                      <el-date-picker type="date" placeholder="选择日期"></el-date-picker>
+                    </el-form-item>
+
+                    <el-form-item prop="date" label="建议续约日期">
+                      <el-date-picker type="date" placeholder="选择日期"></el-date-picker>
+                    </el-form-item>
+
+                    <el-form-item label="续约状态">
+                      <el-select>
+                        <el-option v-for="state in renewStateList"
+                          :label="state.label"
+                          :value="state.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="续约方式">
+                      <el-select>
+                        <el-option v-for="style in renewStyleList"
+                          :label="style.label"
+                          :value="style.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="续约责任人">
+                      <el-input></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="维保服务商">
+                      <el-input></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="维保联系人">
+                      <el-input></el-input>
+                    </el-form-item>
+
+                    <el-form-item label="维保责任部门">
+                      <el-select>
+                        <el-option v-for="maintenance in maintenanceDepartmentList"
+                          :label="maintenance.label"
+                          :value="maintenance.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+
+                     <el-form-item label="订单号">
+                      <el-input></el-input>
+                    </el-form-item>
+
+                    <h4 class="form-title">默认状态</h4>
+                    <el-form-item label="所在地点">
+                      <el-select v-model="item.place">
+                        <el-option v-for="place in placeList"
+                          :label="place.label"
+                          :value="place.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+
+                    <el-form-item label="当前状态">
+                      <el-select v-model="item.currentState">
+                        <el-option v-for="currentState in currentStateList"
+                          :label="currentState.label"
+                          :value="currentState.value"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-card>
+
+                  <el-button type="text" icon="plus" class="margin-top" @click="onAdd">增加</el-button>
+                </el-form>
+                <el-button type="primary" class="margin-top" @click="onConfirm">确认</el-button>
+              </div>
+            </el-col>
+          <!-- </el-col> -->
+        <!-- </el-card> -->
+      </el-col>
+    </el-row>
   </div>
 </template>
+
 <script>
   export default {
     data () {
       return {
-        applyForm: {
-          applicant: '',
-          project: '',
-          date: '',
+        activeStep: 1,
+        deviceValue: '',
+        instockForm: {
           remark: '',
           data: [{
-            environment: '',
-            purpose: '',
-            operateSystem: '',
-            machineIp: '',
-            serverType: '',
-            cpu: '',
-            internalStorage: '',
-            hardDisk: '',
-            score: 0
+            ItNo: '',
+            important: 1,
+            uNumber: 1,
+            place: 'warehouse',
+            currentState: 'idle'
           }]
         },
-        applyRules: {
-          applicant: [
-            { required: true, message: '请输入申请人', trigger: 'blur' }
-            // { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
-          ],
-          project: [
-            { required: true, message: '请输入项目组', trigger: 'blur' }
-          ],
-          date: [
-            { type: 'date', required: true, message: '请输入日期', trigger: 'change' }
-          ]
+        currentStateList: [{ // 当前状态
+          label: '空闲',
+          value: 'idle'
+        }, {
+          label: '使用中',
+          value: 'using'
+        }, {
+          label: '故障中',
+          value: 'malfunction'
+        }, {
+          label: '隔离中',
+          value: 'isolation'
+        }, {
+          label: '待报废',
+          value: 'tobescrapped'
+        }],
+        placeList: [{ // 所在地点
+          label: '仓库',
+          value: 'warehouse'
+        }, {
+          label: '机房',
+          value: 'engineroom'
+        }, {
+          label: '其他',
+          value: 'others'
+        }],
+        maintenanceDepartmentList: [{ // 维保责任部门
+          label: '采购部',
+          value: 'purchase'
+        }, {
+          label: '其他',
+          value: 'others'
+        }],
+        renewStateList: [{ // 续约状态
+          label: '准备启动',
+          value: 'ready'
+        }, {
+          label: '终止',
+          value: 'over'
+        }, {
+          label: '其他',
+          value: 'others'
+        }],
+        renewStyleList: [{ // 续约方式
+          label: '硬件维保',
+          value: 'hardware'
+        }, {
+          label: '服务维保',
+          value: 'server'
+        }],
+        raidList: [{ // RAID方式
+          label: '0',
+          value: '0'
+        }, {
+          label: '1',
+          value: '1'
+        }, {
+          label: '5',
+          value: '5'
+        }, {
+          label: '10',
+          value: '10'
+        }, {
+          label: '01',
+          value: '01'
+        }, {
+          label: '2',
+          value: '2'
+        }, {
+          label: '3',
+          value: '3'
+        }, {
+          label: '4',
+          value: '4'
+        }, {
+          label: '6',
+          value: '6'
+        }, {
+          label: '7',
+          value: '7'
+        }, {
+          label: '5E',
+          value: '5E'
+        }, {
+          label: '5EE',
+          value: '5EE'
+        }, {
+          label: '50',
+          value: '50'
+        }, {
+          label: '其他',
+          value: 'others'
+        }],
+        factoryList: [{ // 制造商
+          label: 'Lenovo',
+          value: 'Lenovo'
+        }, {
+          label: 'DELL',
+          value: 'DELL'
+        }, {
+          label: 'Inspur',
+          value: 'Inspur'
+        }, {
+          label: 'HP',
+          value: 'HP'
+        }, {
+          label: 'IBM',
+          value: 'IBM'
+        }, {
+          label: 'SUN',
+          value: 'SUN'
+        }, {
+          label: 'Oracle',
+          value: 'Oracle'
+        }, {
+          label: '齐治科技',
+          value: 'QIZHI'
+        }, {
+          label: 'GreatWall',
+          value: 'GreatWall'
+        }],
+        departmentList: [{  // 管理部门
+          label: '春秋航空IT部',
+          value: 'springAirlines'
+        }, {
+          label: '春秋国旅IT部',
+          value: 'springTravel'
+        }, {
+          label: '中国移动',
+          value: 'cmcc'
+        }, {
+          label: '佳讯',
+          value: 'abc'
+        }, {
+          label: '强冠',
+          value: 'foodanddrink'
+        }, {
+          label: '其他',
+          value: 'others'
+        }],
+        serverList: [{  // 所属服务
+          label: '测试系统',
+          value: 'test'
+        }, {
+          label: '业务系统',
+          value: 'business'
+        }, {
+          label: '办公系统',
+          value: 'office'
+        }, {
+          label: '离港系统',
+          value: 'departure'
+        }, {
+          label: '空闲',
+          value: 'free'
+        }],
+        deviceList: [{ // 设备类型
+          label: '服务器',
+          value: 'server'
+        }, {
+          label: '网络设备',
+          value: 'network'
+        }, {
+          label: '存储设备',
+          value: 'storage'
+        }, {
+          label: '其他外设',
+          value: 'others'
+        }],
+        deviceSearch: '',
+        deviceTable: [],
+        deviceViewData: {
+          visible: false,
+          device: {}
         }
       }
     },
+
     methods: {
-      checkNumber (rule, value, callback) {
-        if (!value) {
-          return callback(new Error('不能为空并且必须大于0'))
-        }
-        setTimeout(() => {
-          if (value < 0) {
-            callback(new Error('必须大于0'))
-          } else {
-            callback()
-          }
-        }, 1000)
-      },
-      onSubmit () {
-        // this.applyForm.data.map(v => {
-        //   v.score = v.cpu * 1 + v.internalStorage * 1 + v.hardDisk / 20
-        //   return v
-        // })
-      },
       onAdd () {
-        this.applyForm.data.push({
-          no: '',
-          environment: '',
-          purpose: '',
-          operateSystem: '',
-          machineIp: '',
-          serverType: '',
-          cpu: '',
-          internalStorage: '',
-          hardDisk: '',
-          score: 0
+        this.instockForm.data.push({
+          ItNo: '',
+          important: 1,
+          uNumber: 1,
+          place: 'warehouse',
+          currentState: 'idle'
         })
       },
-      removeItem (item) {
-        var index = this.applyForm.data.indexOf(item)
+      onRemove (item) {
+        var index = this.instockForm.data.indexOf(item)
         if (index !== -1) {
-          this.applyForm.data.splice(index, 1)
+          this.instockForm.data.splice(index, 1)
         }
       }
+    },
+
+    components: {
+      // deviceView
     }
   }
 </script>
-<style lang="less" scoped>
-  .el-select {
-    width: 100%;
-  }
-  .wrapper {
-    padding: 20px;
 
-    .form-title {
-      font-size: 22px;
-      font-weight: 400;
-      margin-top: 10px;
-      margin-bottom: 40px;
-      margin-left: 10px;
-      color: #4e5b6d;
+<style lang="less">
+  .step-card {
+
+    .el-select {
+      width: 100%;
+    }
+
+    .step {
+      margin-top: 24px;
+    }
+
+    .step-1 {
+      width: 400px;
+      margin: 0 auto;
+    }
+
+    .el-steps {
+      width: 400px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+
+    .btn-area {
+      margin-bottom: 24px;
+      margin-left: auto;
+      margin-right: auto;
+      width: 200px;
     }
   }
-  .m-top {
-    margin-bottom: 30px;
-    border-bottom: 1px dashed #C0CCDA;
+  .form-title {
+    margin-bottom: 15px;
   }
-  .m-row {
-    width: auto;
-    display: flex;
-
-    .icon-plus {
-      margin-bottom: 20px;
-      background-color: #f8f8f8;
-      margin-left: 10px;
-      text-align: center;
-      .el-button {
-        display: block;
-        width: 100%;
-        height: 100%;
-        font-size: 28px;
-        color: #C0CCDA;
-        border: 1px solid #C0CCDA;
-
-        &:hover {
-          border-color: #C0CCDA;
-          background-color: #C0CCDA;
-          color: #fff;
-        }
-      }
-    }
-
-    .el-col:not(:last-child) {
-      position: relative;
-      &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: -40px;
-        display: block;
-        width: 1px;
-        height: 95%;
-        background-color: #C0CCDA;
-      }
-    }
-
-    .el-col:not(:first-child) {
-      position: relative;
-      .icon-close {
-        display: block;
-        cursor: pointer;
-        z-index: 2;
-        position: absolute;
-        bottom: 20px;
-        right: 2%;
-      }
-    }
+  .margin-top {
+    margin-top: 15px;
+  }
+  .instock-card {
+    margin-bottom: 15px;
+    position: relative;
+  }
+  .instock-card-remove {
+    display: block;
+    position: absolute;
+    top: 0;
+    right: 0;
+    font-size: 28px;
+    color: #ff4949;
   }
 </style>

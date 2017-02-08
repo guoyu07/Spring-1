@@ -73,6 +73,7 @@
                 <el-table
                   :data="deviceTable"
                   border
+                  v-loading.body="deviceLoading"
                   style="width: 100%">
                   <el-table-column
                     prop="name"
@@ -113,7 +114,7 @@
       </ul>
       <el-row>
         <el-col :span="14" :offset="5">
-          <h4 class="sub-title">请指定出库后的所在地点：</h4>
+          <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
           <el-input
             placeholder="请输入出库指定地点..."
             v-model="retrieveViewData.location"></el-input>
@@ -136,6 +137,7 @@
       return {
         activeStep: 1,
         deviceValue: '',
+        deviceLoading: false,
         deviceList: [{
           label: '服务器',
           value: 'server'
@@ -163,34 +165,33 @@
       }
     },
 
+    watch: {
+      activeStep () {
+        this.deviceTable = []
+        this.deviceSearch = ''
+      }
+    },
+
     methods: {
       onSearchDevices () {
         console.log(this.deviceSearch)
+        this.deviceLoading = true
         this.$http.get('/deviceData').then((res) => {
-          console.log(res.body)
           this.deviceTable = res.body
+          this.deviceLoading = false
         })
       },
 
       onRetrieve (device) {
-        // this.$confirm(`确定对设备「${device.name}」进行出库操作吗？`, '提示', {
-        //   confirmButtonText: '确定',
-        //   cancelButtonText: '取消',
-        //   type: 'warning'
-        // }).then(() => {
-        //   console.log(device.id)
-        //   this.$message({
-        //     type: 'success',
-        //     message: '已出库！'
-        //   })
-        // }).catch(() => {
-        //   console.log(device.id)
-        // })
         this.retrieveViewData.visible = true
         this.retrieveViewData.device = device
       },
 
       onConfirmRetrieve (device, location) {
+        if (!location) {
+          this.$message.error('请填写出库地点！')
+          return
+        }
         this.$message({
           type: 'success',
           message: `已成功将设备「${device.name}」出库至${location}！`
