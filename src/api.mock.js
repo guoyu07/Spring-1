@@ -101,6 +101,38 @@ const apis = [{
     number: '2345678901',
     other: 'xxxx'
   }]
+}, {
+  method: 'GET',
+  url: '/equipmentData',
+  response: [{
+    id: 1,
+    name: '设备一',
+    number: '1234567890',
+    other: 'xxxx',
+    os: 'Windows',
+    db: 'mongodb',
+    agent: true,
+    ip: '1.1.1.1',
+    port: '80',
+    ubit: '3',
+    cabinet: '4',
+    room: '5',
+    app: 'xxx'
+  }, {
+    id: 2,
+    name: '设备二',
+    number: '1234567890',
+    os: 'Windows',
+    db: 'mongodb',
+    agent: true,
+    other: 'xxxx',
+    ip: '1.1.1.1',
+    port: '80',
+    ubit: '3',
+    cabinet: '4',
+    room: '5',
+    app: 'xxx'
+  }]
 }]
 
 export default apis

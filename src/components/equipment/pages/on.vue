@@ -13,8 +13,8 @@
         <el-card class="box-card step-card">
           <h3>上架流程</h3>
           <el-steps :space="180" :active="activeStep">
-            <el-step title="选择操作类型"></el-step>
-            <el-step title="选择设备类型"></el-step>
+            <el-step title="选择操作类型" :description="operationType.label"></el-step>
+            <el-step title="选择设备类型" :description="deviceType.label"></el-step>
             <el-step title="设备搜索及操作"></el-step>
           </el-steps>
           <el-row>
@@ -23,8 +23,9 @@
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="操作类型">
                     <el-select v-model="operationType">
-                      <el-option value="1" label="上架"></el-option>
-                      <el-option value="2" label="出库并上架"></el-option>
+                      <el-option v-for="operation in operationList"
+                        :label="operation.label"
+                        :value="operation"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-form>
@@ -38,13 +39,13 @@
                     <el-select v-model="deviceType">
                       <el-option v-for="device in deviceList"
                         :label="device.label"
-                        :value="device.value"></el-option>
+                        :value="device"></el-option>
                     </el-select>
                   </el-form-item>
                 </el-form>
                 <div class="btn-area clear">
                   <el-button class="fl" @click="activeStep--">上一步</el-button>
-                  <el-button type="primary" :disabled="!deviceType" @click="activeStep++" class="fr">下一步</el-button>
+                  <el-button type="primary" :disabled="!deviceType.value" @click="activeStep++" class="fr">下一步</el-button>
                 </div>
               </div>
               <div class="step step-3" v-show="activeStep === 3">
@@ -77,8 +78,8 @@
                     :context="_self"
                     label="操作">
                     <span>
-                      <el-button v-if="operationType === '1'" type="text" @click="onDeploy(row)">上架</el-button>
-                      <el-button v-if="operationType === '2'" type="text" @click="onRetrieve(row)">上架并出库</el-button>
+                      <el-button v-if="operationType.value === '1'" type="text" @click="onDeploy(row)">上架</el-button>
+                      <el-button v-if="operationType.value === '2'" type="text" @click="onRetrieve(row)">上架并出库</el-button>
                     </span>
                   </el-table-column>
                 </el-table>
@@ -92,17 +93,22 @@
         </el-card>
       </el-col>
     </el-row>
+    <deploy-view
+      :deploy-view-data="deployViewData"
+      :operation-type="operationType"></deploy-view>
   </div>
 </template>
 
 <script>
+  import deployView from '../../_plugins/_deployView'
+
   export default {
     data () {
       return {
         activeStep: 1,
-        deviceType: '',
+        operationType: {},
+        deviceType: {},
         deviceLoading: false,
-        operationType: '',
         deviceList: [{
           label: '服务器',
           value: 'server'
@@ -116,8 +122,19 @@
           label: '其他外设',
           value: 'others'
         }],
+        operationList: [{
+          label: '上架',
+          value: '1'
+        }, {
+          label: '上架并出库',
+          value: '2'
+        }],
         deviceSearch: '',
-        deviceTable: []
+        deviceTable: [],
+        deployViewData: {
+          visible: false,
+          device: {}
+        }
       }
     },
 
@@ -128,11 +145,25 @@
           return
         }
         this.deviceLoading = true
-        this.$http.get('/deviceData').then((res) => {
+        this.$http.get('/equipmentData').then((res) => {
           this.deviceTable = res.body
           this.deviceLoading = false
         })
+      },
+
+      onDeploy (device) {
+        this.deployViewData.visible = true
+        this.deployViewData.device = device
+      },
+
+      onRetrieve (device) {
+        this.deployViewData.visible = true
+        this.deployViewData.device = device
       }
+    },
+
+    components: {
+      deployView
     }
   }
 </script>

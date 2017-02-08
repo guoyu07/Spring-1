@@ -1,2 +1,2 @@
-export const LOGIN_USER = 'LOGIN_USER'
-export const LOGOUT_USER = 'LOGOUT_USER'
+export const BEGIN_REQUEST = 'BEGIN_REQUEST'
+export const CEASE_REQUEST = 'CEASE_REQUEST'
