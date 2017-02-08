@@ -5,7 +5,9 @@ import actions from './actions'
 
 Vue.use(Vuex)
 
-const state = {}
+const state = {
+  isRequesting: false
+}
 
 export default new Vuex.Store({
   state,

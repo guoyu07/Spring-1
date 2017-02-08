@@ -1,3 +1,9 @@
-// import * as types from './mutation-types'
+import * as types from './mutation-types'
 
-export default {}
+export const beginRequest = ({ commit }) => {
+  commit(types.BEGIN_REQUEST)
+}
+
+export const ceaseRequest = ({ commit }) => {
+  commit(types.CEASE_REQUEST)
+}

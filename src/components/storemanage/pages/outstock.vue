@@ -35,7 +35,7 @@
               <div class="step step-1" v-show="activeStep === 1">
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="设备类型">
-                    <el-select v-model="deviceType">
+                    <el-select v-model="deviceValue">
                       <el-option v-for="device in deviceList"
                         :label="device.label"
                         :value="device"></el-option>
@@ -43,11 +43,10 @@
                   </el-form-item>
                 </el-form>
                 <div class="btn-area">
-                  <el-button type="primary" :disabled="!deviceType" @click="activeStep++" class="md">下一步</el-button>
+                  <el-button type="primary" :disabled="!deviceValue.value" @click="activeStep++" class="md">下一步</el-button>
                 </div>
               </div>
               <div class="step step-2" v-show="activeStep === 2">
-                <div class="sub-title">设备类型：{{deviceType}}</div>
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="搜索设备">
                     <el-input
