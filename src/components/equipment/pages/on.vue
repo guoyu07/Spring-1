@@ -11,15 +11,15 @@
     <el-row>
       <el-col :sm="24" :md="20" :lg="18">
         <el-card class="box-card step-card">
-          <h3>上架流程</h3>
-          <el-steps :space="180" :active="activeStep">
+          <h3><i class="el-icon-fa-upload"></i> 上架流程</h3>
+          <el-steps :space="180" :active="deployStep">
             <el-step title="选择操作类型" :description="operationType.label"></el-step>
             <el-step title="选择设备类型" :description="deviceType.label"></el-step>
             <el-step title="设备搜索及操作"></el-step>
           </el-steps>
           <el-row>
             <el-col :span="16" :offset="4">
-              <div class="step step-1" v-show="activeStep === 1">
+              <div class="step step-1" v-show="deployStep === 1">
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="操作类型">
                     <el-select v-model="operationType">
@@ -30,13 +30,13 @@
                   </el-form-item>
                 </el-form>
                 <div class="btn-area">
-                  <el-button type="primary" :disabled="!operationType" @click="activeStep++" class="md">下一步</el-button>
+                  <el-button type="primary" :disabled="!operationType.value" @click="deployStep++" class="md">下一步</el-button>
                 </div>
               </div>
-              <div class="step step-2" v-show="activeStep === 2">
+              <div class="step step-2" v-show="deployStep === 2">
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="设备类型">
-                    <el-select v-model="deviceType">
+                    <el-select v-model="deviceType" @change="onDeviceTypeChange">
                       <el-option v-for="device in deviceList"
                         :label="device.label"
                         :value="device"></el-option>
@@ -44,21 +44,26 @@
                   </el-form-item>
                 </el-form>
                 <div class="btn-area clear">
-                  <el-button class="fl" @click="activeStep--">上一步</el-button>
-                  <el-button type="primary" :disabled="!deviceType.value" @click="activeStep++" class="fr">下一步</el-button>
+                  <el-button class="fl" @click="deployStep--">上一步</el-button>
+                  <el-button type="primary" :disabled="!deviceType.value" @click="deployStep++" class="fr">下一步</el-button>
                 </div>
               </div>
-              <div class="step step-3" v-show="activeStep === 3">
-                <el-form label-position="left" label-width="100px">
-                  <el-form-item label="搜索设备">
-                    <el-input
-                      placeholder="请在这里搜索设备..."
-                      icon="search"
-                      v-model="deviceSearch">
-                      <el-button slot="append" icon="search" @click="onSearchDevices"></el-button>
-                    </el-input>
-                  </el-form-item>
-                </el-form>
+              <div class="step step-3" v-show="deployStep === 3">
+                <el-row>
+                  <el-col :span="16">
+                    <el-form label-position="left" label-width="80px" class="advance-search-form">
+                      <el-form-item v-for="key in searchKeys" :label="key.label">
+                        <el-input
+                          v-model="key.value"
+                          size="small"></el-input>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
+                        <el-button @click="onEmptySearch" size="small">清空</el-button>
+                      </el-form-item>
+                    </el-form>
+                  </el-col>
+                </el-row>
                 <el-table
                   :data="deviceTable"
                   border
@@ -85,10 +90,31 @@
                 </el-table>
                 <br>
                 <div class="btn-area">
-                  <el-button class="md" @click="activeStep--">上一步</el-button>
+                  <el-button class="md" @click="deployStep--">上一步</el-button>
                 </div>
               </div>
             </el-col>
+          </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
+    <br>
+    <el-row>
+      <el-col :sm="24" :md="20" :lg="18">
+        <el-card class="box-card step-card">
+          <h3><i class="el-icon-fa-gavel"></i> 审核流程</h3>
+          <el-steps :space="380" :active="reviewStep">
+            <el-step title="上架操作审核"></el-step>
+            <el-step title="上架任务确认"></el-step>
+          </el-steps>
+          <el-row>
+            <el-col :span="16" :offset="4">
+              <div class="step step-1" v-show="reviewStep === 1">
+                
+              </div>
+              <div class="step step-2" v-show="reviewStep === 2">
+                
+              </div>
           </el-row>
         </el-card>
       </el-col>
@@ -105,7 +131,7 @@
   export default {
     data () {
       return {
-        activeStep: 1,
+        deployStep: 1,
         operationType: {},
         deviceType: {},
         deviceLoading: false,
@@ -129,19 +155,26 @@
           label: '上架并出库',
           value: '2'
         }],
-        deviceSearch: '',
+        searchKeys: [],
         deviceTable: [],
         deployViewData: {
           visible: false,
           device: {}
-        }
+        },
+        reviewStep: 1
       }
     },
 
     methods: {
+      onDeviceTypeChange () {
+        this.$http.get('/searchKeys').then((res) => {
+          this.searchKeys = res.body
+        })
+      },
+
       onSearchDevices () {
-        if (!this.deviceSearch) {
-          this.$message.error('搜索关键字不能为空！')
+        if (!this.searchKeys.some((key) => key.value)) {
+          this.$message.error('搜索条件不能全空！')
           return
         }
         this.deviceLoading = true
@@ -149,6 +182,12 @@
           this.deviceTable = res.body
           this.deviceLoading = false
         })
+      },
+
+      onEmptySearch () {
+        for (let key of this.searchKeys) {
+          key.value = ''
+        }
       },
 
       onDeploy (device) {

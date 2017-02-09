@@ -20,12 +20,12 @@
                 </el-form-item>
               </el-form>
               <div class="btn-area">
-                <el-button type="primary" @click="activeStep++" :disabled="!deviceValue.value">下一步</el-button>
+                <el-button type="primary" class="md" @click="activeStep++" :disabled="!deviceValue.value">下一步</el-button>
               </div>
             </div>
             <div class="step step-2" v-show="activeStep === 2">
               <div class="btn-area">
-                <el-button @click="activeStep--">上一步</el-button>
+                <el-button @click="activeStep--" class="md">上一步</el-button>
               </div>
               <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
                 <el-button size="small" @click="onAdd" class="margin-bottom" icon="plus">增加{{ deviceValue.label }}</el-button>
@@ -201,6 +201,7 @@
                           :value="currentState"></el-option>
                       </el-select>
                     </el-form-item>
+
                   </el-tab-pane>
                 </el-tabs>
               </el-form>
@@ -496,10 +497,7 @@
             currentState: '空闲'
           })
         } else {
-          that.$alert('最多只能增加10个设备', '提示信息', {
-            confirmButtonText: '确定',
-            type: 'info'
-          })
+          that.$message.warning('最多只能增加 10 个设备！')
         }
       },
       onConfirm () {

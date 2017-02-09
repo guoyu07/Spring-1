@@ -25,9 +25,9 @@
     <el-row>
       <el-col :sm="24" :md="20" :lg="18">
         <el-card class="box-card step-card">
-          <h3>出库流程</h3>
+          <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
           <el-steps :space="380" :active="activeStep">
-            <el-step title="选择设备类型" :description="deviceValue.label"></el-step>
+            <el-step title="选择设备类型" :description="deviceType.label"></el-step>
             <el-step title="设备搜索及操作"></el-step>
           </el-steps>
           <el-row>
@@ -35,7 +35,7 @@
               <div class="step step-1" v-show="activeStep === 1">
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="设备类型">
-                    <el-select v-model="deviceValue">
+                    <el-select v-model="deviceType" @change="onDeviceTypeChange">
                       <el-option v-for="device in deviceList"
                         :label="device.label"
                         :value="device"></el-option>
@@ -43,20 +43,25 @@
                   </el-form-item>
                 </el-form>
                 <div class="btn-area">
-                  <el-button type="primary" :disabled="!deviceValue.value" @click="activeStep++" class="md">下一步</el-button>
+                  <el-button type="primary" :disabled="!deviceType.value" @click="activeStep++" class="md">下一步</el-button>
                 </div>
               </div>
               <div class="step step-2" v-show="activeStep === 2">
-                <el-form label-position="left" label-width="100px">
-                  <el-form-item label="搜索设备">
-                    <el-input
-                      :placeholder="'请在这里搜索' + deviceValue.label + '...'"
-                      icon="search"
-                      v-model="deviceSearch">
-                      <el-button slot="append" icon="search" @click="onSearchDevices"></el-button>
-                    </el-input>
-                  </el-form-item>
-                </el-form>
+                <el-row>
+                  <el-col :span="16">
+                    <el-form label-position="left" label-width="80px" class="advance-search-form">
+                      <el-form-item v-for="key in searchKeys" :label="key.label">
+                        <el-input
+                          v-model="key.value"
+                          size="small"></el-input>
+                      </el-form-item>
+                      <el-form-item>
+                        <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
+                        <el-button @click="onEmptySearch" size="small">清空</el-button>
+                      </el-form-item>
+                    </el-form>
+                  </el-col>
+                </el-row>
                 <el-table
                   :data="deviceTable"
                   border
@@ -128,7 +133,7 @@
     data () {
       return {
         activeStep: 1,
-        deviceValue: {},
+        deviceType: {},
         deviceLoading: false,
         deviceList: [{
           label: '服务器',
@@ -143,7 +148,7 @@
           label: '其他外设',
           value: 'others'
         }],
-        deviceSearch: '',
+        searchKeys: [],
         deviceTable: [],
         retrieveViewData: {
           visible: false,
@@ -160,14 +165,21 @@
     watch: {
       activeStep () {
         this.deviceTable = []
-        this.deviceSearch = ''
+        // this.searchKeys = []
       }
     },
 
     methods: {
+      onDeviceTypeChange () {
+        this.$http.get('/searchKeys').then((res) => {
+          console.log(res)
+          this.searchKeys = res.body
+        })
+      },
+
       onSearchDevices () {
-        if (!this.deviceSearch) {
-          this.$message.error('搜索关键字不能为空！')
+        if (!this.searchKeys.some((key) => key.value)) {
+          this.$message.error('搜索条件不能全空！')
           return
         }
         this.deviceLoading = true
@@ -175,6 +187,12 @@
           this.deviceTable = res.body
           this.deviceLoading = false
         })
+      },
+
+      onEmptySearch () {
+        for (let key of this.searchKeys) {
+          key.value = ''
+        }
       },
 
       onRetrieve (device) {

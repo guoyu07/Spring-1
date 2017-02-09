@@ -1,7 +1,7 @@
 <style lang="less" scoped>
   .deploy-view {
     .el-form-item {
-      margin-bottom: 8px;
+      margin-bottom: 12px;
     }
   }
 </style>
@@ -11,6 +11,7 @@
     <el-dialog
       title="确认上架信息"
       v-model="deployViewData.visible"
+      top="10%"
       :modal="true">
       <el-row>
         <el-col :span="20" :offset="2">
