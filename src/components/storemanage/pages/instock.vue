@@ -42,11 +42,11 @@
                     </el-form-item>
 
                     <el-form-item label="公司资产编号">
-                      <el-input></el-input>
+                      <el-input v-model="item.assertNo"></el-input>
                     </el-form-item>
 
                     <el-form-item label="所属服务">
-                      <el-select>
+                      <el-select v-model="item.subServer">
                         <el-option v-for="server in serverList"
                           :label="server.label"
                           :value="server"></el-option>
@@ -54,7 +54,7 @@
                     </el-form-item>
 
                     <el-form-item label="管理部门">
-                      <el-select>
+                      <el-select v-model="item.department">
                         <el-option v-for="department in departmentList"
                           :label="department.label"
                           :value="department"></el-option>
@@ -62,24 +62,24 @@
                     </el-form-item>
 
                     <el-form-item label="管理人">
-                      <el-input></el-input>
+                      <el-input v-model="item.management"></el-input>
                     </el-form-item>
 
                     <el-form-item label="所属应用服务">
-                      <el-input placeholder="所属业务/应用/项目组"></el-input>
+                      <el-input v-model="item.subApplication" placeholder="所属业务/应用/项目组"></el-input>
                     </el-form-item>
 
                     <el-form-item label="重要度">
-                      <el-input type="number"></el-input>
+                      <el-input type="number" v-model="item.importantDegree"></el-input>
                     </el-form-item>
 
                     <el-form-item label="重要等级">
-                      <el-input-number v-model="item.important" :min="1" :max="10"></el-input-number>
+                      <el-input-number v-model="item.importantLevel" :min="1" :max="10"></el-input-number>
                     </el-form-item>
 
                     <h4 class="form-title">设备信息</h4>
                     <el-form-item label="制造商">
-                      <el-select>
+                      <el-select v-model="item.manufacturer">
                         <el-option v-for="factory in factoryList"
                           :label="factory.label"
                           :value="factory"></el-option>
@@ -87,27 +87,27 @@
                     </el-form-item>
 
                     <el-form-item label="设备型号">
-                      <el-input></el-input>
+                      <el-input v-model="item.deviceModel"></el-input>
                     </el-form-item>
 
                     <el-form-item label="SN序列号">
-                      <el-input></el-input>
+                      <el-input v-model="item.SNSerialNumber"></el-input>
                     </el-form-item>
 
                     <el-form-item label="CPU性能">
-                      <el-input></el-input>
+                      <el-input v-model="item.CPUPerformance"></el-input>
                     </el-form-item>
 
                     <el-form-item label="内存性能">
-                      <el-input></el-input>
+                      <el-input v-model="item.memoryPerformance"></el-input>
                     </el-form-item>
 
                     <el-form-item label="硬盘情况">
-                      <el-input></el-input>
+                      <el-input v-model="item.hardDisk"></el-input>
                     </el-form-item>
 
                     <el-form-item label="RAID方式">
-                      <el-select>
+                      <el-select v-model="item.RAIDMode">
                         <el-option v-for="raid in raidList"
                           :label="raid.label"
                           :value="raid"></el-option>
@@ -115,33 +115,38 @@
                     </el-form-item>
 
                     <el-form-item label="U数">
-                      <el-input-number v-model="item.uNumber" :min="1" :max="10"></el-input-number>
+                      <el-input-number v-model="item.uNumber" :min="1"></el-input-number>
                     </el-form-item>
 
-                    <el-form-item label="IP">
-                      <!-- ip的正则表达式验证 -->
-                      <el-input type="number"></el-input>
+                    <el-form-item
+                      label="IP"
+                      :prop="'data.' + index + '.internetProtocol'"
+                      :rules="[
+                        {validator: validateIP, trigger: 'blur'}
+                      ]">
+                      <el-input v-model="item.internetProtocol"></el-input>
                     </el-form-item>
+
 
                     <el-form-item label="OS操作系统">
-                      <el-input></el-input>
+                      <el-input v-model="item.opertatingSystem"></el-input>
                     </el-form-item>
 
                     <h4 class="form-title">维保相关</h4>
                     <el-form-item prop="date" label="出厂日期">
-                      <el-date-picker type="date" placeholder="选择日期"></el-date-picker>
+                      <el-date-picker type="date" placeholder="选择日期" v-model="item.manufactureDate"></el-date-picker>
                     </el-form-item>
 
                     <el-form-item prop="date" label="维保到期日">
-                      <el-date-picker type="date" placeholder="选择日期"></el-date-picker>
+                      <el-date-picker type="date" placeholder="选择日期" v-model="item.maintenanceDate"></el-date-picker>
                     </el-form-item>
 
                     <el-form-item prop="date" label="建议续约日期">
-                      <el-date-picker type="date" placeholder="选择日期"></el-date-picker>
+                      <el-date-picker type="date" placeholder="选择日期" v-model="item.proposedRenewalDate"></el-date-picker>
                     </el-form-item>
 
                     <el-form-item label="续约状态">
-                      <el-select>
+                      <el-select v-model="item.renewState">
                         <el-option v-for="state in renewStateList"
                           :label="state.label"
                           :value="state"></el-option>
@@ -149,7 +154,7 @@
                     </el-form-item>
 
                     <el-form-item label="续约方式">
-                      <el-select>
+                      <el-select v-model="item.renewStyle">
                         <el-option v-for="style in renewStyleList"
                           :label="style.label"
                           :value="style"></el-option>
@@ -157,19 +162,19 @@
                     </el-form-item>
 
                     <el-form-item label="续约责任人">
-                      <el-input></el-input>
+                      <el-input v-model="item.renewHead"></el-input>
                     </el-form-item>
 
                     <el-form-item label="维保服务商">
-                      <el-input></el-input>
+                      <el-input v-model="item.maintenanceProvider"></el-input>
                     </el-form-item>
 
                     <el-form-item label="维保联系人">
-                      <el-input></el-input>
+                      <el-input v-model="item.maintenanceContact"></el-input>
                     </el-form-item>
 
                     <el-form-item label="维保责任部门">
-                      <el-select>
+                      <el-select v-model="item.maintenanceDepartment">
                         <el-option v-for="maintenance in maintenanceDepartmentList"
                           :label="maintenance.label"
                           :value="maintenance"></el-option>
@@ -177,7 +182,7 @@
                     </el-form-item>
 
                      <el-form-item label="订单号">
-                      <el-input></el-input>
+                      <el-input v-model="item.orderNumber"></el-input>
                     </el-form-item>
 
                     <h4 class="form-title">默认状态</h4>
@@ -211,6 +216,12 @@
 <script>
   export default {
     data () {
+      // var validateIP = (rule, value, cb) => {
+      //   const reg = /^(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])$/
+      //   if (!value.match(reg)) {
+      //     cb(new Error('请输入正确的IP地址'))
+      //   }
+      // }
       return {
         activeStep: 1,
         deviceValue: {},
@@ -219,8 +230,33 @@
           data: [{
             id: 0,
             ItNo: '',
-            important: 1,
+            assertNo: '',
+            department: {},
+            management: '',
+            subApplication: '',
+            subServer: {},
+            importantDegree: 1,
+            importantLevel: 1,
+            manufacturer: {},
+            deviceModel: '',
+            SNSerialNumber: '',
+            CPUPerformance: '',
+            memoryPerformance: '',
+            hardDisk: '',
+            RAIDMode: {},
             uNumber: 1,
+            internetProtocol: '',
+            opertatingSystem: '',
+            manufactureDate: '',
+            maintenanceDate: '',
+            proposedRenewalDate: '',
+            renewState: {},
+            renewStyle: {},
+            renewHead: '',
+            maintenanceProvider: '',
+            maintenanceContact: '',
+            maintenanceDepartment: {},
+            orderNumber: '',
             place: '仓库',
             currentState: '空闲'
           }]
@@ -399,7 +435,19 @@
         deviceViewData: {
           visible: false,
           device: {}
+        },
+        validateIP: (rule, value, cb) => {
+          const reg = /^(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])$/
+          if (value && !value.match(reg)) {
+            cb(new Error('请输入正确的IP地址'))
+          }
         }
+
+        // rules2: {
+        //   internetProtocol: [
+        //     {validator: validateIP, trigger: 'blur'}
+        //   ]
+        // }
       }
     },
 
@@ -415,10 +463,35 @@
         var that = this
         if (that.instockForm.data.length < 10) {
           that.instockForm.data.push({
-            id: that.instockForm.data.length,  // 此处 id 并不唯一
+            id: 0,
             ItNo: '',
-            important: 1,
+            assertNo: '',
+            department: {},
+            management: '',
+            subApplication: '',
+            subServer: {},
+            importantDegree: 1,
+            importantLevel: 1,
+            manufacturer: {},
+            deviceModel: '',
+            SNSerialNumber: '',
+            CPUPerformance: '',
+            memoryPerformance: '',
+            hardDisk: '',
+            RAIDMode: {},
             uNumber: 1,
+            internetProtocol: '',
+            opertatingSystem: '',
+            manufactureDate: '',
+            maintenanceDate: '',
+            proposedRenewalDate: '',
+            renewState: {},
+            renewStyle: {},
+            renewHead: '',
+            maintenanceProvider: '',
+            maintenanceContact: '',
+            maintenanceDepartment: {},
+            orderNumber: '',
             place: '仓库',
             currentState: '空闲'
           })
@@ -464,9 +537,7 @@
 
     .btn-area {
       margin-bottom: 24px;
-      margin-left: auto;
-      margin-right: auto;
-      width: 200px;
+      text-align: center;
     }
   }
   .form-title {

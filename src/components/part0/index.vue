@@ -23,7 +23,7 @@
         <el-col :span="8" v-for = "(item, index) in applyForm.data">
           <el-button type="text" class="icon-close" v-if="index !== 0" @click.prevent="removeItem(item)">删除</el-button>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? '使用环境' : ''"
             :prop="'data.' + index + '.environment'">
             <el-select v-model="item.environment" placeholder="请选择使用环境">
@@ -32,7 +32,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? '用途' : ''"
             :prop="'data.' + index + '.purpose'"
             :rules="{
@@ -41,7 +41,7 @@
             <el-input v-model="item.purpose"></el-input>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? 'OS' : ''"
             :prop="'data.' + index + '.operateSystem'">
             <el-select v-model="item.operateSystem" placeholder="请选择OS">
@@ -50,13 +50,13 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? '实机IP' : ''"
             :prop="'data.' + index + '.machineIp'">
             <el-input v-model="item.machineIp"></el-input>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? '服务器类型' : ''"
             :prop="'data.' + index + '.serverType'">
             <el-select v-model="item.serverType" placeholder="请选择服务器类型">
@@ -65,20 +65,20 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? 'CPU核数' : ''"
             :prop="'data.' + index + '.cpu'"
             :rules="{ validator: checkNumber, trigger: 'change' }">
             <el-input type="number" v-model="item.cpu" placeholder="请输入您需要的cpu核数"></el-input>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? '内存(G)' : ''"
             :prop="'data.' + index + '.internalStorage'">
             <el-input type="number" v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
           </el-form-item>
 
-          <el-form-item 
+          <el-form-item
             :label="index === 0 ? '硬盘(G)' : ''"
             :prop="'data.' + index + '.hardDisk'">
             <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
@@ -111,6 +111,12 @@
 <script>
   export default {
     data () {
+      // var validateIP = (rule, value, cb) => {
+      //   const reg = /^(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])$/
+      //   if (!value.match(reg)) {
+      //     cb(new Error('请输入正确的IP地址'))
+      //   }
+      // }
       return {
         applyForm: {
           applicant: '',
