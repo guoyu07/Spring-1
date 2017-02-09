@@ -133,6 +133,46 @@ const apis = [{
     room: '5',
     app: 'xxx'
   }]
+}, {
+  method: 'GET',
+  url: '/searchKeys',
+  response: [{
+    name: 'it-number',
+    label: 'IT 资产编号',
+    value: ''
+  }, {
+    name: 'order',
+    label: '订单号',
+    value: ''
+  }, {
+    name: 'manufacturer',
+    label: '制造商',
+    value: ''
+  }, {
+    name: 'model',
+    label: '型号',
+    value: ''
+  }, {
+    name: 'cpu',
+    label: 'CPU',
+    value: ''
+  }, {
+    name: 'storage',
+    label: '内存',
+    value: ''
+  }, {
+    name: '所属应用服务',
+    label: 'app',
+    value: ''
+  }, {
+    name: 'ip',
+    label: 'IP',
+    value: ''
+  }, {
+    name: 'os',
+    label: 'OS',
+    value: ''
+  }]
 }]
 
 export default apis
