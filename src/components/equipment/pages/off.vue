@@ -6,25 +6,22 @@
         <h3>下架流程</h3>
         <el-form ref="offForm" label-width="100px">
           <el-form-item label="设备类型">
-            <el-select v-model="deviceType" @change="onDeviceTypeChange">
+            <!-- <el-select v-model="deviceType">
               <el-option v-for="device in deviceList"
                 :label="device.label"
                 :value="device"></el-option>
-            </el-select>
-            <!-- <el-radio-group v-model="deviceValue">
-              <el-radio v-for="device in deviceList" :label="device.label"></el-radio>
-            </el-radio-group> -->
+            </el-select> -->
+            <el-radio-group v-model="deviceType">
+              <el-radio v-for="device in deviceList" :label="device.value">{{device.label}}</el-radio>
+            </el-radio-group>
           </el-form-item>
         </el-form>
         <el-form ref="searchKeys" label-width="100px" :inline="true">
-          <div v-show="deviceType.value === 'server'" class="form-block">
+          <div class="form-block">
             <el-form-item v-for="key in searchKeys" :label="key.label">
               <el-input v-model="key.value"></el-input>
             </el-form-item>
           </div>
-          <div v-show="deviceType.value === 'network'" class="form-block">2</div>
-          <div v-show="deviceType.value === 'storage'" class="form-block">3</div>
-          <div v-show="deviceType.value === 'others'" class="form-block">4</div>
           <el-form-item>
             <el-button type="primary" @click="onSearchDevices">搜索</el-button>
             <el-button @click="onEmptySearch">清空</el-button>
@@ -68,7 +65,7 @@
   export default {
     data () {
       return {
-        deviceType: '',
+        deviceType: 'server',
         searchKeys: [],
         deviceLoading: false,
         deviceTable: [],
@@ -88,9 +85,12 @@
         multipleSelection: []
       }
     },
+    created () {
+      this.onDeviceTypeChange()
+    },
     methods: {
       onDeviceTypeChange () {
-        this.$http.get('/searchKeys').then((res) => {
+        this.$http.get(`/searchKeys/${this.deviceType}`).then((res) => {
           this.searchKeys = res.body
         })
       },
@@ -123,6 +123,13 @@
       },
       handleClose (key, keyPath) {
         console.log(key, keyPath)
+      }
+    },
+    watch: {
+      deviceType: function () {
+        this.$http.get(`/searchKeys/${this.deviceType}`).then((res) => {
+          this.searchKeys = res.body
+        })
       }
     }
   }

@@ -135,7 +135,7 @@ const apis = [{
   }]
 }, {
   method: 'GET',
-  url: '/searchKeys',
+  url: '/searchKeys/server',
   response: [{
     name: 'it-number',
     label: 'IT 资产编号',
@@ -171,6 +171,62 @@ const apis = [{
   }, {
     name: 'os',
     label: 'OS',
+    value: ''
+  }]
+}, {
+  method: 'GET',
+  url: '/searchKeys/network',
+  response: [{
+    name: 'she',
+    label: '网络设备',
+    value: ''
+  }, {
+    name: 'storage',
+    label: '网络设备',
+    value: ''
+  }, {
+    name: '网络设备',
+    label: 'app',
+    value: ''
+  }, {
+    name: 'ip',
+    label: '网络设备',
+    value: ''
+  }, {
+    name: 'os',
+    label: 'OS',
+    value: ''
+  }]
+}, {
+  method: 'GET',
+  url: '/searchKeys/storage',
+  response: [{
+    name: '所属应用服务',
+    label: '存储设备',
+    value: ''
+  }, {
+    name: 'ip',
+    label: '存储设备',
+    value: ''
+  }, {
+    name: 'os',
+    label: '存储设备',
+    value: ''
+  }]
+}, {
+  method: 'GET',
+  url: '/searchKeys/others',
+  response: [{
+    name: '其他',
+    label: '其他',
+    value: ''
+  }, {
+    name: '其他',
+    label: '其他',
+    value: ''
+  }, {
+    name: '其他',
+    label: '其他',
     value: ''
   }]
 }]

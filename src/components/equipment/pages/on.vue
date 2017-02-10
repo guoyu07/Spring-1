@@ -159,7 +159,7 @@
 
     methods: {
       onDeviceTypeChange () {
-        this.$http.get('/searchKeys').then((res) => {
+        this.$http.get(`/searchKeys/${this.deviceType.value}`).then((res) => {
           this.searchKeys = res.body
         })
       },
