@@ -46,15 +46,45 @@
           <el-table-column
             prop="other"
             label="其他"></el-table-column>
-          <el-table-column
+          <!-- <el-table-column
             inline-template
             :context="_self"
             label="操作">
             <span>
               <el-button type="text" @click="onDeploy(row)">下架</el-button>
             </span>
+          </el-table-column> -->
+        </el-table>
+        <div class="btn-area">
+          <el-button type="primary" size="small" @click="onAddtoOff">添加至下架</el-button>
+        </div>
+        <h5>下架列表</h5>
+        <el-table
+          :data="offTabel"
+          border
+          style="width: 100%; min-width: 460px">
+          <el-table-column
+            prop="name"
+            label="设备"></el-table-column>
+          <el-table-column
+            prop="number"
+            label="编号"></el-table-column>
+          <el-table-column
+            prop="other"
+            label="其他"></el-table-column>
+          <el-table-column
+            inline-template
+            :context="_self"
+            label="操作">
+            <span>
+              <el-button type="text" @click="onRemove(row)">移除</el-button>
+            </span>
           </el-table-column>
         </el-table>
+        <div class="btn-area">
+          <el-button type="primary" @click="onConfirmOff">确认下架</el-button>
+          <el-button @click="onReject">驳回</el-button>
+        </div>
       </el-card>
 
     </el-col>
@@ -82,7 +112,8 @@
           label: '其他外设',
           value: 'others'
         }],
-        multipleSelection: []
+        multipleSelection: [],
+        offTabel: []
       }
     },
     created () {
@@ -106,17 +137,42 @@
         })
       },
       handleSelectionChange (val) {
-        if (val.length > 5) {
+        if (this.multipleSelection.length > 5) {
           this.$message.warning('下架设备最多5个')
         } else {
-          this.multipleSelection = val
           console.log(val)
+          this.multipleSelection = val
         }
       },
       onEmptySearch () {
         for (let key of this.searchKeys) {
           key.value = ''
         }
+      },
+      onAddtoOff () {
+        for (const selection of this.multipleSelection) {
+          if (!this.offTabel.includes(selection)) {
+            this.offTabel = [...this.offTabel, selection]
+          }
+          // else {
+          //   this.$message.warning(`下架列表中已存在${selection.name}`)
+          // }
+        }
+      },
+      onRemove (row) {
+        console.log(row)
+        const index = this.offTabel.indexOf(row)
+        this.offTabel.splice(index, 1)
+      },
+      onConfirmOff () {
+        this.offTabel = []
+        this.deviceTable = []
+        this.$message.success('成功上架')
+        console.log(this.offTabel)
+      },
+      onReject () {
+        this.offTabel = []
+        console.log(this.offTabel)
       },
       handleOpen (key, keyPath) {
         console.log(key, keyPath)
@@ -127,9 +183,7 @@
     },
     watch: {
       deviceType: function () {
-        this.$http.get(`/searchKeys/${this.deviceType}`).then((res) => {
-          this.searchKeys = res.body
-        })
+        this.onDeviceTypeChange()
       }
     }
   }
@@ -137,5 +191,9 @@
 <style scoped>
   .box-card {
     min-height: 880px;
+  }
+  .btn-area {
+    text-align: center;
+    margin: 15px 0;
   }
 </style>
