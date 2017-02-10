@@ -110,10 +110,10 @@
           <el-row>
             <el-col :span="16" :offset="4">
               <div class="step step-1" v-show="reviewStep === 1">
-                
+
               </div>
               <div class="step step-2" v-show="reviewStep === 2">
-                
+
               </div>
           </el-row>
         </el-card>
