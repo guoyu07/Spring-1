@@ -172,6 +172,7 @@
       },
       onReject () {
         this.offTabel = []
+        this.$message.success('成功驳回')
         console.log(this.offTabel)
       },
       handleOpen (key, keyPath) {
