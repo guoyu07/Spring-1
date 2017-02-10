@@ -137,12 +137,7 @@
         })
       },
       handleSelectionChange (val) {
-        if (this.multipleSelection.length > 5) {
-          this.$message.warning('下架设备最多5个')
-        } else {
-          console.log(val)
-          this.multipleSelection = val
-        }
+        this.multipleSelection = val
       },
       onEmptySearch () {
         for (let key of this.searchKeys) {
@@ -152,7 +147,11 @@
       onAddtoOff () {
         for (const selection of this.multipleSelection) {
           if (!this.offTabel.includes(selection)) {
-            this.offTabel = [...this.offTabel, selection]
+            if (this.multipleSelection.length > 5) {
+              this.$message.warning('下架设备最多5个')
+            } else {
+              this.offTabel = [...this.offTabel, selection]
+            }
           }
           // else {
           //   this.$message.warning(`下架列表中已存在${selection.name}`)
