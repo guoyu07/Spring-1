@@ -12,28 +12,13 @@
       <el-col :sm="24" :md="20" :lg="18">
         <el-card class="box-card step-card">
           <h3><i class="el-icon-fa-upload"></i> 上架流程</h3>
-          <el-steps :space="180" :active="deployStep">
-            <el-step title="选择操作类型" :description="operationType.label"></el-step>
+          <el-steps :space="380" :active="deployStep">
             <el-step title="选择设备类型" :description="deviceType.label"></el-step>
             <el-step title="设备搜索及操作"></el-step>
           </el-steps>
           <el-row>
             <el-col :span="16" :offset="4">
               <div class="step step-1" v-show="deployStep === 1">
-                <el-form label-position="left" label-width="100px">
-                  <el-form-item label="操作类型">
-                    <el-select v-model="operationType">
-                      <el-option v-for="operation in operationList"
-                        :label="operation.label"
-                        :value="operation"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-form>
-                <div class="btn-area">
-                  <el-button type="primary" :disabled="!operationType.value" @click="deployStep++" class="md">下一步</el-button>
-                </div>
-              </div>
-              <div class="step step-2" v-show="deployStep === 2">
                 <el-form label-position="left" label-width="100px">
                   <el-form-item label="设备类型">
                     <el-select v-model="deviceType" @change="onDeviceTypeChange">
@@ -48,7 +33,7 @@
                   <el-button type="primary" :disabled="!deviceType.value" @click="deployStep++" class="fr">下一步</el-button>
                 </div>
               </div>
-              <div class="step step-3" v-show="deployStep === 3">
+              <div class="step step-2" v-show="deployStep === 2">
                 <el-row>
                   <el-col :span="16">
                     <el-form label-position="left" label-width="80px" class="advance-search-form">
@@ -56,6 +41,13 @@
                         <el-input
                           v-model="key.value"
                           size="small"></el-input>
+                      </el-form-item>
+                      <el-form-item label="状态">
+                        <el-select v-model="operationType">
+                          <el-option value="all" label="全部"></el-option>
+                          <el-option value="op-1" label="已出库"></el-option>
+                          <el-option value="op-2" label="未出库"></el-option>
+                        </el-select>
                       </el-form-item>
                       <el-form-item>
                         <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
@@ -68,7 +60,11 @@
                   :data="deviceTable"
                   border
                   v-loading.body="deviceLoading"
+                  @selection-change="onSelectRow"
                   style="width: 100%; min-width: 460px">
+                  <el-table-column
+                    width="55"
+                    type="selection"></el-table-column>
                   <el-table-column
                     prop="name"
                     label="设备"></el-table-column>
@@ -78,19 +74,14 @@
                   <el-table-column
                     prop="other"
                     label="其他"></el-table-column>
-                  <el-table-column
-                    inline-template
-                    :context="_self"
-                    label="操作">
-                    <span>
-                      <el-button v-if="operationType.value === '1'" type="text" @click="onDeploy(row)">上架</el-button>
-                      <el-button v-if="operationType.value === '2'" type="text" @click="onRetrieve(row)">上架并出库</el-button>
-                    </span>
-                  </el-table-column>
                 </el-table>
                 <br>
-                <div class="btn-area">
-                  <el-button class="md" @click="deployStep--">上一步</el-button>
+                <div class="btn-area clear">
+                  <el-button class="fl" @click="deployStep--">上一步</el-button>
+                  <el-button
+                    type="primary"
+                    class="fr"
+                    @click="deployViewData.visible = true">{{ operationType === 'op-1' ? '批量上架' : '批量上架并出库' }}</el-button>
                 </div>
               </div>
             </el-col>
@@ -121,6 +112,7 @@
     </el-row>
     <deploy-view
       :deploy-view-data="deployViewData"
+      :selected-devices="selectedDevices"
       :operation-type="operationType"></deploy-view>
   </div>
 </template>
@@ -132,7 +124,7 @@
     data () {
       return {
         deployStep: 1,
-        operationType: {},
+        operationType: 'op-1',
         deviceType: {},
         deviceLoading: false,
         deviceList: [{
@@ -158,10 +150,10 @@
         searchKeys: [],
         deviceTable: [],
         deployViewData: {
-          visible: false,
-          device: {}
+          visible: false
         },
-        reviewStep: 1
+        reviewStep: 1,
+        selectedDevices: []
       }
     },
 
@@ -190,14 +182,8 @@
         }
       },
 
-      onDeploy (device) {
-        this.deployViewData.visible = true
-        this.deployViewData.device = device
-      },
-
-      onRetrieve (device) {
-        this.deployViewData.visible = true
-        this.deployViewData.device = device
+      onSelectRow (val) {
+        this.selectedDevices = val
       }
     },
 
