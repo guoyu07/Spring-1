@@ -5,16 +5,16 @@
       <el-col :span="2">
         <el-checkbox v-model="item.required">必填</el-checkbox>
       </el-col>
-      <el-col :span="4" v-if="item.type === 'text'">
+      <el-col :span="4">
         <el-input v-model="item.label" placeholder="请输入标签"></el-input>
       </el-col>
-      <el-col :span="4" v-if="item.type === 'text'">
+      <el-col :span="4">
         <el-input v-model="item.name" placeholder="请输入提交字段名"></el-input>
       </el-col>
       <el-col :span="4" v-if="item.type === 'text'">
         <el-input v-model="item.value" placeholder="请输入初始值"></el-input>
       </el-col>
-      <el-col :span="4" v-if="item.type === 'text'">
+      <el-col :span="4">
         <el-input v-model="item.description" placeholder="请输入说明文本"></el-input>
       </el-col>
       <el-col :span="2">
@@ -54,6 +54,16 @@ export default {
             name: '',
             description: '',
             value: ''
+          })
+          break
+        case 'number':
+          this.formConf.push({
+            type: 'number',
+            required: true,
+            label: '',
+            name: '',
+            description: '',
+            value: 0
           })
           break
         default:
