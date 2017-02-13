@@ -14,6 +14,9 @@
       <el-col :span="4" v-if="item.type === 'text'">
         <el-input v-model="item.value" placeholder="请输入初始值"></el-input>
       </el-col>
+      <el-col :span="4" v-if="item.type === 'number'">
+        <el-input-number v-model="item.value"></el-input-number>
+      </el-col>
       <el-col :span="4">
         <el-input v-model="item.description" placeholder="请输入说明文本"></el-input>
       </el-col>
