@@ -82,7 +82,7 @@
         </el-table>
         <div class="btn-area">
           <el-button type="primary" @click="onConfirmOff">确认下架</el-button>
-          <el-button @click="onReject">驳回</el-button>
+          <!-- <el-button @click="onReject">驳回</el-button> -->
         </div>
       </el-card>
 

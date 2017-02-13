@@ -141,7 +141,7 @@
 
       <el-form-item>
         <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
-        <el-button>取消</el-button>
+        <el-button @click="resetForm('applyForm')">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -263,6 +263,9 @@
             return false
           }
         })
+      },
+      resetForm (applyForm) {
+        this.$refs[applyForm].resetFields()
       },
       onAdd () {
         this.applyForm.data.push({
