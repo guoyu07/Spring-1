@@ -5,14 +5,17 @@
       <el-col :span="2">
         <el-checkbox v-model="item.required">必填</el-checkbox>
       </el-col>
-      <el-col :span="4">
-        <el-input placeholder="请输入参数名"></el-input>
+      <el-col :span="4" v-if="item.type === 'text'">
+        <el-input v-model="item.label" placeholder="请输入标签"></el-input>
       </el-col>
-      <el-col :span="4">
-        <el-input placeholder="请输入初始值"></el-input>
+      <el-col :span="4" v-if="item.type === 'text'">
+        <el-input v-model="item.name" placeholder="请输入提交字段名"></el-input>
       </el-col>
-      <el-col :span="4">
-        <el-input placeholder="请输入说明文本"></el-input>
+      <el-col :span="4" v-if="item.type === 'text'">
+        <el-input v-model="item.value" placeholder="请输入初始值"></el-input>
+      </el-col>
+      <el-col :span="4" v-if="item.type === 'text'">
+        <el-input v-model="item.description" placeholder="请输入说明文本"></el-input>
       </el-col>
       <el-col :span="2">
         <el-button type="primary" icon="delete" @click="delBtn(index)"></el-button>
@@ -45,11 +48,12 @@ export default {
       switch (cmd) {
         case 'text':
           this.formConf.push({
-            name: 'some-text',
-            description: '输入框',
-            required: false,
             type: 'text',
-            value: 'lorem ipsum'
+            required: false,
+            label: '',
+            name: '',
+            description: '',
+            value: ''
           })
           break
         default:
