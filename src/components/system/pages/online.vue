@@ -4,17 +4,42 @@
     <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px">
       <el-row :gutter="10" class="m-top">
         <el-col :span="8">
-          <el-form-item prop="applicant" label="申请人">
-            <el-input v-model="applyForm.applicant"></el-input>
+          <el-form-item prop="applyType" label="申请类型">
+            <el-select v-model="applyForm.applyType">
+              <el-option v-for="type in applyTypes"
+                :label="type.label"
+                :value="type"></el-option>
+            </el-select>
           </el-form-item>
 
-          <el-form-item prop="project" label="项目组">
+          <!-- <el-form-item prop="applicant" label="申请人">
+            <el-input v-model="applyForm.applicant"></el-input>
+          </el-form-item> -->
+          <el-form-item v-if="applyForm.applyType.value !== 'newBusiness'" prop="project" label="项目组">
+            <el-select v-model="applyForm.project">
+              <el-option v-for="project in projectList"
+                :label="project.label"
+                :value="project.value"></el-option>
+            </el-select>
+          </el-form-item>
+          <el-form-item v-if="applyForm.applyType.value === 'newBusiness'" prop="project" label="所属业务">
             <el-input v-model="applyForm.project"></el-input>
           </el-form-item>
 
-          <el-form-item prop="date" label="申请时间">
-            <el-date-picker type="date" placeholder="选择日期" v-model="applyForm.date" style="width: 100%;"></el-date-picker>
+          <el-form-item v-if="applyForm.applyType.value === 'newGroup'" prop="applicationName" label="应用名">
+            <el-select v-model="applyForm.applicationName">
+              <el-option v-for="application in applicationNameList"
+                :label="application.label"
+                :value="application.value"></el-option>
+            </el-select>
           </el-form-item>
+          <el-form-item v-if="applyForm.applyType.value !== 'newGroup'" prop="applicationName" label="应用名">
+            <el-input v-model="applyForm.applicationName"></el-input>
+          </el-form-item>
+
+          <!-- <el-form-item prop="date" label="申请时间">
+            <el-date-picker type="date" placeholder="选择日期" v-model="applyForm.date" style="width: 100%;"></el-date-picker>
+          </el-form-item> -->
         </el-col>
       </el-row>
 
@@ -25,63 +50,81 @@
 
           <el-form-item
             :label="index === 0 ? '使用环境' : ''"
-            :prop="'data.' + index + '.environment'">
+            :prop="'data.' + index + '.environment'"
+            :rules="{
+              type: 'object', required: true, message: '使用环境不能为空', trigger: 'change'
+            }">
             <el-select v-model="item.environment" placeholder="请选择使用环境">
-              <el-option label="环境一" value="shanghai"></el-option>
-              <el-option label="环境二" value="beijing"></el-option>
+              <el-option v-for="envir in environmentList"
+                :label="envir.label"
+                :value="envir"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '用途' : ''"
-            :prop="'data.' + index + '.purpose'"
+            :label="index === 0 ? '数量' : ''"
+            :prop="'data.' + index + '.quantity'"
             :rules="{
-              required: true, message: '用途不能为空', trigger: 'blur'
+              required: true, message: '数量不能为空', trigger: 'blur'
             }">
-            <el-input v-model="item.purpose"></el-input>
+            <el-input v-model="item.quantity"></el-input>
           </el-form-item>
 
           <el-form-item
             :label="index === 0 ? 'OS' : ''"
-            :prop="'data.' + index + '.operateSystem'">
+            :prop="'data.' + index + '.operateSystem'"
+            :rules="{
+              type: 'object', required: true, message: 'OS不能为空', trigger: 'change'
+            }">
             <el-select v-model="item.operateSystem" placeholder="请选择OS">
-              <el-option label="OS1" value="OS1"></el-option>
-              <el-option label="OS2" value="OS2"></el-option>
+              <el-option v-for="system in systemsList"
+                :label="system.label"
+                :value="system"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '实机IP' : ''"
-            :prop="'data.' + index + '.machineIp'">
-            <el-input v-model="item.machineIp"></el-input>
-          </el-form-item>
-
-          <el-form-item
-            :label="index === 0 ? '服务器类型' : ''"
-            :prop="'data.' + index + '.serverType'">
-            <el-select v-model="item.serverType" placeholder="请选择服务器类型">
-              <el-option label="实体" value="type1"></el-option>
-              <el-option label="虚拟" value="type2"></el-option>
+            :label="index === 0 ? '主机' : ''"
+            :prop="'data.' + index + '.hostType'"
+            :rules="{
+              type: 'object', required: true, message: '主机类型不能为空', trigger: 'change'
+            }">
+            <el-select v-model="item.hostType" placeholder="请选择主机类型">
+              <el-option v-for="host in hostTypeList"
+                :label="host.label"
+                :value="host"></el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item
             :label="index === 0 ? 'CPU核数' : ''"
             :prop="'data.' + index + '.cpu'"
-            :rules="{ validator: checkNumber, trigger: 'change' }">
+            :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input type="number" v-model="item.cpu" placeholder="请输入您需要的cpu核数"></el-input>
           </el-form-item>
 
           <el-form-item
             :label="index === 0 ? '内存(G)' : ''"
-            :prop="'data.' + index + '.internalStorage'">
-            <el-input type="number" v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
+            :prop="'data.' + index + '.internalStorage'"
+            :rules="{
+              required: true, message: '内存(G)不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
           </el-form-item>
 
           <el-form-item
             :label="index === 0 ? '硬盘(G)' : ''"
-            :prop="'data.' + index + '.hardDisk'">
-            <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
+            :prop="'data.' + index + '.hardDisk'"
+            :rules="{
+              required: true, message: '硬盘(G)不能为空', trigger: 'blur'
+            }">
+            <el-input v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
+          </el-form-item>
+
+          <el-form-item
+            :label="index === 0 ? '资产编号' : ''"
+            :prop="'data.' + index + '.assetNumber'">
+            <el-input type="number" v-model="item.assetNumber"></el-input>
           </el-form-item>
 
           <el-form-item :label="index === 0 ? '资源分数' : ''">
@@ -111,40 +154,96 @@
 <script>
   export default {
     data () {
-      // var validateIP = (rule, value, cb) => {
-      //   const reg = /^(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])$/
-      //   if (!value.match(reg)) {
-      //     cb(new Error('请输入正确的IP地址'))
-      //   }
-      // }
       return {
         applyForm: {
+          applyType: {},
           applicant: '',
           project: '',
+          applicationName: '',
           date: '',
           remark: '',
           data: [{
-            environment: '',
-            purpose: '',
-            operateSystem: '',
-            machineIp: '',
-            serverType: '',
+            environment: {},
+            quantity: '',
+            operateSystem: {},
+            hostType: {},
             cpu: '',
             internalStorage: '',
             hardDisk: '',
+            assetNumber: '',
             score: 0
           }]
         },
+        applyTypes: [{
+          label: '新建应用',
+          value: 'newApplication'
+        }, {
+          label: '新建集群节点',
+          value: 'newGroup'
+        }, {
+          label: '新建业务',
+          value: 'newBusiness'
+        }],
+        projectList: [],
+        applicationNameList: [],
+        environmentList: [{
+          label: '质量测试环境',
+          value: 'qutityTesting'
+        }, {
+          label: '开发测试环境',
+          value: 'devTesting'
+        }, {
+          label: '开发联调环境',
+          value: 'jointDevTesting'
+        }, {
+          label: '预上线环境',
+          value: 'preOnline'
+        }, {
+          label: '生产环境',
+          value: 'production'
+        }, {
+          label: '展示环境',
+          value: 'display'
+        }, {
+          label: ' DMZ区环境',
+          value: 'demilitarizedZone'
+        }],
+        systemsList: [{
+          label: 'Red Hat5.5(应用)',
+          value: 'RedHat5.5'
+        }, {
+          label: 'Red Hat6.5(数据库)',
+          value: 'RedHat6.5'
+        }, {
+          label: 'Win2008R2 SP1',
+          value: 'Win2008R2SP1'
+        }, {
+          label: 'Win7',
+          value: 'Win7'
+        }, {
+          label: 'WinXP',
+          value: 'WinXP'
+        }, {
+          label: '其他',
+          value: 'other'
+        }],
+        hostTypeList: [{
+          label: '物理机',
+          value: 'physical'
+        }, {
+          label: '虚拟机',
+          value: 'virtual'
+        }],
         applyRules: {
-          applicant: [
-            { required: true, message: '请输入申请人', trigger: 'blur' }
+          applyType: [
+            { required: true, message: '请选择申请类型', trigger: 'blur' }
             // { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
           ],
           project: [
-            { required: true, message: '请输入项目组', trigger: 'blur' }
+            { required: true, message: '请输入所属业务', trigger: 'blur' }
           ],
-          date: [
-            { type: 'date', required: true, message: '请输入日期', trigger: 'change' }
+          applicationName: [
+            { type: 'date', required: true, message: '请输入应用名', trigger: 'blur' }
           ]
         }
       }
@@ -152,7 +251,7 @@
     methods: {
       checkNumber (rule, value, callback) {
         if (!value) {
-          return callback(new Error('不能为空并且必须大于0'))
+          return callback(new Error('不为空且必须大于0'))
         }
         setTimeout(() => {
           if (value < 0) {
@@ -170,15 +269,14 @@
       },
       onAdd () {
         this.applyForm.data.push({
-          no: '',
-          environment: '',
-          purpose: '',
-          operateSystem: '',
-          machineIp: '',
-          serverType: '',
+          environment: {},
+          quantity: '',
+          operateSystem: {},
+          hostType: {},
           cpu: '',
           internalStorage: '',
           hardDisk: '',
+          assetNumber: '',
           score: 0
         })
       },
