@@ -1,4 +1,3 @@
-<!-- TODO: 默认服务器 默认搜索条件为服务器 -->
 <template>
   <el-row>
     <el-col :sm="24" :md="24" :lg="24">
@@ -159,7 +158,6 @@
         }
       },
       onRemove (row) {
-        console.log(row)
         const index = this.offTabel.indexOf(row)
         this.offTabel.splice(index, 1)
       },

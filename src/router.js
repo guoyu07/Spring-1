@@ -19,9 +19,6 @@ const routes = [{
   path: '/',
   component: require('./components/Home'),
   children: [{
-    path: '/part0',
-    component: require('./components/part0/index')
-  }, {
     path: '/storemanage',
     component: require('./components/storemanage/index'),
     children: [{
@@ -43,6 +40,16 @@ const routes = [{
     }, {
       path: '/equipment/check',
       component: require('./components/equipment/pages/check.vue')
+    }]
+  }, {
+    path: '/system',
+    component: require('./components/system/index'),
+    children: [{
+      path: '/system/online',
+      component: require('./components/system/pages/online.vue')
+    }, {
+      path: '/system/offline',
+      component: require('./components/system/pages/offline.vue')
     }]
   }, {
     path: '/part1',
