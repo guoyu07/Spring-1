@@ -6,34 +6,34 @@
         <el-col :span="8">
           <el-form-item prop="applyType" label="申请类型">
             <el-select v-model="applyForm.applyType">
-              <el-option v-for="type in applyTypes"
-                :label="type.label"
-                :value="type"></el-option>
+              <el-option v-for="apyType in applyTypes"
+                :label="apyType.label"
+                :value="apyType.value"></el-option>
             </el-select>
           </el-form-item>
 
           <!-- <el-form-item prop="applicant" label="申请人">
             <el-input v-model="applyForm.applicant"></el-input>
           </el-form-item> -->
-          <el-form-item v-if="applyForm.applyType.value !== 'newBusiness'" prop="project" label="项目组">
+          <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="project" label="项目组">
             <el-select v-model="applyForm.project">
-              <el-option v-for="project in projectList"
+              <el-option v-for="project in applyTypes"
                 :label="project.label"
-                :value="project.value"></el-option>
+                :value="project.value"></el-option> <!-- 因为这个project可以选填可以输入，所以只取字符串 -->
             </el-select>
           </el-form-item>
-          <el-form-item v-if="applyForm.applyType.value === 'newBusiness'" prop="project" label="所属业务">
+          <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="project" label="所属业务">
             <el-input v-model="applyForm.project"></el-input>
           </el-form-item>
 
-          <el-form-item v-if="applyForm.applyType.value === 'newGroup'" prop="applicationName" label="应用名">
+          <el-form-item v-if="applyForm.applyType === 'newGroup'" prop="applicationName" label="应用名">
             <el-select v-model="applyForm.applicationName">
-              <el-option v-for="application in applicationNameList"
+              <el-option v-for="application in applyTypes"
                 :label="application.label"
                 :value="application.value"></el-option>
             </el-select>
           </el-form-item>
-          <el-form-item v-if="applyForm.applyType.value !== 'newGroup'" prop="applicationName" label="应用名">
+          <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
             <el-input v-model="applyForm.applicationName"></el-input>
           </el-form-item>
 
@@ -52,7 +52,7 @@
             :label="index === 0 ? '使用环境' : ''"
             :prop="'data.' + index + '.environment'"
             :rules="{
-              type: 'object', required: true, message: '使用环境不能为空', trigger: 'change'
+              required: true, message: '使用环境不能为空', trigger: 'change', type: 'object'
             }">
             <el-select v-model="item.environment" placeholder="请选择使用环境">
               <el-option v-for="envir in environmentList"
@@ -64,10 +64,9 @@
           <el-form-item
             :label="index === 0 ? '数量' : ''"
             :prop="'data.' + index + '.quantity'"
-            :rules="{
-              required: true, message: '数量不能为空', trigger: 'blur'
-            }">
+            :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input v-model="item.quantity"></el-input>
+            <!-- <el-input-number v-model="item.quantity" :min="1"></el-input-number> -->
           </el-form-item>
 
           <el-form-item
@@ -106,18 +105,14 @@
           <el-form-item
             :label="index === 0 ? '内存(G)' : ''"
             :prop="'data.' + index + '.internalStorage'"
-            :rules="{
-              required: true, message: '内存(G)不能为空', trigger: 'blur'
-            }">
+            :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
           </el-form-item>
 
           <el-form-item
             :label="index === 0 ? '硬盘(G)' : ''"
             :prop="'data.' + index + '.hardDisk'"
-            :rules="{
-              required: true, message: '硬盘(G)不能为空', trigger: 'blur'
-            }">
+            :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
           </el-form-item>
 
@@ -145,7 +140,7 @@
       </el-form-item>
 
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">立即创建</el-button>
+        <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
         <el-button>取消</el-button>
       </el-form-item>
     </el-form>
@@ -156,17 +151,15 @@
     data () {
       return {
         applyForm: {
-          applyType: {},
-          applicant: '',
+          applyType: '',
           project: '',
           applicationName: '',
-          date: '',
           remark: '',
           data: [{
-            environment: {},
+            environment: null,
             quantity: '',
-            operateSystem: {},
-            hostType: {},
+            operateSystem: null,
+            hostType: null,
             cpu: '',
             internalStorage: '',
             hardDisk: '',
@@ -236,14 +229,14 @@
         }],
         applyRules: {
           applyType: [
-            { required: true, message: '请选择申请类型', trigger: 'blur' }
+            { required: true, message: '请选择申请类型', trigger: 'change' }
             // { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
           ],
           project: [
-            { required: true, message: '请输入所属业务', trigger: 'blur' }
+            { required: true, message: '请输入所属业务', trigger: 'change, blur' }
           ],
           applicationName: [
-            { type: 'date', required: true, message: '请输入应用名', trigger: 'blur' }
+            { required: true, message: '请输入应用名', trigger: 'change, blur' }
           ]
         }
       }
@@ -261,18 +254,22 @@
           }
         }, 1000)
       },
-      onSubmit () {
-        // this.applyForm.data.map(v => {
-        //   v.score = v.cpu * 1 + v.internalStorage * 1 + v.hardDisk / 20
-        //   return v
-        // })
+      onSubmit (applyForm) {
+        this.$refs[applyForm].validate((valid) => {
+          if (valid) {
+            console.log('submit!')
+          } else {
+            console.log('error submit!!')
+            return false
+          }
+        })
       },
       onAdd () {
         this.applyForm.data.push({
-          environment: {},
+          environment: null,
           quantity: '',
-          operateSystem: {},
-          hostType: {},
+          operateSystem: null,
+          hostType: null,
           cpu: '',
           internalStorage: '',
           hardDisk: '',
