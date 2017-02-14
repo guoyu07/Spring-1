@@ -39,7 +39,7 @@
                 </el-form-item>
                 <el-form-item label="是否安装 Agent">
                   <el-switch
-                    value="" v-model="device.agent"
+                    v-model="device.agent"
                     on-text="是"
                     off-text="否"></el-switch>
                 </el-form-item>
