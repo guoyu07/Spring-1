@@ -1,25 +1,3 @@
-<style lang="less">
-  @import url("../../../assets/css/variables.less");
-
-  .device-data-table {
-    border-top: 1px solid @borderColor;
-    border-left: 1px solid @borderColor;
-    margin: 0 auto 18px;
-    width: 66%;
-
-    tr > td:first-child {
-      background-color: lighten(@bgLighter, 3%);
-    }
-
-    td {
-      border-bottom: 1px solid @borderColor;
-      border-right: 1px solid @borderColor;
-      padding: 6px;
-      font-size: 13px;
-    }
-  }
-</style>
-
 <template>
   <div class="outstock">
     <el-row>
@@ -47,21 +25,20 @@
                 </div>
               </div>
               <div class="step step-2" v-show="activeStep === 2">
-                <el-row>
-                  <el-col :span="16">
-                    <el-form label-position="left" label-width="80px" class="advance-search-form">
-                      <el-form-item v-for="key in searchKeys" :label="key.label">
-                        <el-input
-                          v-model="key.value"
-                          size="small"></el-input>
-                      </el-form-item>
-                      <el-form-item>
-                        <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
-                        <el-button @click="onEmptySearch" size="small">清空</el-button>
-                      </el-form-item>
-                    </el-form>
-                  </el-col>
-                </el-row>
+                <el-form label-position="left" label-width="80px" class="advance-search-form" :inline="true">
+                  <div class="form-block">
+                    <el-form-item v-for="key in searchKeys" :label="key.label">
+                      <el-input
+                        v-model="key.value"
+                        size="small"></el-input>
+                    </el-form-item>
+                  </div>
+                  <el-form-item>
+                    <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
+                    <el-button @click="onEmptySearch" size="small">清空</el-button>
+                  </el-form-item>
+                </el-form>
+
                 <el-table
                   :data="deviceTable"
                   border
@@ -171,7 +148,7 @@
 
     methods: {
       onDeviceTypeChange () {
-        this.$http.get('/searchKeys').then((res) => {
+        this.$http.get(`/searchKeys/${this.deviceType.value}`).then((res) => {
           console.log(res)
           this.searchKeys = res.body
         })

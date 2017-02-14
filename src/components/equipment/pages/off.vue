@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :sm="24" :md="24" :lg="24">
+    <el-col :sm="24" :md="24" :lg="20">
       <el-card class="box-card">
         <h3>下架流程</h3>
         <el-form ref="offForm" label-width="100px">
@@ -15,15 +15,15 @@
             </el-radio-group>
           </el-form-item>
         </el-form>
-        <el-form ref="searchKeys" label-width="100px" :inline="true">
+        <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
           <div class="form-block">
             <el-form-item v-for="key in searchKeys" :label="key.label">
-              <el-input v-model="key.value"></el-input>
+              <el-input v-model="key.value" size="small"></el-input>
             </el-form-item>
           </div>
           <el-form-item>
-            <el-button type="primary" @click="onSearchDevices">搜索</el-button>
-            <el-button @click="onEmptySearch">清空</el-button>
+            <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
+            <el-button @click="onEmptySearch" size="small">清空</el-button>
           </el-form-item>
         </el-form>
         <el-table
