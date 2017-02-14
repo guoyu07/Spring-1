@@ -208,7 +208,7 @@
                     inline-template
                     :context="_self">
                     <template>
-                      <el-button type="text" @click="onReject(row)">驳回</el-button>
+                      <el-button size="small" type="danger" @click="onReject(row)">驳回</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -276,7 +276,7 @@
                     inline-template
                     :context="_self">
                     <template>
-                      <el-button type="text" @click="onPrint(row)">打印</el-button>
+                      <el-button size="small" @click="onPrint(row)">打印</el-button>
                     </template>
                   </el-table-column>
                 </el-table>

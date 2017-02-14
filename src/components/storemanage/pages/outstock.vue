@@ -58,8 +58,8 @@
                     :context="_self"
                     label="操作">
                     <span>
-                      <el-button type="text" @click="onRetrieve(row)">出库</el-button>
-                      <el-button type="text" @click="onEdit(row)">变更</el-button>
+                      <el-button size="small" @click="onRetrieve(row)">出库</el-button>
+                      <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button>
                     </span>
                   </el-table-column>
                 </el-table>
