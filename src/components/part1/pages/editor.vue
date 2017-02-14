@@ -17,6 +17,18 @@
       <el-col :span="4" v-if="item.type === 'number'">
         <el-input-number v-model="item.value"></el-input-number>
       </el-col>
+      <el-col :span="4" v-if="item.type === 'radiobox'">
+        <el-popover placement="bottom" title="单选配置" trigger="click">
+          <p>123</p>
+          <el-button slot="reference" style="width: 100%">配置选项</el-button>
+        </el-popover>
+      </el-col>
+      <el-col :span="4" v-if="item.type === 'checkbox'">
+        <el-popover placement="bottom" title="多选配置" trigger="click">
+          <p>123</p>
+          <el-button slot="reference" style="width: 100%">配置选项</el-button>
+        </el-popover>
+      </el-col>
       <el-col :span="4">
         <el-input v-model="item.description" placeholder="请输入说明文本"></el-input>
       </el-col>
@@ -29,10 +41,10 @@
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item command="text">文本输入</el-dropdown-item>
         <el-dropdown-item command="number">数字输入</el-dropdown-item>
-        <el-dropdown-item command="data">日期输入</el-dropdown-item>
         <el-dropdown-item command="radiobox">单选</el-dropdown-item>
-        <el-dropdown-item command="select">下拉单选</el-dropdown-item>
         <el-dropdown-item command="checkbox">多选</el-dropdown-item>
+        <el-dropdown-item command="select">下拉框</el-dropdown-item>
+        <el-dropdown-item command="data">日期输入</el-dropdown-item>
       </el-dropdown-menu>
     </el-dropdown>
   </div>
@@ -67,6 +79,32 @@ export default {
             name: '',
             description: '',
             value: 0
+          })
+          break
+        case 'radiobox':
+          this.formConf.push({
+            type: 'radiobox',
+            required: true,
+            label: '',
+            name: '',
+            description: '',
+            value: {
+              checkboxTypeCode: 'radioboxOne',
+              value: ['选项 1', '选项 3']
+            }
+          })
+          break
+        case 'checkbox':
+          this.formConf.push({
+            type: 'checkbox',
+            required: true,
+            label: '',
+            name: '',
+            description: '',
+            value: {
+              checkboxTypeCode: 'checkboxOne',
+              value: ['选项 1', '选项 3']
+            }
           })
           break
         default:
