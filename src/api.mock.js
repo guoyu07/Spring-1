@@ -242,41 +242,6 @@ const apis = [{
       number: 2,
       operationSystem: 'Red Hat5.5(应用)',
       score: 23.5
-    }, {
-      host: '物理机',
-      envirnment: '预上线环境',
-      number: 2,
-      operationSystem: 'WinXP',
-      score: 23.5
-    }, {
-      host: '虚拟机',
-      envirnment: '生产环境',
-      number: 2,
-      operationSystem: 'Win7',
-      score: 23.5
-    }]
-  }, {
-    applyType: '新建集群节点',
-    project: '项目组',
-    applicationName: '阿里音乐',
-    data: [{
-      host: '物理机',
-      envirnment: '质量测试环境',
-      number: 2,
-      operationSystem: 'Red Hat5.5(应用)',
-      score: 23.5
-    }, {
-      host: '物理机',
-      envirnment: '预上线环境',
-      number: 2,
-      operationSystem: 'WinXP',
-      score: 23.5
-    }, {
-      host: '虚拟机',
-      envirnment: '生产环境',
-      number: 2,
-      operationSystem: 'Win7',
-      score: 23.5
     }]
   }, {
     applyType: '新建业务',
@@ -293,6 +258,12 @@ const apis = [{
       envirnment: '预上线环境',
       number: 2,
       operationSystem: 'WinXP',
+      score: 23.5
+    }, {
+      host: '虚拟机',
+      envirnment: '生产环境',
+      number: 2,
+      operationSystem: 'Win7',
       score: 23.5
     }, {
       host: '虚拟机',

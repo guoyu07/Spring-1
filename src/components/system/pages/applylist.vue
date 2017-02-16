@@ -10,10 +10,10 @@
         width="55">
       </el-table-column> -->
       <el-table-column type="expand">
-        <template scope="data">
-          <div class="item-block" v-for="item in data">
+        <template scope="props">
+          <div class="item-block" v-for="item in props.row.data">
             <p>主机: {{ item.host }}</p>
-            <p>环境: {{ item.host }}</p>
+            <p>环境: {{ item.envirnment }}</p>
             <p>数量: {{ item.number }}</p>
             <p>OS: {{ item.operationSystem }}</p>
             <p>资源分数: {{ item.score }}</p>
@@ -80,6 +80,13 @@
 }
 .item-block {
   display: inline-block;
-  margin-right: 15px;
+  margin-right: 30px;
+  padding-right: 20px;
+  border-right: 1px dashed #e0e6ed;
+  color: #5e6d82;
+
+  &:last-child {
+    border-right: none;
+  }
 }
 </style>
