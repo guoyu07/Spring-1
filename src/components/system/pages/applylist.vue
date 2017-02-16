@@ -34,9 +34,8 @@
         :context="_self"
         label="操作">
         <div class="btn-block">
-          <el-button type="text" href="###" @click="onDeploy(row)">详情</el-button>
-          <el-button type="text" href="###" @click="onDeploy(row)">资源分配</el-button>
-          <el-button type="text" href="###" @click="onDeploy(row)">审批</el-button>
+          <el-button type="text" @click="onDeploy(row)">资源分配</el-button>
+          <el-button type="text" @click="onDeploy(row)">审批</el-button>
         </div>
       </el-table-column>
     </el-table>
