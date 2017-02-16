@@ -11,11 +11,13 @@
       </el-table-column> -->
       <el-table-column type="expand">
         <template scope="data">
-          <p>主机: {{ data.host }}</p>
-          <p>环境: {{ data.host }}</p>
-          <p>数量: {{ data.number }}</p>
-          <p>OS: {{ data.operationSystem }}</p>
-          <p>资源分数: {{ data.score }}</p>
+          <div class="item-block" v-for="item in data">
+            <p>主机: {{ item.host }}</p>
+            <p>环境: {{ item.host }}</p>
+            <p>数量: {{ item.number }}</p>
+            <p>OS: {{ item.operationSystem }}</p>
+            <p>资源分数: {{ item.score }}</p>
+          </div>
         </template>
       </el-table-column>
       <el-table-column
@@ -75,5 +77,9 @@
       margin-right: 0;
     }
   }
+}
+.item-block {
+  display: inline-block;
+  margin-right: 15px;
 }
 </style>
