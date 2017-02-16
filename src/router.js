@@ -45,8 +45,11 @@ const routes = [{
     path: '/system',
     component: require('./components/system/index'),
     children: [{
-      path: '/system/online',
-      component: require('./components/system/pages/online.vue')
+      path: '/system/apply',
+      component: require('./components/system/pages/apply.vue')
+    }, {
+      path: '/system/applylist',
+      component: require('./components/system/pages/applylist.vue')
     }, {
       path: '/system/offline',
       component: require('./components/system/pages/offline.vue')

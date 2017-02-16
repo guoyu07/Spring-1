@@ -229,6 +229,37 @@ const apis = [{
     label: '其他',
     value: ''
   }]
+}, {
+  method: 'GET',
+  url: '/applylist',
+  response: [{
+    applyType: '新建应用',
+    project: '前端组',
+    applicationName: '阿里影业',
+    host: '物理机',
+    envirnment: '质量测试环境',
+    number: 2,
+    operationSystem: 'Red Hat5.5(应用)',
+    score: 23.5
+  }, {
+    applyType: '新建集群节点',
+    project: '项目组',
+    applicationName: '阿里音乐',
+    host: '物理机',
+    envirnment: '预上线环境',
+    number: 2,
+    operationSystem: 'WinXP',
+    score: 23.5
+  }, {
+    applyType: '新建业务',
+    project: '项目组',
+    applicationName: '阿里巴巴',
+    host: '虚拟机',
+    envirnment: '生产环境',
+    number: 2,
+    operationSystem: 'Win7',
+    score: 23.5
+  }]
 }]
 
 export default apis

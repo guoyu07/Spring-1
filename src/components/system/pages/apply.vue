@@ -106,14 +106,14 @@
             :label="index === 0 ? '内存(G)' : ''"
             :prop="'data.' + index + '.internalStorage'"
             :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-            <el-input v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
+            <el-input type="number" v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
           </el-form-item>
 
           <el-form-item
             :label="index === 0 ? '硬盘(G)' : ''"
             :prop="'data.' + index + '.hardDisk'"
             :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-            <el-input v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
+            <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
           </el-form-item>
 
           <el-form-item
@@ -244,7 +244,7 @@
     methods: {
       checkNumber (rule, value, callback) {
         if (!value) {
-          return callback(new Error('不为空且必须大于0'))
+          return callback(new Error('不能为空'))
         }
         setTimeout(() => {
           if (value < 0) {

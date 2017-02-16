@@ -35,7 +35,7 @@
                 </div>
               </div>
               <div class="step step-2" v-show="deployStep === 2">
-                
+
                 <el-form ref="searchKeys" label-width="80px" class="advance-search-form" :inline="true">
                   <div class="form-block">
                     <el-form-item v-for="key in searchKeys" :label="key.label">
@@ -56,7 +56,7 @@
                     <el-button @click="onEmptySearch" size="small">清空</el-button>
                   </el-form-item>
                 </el-form>
-                
+
                 <el-table
                   :data="deviceTable"
                   border
