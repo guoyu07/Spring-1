@@ -9,6 +9,15 @@
         type="selection"
         width="55">
       </el-table-column> -->
+      <el-table-column type="expand">
+        <template scope="data">
+          <p>主机: {{ data.host }}</p>
+          <p>环境: {{ data.host }}</p>
+          <p>数量: {{ data.number }}</p>
+          <p>OS: {{ data.operationSystem }}</p>
+          <p>资源分数: {{ data.score }}</p>
+        </template>
+      </el-table-column>
       <el-table-column
         prop="applicationName"
         label="应用名"></el-table-column>
@@ -18,30 +27,6 @@
       <el-table-column
         prop="project"
         label="项目组"></el-table-column>
-      <el-table-column
-        prop="envirnment"
-        label="使用环境"></el-table-column>
-      <el-table-column
-        prop="number"
-        label="数量"></el-table-column>
-      <el-table-column
-        prop="operationSystem"
-        label="OS"></el-table-column>
-      <el-table-column
-        prop="host"
-        label="主机"></el-table-column>
-      <!-- <el-table-column
-        prop="project"
-        label="CPU核数"></el-table-column>
-      <el-table-column
-        prop="project"
-        label="内存(G)"></el-table-column>
-      <el-table-column
-        prop="project"
-        label="硬盘(G)"></el-table-column> -->
-      <el-table-column
-        prop="score"
-        label="资产分数"></el-table-column>
       <el-table-column
         inline-template
         :context="_self"
