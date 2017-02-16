@@ -14,7 +14,7 @@
           <h3><i class="el-icon-fa-upload"></i> 上架流程</h3>
           <el-steps :space="180" :active="deployStep">
             <el-step title="选择设备类型" :description="deviceType.label"></el-step>
-            <el-step title="设备搜索及操作"></el-step>
+            <el-step title="设备搜索及操作" :description="selectedDevices.length ? selectedDevices.length + ' 台设备' : ''"></el-step>
             <el-step title="编辑及上架操作"></el-step>
           </el-steps>
           <el-row>
@@ -163,31 +163,31 @@
                       <table class="device-data-table">
                         <tbody>
                           <tr>
-                            <td>是否安装代理</td>
+                            <td><b>是否安装代理</b></td>
                             <td>{{ props.row.agent ? '是' : '否' }}</td>
-                            <td>操作系统</td>
+                            <td><b>操作系统</b></td>
                             <td>{{ props.row.os }}</td>
                           </tr>
                           <tr>
-                            <td>应用服务</td>
+                            <td><b>应用服务</b></td>
                             <td>{{ props.row.app }}</td>
-                            <td>数据库</td>
+                            <td><b>数据库</b></td>
                             <td>{{ props.row.db }}</td>
                           </tr>
                           <tr>
-                            <td>机房</td>
+                            <td><b>机房</b></td>
                             <td>{{ props.row.room }}</td>
-                            <td>机柜</td>
+                            <td><b>机柜</b></td>
                             <td>{{ props.row.cabinet }}</td>
                           </tr>
                           <tr>
-                            <td>U 位</td>
+                            <td><b>U 位</b></td>
                             <td>{{ props.row.ubit }}</td>
-                            <td>IP</td>
+                            <td><b>IP</b></td>
                             <td>{{ props.row.ip }}</td>
                           </tr>
                           <tr>
-                            <td>端口</td>
+                            <td><b>端口</b></td>
                             <td>{{ props.row.port }}</td>
                           </tr>
                         </tbody>
@@ -208,7 +208,7 @@
                     inline-template
                     :context="_self">
                     <template>
-                      <el-button type="text" @click="onReject(row)">驳回</el-button>
+                      <el-button size="small" type="danger" @click="onReject(row)">驳回</el-button>
                     </template>
                   </el-table-column>
                 </el-table>
@@ -218,8 +218,72 @@
                 </div>
               </div>
               <div class="step step-2" v-show="reviewStep === 2">
-                <div class="btn-area">
-                  <el-button class="md" @click="reviewStep--">上一步</el-button>
+                <el-table
+                  :data="selectedDevices"
+                  @selection-change="onSelectRow2"
+                  style="width: 100%">
+                  <el-table-column
+                    type="selection"
+                    width="55"></el-table-column>
+                  <el-table-column
+                    type="expand">
+                    <template scope="props">
+                      <table class="device-data-table">
+                        <tbody>
+                          <tr>
+                            <td><b>是否安装代理</b></td>
+                            <td>{{ props.row.agent ? '是' : '否' }}</td>
+                            <td><b>操作系统</b></td>
+                            <td>{{ props.row.os }}</td>
+                          </tr>
+                          <tr>
+                            <td><b>应用服务</b></td>
+                            <td>{{ props.row.app }}</td>
+                            <td><b>数据库</b></td>
+                            <td>{{ props.row.db }}</td>
+                          </tr>
+                          <tr>
+                            <td><b>机房</b></td>
+                            <td>{{ props.row.room }}</td>
+                            <td><b>机柜</b></td>
+                            <td>{{ props.row.cabinet }}</td>
+                          </tr>
+                          <tr>
+                            <td><b>U 位</b></td>
+                            <td>{{ props.row.ubit }}</td>
+                            <td><b>IP</b></td>
+                            <td>{{ props.row.ip }}</td>
+                          </tr>
+                          <tr>
+                            <td><b>端口</b></td>
+                            <td>{{ props.row.port }}</td>
+                          </tr>
+                        </tbody>
+                      </table>
+                    </template>
+                  </el-table-column>
+                  <el-table-column
+                    prop="name"
+                    label="设备"></el-table-column>
+                  <el-table-column
+                    prop="number"
+                    label="编号"></el-table-column>
+                  <el-table-column
+                    prop="other"
+                    label="其他"></el-table-column>
+                  <el-table-column
+                    label="操作"
+                    inline-template
+                    :context="_self">
+                    <template>
+                      <el-button size="small" @click="onPrint(row)">打印</el-button>
+                    </template>
+                  </el-table-column>
+                </el-table>
+                <br>
+                <div class="btn-area clear">
+                  <el-button class="fl" @click="reviewStep--">上一步</el-button>
+                  <el-button class="fr" type="primary" :disabled="!selectedDevices2.length" @click="onSubmit">提交完成工单</el-button>
                 </div>
               </div>
           </el-row>
@@ -269,7 +333,8 @@
           visible: false
         },
         reviewStep: 1,
-        selectedDevices: []
+        selectedDevices: [],
+        selectedDevices2: []
       }
     },
 
@@ -312,6 +377,20 @@
             message: '已驳回！'
           })
         })
+      },
+
+      onSelectRow2 (val) {
+        console.log(val)
+        this.selectedDevices2 = val
+      },
+
+      onPrint (device) {
+        console.log(device.name)
+      },
+
+      onSubmit () {
+        console.log(this.selectedDevices2)
+        this.$message.success('成功提交已选工单！')
       }
     },
 
