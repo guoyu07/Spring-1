@@ -1,55 +1,51 @@
 <template>
   <div id="item1-side" class="wrapper">
     <h3 class="form-title">服务资源申请单</h3>
-    <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px">
+    <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px" :inline="true">
       <el-row :gutter="10" class="m-top">
-        <el-col :span="8">
-          <el-form-item prop="applyType" label="申请类型">
-            <el-select v-model="applyForm.applyType">
-              <el-option v-for="apyType in applyTypes"
-                :label="apyType.label"
-                :value="apyType.value"></el-option>
-            </el-select>
-          </el-form-item>
+        <el-form-item prop="applyType" label="申请类型">
+          <el-select v-model="applyForm.applyType">
+            <el-option v-for="apyType in applyTypes"
+              :label="apyType.label"
+              :value="apyType.value"></el-option>
+          </el-select>
+        </el-form-item>
 
-          <!-- <el-form-item prop="applicant" label="申请人">
-            <el-input v-model="applyForm.applicant"></el-input>
-          </el-form-item> -->
-          <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="project" label="项目组">
-            <el-select v-model="applyForm.project">
-              <el-option v-for="project in applyTypes"
-                :label="project.label"
-                :value="project.value"></el-option> <!-- 因为这个project可以选填可以输入，所以只取字符串 -->
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="project" label="所属业务">
-            <el-input v-model="applyForm.project"></el-input>
-          </el-form-item>
+        <!-- <el-form-item prop="applicant" label="申请人">
+          <el-input v-model="applyForm.applicant"></el-input>
+        </el-form-item> -->
+        <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="project" label="项目组">
+          <el-select v-model="applyForm.project">
+            <el-option v-for="project in applyTypes"
+              :label="project.label"
+              :value="project.value"></el-option> <!-- 因为这个project可以选填可以输入，所以只取字符串 -->
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="project" label="所属业务">
+          <el-input v-model="applyForm.project"></el-input>
+        </el-form-item>
 
-          <el-form-item v-if="applyForm.applyType === 'newGroup'" prop="applicationName" label="应用名">
-            <el-select v-model="applyForm.applicationName">
-              <el-option v-for="application in applyTypes"
-                :label="application.label"
-                :value="application.value"></el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
-            <el-input v-model="applyForm.applicationName"></el-input>
-          </el-form-item>
+        <el-form-item v-if="applyForm.applyType === 'newGroup'" prop="applicationName" label="应用名">
+          <el-select v-model="applyForm.applicationName">
+            <el-option v-for="application in applyTypes"
+              :label="application.label"
+              :value="application.value"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
+          <el-input v-model="applyForm.applicationName"></el-input>
+        </el-form-item>
 
-          <!-- <el-form-item prop="date" label="申请时间">
-            <el-date-picker type="date" placeholder="选择日期" v-model="applyForm.date" style="width: 100%;"></el-date-picker>
-          </el-form-item> -->
-        </el-col>
+        <!-- <el-form-item prop="date" label="申请时间">
+          <el-date-picker type="date" placeholder="选择日期" v-model="applyForm.date" style="width: 100%;"></el-date-picker>
+        </el-form-item> -->
       </el-row>
 
-      <el-row class="m-row">
-
-        <el-col :span="8" v-for = "(item, index) in applyForm.data">
-          <el-button type="text" class="icon-close" v-if="index !== 0" @click.prevent="removeItem(item)">删除</el-button>
-
+      <el-button size="small" @click="onAdd('applyForm')" class="margin-bottom" icon="plus">增加服务器</el-button>
+      <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
+        <el-tab-pane  v-for="(item, index) in applyForm.data" :key="item.id" :label="'服务资源' + (index + 1)">
           <el-form-item
-            :label="index === 0 ? '使用环境' : ''"
+            label="使用环境"
             :prop="'data.' + index + '.environment'"
             :rules="{
               required: true, message: '使用环境不能为空', trigger: 'change', type: 'object'
@@ -62,15 +58,7 @@
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '数量' : ''"
-            :prop="'data.' + index + '.quantity'"
-            :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-            <el-input v-model="item.quantity"></el-input>
-            <!-- <el-input-number v-model="item.quantity" :min="1"></el-input-number> -->
-          </el-form-item>
-
-          <el-form-item
-            :label="index === 0 ? 'OS' : ''"
+            label="OS"
             :prop="'data.' + index + '.operateSystem'"
             :rules="{
               type: 'object', required: true, message: 'OS不能为空', trigger: 'change'
@@ -83,7 +71,7 @@
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '主机' : ''"
+            label="主机"
             :prop="'data.' + index + '.hostType'"
             :rules="{
               type: 'object', required: true, message: '主机类型不能为空', trigger: 'change'
@@ -96,49 +84,50 @@
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? 'CPU核数' : ''"
+            label="数量"
+            :prop="'data.' + index + '.quantity'"
+            :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
+            <el-input v-model="item.quantity"></el-input>
+            <!-- <el-input-number v-model="item.quantity" :min="1"></el-input-number> -->
+          </el-form-item>
+
+          <el-form-item
+            label="CPU核数"
             :prop="'data.' + index + '.cpu'"
             :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input type="number" v-model="item.cpu" placeholder="请输入您需要的cpu核数"></el-input>
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '内存(G)' : ''"
+            label="内存(G)"
             :prop="'data.' + index + '.internalStorage'"
             :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input type="number" v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '硬盘(G)' : ''"
+            label="硬盘(G)"
             :prop="'data.' + index + '.hardDisk'"
             :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
             <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
           </el-form-item>
 
           <el-form-item
-            :label="index === 0 ? '资产编号' : ''"
+            label="资产编号"
             :prop="'data.' + index + '.assetNumber'">
             <el-input type="number" v-model="item.assetNumber"></el-input>
           </el-form-item>
 
-          <el-form-item :label="index === 0 ? '资源分数' : ''">
+          <el-form-item label="资源分数">
             {{ item.score = item.cpu * 1 + item.internalStorage * 1 + item.hardDisk / 20 }}
           </el-form-item>
-        </el-col>
-
-        <el-col :span="2" class="icon-plus" v-if="applyForm.data.length < 5">
-          <el-button type="text" @click="onAdd"><i class="el-icon-plus"></i></el-button>
-        </el-col>
-
-      </el-row>
-
+        </el-tab-pane>
+      </el-tabs>
+      <br>
       <el-form-item label="备注">
-        <el-col :span="12">
-          <el-input type="textarea" v-model="applyForm.remark"></el-input>
-        </el-col>
+        <el-input type="textarea" v-model="applyForm.remark"></el-input>
       </el-form-item>
-
+      <br>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
         <el-button @click="resetForm('applyForm')">重置</el-button>
@@ -242,6 +231,13 @@
       }
     },
     methods: {
+      handleRemove (tab) {
+        this.applyForm.data.splice(tab.index, 1)
+        // console.log(tab.index, this.instockForm.data)
+      },
+      handleClick (tab, event) {
+        // console.log(tab.index, tab, event)
+      },
       checkNumber (rule, value, callback) {
         if (!value) {
           return callback(new Error('不能为空'))
@@ -267,17 +263,28 @@
       resetForm (applyForm) {
         this.$refs[applyForm].resetFields()
       },
-      onAdd () {
-        this.applyForm.data.push({
-          environment: null,
-          quantity: '',
-          operateSystem: null,
-          hostType: null,
-          cpu: '',
-          internalStorage: '',
-          hardDisk: '',
-          assetNumber: '',
-          score: 0
+      onAdd (applyForm) {
+        var that = this
+        this.$refs[applyForm].validate((valid) => {
+          if (valid) {
+            if (that.applyForm.data.length < 5) {
+              that.applyForm.data.push({
+                environment: null,
+                quantity: '',
+                operateSystem: null,
+                hostType: null,
+                cpu: '',
+                internalStorage: '',
+                hardDisk: '',
+                assetNumber: '',
+                score: 0
+              })
+            } else {
+              that.$message.warning('最多只能增加 5 个设备！')
+            }
+          } else {
+            that.$message.warning('请填写完整当前表单')
+          }
         })
       },
       removeItem (item) {
@@ -307,57 +314,8 @@
   }
   .m-top {
     margin-bottom: 30px;
-    border-bottom: 1px dashed #C0CCDA;
   }
-  .m-row {
-    width: auto;
-    display: flex;
-
-    .icon-plus {
-      margin-bottom: 20px;
-      background-color: #f8f8f8;
-      margin-left: 10px;
-      text-align: center;
-      .el-button {
-        display: block;
-        width: 100%;
-        height: 100%;
-        font-size: 28px;
-        color: #C0CCDA;
-        border: 1px solid #C0CCDA;
-
-        &:hover {
-          border-color: #C0CCDA;
-          background-color: #C0CCDA;
-          color: #fff;
-        }
-      }
-    }
-
-    .el-col:not(:last-child) {
-      position: relative;
-      &:after {
-        content: '';
-        position: absolute;
-        top: 0;
-        right: -40px;
-        display: block;
-        width: 1px;
-        height: 95%;
-        background-color: #C0CCDA;
-      }
-    }
-
-    .el-col:not(:first-child) {
-      position: relative;
-      .icon-close {
-        display: block;
-        cursor: pointer;
-        z-index: 2;
-        position: absolute;
-        bottom: 20px;
-        right: 2%;
-      }
-    }
+  .el-form--inline .el-form-item {
+    min-width: 280px;
   }
 </style>

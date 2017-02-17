@@ -1,6 +1,7 @@
 <template>
   <div id="item1-side" class="wrapper">
     <h3>系统上线列表</h3>
+    <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
     <el-table
       :data="applylist"
       border
@@ -34,8 +35,8 @@
         :context="_self"
         label="操作">
         <div class="btn-block">
-          <el-button type="text" @click="onDeploy(row)">资源分配</el-button>
-          <el-button type="text" @click="onDeploy(row)">审批</el-button>
+          <el-button type="text" @click="onAssign(row)">资源分配</el-button>
+          <el-button type="text" v-popover:popover5>驳回</el-button>
         </div>
       </el-table-column>
     </el-table>
@@ -87,5 +88,8 @@
   &:last-child {
     border-right: none;
   }
+}
+.margin-bottom {
+  margin-bottom: 15px;
 }
 </style>
