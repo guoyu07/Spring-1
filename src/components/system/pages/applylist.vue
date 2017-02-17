@@ -17,6 +17,9 @@
             <p>环境: {{ item.envirnment }}</p>
             <p>数量: {{ item.number }}</p>
             <p>OS: {{ item.operationSystem }}</p>
+            <p>CPU: {{ item.cpu }}</p>
+            <p>内存(G): {{ item.internalStorage }}</p>
+            <p>硬盘(G): {{ item.hardDisk }}</p>
             <p>资源分数: {{ item.score }}</p>
           </div>
         </template>
@@ -36,7 +39,16 @@
         label="操作">
         <div class="btn-block">
           <el-button type="text" @click="onAssign(row)">资源分配</el-button>
-          <el-button type="text" v-popover:popover5>驳回</el-button>
+          <el-button type="text" @click="showDialogReject(row)">驳回</el-button>
+
+          <el-dialog title="提示" v-model="dialogReject" size="tiny">
+            <span>驳回后不可恢复，确定要驳回此申请吗？</span>
+            <span slot="footer" class="dialog-footer">
+              <el-button @click="onCancel">取 消</el-button>
+              <el-button type="primary" @click="onReject(row)">确 定</el-button>
+            </span>
+          </el-dialog>
+
         </div>
       </el-table-column>
     </el-table>
@@ -46,6 +58,7 @@
   export default {
     data () {
       return {
+        dialogReject: false,
         applylist: []
       }
     },
@@ -57,6 +70,16 @@
         this.$http.get('/applylist').then((res) => {
           this.applylist = res.body
         })
+      },
+      showDialogReject (row) {
+        this.dialogReject = true
+      },
+      onReject (row) {
+        console.log(row)
+        this.dialogReject = false
+      },
+      onCancel () {
+        this.dialogReject = false
       },
       removeItem (item) {
         var index = this.applyForm.data.indexOf(item)
