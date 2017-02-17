@@ -71,6 +71,9 @@
           this.applylist = res.body
         })
       },
+      onAssign (row) {
+        this.$router.push('/system/assign')
+      },
       showDialogReject (row) {
         this.dialogReject = true
       },

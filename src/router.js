@@ -51,6 +51,9 @@ const routes = [{
       path: '/system/applylist',
       component: require('./components/system/pages/applylist.vue')
     }, {
+      path: '/system/assign',
+      component: require('./components/system/pages/assign.vue')
+    }, {
       path: '/system/offline',
       component: require('./components/system/pages/offline.vue')
     }]
