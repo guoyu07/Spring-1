@@ -1,7 +1,7 @@
 <template>
   <div class="off-review">
     <el-row>
-      <el-col :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>审核流程</h3>
           <el-table
@@ -27,7 +27,7 @@
               :context="_self"
               label="操作">
               <span>
-                <el-button type="text" @click="onReview(row)">审核</el-button>
+                <el-button size="small" @click="onReview(row)">审核</el-button>
               </span>
             </el-table-column>
           </el-table>

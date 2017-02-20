@@ -4,72 +4,50 @@
       <el-col :sm="24" :md="20" :lg="18">
         <el-card class="box-card step-card">
           <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
-          <el-steps :space="380" :active="activeStep">
-            <el-step title="选择设备类型" :description="deviceType.label"></el-step>
-            <el-step title="设备搜索及操作"></el-step>
-          </el-steps>
-          <el-row>
-            <el-col :span="16" :offset="4">
-              <div class="step step-1" v-show="activeStep === 1">
-                <el-form label-position="left" label-width="100px">
-                  <el-form-item label="设备类型">
-                    <el-select v-model="deviceType" @change="onDeviceTypeChange">
-                      <el-option v-for="device in deviceList"
-                        :label="device.label"
-                        :value="device"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-form>
-                <div class="btn-area">
-                  <el-button type="primary" :disabled="!deviceType.value" @click="activeStep++" class="md">下一步</el-button>
-                </div>
-              </div>
-              <div class="step step-2" v-show="activeStep === 2">
-                <el-form label-position="left" label-width="80px" class="advance-search-form" :inline="true">
-                  <div class="form-block">
-                    <el-form-item v-for="key in searchKeys" :label="key.label">
-                      <el-input
-                        v-model="key.value"
-                        size="small"></el-input>
-                    </el-form-item>
-                  </div>
-                  <el-form-item>
-                    <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
-                    <el-button @click="onEmptySearch" size="small">清空</el-button>
-                  </el-form-item>
-                </el-form>
+          <el-form ref="onForm" label-width="100px">
+            <el-form-item label="设备类型">
+              <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
+                <el-radio v-for="device in deviceList" :label="device.value">{{device.label}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-form>
+              
+          <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
+            <div class="form-block">
+              <el-form-item v-for="key in searchKeys" :label="key.label">
+                <el-input v-model="key.value" size="small"></el-input>
+              </el-form-item>
+            </div>
+            <el-form-item>
+              <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
+              <el-button @click="onEmptySearch" size="small">清空</el-button>
+            </el-form-item>
+          </el-form>
 
-                <el-table
-                  :data="deviceTable"
-                  border
-                  v-loading.body="deviceLoading"
-                  style="width: 100%; min-width: 460px">
-                  <el-table-column
-                    prop="name"
-                    label="设备"></el-table-column>
-                  <el-table-column
-                    prop="number"
-                    label="编号"></el-table-column>
-                  <el-table-column
-                    prop="other"
-                    label="其他"></el-table-column>
-                  <el-table-column
-                    inline-template
-                    :context="_self"
-                    label="操作">
-                    <span>
-                      <el-button size="small" @click="onRetrieve(row)">出库</el-button>
-                      <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button>
-                    </span>
-                  </el-table-column>
-                </el-table>
-                <br>
-                <div class="btn-area">
-                  <el-button class="md" @click="activeStep--">上一步</el-button>
-                </div>
-              </div>
-            </el-col>
-          </el-row>
+          <el-table
+            :data="deviceTable"
+            border
+            v-loading.body="deviceLoading"
+            style="width: 100%; min-width: 460px">
+            <el-table-column
+              prop="name"
+              label="设备"></el-table-column>
+            <el-table-column
+              prop="number"
+              label="编号"></el-table-column>
+            <el-table-column
+              prop="other"
+              label="其他"></el-table-column>
+            <el-table-column
+              inline-template
+              :context="_self"
+              label="操作">
+              <span>
+                <el-button size="small" @click="onRetrieve(row)">出库</el-button>
+                <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button>
+              </span>
+            </el-table-column>
+          </el-table>
         </el-card>
       </el-col>
     </el-row>
