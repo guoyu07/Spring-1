@@ -40,6 +40,12 @@ const routes = [{
     }, {
       path: '/equipment/check',
       component: require('./components/equipment/pages/check.vue')
+    }, {
+      path: '/equipment/review',
+      component: require('./components/equipment/pages/review.vue')
+    }, {
+      path: '/equipment/confirm',
+      component: require('./components/equipment/pages/confirm.vue')
     }]
   }, {
     path: '/system',

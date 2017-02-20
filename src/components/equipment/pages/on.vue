@@ -143,153 +143,6 @@
         </el-card>
       </el-col>
     </el-row>
-    <br>
-    <el-row>
-      <el-col :sm="24" :md="24" :lg="20">
-        <el-card class="box-card step-card">
-          <h3><i class="el-icon-fa-gavel"></i> 审核流程</h3>
-          <el-steps :space="380" :active="reviewStep">
-            <el-step title="上架操作审核"></el-step>
-            <el-step title="上架任务确认"></el-step>
-          </el-steps>
-          <el-row>
-            <el-col :md="24" :lg="{ span: 20, offset: 2}">
-              <div class="step step-2" v-show="reviewStep === 1">
-                <el-table
-                  :data="selectedDevices"
-                  style="width: 100%">
-                  <el-table-column type="expand">
-                    <template scope="props">
-                      <table class="device-data-table">
-                        <tbody>
-                          <tr>
-                            <td><b>是否安装代理</b></td>
-                            <td>{{ props.row.agent ? '是' : '否' }}</td>
-                            <td><b>操作系统</b></td>
-                            <td>{{ props.row.os }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>应用服务</b></td>
-                            <td>{{ props.row.app }}</td>
-                            <td><b>数据库</b></td>
-                            <td>{{ props.row.db }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>机房</b></td>
-                            <td>{{ props.row.room }}</td>
-                            <td><b>机柜</b></td>
-                            <td>{{ props.row.cabinet }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>U 位</b></td>
-                            <td>{{ props.row.ubit }}</td>
-                            <td><b>IP</b></td>
-                            <td>{{ props.row.ip }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>端口</b></td>
-                            <td>{{ props.row.port }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="name"
-                    label="设备"></el-table-column>
-                  <el-table-column
-                    prop="number"
-                    label="编号"></el-table-column>
-                  <el-table-column
-                    prop="other"
-                    label="其他"></el-table-column>
-                  <el-table-column
-                    label="操作"
-                    inline-template
-                    :context="_self">
-                    <template>
-                      <el-button size="small" type="danger" @click="onReject(row)">驳回</el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-                <br>
-                <div class="btn-area">
-                  <el-button type="primary" class="md" @click="reviewStep++">下一步</el-button>
-                </div>
-              </div>
-              <div class="step step-2" v-show="reviewStep === 2">
-                <el-table
-                  :data="selectedDevices"
-                  @selection-change="onSelectRow2"
-                  style="width: 100%">
-                  <el-table-column
-                    type="selection"
-                    width="55"></el-table-column>
-                  <el-table-column
-                    type="expand">
-                    <template scope="props">
-                      <table class="device-data-table">
-                        <tbody>
-                          <tr>
-                            <td><b>是否安装代理</b></td>
-                            <td>{{ props.row.agent ? '是' : '否' }}</td>
-                            <td><b>操作系统</b></td>
-                            <td>{{ props.row.os }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>应用服务</b></td>
-                            <td>{{ props.row.app }}</td>
-                            <td><b>数据库</b></td>
-                            <td>{{ props.row.db }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>机房</b></td>
-                            <td>{{ props.row.room }}</td>
-                            <td><b>机柜</b></td>
-                            <td>{{ props.row.cabinet }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>U 位</b></td>
-                            <td>{{ props.row.ubit }}</td>
-                            <td><b>IP</b></td>
-                            <td>{{ props.row.ip }}</td>
-                          </tr>
-                          <tr>
-                            <td><b>端口</b></td>
-                            <td>{{ props.row.port }}</td>
-                          </tr>
-                        </tbody>
-                      </table>
-                    </template>
-                  </el-table-column>
-                  <el-table-column
-                    prop="name"
-                    label="设备"></el-table-column>
-                  <el-table-column
-                    prop="number"
-                    label="编号"></el-table-column>
-                  <el-table-column
-                    prop="other"
-                    label="其他"></el-table-column>
-                  <el-table-column
-                    label="操作"
-                    inline-template
-                    :context="_self">
-                    <template>
-                      <el-button size="small" @click="onPrint(row)">打印</el-button>
-                    </template>
-                  </el-table-column>
-                </el-table>
-                <br>
-                <div class="btn-area clear">
-                  <el-button class="fl" @click="reviewStep--">上一步</el-button>
-                  <el-button class="fr" type="primary" :disabled="!selectedDevices2.length" @click="onSubmit">提交完成工单</el-button>
-                </div>
-              </div>
-          </el-row>
-        </el-card>
-      </el-col>
-    </el-row>
     <deploy-view
       :deploy-view-data="deployViewData"
       :selected-devices="selectedDevices"
@@ -332,9 +185,7 @@
         deployViewData: {
           visible: false
         },
-        reviewStep: 1,
-        selectedDevices: [],
-        selectedDevices2: []
+        selectedDevices: []
       }
     },
 
@@ -365,32 +216,6 @@
 
       onSelectRow (val) {
         this.selectedDevices = val
-      },
-
-      onReject (device) {
-        this.$prompt(`请输入对${device.name}的驳回意见：`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消'
-        }).then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '已驳回！'
-          })
-        })
-      },
-
-      onSelectRow2 (val) {
-        console.log(val)
-        this.selectedDevices2 = val
-      },
-
-      onPrint (device) {
-        console.log(device.name)
-      },
-
-      onSubmit () {
-        console.log(this.selectedDevices2)
-        this.$message.success('成功提交已选工单！')
       }
     },
 
