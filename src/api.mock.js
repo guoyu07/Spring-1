@@ -231,6 +231,37 @@ const apis = [{
   }]
 }, {
   method: 'GET',
+  url: '/idclist',
+  response: {
+    idclist: [{
+      label: 'idc11',
+      value: 'idc1'
+    }, {
+      label: 'idc22',
+      value: 'idc2'
+    }, {
+      label: 'idc33',
+      value: 'idc1z'
+    }, {
+      label: 'idc44',
+      value: 'idc1zzz'
+    }],
+    idcGroupList: [{
+      label: '集群1',
+      value: 'idcGroup1'
+    }, {
+      label: '集群2',
+      value: 'idcGroup2'
+    }, {
+      label: '集群3',
+      value: 'idcGroup1z'
+    }, {
+      label: '集群4',
+      value: 'idcGroup1zzz'
+    }]
+  }
+}, {
+  method: 'GET',
   url: '/applylist',
   response: [{
     applyType: '新建应用',
