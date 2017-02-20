@@ -1,125 +1,94 @@
 <template>
-  <el-row>
-    <el-col :lg="24">
-      <el-card class="box-card">
-        <h3>下架流程</h3>
-        <el-form ref="offForm" label-width="100px">
-          <el-form-item label="设备类型">
-            <!-- <el-select v-model="deviceType">
-              <el-option v-for="device in deviceList"
-                :label="device.label"
-                :value="device"></el-option>
-            </el-select> -->
-            <el-radio-group v-model="deviceType">
-              <el-radio v-for="device in deviceList" :label="device.value">{{device.label}}</el-radio>
-            </el-radio-group>
-          </el-form-item>
-        </el-form>
-        <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
-          <div class="form-block">
-            <el-form-item v-for="key in searchKeys" :label="key.label">
-              <el-input v-model="key.value" size="small"></el-input>
+  <div class="offshelf">
+    <el-row>
+      <el-col :lg="24">
+        <el-card class="box-card">
+          <h3>下架流程</h3>
+          <el-form ref="offForm" label-width="100px">
+            <el-form-item label="设备类型">
+              <!-- <el-select v-model="deviceType">
+                <el-option v-for="device in deviceList"
+                  :label="device.label"
+                  :value="device"></el-option>
+              </el-select> -->
+              <el-radio-group v-model="deviceType">
+                <el-radio v-for="device in deviceList" :label="device.value">{{device.label}}</el-radio>
+              </el-radio-group>
             </el-form-item>
+          </el-form>
+          <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
+            <div class="form-block">
+              <el-form-item v-for="key in searchKeys" :label="key.label">
+                <el-input v-model="key.value" size="small"></el-input>
+              </el-form-item>
+            </div>
+            <el-form-item>
+              <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
+              <el-button @click="onEmptySearch" size="small">清空</el-button>
+            </el-form-item>
+          </el-form>
+          <el-table
+            :data="deviceTable"
+            border
+            v-loading.body="deviceLoading"
+            @selection-change="handleSelectionChange"
+            style="width: 100%; min-width: 460px">
+            <el-table-column
+              type="selection"
+              width="55">
+            </el-table-column>
+            <el-table-column
+              prop="name"
+              label="设备"></el-table-column>
+            <el-table-column
+              prop="number"
+              label="编号"></el-table-column>
+            <el-table-column
+              prop="other"
+              label="其他"></el-table-column>
+            <!-- <el-table-column
+              inline-template
+              :context="_self"
+              label="操作">
+              <span>
+                <el-button type="text" @click="onDeploy(row)">下架</el-button>
+              </span>
+            </el-table-column> -->
+          </el-table>
+          <div class="btn-area" style="margin: 15px 0">
+            <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至下架</el-button>
           </div>
-          <el-form-item>
-            <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
-            <el-button @click="onEmptySearch" size="small">清空</el-button>
-          </el-form-item>
-        </el-form>
-        <el-table
-          :data="deviceTable"
-          border
-          v-loading.body="deviceLoading"
-          @selection-change="handleSelectionChange"
-          style="width: 100%; min-width: 460px">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="设备"></el-table-column>
-          <el-table-column
-            prop="number"
-            label="编号"></el-table-column>
-          <el-table-column
-            prop="other"
-            label="其他"></el-table-column>
-          <!-- <el-table-column
-            inline-template
-            :context="_self"
-            label="操作">
-            <span>
-              <el-button type="text" @click="onDeploy(row)">下架</el-button>
-            </span>
-          </el-table-column> -->
-        </el-table>
-        <div class="btn-area">
-          <el-button type="info" size="small" @click="onAddtoOff">添加至下架</el-button>
-        </div>
-        <h5>下架列表</h5>
-        <el-table
-          :data="offTabel"
-          border
-          style="width: 100%; min-width: 460px">
-          <el-table-column
-            prop="name"
-            label="设备"></el-table-column>
-          <el-table-column
-            prop="number"
-            label="编号"></el-table-column>
-          <el-table-column
-            prop="other"
-            label="其他"></el-table-column>
-          <el-table-column
-            inline-template
-            :context="_self"
-            label="操作">
-            <span>
-              <el-button type="text" @click="onRemove(row)">移除</el-button>
-            </span>
-          </el-table-column>
-        </el-table>
-        <div class="btn-area">
-          <el-button type="primary" @click="onConfirmOff">确认下架</el-button>
-          <!-- <el-button @click="onReject">驳回</el-button> -->
-        </div>
-      </el-card>
-    </el-col>
-    <el-col :lg="24">
-      <el-card class="box-card">
-        <h3>审核流程</h3>
-        <el-table
-          :data="deviceTable"
-          border
-          v-loading.body="deviceLoading"
-          @selection-change="handleSelectionChange"
-          style="width: 100%; min-width: 460px">
-          <el-table-column
-            type="selection"
-            width="55">
-          </el-table-column>
-          <el-table-column
-            prop="name"
-            label="设备"></el-table-column>
-          <el-table-column
-            prop="number"
-            label="编号"></el-table-column>
-          <el-table-column
-            prop="other"
-            label="其他"></el-table-column>
-          <el-table-column
-            inline-template
-            :context="_self"
-            label="操作">
-            <span>
-              <el-button type="text" @click="onReview(row)">审核</el-button>
-            </span>
-          </el-table-column>
-        </el-table>
-      </el-card>
-    </el-col>
-  </el-row>
+          <h5>下架列表</h5>
+          <el-table
+            :data="offTabel"
+            border
+            style="width: 100%; min-width: 460px">
+            <el-table-column
+              prop="name"
+              label="设备"></el-table-column>
+            <el-table-column
+              prop="number"
+              label="编号"></el-table-column>
+            <el-table-column
+              prop="other"
+              label="其他"></el-table-column>
+            <el-table-column
+              inline-template
+              :context="_self"
+              label="操作">
+              <span>
+                <el-button type="text" @click="onRemove(row)">移除</el-button>
+              </span>
+            </el-table-column>
+          </el-table>
+          <div class="btn-area" style="margin: 25px 0 12px">
+            <el-button class="md" type="primary" @click="onConfirmOff">确认下架</el-button>
+            <!-- <el-button @click="onReject">驳回</el-button> -->
+          </div>
+        </el-card>
+      </el-col>
+    </el-row>
+  </div>
 </template>
 
 <script>
@@ -218,15 +187,3 @@
     }
   }
 </script>
-<style scoped>
-  .box-card {
-    min-height: 880px;
-  }
-  .box-card {
-    margin: 20px 0;
-  }
-  .btn-area {
-    text-align: center;
-    margin: 15px 0;
-  }
-</style>

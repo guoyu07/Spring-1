@@ -40,6 +40,15 @@ const routes = [{
     }, {
       path: '/equipment/check',
       component: require('./components/equipment/pages/check.vue')
+    }, {
+      path: '/equipment/on-review',
+      component: require('./components/equipment/pages/onReview.vue')
+    }, {
+      path: '/equipment/on-confirm',
+      component: require('./components/equipment/pages/onConfirm.vue')
+    }, {
+      path: '/equipment/off-review',
+      component: require('./components/equipment/pages/offReview.vue')
     }]
   }, {
     path: '/system',
