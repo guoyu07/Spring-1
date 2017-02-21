@@ -11,24 +11,19 @@ export default {
 
   // 往登录 URL 发起请求并保存返回的 token
   login (context, creds, redirect) {
-    // 这里应该发起请求
-    // 暂时去掉
-    // context.$http.post(LOGIN_URL, creds, (data) => {
-    // window.localStorage.setItem('id_token', data.id_token)
-    window.localStorage.setItem('id_token', creds.username)
-
-    this.authenticated = true
-
-    // 跳转至指定目的
-    if (redirect) {
-      router.replace(redirect)
-    }
-
-    // 发射 login 事件
-    eventHub.$emit('login')
-    // }).error((err) => {
-    //   context.error = err
-    // })
+    console.log(creds)
+    context.http.post('', creds).then(response => {
+      window.localStorage.setItem('id_token', response.user)
+      this.authenticated = true
+      // 跳转至指定目的
+      if (redirect) {
+        router.replace(redirect)
+      }
+      // 发射 login 事件
+      eventHub.$emit('login')
+    }, response => {
+      // error callback
+    })
   },
 
   logout () {
@@ -44,12 +39,12 @@ export default {
     } else {
       this.authenticated = false
     }
-  },
-
-  // 供需要验证头部的请求使用
-  getAuthHeader () {
-    return {
-      'Authorization': 'Bearer' + window.localStorage.getItem('id_token')
-    }
   }
+
+  // // 供需要验证头部的请求使用
+  // getAuthHeader () {
+  //   return {
+  //     'Authorization': 'Bearer' + window.localStorage.getItem('id_token')
+  //   }
+  // }
 }

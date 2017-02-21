@@ -19,7 +19,7 @@
     .el-row {
       margin-bottom: 20px;
     }
-    
+
     .login-btn {
       width: 100%;
       font-weight: bold;
@@ -57,7 +57,7 @@
           </el-col>
         </el-row>
         <el-row>
-          <el-col  :span="24">
+          <el-col :span="24">
             <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 陆</el-button>
           </el-col>
         </el-row>
@@ -92,12 +92,16 @@
     methods: {
       submit () {
         const credentials = {
-          username: this.credentials.username,
-          password: this.credentials.password
+          action: 'login',
+          method: 'POST',
+          data: {
+            userId: this.credentials.username,
+            password: this.credentials.password
+          }
         }
         // 传入组件的上下文、验证信息及跳转目地
         // 以便 auth.login 发起登录请求
-        auth.login(this, credentials, '/')
+        auth.login(this, this.parseData(credentials), '/')
       }
     },
 

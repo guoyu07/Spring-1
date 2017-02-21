@@ -5,22 +5,22 @@
         <el-card class="box-card step-card">
           <h3>入库流程</h3>
           <el-steps :space="380" :active="activeStep">
-            <el-step title="选择设备类型" :description="deviceValue.label"></el-step>
+            <el-step title="选择设备类型" :description="deviceType.name"></el-step>
             <el-step title="设备录入"></el-step>
           </el-steps>
           <el-col>
             <div class="step step-1" v-show="activeStep === 1">
               <el-form label-position="left" label-width="100px">
                 <el-form-item label="设备类型">
-                  <el-select v-model="deviceValue">
+                  <el-select v-model="deviceType">
                     <el-option v-for="device in deviceList"
-                      :label="device.label"
+                      :label="device.name"
                       :value="device"></el-option>
                   </el-select>
                 </el-form-item>
               </el-form>
               <div class="btn-area">
-                <el-button type="primary" class="md" @click="activeStep++" :disabled="!deviceValue.value">下一步</el-button>
+                <el-button type="primary" class="md" @click="activeStep++" :disabled="!deviceType.name">下一步</el-button>
               </div>
             </div>
             <div class="step step-2" v-show="activeStep === 2">
@@ -28,7 +28,7 @@
                 <el-button @click="activeStep--" class="md">上一步</el-button>
               </div>
               <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-                <el-button size="small" @click="onAdd" class="margin-bottom" icon="plus">增加{{ deviceValue.label }}</el-button>
+                <el-button size="small" @click="onAdd" class="margin-bottom" icon="plus">增加{{ deviceType.name }}</el-button>
                 <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                   <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                     <div class="form-block">
@@ -233,7 +233,7 @@
       // }
       return {
         activeStep: 1,
-        deviceValue: {},
+        deviceType: {},
         instockForm: {
           remark: '',
           data: [{
@@ -426,19 +426,7 @@
           label: '空闲',
           value: 'free'
         }],
-        deviceList: [{ // 设备类型
-          label: '服务器',
-          value: 'server'
-        }, {
-          label: '网络设备',
-          value: 'network'
-        }, {
-          label: '存储设备',
-          value: 'storage'
-        }, {
-          label: '其他外设',
-          value: 'others'
-        }],
+        deviceList: [],
         deviceSearch: '',
         deviceTable: [],
         deviceViewData: {
@@ -459,8 +447,21 @@
         // }
       }
     },
-
+    created () {
+      this.renderDeviceList()
+    },
     methods: {
+      renderDeviceList () {
+        var renderDeviceListData = {
+          action: 'import/device/items',
+          method: 'GET',
+          data: {}
+        }
+        this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
+          console.log(res)
+          this.deviceList = res.data.data.list
+        })
+      },
       handleRemove (tab) {
         this.instockForm.data.splice(tab.index, 1)
         // console.log(tab.index, this.instockForm.data)
