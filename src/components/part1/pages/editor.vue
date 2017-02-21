@@ -1,3 +1,12 @@
+<style lang="less" scoped>
+  .config-options {
+    .el-input {
+      width: 180px;
+      display: inline-block;
+    }
+  }
+</style>
+
 <template>
   <div class="editor-content">
     <el-button @click="$router.go(-1)">返回</el-button>
@@ -19,14 +28,22 @@
       </el-col>
       <el-col :span="4" v-if="item.type === 'radiobox'">
         <el-popover placement="bottom" title="单选配置" trigger="click">
-          <p>123</p>
           <el-button slot="reference" style="width: 100%">配置选项</el-button>
+          <div v-for="(op, opIndex) of item.value.value" class="config-options">
+            <el-input v-model="formConf[index].value.value[opIndex]" size="mini" placeholder="输入选项label" />
+            <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index, opIndex)" />
+          </div>
+          <el-button size="mini" icon="plus" type="primary" @click="opAddBtn(index)" />
         </el-popover>
       </el-col>
       <el-col :span="4" v-if="item.type === 'checkbox'">
         <el-popover placement="bottom" title="多选配置" trigger="click">
-          <p>123</p>
           <el-button slot="reference" style="width: 100%">配置选项</el-button>
+          <div v-for="(op, opIndex) of item.value.value" class="config-options">
+            <el-input v-model="formConf[index].value.value[opIndex]" size="mini" placeholder="输入选项label" />
+            <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index, opIndex)" />
+          </div>
+          <el-button size="mini" icon="plus" type="primary" @click="opAddBtn(index)" />
         </el-popover>
       </el-col>
       <el-col :span="4">
@@ -90,7 +107,7 @@ export default {
             description: '',
             value: {
               checkboxTypeCode: 'radioboxOne',
-              value: ['选项 1', '选项 3']
+              value: ['单选 1', '单选 3']
             }
           })
           break
@@ -103,7 +120,7 @@ export default {
             description: '',
             value: {
               checkboxTypeCode: 'checkboxOne',
-              value: ['选项 1', '选项 3']
+              value: ['多选 1', '多选 3']
             }
           })
           break
@@ -113,6 +130,12 @@ export default {
     },
     delBtn (index) {
       this.formConf.splice(index, 1)
+    },
+    opDelBtn (index, opIndex) {
+      this.formConf[index].value.value.splice(opIndex, 1)
+    },
+    opAddBtn (index) {
+      this.formConf[index].value.value.push('')
     }
   }
 }

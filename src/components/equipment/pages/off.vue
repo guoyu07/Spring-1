@@ -1,7 +1,7 @@
 <template>
   <div class="offshelf">
     <el-row>
-      <el-col :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>下架流程</h3>
           <el-form ref="offForm" label-width="100px">
@@ -77,7 +77,7 @@
               :context="_self"
               label="操作">
               <span>
-                <el-button type="text" @click="onRemove(row)">移除</el-button>
+                <el-button size="small" type="warning" @click="onRemove(row)">移除</el-button>
               </span>
             </el-table-column>
           </el-table>
@@ -148,7 +148,7 @@
         for (const selection of this.multipleSelection) {
           if (!this.offTabel.includes(selection)) {
             if (this.multipleSelection.length > 5) {
-              this.$message.warning('下架设备最多5个')
+              this.$message.warning('下架设备最多 5 个！')
             } else {
               this.offTabel = [...this.offTabel, selection]
             }
