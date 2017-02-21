@@ -39,7 +39,11 @@
       <el-col :span="4" v-if="item.type === 'checkbox'">
         <el-popover placement="bottom" title="多选配置" trigger="click">
           <el-button slot="reference" style="width: 100%">配置选项</el-button>
-          <p>123</p>
+          <div v-for="(op, opIndex) of item.value.value" class="config-options">
+            <el-input v-model="formConf[index].value.value[opIndex]" size="mini" placeholder="输入选项label" />
+            <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index, opIndex)" />
+          </div>
+          <el-button size="mini" icon="plus" type="primary" @click="opAddBtn(index)" />
         </el-popover>
       </el-col>
       <el-col :span="4">
@@ -103,7 +107,7 @@ export default {
             description: '',
             value: {
               checkboxTypeCode: 'radioboxOne',
-              value: ['选项 1', '选项 3']
+              value: ['单选 1', '单选 3']
             }
           })
           break
@@ -116,7 +120,7 @@ export default {
             description: '',
             value: {
               checkboxTypeCode: 'checkboxOne',
-              value: ['选项 1', '选项 3']
+              value: ['多选 1', '多选 3']
             }
           })
           break
