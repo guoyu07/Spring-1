@@ -1,95 +1,79 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="24" class="step-card">
-        <el-card class="box-card step-card">
+      <el-col :sm="24" :md="24">
+        <el-card class="box-card">
           <h3>入库流程</h3>
-          <el-steps :space="380" :active="activeStep">
-            <el-step title="选择设备类型" :description="deviceType.name"></el-step>
-            <el-step title="设备录入"></el-step>
-          </el-steps>
-          <el-col>
-            <div class="step step-1" v-show="activeStep === 1">
-              <el-form label-position="left" label-width="100px">
-                <el-form-item label="设备类型">
-                  <el-select v-model="deviceType">
-                    <el-option v-for="device in deviceList"
-                      :label="device.name"
-                      :value="device"></el-option>
-                  </el-select>
-                </el-form-item>
-              </el-form>
-              <div class="btn-area">
-                <el-button type="primary" class="md" @click="renderFormData" :disabled="!deviceType.name">下一步</el-button>
-              </div>
-            </div>
-            <div class="step step-2" v-show="activeStep === 2">
-              <div class="btn-area">
-                <el-button @click="activeStep--" class="md">上一步</el-button>
-              </div>
-              <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-                <el-button size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加{{ deviceType.name }}</el-button>
-                <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
-                  <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
-                    <div class="form-block" v-for="formBlcok in formData">
-                      <h4>{{formBlcok.name}}</h4>
-                      <el-form-item
-                        v-for="formItem in formBlcok.value"
-                        :prop="'data.' + index + '.' + formItem.id"
-                        :label="formItem.name"
-                        :rules="{
-                          type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : 'string'), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur'
-                        }">
-                        <el-input
-                          v-if="formItem.value.type === 'str'"
-                          v-model="item[formItem.id]">
-                        </el-input>
+          <el-form label-position="left" label-width="100px">
+            <el-form-item label="设备类型">
+              <el-radio-group v-model="deviceType" @change="renderFormData">
+                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-form>
+          <div class="step step-2">
+            <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
+              <el-button size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
+              <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
+                <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
+                  <div class="form-block" v-for="formBlcok in formData">
+                    <h4>{{formBlcok.name}}</h4>
+                    <el-form-item
+                      v-for="formItem in formBlcok.value"
+                      :prop="'data.' + index + '.' + formItem.id"
+                      :label="formItem.name"
+                      :rules="{
+                        type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : 'string'), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur'
+                      }">
+                      <el-input
+                        v-if="formItem.value.type === 'str'"
+                        v-model="item[formItem.id]">
+                      </el-input>
 
-                        <el-input-number
-                          v-else-if="formItem.value.type === 'int'"
-                          v-model="item[formItem.id]" :min="0">
-                        </el-input-number>
+                      <el-input-number
+                        v-else-if="formItem.value.type === 'int'"
+                        v-model="item[formItem.id]" :min="0">
+                      </el-input-number>
 
-                        <el-select
-                          v-else-if="formItem.value.type === 'enum'"
-                          v-model="item[formItem.id]">
-                          <el-option v-for="option in formItem.value.regex"
-                            :label="option"
-                            :value="option"></el-option>
-                        </el-select>
+                      <el-select
+                        v-else-if="formItem.value.type === 'enum'"
+                        v-model="item[formItem.id]">
+                        <el-option v-for="option in formItem.value.regex"
+                          :label="option"
+                          :value="option"></el-option>
+                      </el-select>
 
-                        <el-select
-                          v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                          v-model="item[formItem.id]"
-                          :multiple="formItem.value.type === 'FKs'">
-                          <el-option v-for="option in formItem.value.external"
-                            :label="option.name"
-                            :value="option.org_attr"></el-option>
-                        </el-select>
+                      <el-select
+                        v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
+                        v-model="item[formItem.id]"
+                        :multiple="formItem.value.type === 'FKs'">
+                        <el-option v-for="option in formItem.value.external"
+                          :label="option.name"
+                          :value="option.org_attr"></el-option>
+                      </el-select>
 
-                        <el-select
-                          v-else-if="formItem.value.type === 'arr'"
-                          v-model="item[formItem.id]"
-                          multiple
-                          filterable=""
-                          allow-create>
-                          <el-option value="">请创建</el-option>
-                        </el-select>
+                      <el-select
+                        v-else-if="formItem.value.type === 'arr'"
+                        v-model="item[formItem.id]"
+                        multiple
+                        filterable=""
+                        allow-create>
+                        <el-option value="">请创建</el-option>
+                      </el-select>
 
-                        <el-date-picker
-                          v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                          v-model="item[formItem.id]"
-                          :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                          placeholder="选择日期时间">
-                        </el-date-picker>
-                      </el-form-item>
-                    </div>
-                  </el-tab-pane>
-                </el-tabs>
-              </el-form>
-              <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')">确认</el-button>
-            </div>
-          </el-col>
+                      <el-date-picker
+                        v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
+                        v-model="item[formItem.id]"
+                        :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
+                        placeholder="选择日期时间">
+                      </el-date-picker>
+                    </el-form-item>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
+            </el-form>
+            <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')">确认</el-button>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -100,8 +84,7 @@
   export default {
     data () {
       return {
-        activeStep: 1,
-        deviceType: {},
+        deviceType: 'HOST',
         instockForm: {
           data: [{}]
         },
@@ -123,6 +106,7 @@
     },
     created () {
       this.renderDeviceList()
+      this.renderFormData()
     },
     methods: {
       renderDeviceList () { // 渲染设备类型
@@ -137,12 +121,11 @@
         })
       },
       renderFormData () { // 渲染表单数据
-        this.activeStep++
         const renderFromData = {
           action: 'cmdb/object/attr',
           method: 'GET',
           data: {
-            object_id: this.deviceType.object_id
+            object_id: this.deviceType
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
@@ -194,12 +177,25 @@
         })
       },
       onConfirm (formName) {
-        console.log(this.instockForm)
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log('submit!')
-            this.$router.replace('/')
-            this.$message.warning('提交成功！')
+            const postData = {
+              action: 'runtime/process/instances',
+              method: 'POST',
+              data: {
+                pkey: 'import_device',
+                form: {
+                  'object_list': this.instockForm.data,
+                  'object_id': this.deviceType
+                }
+              }
+            }
+            this.http.post('', this.parseData(postData)).then((res) => {
+              console.log(res)
+              this.$router.replace('/')
+              this.$message.warning('提交成功！')
+            })
           } else {
             console.log('error submit!!')
             this.$message.warning('表单未填写完整，提交失败！')
@@ -216,31 +212,8 @@
 </script>
 
 <style lang="less">
-  .step-card {
-
-    .el-select {
-      width: 100%;
-    }
-
-    .step {
-      margin: 24px 0;
-    }
-
-    .step-1 {
-      width: 400px;
-      margin: 0 auto;
-    }
-
-    .el-steps {
-      width: 400px;
-      margin-left: auto;
-      margin-right: auto;
-    }
-
-    .btn-area {
-      margin-bottom: 24px;
-      text-align: center;
-    }
+  .el-select, .el-input-number, .el-input, .el-date-editor.el-input {
+    width: 187px;
   }
   .form-title {
     margin-bottom: 15px;

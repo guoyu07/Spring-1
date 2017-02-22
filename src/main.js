@@ -27,9 +27,9 @@ const http = axios.create({
 
 auth.checkAuth()
 
-// const setConfigs = () => {
-//   Vue.http.headers.common['Authorization'] = auth.getAuthHeader()['Authorization']
-// }
+const setConfigs = () => {
+  Vue.http.headers.common['Authorization'] = auth.getAuthHeader()['Authorization']
+}
 
 // Ajax 全局配置
 // Vue.http.options.root = 'http://192.168.10.28:8002/api' // dev
@@ -79,7 +79,7 @@ Vue.prototype.parseData = (obj) => {
 
 // 当收听到 login 事件时
 eventHub.$on('login', () => {
-  // setConfigs()
+  setConfigs()
   axios.defaults.withCredentials = true
 })
 

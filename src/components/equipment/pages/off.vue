@@ -6,11 +6,6 @@
           <h3>下架流程</h3>
           <el-form ref="offForm" label-width="100px">
             <el-form-item label="设备类型">
-              <!-- <el-select v-model="deviceType">
-                <el-option v-for="device in deviceList"
-                  :label="device.label"
-                  :value="device"></el-option>
-              </el-select> -->
               <el-radio-group v-model="deviceType">
                 <el-radio v-for="device in deviceList" :label="device.value">{{device.label}}</el-radio>
               </el-radio-group>

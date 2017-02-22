@@ -39,12 +39,12 @@ export default {
     } else {
       this.authenticated = false
     }
-  }
+  },
 
-  // // 供需要验证头部的请求使用
-  // getAuthHeader () {
-  //   return {
-  //     'Authorization': 'Bearer' + window.localStorage.getItem('id_token')
-  //   }
-  // }
+  // 供需要验证头部的请求使用
+  getAuthHeader () {
+    return {
+      'Authorization': 'Bearer' + window.localStorage.getItem('id_token')
+    }
+  }
 }
