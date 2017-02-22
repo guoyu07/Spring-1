@@ -21,7 +21,7 @@ Vue.use(ElementUI)
 Vue.use(VueResource)
 const http = axios.create({
   baseURL: '/api/', // 使用了代理
-  timeout: 1000,
+  // timeout: 1000,
   headers: {'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'}
 })
 
@@ -58,6 +58,7 @@ http.interceptors.response.use(rs => {
 Vue.prototype.http = http
 
 Vue.prototype.parseData = (obj) => {
+  // qs.stringify(obj)
   const action = encodeURIComponent(obj.action)
   const result = `action=${action}&method=${obj.method}&data=`
   return result + encodeURI(JSON.stringify(obj.data))
