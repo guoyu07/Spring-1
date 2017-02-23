@@ -10,7 +10,7 @@
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+                <el-radio :disabled="instanceId !== ''" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
