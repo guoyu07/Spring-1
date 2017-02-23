@@ -1,20 +1,20 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="20" :lg="18">
+      <el-col :sm="24" :md="20" :lg="24">
         <el-card class="box-card step-card">
           <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
-              <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
-                <el-radio v-for="device in deviceList" :label="device.value">{{device.label}}</el-radio>
+              <el-radio-group v-model="deviceType">
+                <el-radio v-for="device in deviceList" :label="device">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
-              
+
           <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
             <div class="form-block">
-              <el-form-item v-for="key in searchKeys" :label="key.label">
+              <el-form-item v-for="key in searchKeys[deviceType.object_id]" :label="key.label">
                 <el-input v-model="key.value" size="small"></el-input>
               </el-form-item>
             </div>
@@ -90,20 +90,73 @@
         activeStep: 1,
         deviceType: {},
         deviceLoading: false,
-        deviceList: [{
-          label: '服务器',
-          value: 'server'
-        }, {
-          label: '网络设备',
-          value: 'network'
-        }, {
-          label: '存储设备',
-          value: 'storage'
-        }, {
-          label: '其他外设',
-          value: 'others'
-        }],
-        searchKeys: [],
+        deviceList: [],
+        searchKeys: {
+          HOST: [{
+            name: 'it-number',
+            label: 'IT 资产编号',
+            value: ''
+          }, {
+            name: 'order',
+            label: '订单号',
+            value: ''
+          }, {
+            name: 'manufacturer',
+            label: '制造商',
+            value: ''
+          }, {
+            name: 'model',
+            label: '型号',
+            value: ''
+          }, {
+            name: 'cpu',
+            label: 'CPU',
+            value: ''
+          }, {
+            name: 'storage',
+            label: '内存',
+            value: ''
+          }, {
+            name: '所属应用服务',
+            label: 'app',
+            value: ''
+          }, {
+            name: 'ip',
+            label: 'IP',
+            value: ''
+          }, {
+            name: 'os',
+            label: 'OS',
+            value: ''
+          }],
+          netd: [{
+            name: '网络设备',
+            label: '网络设备',
+            value: ''
+          }, {
+            name: 'os',
+            label: 'OS',
+            value: ''
+          }],
+          storage: [{
+            name: '存储',
+            label: '存储',
+            value: ''
+          }, {
+            name: 'os',
+            label: 'OS',
+            value: ''
+          }],
+          idcrack: [{
+            name: '其他',
+            label: '其他',
+            value: ''
+          }, {
+            name: 'os',
+            label: 'OS',
+            value: ''
+          }]
+        },
         deviceTable: [],
         retrieveViewData: {
           visible: false,
@@ -117,6 +170,10 @@
       }
     },
 
+    created () {
+      this.renderDeviceList()
+    },
+
     watch: {
       activeStep () {
         this.deviceTable = []
@@ -125,6 +182,19 @@
     },
 
     methods: {
+      renderDeviceList () { // 渲染设备类型
+        var renderDeviceListData = {
+          action: 'import/device/items',
+          method: 'GET',
+          data: {}
+        }
+        this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
+          console.log(res)
+          this.deviceList = res.data.data.list
+          this.deviceType = this.deviceList[0]
+        })
+      },
+
       onDeviceTypeChange () {
         this.$http.get(`/searchKeys/${this.deviceType.value}`).then((res) => {
           console.log(res)
