@@ -145,12 +145,12 @@
       },
 
       onSearchDevices (page = 1) {
-        this.deviceLoading = true
         const searchData = this.filterObj(this.searchKeys)
         if (this.isEmptyObj(searchData)) {
           this.$message.info('搜索条件不能为空')
           return false
         }
+        this.deviceLoading = true
         var searchDeviceData = {
           action: `/object/${this.deviceType}/instance/_search`,
           method: 'POST',
