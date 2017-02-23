@@ -47,9 +47,9 @@
                         v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
                         v-model="item[formItem.id]"
                         :multiple="formItem.value.type === 'FKs'">
-                        <el-option v-for="option in formItem.value.external"
+                        <el-option v-for="option in formItem.value.object_list"
                           :label="option.name"
-                          :value="option.org_attr"></el-option>
+                          :value="option.instanceId"></el-option>
                       </el-select>
 
                       <el-select
@@ -211,7 +211,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   .el-select, .el-input-number, .el-input, .el-date-editor.el-input {
     width: 187px;
   }
