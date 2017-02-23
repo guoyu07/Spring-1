@@ -285,12 +285,13 @@
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          // this.onSearchDevices(1, 'like')
-          this.$message({
-            type: 'success',
-            message: `已成功将设备「${device.name}」出库至${location}！`
+          this.$notify({
+            title: '成功',
+            message: `已成功将设备「${device.name}」出库至${location}！`,
+            type: 'success'
           })
           this.retrieveViewData.visible = false
+          this.deviceViewData.location = ''
         })
       },
 

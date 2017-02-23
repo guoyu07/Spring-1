@@ -6,17 +6,17 @@
           class="box-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3>入库流程</h3>
+          <h3>{{ instanceId ? '更改信息' : '入库流程'}}</h3>
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+                <el-radio :disabled="instanceId" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-              <el-button size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
+              <el-button v-if="!instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
               <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                 <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                   <div class="form-block" v-for="formBlcok in formData">
@@ -88,6 +88,7 @@
     data () {
       return {
         loading: false,
+        instanceId: '',
         deviceType: '',
         instockForm: {
           data: [{}]
@@ -112,6 +113,10 @@
     created () {
       this.renderDeviceList()
       this.renderFormData()
+      if (this.$route.query.instanceId) {
+        this.instanceId = this.$route.query.instanceId
+        // todo: 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]；并返回 设备类型
+      }
     },
     methods: {
       renderDeviceList () { // 渲染设备类型

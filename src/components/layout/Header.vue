@@ -2,7 +2,7 @@
   @import url("../../assets/css/variables");
   .header {
     position: fixed;
-    z-index: @god;
+    z-index: @flying;
 
     .logo {
       font-size: 16px;
