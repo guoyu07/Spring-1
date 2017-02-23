@@ -10,7 +10,7 @@
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio :disabled="instanceId" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -112,10 +112,10 @@
     },
     created () {
       this.renderDeviceList()
-      this.renderFormData()
+      // this.renderFormData()
       if (this.$route.query.instanceId) {
         this.instanceId = this.$route.query.instanceId
-        // todo: 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]；并返回 设备类型
+        // TODO: 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]；并返回 设备类型
       }
     },
     methods: {
