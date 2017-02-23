@@ -57,11 +57,28 @@ http.interceptors.response.use(rs => {
 
 Vue.prototype.http = http
 
-Vue.prototype.parseData = (obj) => {
+Vue.prototype.parseData = obj => {
   // qs.stringify(obj)
   const action = encodeURIComponent(obj.action)
   const result = `action=${action}&method=${obj.method}&data=`
   return result + encodeURI(JSON.stringify(obj.data))
+}
+
+Vue.prototype.filterObj = obj => { // 筛选出有值的对象属性及其值
+  let data = {}
+  for (const key in obj) {
+    if (obj[key]) {
+      data[key] = obj[key]
+    }
+  }
+  return data
+}
+
+Vue.prototype.isEmptyObj = obj => { // 判断是不是没有属性的空对象 {} => true {xx: 'xxx'} => false
+  for (const key in obj) {
+    return false
+  }
+  return true
 }
 
 // api mocking
