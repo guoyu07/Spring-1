@@ -89,6 +89,7 @@
           data: [{}]
         },
         deviceList: [],
+        deviceListStructure: {},
         formData: {},
         deviceSearch: '',
         deviceTable: [],
@@ -119,6 +120,9 @@
           console.log(res)
           this.deviceList = res.data.data.list
           this.deviceType = this.deviceList[0].object_id
+          this.deviceList.map(item => {
+            this.deviceListStructure[item.object_id] = item.pkey
+          })
         })
       },
       renderFormData () { // 渲染表单数据
@@ -185,7 +189,7 @@
               action: 'runtime/process/instances',
               method: 'POST',
               data: {
-                pkey: 'import_device',
+                pkey: this.deviceListStructure[this.deviceType],
                 form: {
                   'object_list': this.instockForm.data,
                   'object_id': this.deviceType

@@ -148,6 +148,7 @@
         deviceType: '',
         deviceLoading: false,
         deviceList: [],
+        deviceListStructure: {},
         searchKeys: {},
         searchKeyList: [],
         deviceTable: [],
@@ -177,7 +178,7 @@
     methods: {
       renderDeviceList () { // 渲染设备类型
         var renderDeviceListData = {
-          action: 'import/device/items',
+          action: 'export/device/items',
           method: 'GET',
           data: {}
         }
@@ -185,6 +186,9 @@
           console.log(res)
           this.deviceList = res.data.data.list
           this.deviceType = this.deviceList[0].object_id
+          this.deviceList.map(item => {
+            this.deviceListStructure[item.object_id] = item.pkey
+          })
         })
       },
 
@@ -196,11 +200,11 @@
         }
         this.http.post('easyops/', this.parseData(renderFormStructureData)).then((res) => {
           console.log(res)
-          for (const item of res.data.data.data) {
+          res.data.data.data.map(item => {
             this.formStructure[item.id] = {}
             this.formStructure[item.id].name = item.name
             this.formStructure[item.id].type = item.value.type
-          }
+          })
         })
       },
 
@@ -266,11 +270,28 @@
           this.$message.error('请填写出库地点！')
           return
         }
-        this.$message({
-          type: 'success',
-          message: `已成功将设备「${device.name}」出库至${location}！`
+        const postData = {
+          action: 'runtime/process/instances',
+          method: 'POST',
+          data: {
+            pkey: this.deviceListStructure[this.deviceType],
+            form: {
+              'object_id': this.deviceType,
+              'object_list': [{
+                instanceId: device.instanceId,
+                location: location
+              }]
+            }
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          // this.onSearchDevices(1, 'like')
+          this.$message({
+            type: 'success',
+            message: `已成功将设备「${device.name}」出库至${location}！`
+          })
+          this.retrieveViewData.visible = false
         })
-        this.retrieveViewData.visible = false
       },
 
       onEdit (device) {
