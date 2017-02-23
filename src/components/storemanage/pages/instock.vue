@@ -65,7 +65,7 @@
                         v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
                         v-model="item[formItem.id]"
                         :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                        placeholder="选择日期时间">
+                        placeholder="选择时间">
                       </el-date-picker>
                     </el-form-item>
                   </div>
@@ -84,7 +84,7 @@
   export default {
     data () {
       return {
-        deviceType: 'HOST',
+        deviceType: '',
         instockForm: {
           data: [{}]
         },
@@ -118,6 +118,7 @@
         this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
           console.log(res)
           this.deviceList = res.data.data.list
+          this.deviceType = this.deviceList[0].object_id
         })
       },
       renderFormData () { // 渲染表单数据

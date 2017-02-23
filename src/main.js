@@ -64,12 +64,26 @@ Vue.prototype.parseData = obj => {
   return result + encodeURI(JSON.stringify(obj.data))
 }
 
-Vue.prototype.filterObj = obj => { // 筛选出有值的对象属性及其值
+Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
   let data = {}
   for (const key in obj) {
-    if (obj[key]) {
-      data[key] = obj[key]
+    if (obj[key]) { // 首先要有值
+      if (Array.isArray(obj[key])) { // 这是数组的处理方法
+        if (obj[key].length === 2) { // 两个空都填了才加进来
+          data[key + '.' + obj[key][0]] = obj[key][1]
+        }
+      } else { // 除了数组以外的其他值
+        data[key] = obj[key]
+      }
     }
+  }
+  if (like) { // 模糊查询
+    let likedata = {}
+    for (const key in data) {
+      likedata[key] = {}
+      likedata[key]['$regex'] = data[key]
+    }
+    data = likedata
   }
   return data
 }

@@ -2,7 +2,7 @@
   <div class="outstock">
     <el-row>
       <el-col :sm="24" :md="20" :lg="24">
-        <el-card class="box-card step-card">
+        <el-card class="box-card">
           <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
@@ -12,15 +12,62 @@
             </el-form-item>
           </el-form>
 
-          <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
+          <el-form ref="searchKeys" label-width="100px" :inline="true">
             <div class="form-block">
-              <el-form-item v-for="key in searchKeyList" :label="key.name">
-                <el-input v-model="searchKeys[key.id]" size="small"></el-input>
+              <el-form-item v-for="formItem in searchKeyList" :label="formItem.name">
+                <!-- <el-input v-model="searchKeys[key.id]" size="small"></el-input> -->
+                <el-input
+                  v-if="formItem.value.type === 'str'"
+                  v-model="searchKeys[formItem.id]">
+                </el-input>
+
+                <el-input
+                  v-else-if="formItem.value.type === 'int'"
+                  v-model="searchKeys[formItem.id]"
+                  type="number">
+                </el-input>
+
+                <el-select
+                  v-else-if="formItem.value.type === 'enum'"
+                  v-model="searchKeys[formItem.id]">
+                  <el-option v-for="option in formItem.value.regex"
+                    :label="option"
+                    :value="option"></el-option>
+                </el-select>
+
+                <!-- <el-select
+                  v-else-if="formItem.value.type === 'FKs'"
+                  v-model="searchKeys[formItem.id]">
+                  <el-option v-for="option in formItem.value.object_list"
+                    :label="option.name"
+                    :value="option.instanceId"></el-option>
+                </el-select> -->
+
+                <div class="form-unit" v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'">
+                  <el-select
+                    v-model="searchKeys[formItem.id][0]">
+                    <el-option v-for="option in formItem.value.external"
+                      :label="option.name"
+                      :value="option.org_attr"></el-option>
+                  </el-select>
+                  <el-input
+                    :disabled="!searchKeys[formItem.id][0]"
+                    v-model="searchKeys[formItem.id][1]">
+                  </el-input>
+                </div>
+
+                <el-date-picker
+                  v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
+                  v-model="searchKeys[formItem.id]"
+                  :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
+                  placeholder="选择时间">
+                </el-date-picker>
               </el-form-item>
             </div>
             <el-form-item>
-              <el-button type="primary" size="small" @click="onSearchDevices">搜索</el-button>
-              <el-button @click="onEmptySearch" size="small">清空</el-button>
+              <el-button type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
+              <el-button type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
+              <el-button @click="onEmptySearch">清空</el-button>
             </el-form-item>
           </el-form>
 
@@ -30,11 +77,11 @@
             v-loading.body="deviceLoading"
             style="width: 100%; min-width: 460px">
             <el-table-column
-              prop="hostname"
-              label="设备"></el-table-column>
-            <el-table-column
               prop="instanceId"
               label="编号"></el-table-column>
+            <el-table-column
+              prop="hostname"
+              label="设备"></el-table-column>
             <el-table-column
               prop="status"
               label="状态"></el-table-column>
@@ -54,16 +101,26 @@
     <el-dialog
       title="出库操作"
       v-model="retrieveViewData.visible"
-      size="tiny"
+      size="small"
       :modal="true">
-      <table class="device-data-table">
+      <!-- <table class="device-data-table">
         <tbody>
-          <tr v-for="(value, key) in retrieveViewData.device">
-            <td><b>{{key}}</b></td>
+          <tr v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
+            <td><b>{{ formStructure[key] }}</b></td>
             <td>{{value}}</td>
           </tr>
         </tbody>
-      </table>
+      </table> -->
+      <ul class="device-data-ul">
+        <li v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
+          <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
+            <h4>{{ formStructure[key].name }}:</h4><span v-for="option in value">{{option.name}}</span>
+          </div>
+          <div v-else>
+            <h4>{{ formStructure[key].name }}:</h4>{{value}}
+          </div>
+        </li>
+      </ul>
       <el-row>
         <el-col :span="14" :offset="5">
           <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
@@ -87,8 +144,8 @@
   export default {
     data () {
       return {
-        activeStep: 1,
-        deviceType: 'HOST',
+        formStructure: {},
+        deviceType: '',
         deviceLoading: false,
         deviceList: [],
         searchKeys: {},
@@ -108,13 +165,12 @@
 
     created () {
       this.renderDeviceList()
-      this.onDeviceTypeChange()
+      // this.renderFormStructure()
     },
 
     watch: {
-      activeStep () {
-        this.deviceTable = []
-        // this.searchKeys = []
+      deviceType: function () {
+        this.renderFormStructure()
       }
     },
 
@@ -128,6 +184,23 @@
         this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
           console.log(res)
           this.deviceList = res.data.data.list
+          this.deviceType = this.deviceList[0].object_id
+        })
+      },
+
+      renderFormStructure () {
+        var renderFormStructureData = {
+          action: `/object/attr/${this.deviceType}`,
+          method: 'GET',
+          data: {}
+        }
+        this.http.post('easyops/', this.parseData(renderFormStructureData)).then((res) => {
+          console.log(res)
+          for (const item of res.data.data.data) {
+            this.formStructure[item.id] = {}
+            this.formStructure[item.id].name = item.name
+            this.formStructure[item.id].type = item.value.type
+          }
         })
       },
 
@@ -141,11 +214,18 @@
         }
         this.http.post('', this.parseData(searchAttrData)).then((res) => {
           this.searchKeyList = res.data.data.attr_list
+          this.searchKeyList.map(item => {
+            if (item.value.type === 'FK' || item.value.type === 'FKs') {
+              this.$set(this.searchKeys, item.id, [])
+            } else {
+              this.$set(this.searchKeys, item.id, '')
+            }
+          })
         })
       },
 
-      onSearchDevices (page = 1) {
-        const searchData = this.filterObj(this.searchKeys)
+      onSearchDevices (page, like) {
+        const searchData = this.filterObj(this.searchKeys, like)
         if (this.isEmptyObj(searchData)) {
           this.$message.info('搜索条件不能为空')
           return false
@@ -156,7 +236,7 @@
           method: 'POST',
           data: {
             query: searchData, // "字典,格式参考:http://www.jb51.net/article/48216.htm"
-            page: 1,
+            page: page,
             pageSize: '', // 默认为30
             fields: {}, // "字典, 过滤字段, 留空代表返回所有字段"
             sort: {} // "字典, 按字段排序, 留空代表不排序"
@@ -175,6 +255,8 @@
       },
 
       onRetrieve (device) {
+        console.log(this.formStructure)
+        // this.renderFormStructure()
         this.retrieveViewData.visible = true
         this.retrieveViewData.device = device
       },
@@ -202,3 +284,29 @@
     }
   }
 </script>
+<style scoped lang="less">
+  .form-unit {
+    display: flex;
+    .el-select {
+      flex-grow: 1;
+      margin-right: 10px;
+    }
+  }
+  .device-data-ul {
+    display: flex;
+    flex-wrap: wrap;
+    li {
+      display: inline-block;
+      width: 280px;
+      vertical-align: top;
+      padding-top: 15px;
+      padding-bottom: 10px;
+      h4 {
+        width: 100px;
+        display: inline-block;
+        text-align: right;
+        margin: 0 10px;
+      }
+    }
+  }
+</style>
