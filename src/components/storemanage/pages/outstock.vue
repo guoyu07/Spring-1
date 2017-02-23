@@ -6,16 +6,16 @@
           <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
-              <el-radio-group v-model="deviceType">
-                <el-radio v-for="device in deviceList" :label="device">{{device.name}}</el-radio>
+              <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
+                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
 
           <el-form ref="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
             <div class="form-block">
-              <el-form-item v-for="key in searchKeys[deviceType.object_id]" :label="key.label">
-                <el-input v-model="key.value" size="small"></el-input>
+              <el-form-item v-for="key in searchKeyList" :label="key.name">
+                <el-input v-model="searchKeys[key.id]" size="small"></el-input>
               </el-form-item>
             </div>
             <el-form-item>
@@ -30,14 +30,14 @@
             v-loading.body="deviceLoading"
             style="width: 100%; min-width: 460px">
             <el-table-column
-              prop="name"
+              prop="hostname"
               label="设备"></el-table-column>
             <el-table-column
-              prop="number"
+              prop="instanceId"
               label="编号"></el-table-column>
             <el-table-column
-              prop="other"
-              label="其他"></el-table-column>
+              prop="status"
+              label="状态"></el-table-column>
             <el-table-column
               inline-template
               :context="_self"
@@ -88,75 +88,11 @@
     data () {
       return {
         activeStep: 1,
-        deviceType: {},
+        deviceType: 'HOST',
         deviceLoading: false,
         deviceList: [],
-        searchKeys: {
-          HOST: [{
-            name: 'it-number',
-            label: 'IT 资产编号',
-            value: ''
-          }, {
-            name: 'order',
-            label: '订单号',
-            value: ''
-          }, {
-            name: 'manufacturer',
-            label: '制造商',
-            value: ''
-          }, {
-            name: 'model',
-            label: '型号',
-            value: ''
-          }, {
-            name: 'cpu',
-            label: 'CPU',
-            value: ''
-          }, {
-            name: 'storage',
-            label: '内存',
-            value: ''
-          }, {
-            name: '所属应用服务',
-            label: 'app',
-            value: ''
-          }, {
-            name: 'ip',
-            label: 'IP',
-            value: ''
-          }, {
-            name: 'os',
-            label: 'OS',
-            value: ''
-          }],
-          netd: [{
-            name: '网络设备',
-            label: '网络设备',
-            value: ''
-          }, {
-            name: 'os',
-            label: 'OS',
-            value: ''
-          }],
-          storage: [{
-            name: '存储',
-            label: '存储',
-            value: ''
-          }, {
-            name: 'os',
-            label: 'OS',
-            value: ''
-          }],
-          idcrack: [{
-            name: '其他',
-            label: '其他',
-            value: ''
-          }, {
-            name: 'os',
-            label: 'OS',
-            value: ''
-          }]
-        },
+        searchKeys: {},
+        searchKeyList: [],
         deviceTable: [],
         retrieveViewData: {
           visible: false,
@@ -172,6 +108,7 @@
 
     created () {
       this.renderDeviceList()
+      this.onDeviceTypeChange()
     },
 
     watch: {
@@ -191,25 +128,42 @@
         this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
           console.log(res)
           this.deviceList = res.data.data.list
-          this.deviceType = this.deviceList[0]
         })
       },
 
       onDeviceTypeChange () {
-        this.$http.get(`/searchKeys/${this.deviceType.value}`).then((res) => {
-          console.log(res)
-          this.searchKeys = res.body
+        var searchAttrData = {
+          action: 'cmdb/object/search/attr',
+          method: 'GET',
+          data: {
+            object_id: this.deviceType
+          }
+        }
+        this.http.post('', this.parseData(searchAttrData)).then((res) => {
+          this.searchKeyList = res.data.data.attr_list
         })
       },
 
-      onSearchDevices () {
-        if (!this.searchKeys.some((key) => key.value)) {
-          this.$message.error('搜索条件不能全空！')
-          return
+      onSearchDevices (page = 1) {
+        const searchData = this.filterObj(this.searchKeys)
+        if (this.isEmptyObj(searchData)) {
+          this.$message.info('搜索条件不能为空')
+          return false
         }
         this.deviceLoading = true
-        this.$http.get('/deviceData').then((res) => {
-          this.deviceTable = res.body
+        var searchDeviceData = {
+          action: `/object/${this.deviceType}/instance/_search`,
+          method: 'POST',
+          data: {
+            query: searchData, // "字典,格式参考:http://www.jb51.net/article/48216.htm"
+            page: 1,
+            pageSize: '', // 默认为30
+            fields: {}, // "字典, 过滤字段, 留空代表返回所有字段"
+            sort: {} // "字典, 按字段排序, 留空代表不排序"
+          }
+        }
+        this.http.post('easyops/', this.parseData(searchDeviceData)).then((res) => {
+          this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
         })
       },

@@ -10,7 +10,7 @@
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio v-for="device in deviceList" :label="device">{{device.name}}</el-radio>
+                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -88,7 +88,7 @@
     data () {
       return {
         loading: false,
-        deviceType: {},
+        deviceType: 'HOST',
         instockForm: {
           data: [{}]
         },
@@ -122,7 +122,6 @@
         this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
           console.log(res)
           this.deviceList = res.data.data.list
-          this.deviceType = this.deviceList[0]
         })
       },
       renderFormData () { // 渲染表单数据
@@ -130,7 +129,7 @@
           action: 'cmdb/object/attr',
           method: 'GET',
           data: {
-            object_id: this.deviceType.object_id
+            object_id: this.deviceType
           }
         }
         this.loading = true
@@ -191,10 +190,10 @@
               action: 'runtime/process/instances',
               method: 'POST',
               data: {
-                pkey: this.deviceType.pkey,
+                pkey: 'import_device',
                 form: {
                   'object_list': this.instockForm.data,
-                  'object_id': this.deviceType.object_id
+                  'object_id': this.deviceType
                 }
               }
             }
