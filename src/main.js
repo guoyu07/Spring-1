@@ -19,6 +19,7 @@ import 'assets/css/main.less'
 
 Vue.use(ElementUI)
 Vue.use(VueResource)
+
 const http = axios.create({
   baseURL: '/api/', // 使用了代理
   // timeout: 1000,

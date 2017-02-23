@@ -24,6 +24,10 @@
       width: 100%;
       font-weight: bold;
     }
+
+    .el-input {
+      width: 100%;
+    }
   }
 
   h2 {

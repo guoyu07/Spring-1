@@ -2,7 +2,10 @@
   <div class="outstock">
     <el-row>
       <el-col :sm="24" :md="24">
-        <el-card class="box-card">
+        <el-card
+          class="box-card"
+          v-loading.fullscreen.lock="loading"
+          element-loading-text="拼命加载中">
           <h3>入库流程</h3>
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
@@ -14,7 +17,7 @@
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
               <el-button size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
-              <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
+              <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                 <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                   <div class="form-block" v-for="formBlcok in formData">
                     <h4>{{formBlcok.name}}</h4>
@@ -84,6 +87,7 @@
   export default {
     data () {
       return {
+        loading: false,
         deviceType: 'HOST',
         instockForm: {
           data: [{}]
@@ -128,6 +132,7 @@
             object_id: this.deviceType
           }
         }
+        this.loading = true
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           this.formData = res.data.data.attr_group
           this.formData.map(group => {
@@ -141,6 +146,7 @@
               }
             })
           })
+          this.loading = false
         })
       },
       handleRemove (tab) {
@@ -171,7 +177,7 @@
               this.$message.warning('最多只能增加 10 个设备！')
             }
           } else {
-            this.$message.warning('请填写完整后再增加')
+            this.$message.warning('请填写完整后再增加！')
             return false
           }
         })
