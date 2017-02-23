@@ -46,6 +46,16 @@
           <el-button size="mini" icon="plus" type="primary" @click="opAddBtn(index)" />
         </el-popover>
       </el-col>
+      <el-col :span="4" v-if="item.type === 'select'">
+        <el-popover placement="bottom" title="下拉选项配置" trigger="click">
+          <el-button slot="reference" style="width: 100%">配置选项</el-button>
+          <div v-for="(op, opIndex) of item.value.value" class="config-options">
+            <el-input v-model="formConf[index].value.value[opIndex]" size="mini" placeholder="输入选项label" />
+            <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index, opIndex)" />
+          </div>
+          <el-button size="mini" icon="plus" type="primary" @click="opAddBtn(index)" />
+        </el-popover>
+      </el-col>
       <el-col :span="4">
         <el-input v-model="item.description" placeholder="请输入说明文本"></el-input>
       </el-col>
@@ -91,7 +101,7 @@ export default {
         case 'number':
           this.formConf.push({
             type: 'number',
-            required: true,
+            required: false,
             label: '',
             name: '',
             description: '',
@@ -101,7 +111,7 @@ export default {
         case 'radiobox':
           this.formConf.push({
             type: 'radiobox',
-            required: true,
+            required: false,
             label: '',
             name: '',
             description: '',
@@ -114,13 +124,26 @@ export default {
         case 'checkbox':
           this.formConf.push({
             type: 'checkbox',
-            required: true,
+            required: false,
             label: '',
             name: '',
             description: '',
             value: {
               checkboxTypeCode: 'checkboxOne',
               value: ['多选 1', '多选 3']
+            }
+          })
+          break
+        case 'select':
+          this.formConf.push({
+            type: 'select',
+            required: false,
+            label: '',
+            name: '',
+            description: '',
+            value: {
+              checkboxTypeCode: 'checkboxOne',
+              value: ['选项 1', '选项 3']
             }
           })
           break
