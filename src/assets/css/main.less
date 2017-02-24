@@ -142,10 +142,48 @@ h1, h2, h3, h4, h5, h6, p {
   }
 
   .el-form-item {
-    margin-bottom: 0;
+    margin-bottom: 8px;
 
     &:nth-last-child(2) {
       margin-bottom: 8px;
+    }
+  }
+}
+
+
+.form-unit {
+  display: flex;
+
+  .el-select {
+    flex-grow: 1;
+    margin-right: 10px;
+  }
+}
+
+.device-data-list {
+  display: table;
+  border-collapse: collapse;
+  width: 564px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 0;
+  border-right: 1px solid lighten(@textColor, 30%);
+  border-bottom: 1px solid lighten(@textColor, 30%);
+
+  li {
+    display: inline-block;
+    width: 280px;
+    vertical-align: top;
+    border-top: 1px solid lighten(@textColor, 30%);
+    border-left: 1px solid lighten(@textColor, 30%);
+
+    b {
+      width: 120px;
+      display: inline-block;
+      text-align: right;
+      padding: 4px 10px;
+      margin-right: 8px;
+      background-color: @bgLighter;
     }
   }
 }
