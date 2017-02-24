@@ -12,38 +12,35 @@
             </el-form-item>
           </el-form>
 
-          <el-form ref="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
             <div class="form-block">
               <el-form-item v-for="formItem in searchKeyList" :label="formItem.name">
                 <!-- <el-input v-model="searchKeys[key.id]" size="small"></el-input> -->
                 <el-input
                   v-if="formItem.value.type === 'str'"
+                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]">
                 </el-input>
 
                 <el-input
                   v-else-if="formItem.value.type === 'int'"
+                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
                   type="number">
                 </el-input>
 
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
+                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]">
                   <el-option v-for="option in formItem.value.regex"
                     :label="option"
                     :value="option"></el-option>
                 </el-select>
 
-                <!-- <el-select
-                  v-else-if="formItem.value.type === 'FKs'"
-                  v-model="searchKeys[formItem.id]">
-                  <el-option v-for="option in formItem.value.object_list"
-                    :label="option.name"
-                    :value="option.instanceId"></el-option>
-                </el-select> -->
-
-                <div class="form-unit" v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'">
+                <div class="form-unit"
+                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
+                  :prop="formItem.id">
                   <el-select
                     v-model="searchKeys[formItem.id][0]">
                     <el-option v-for="option in formItem.value.external"
@@ -58,6 +55,7 @@
 
                 <el-date-picker
                   v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
+                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
                   :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
                   placeholder="选择时间">
@@ -67,7 +65,7 @@
             <el-form-item>
               <el-button type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
               <el-button type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
-              <el-button @click="onEmptySearch">清空</el-button>
+              <el-button @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
 
@@ -252,10 +250,9 @@
         })
       },
 
-      onEmptySearch () {
-        for (let key of this.searchKeys) {
-          key.value = ''
-        }
+      onEmptySearch (formName) {
+        console.log(this.$refs[formName])
+        this.$refs[formName].resetFields()
       },
 
       onRetrieve (device) {
@@ -298,6 +295,7 @@
       onEdit (device) {
         this.deviceViewData.visible = true
         this.deviceViewData.device = device
+        this.deviceViewData.object_id = this.deviceType
       }
     },
 

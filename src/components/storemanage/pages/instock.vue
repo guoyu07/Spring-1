@@ -6,23 +6,23 @@
           class="box-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3>{{ instanceId ? '更改信息' : '入库流程'}}</h3>
+          <h3>{{ editInfo.instanceId ? '更改信息' : '入库流程'}}</h3>
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio :disabled="instanceId !== ''" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+                <el-radio :disabled="editInfo.instanceId !== ''" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-              <el-button v-if="!instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
+              <el-button v-if="!editInfo.instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
               <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                 <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
-                  <div class="form-block" v-for="formBlcok in formData">
-                    <h4>{{formBlcok.name}}</h4>
+                  <div class="form-block" v-for="formBlock in formData">
+                    <h4>{{formBlock.name}}</h4>
                     <el-form-item
-                      v-for="formItem in formBlcok.value"
+                      v-for="formItem in formBlock.value"
                       :prop="'data.' + index + '.' + formItem.id"
                       :label="formItem.name"
                       :rules="{
@@ -88,14 +88,18 @@
     data () {
       return {
         loading: false,
-        instanceId: '',
+        editInfo: {
+          instanceId: '',
+          object_id: ''
+        },
         deviceType: '',
         instockForm: {
           data: [{}]
         },
         deviceList: [],
         deviceListStructure: {},
-        formData: {},
+        formData: [],
+        editData: [],
         deviceSearch: '',
         deviceTable: [],
         deviceViewData: {
@@ -111,12 +115,14 @@
       }
     },
     created () {
-      this.renderDeviceList()
       // this.renderFormData()
       if (this.$route.query.instanceId) {
-        this.instanceId = this.$route.query.instanceId
-        // TODO: 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]；并返回 设备类型
+        this.editInfo.instanceId = this.$route.query.instanceId
+        this.editInfo.object_id = this.$route.query.object_id
+        // TODO: 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]
+        this.renderEditInfo()
       }
+      this.renderDeviceList()
     },
     methods: {
       renderDeviceList () { // 渲染设备类型
@@ -132,6 +138,17 @@
           this.deviceList.map(item => {
             this.deviceListStructure[item.object_id] = item.pkey
           })
+        })
+      },
+      renderEditInfo () { // 渲染单个实例信息
+        var renderEditData = {
+          action: `/object/instance/${this.editInfo.object_id}/${this.editInfo.instanceId}`,
+          method: 'GET',
+          data: {}
+        }
+        this.http.post('easyops/', this.parseData(renderEditData)).then((res) => {
+          console.log(res)
+          this.editData = res.data.data.data
         })
       },
       renderFormData () { // 渲染表单数据
@@ -156,6 +173,10 @@
               }
             })
           })
+          console.log(this.editData)
+          if (this.editInfo.instanceId) {
+            this.instockForm.data[0] = this.editData
+          }
           this.loading = false
         })
       },
