@@ -9,7 +9,23 @@
 
 <template>
   <div class="editor-content">
-    <el-button @click="$router.go(-1)">返回</el-button>
+    <el-row>
+      <el-button @click="$router.go(-1)">取消</el-button>
+    </el-row>
+    <el-row>
+      <el-dropdown trigger="click" @command="addBtn">
+        <el-button>新增参数<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
+        <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item command="text">文本输入</el-dropdown-item>
+          <el-dropdown-item command="number">数字输入</el-dropdown-item>
+          <el-dropdown-item command="radiobox">单选</el-dropdown-item>
+          <el-dropdown-item command="checkbox">多选</el-dropdown-item>
+          <el-dropdown-item command="select">下拉框</el-dropdown-item>
+          <el-dropdown-item command="data">日期输入</el-dropdown-item>
+        </el-dropdown-menu>
+      </el-dropdown>
+      <el-button @click="submitBtn">确认完成</el-button>
+    </el-row>
     <el-row v-for="(item, index) of formConf">
       <el-col :span="2">
         <el-checkbox v-model="item.required">必填</el-checkbox>
@@ -63,17 +79,6 @@
         <el-button type="primary" icon="delete" @click="delBtn(index)"></el-button>
       </el-col>
     </el-row>
-    <el-dropdown trigger="click" @command="addBtn">
-      <el-button>新增参数<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
-      <el-dropdown-menu slot="dropdown">
-        <el-dropdown-item command="text">文本输入</el-dropdown-item>
-        <el-dropdown-item command="number">数字输入</el-dropdown-item>
-        <el-dropdown-item command="radiobox">单选</el-dropdown-item>
-        <el-dropdown-item command="checkbox">多选</el-dropdown-item>
-        <el-dropdown-item command="select">下拉框</el-dropdown-item>
-        <el-dropdown-item command="data">日期输入</el-dropdown-item>
-      </el-dropdown-menu>
-    </el-dropdown>
   </div>
 </template>
 
@@ -85,6 +90,7 @@ export default {
     }
   },
   methods: {
+    // 添加一条
     addBtn (cmd) {
       // 添加表单项
       switch (cmd) {
@@ -151,14 +157,22 @@ export default {
           console.log('none')
       }
     },
+    // 删除一条
     delBtn (index) {
       this.formConf.splice(index, 1)
     },
+    // 删除选项
     opDelBtn (index, opIndex) {
       this.formConf[index].value.value.splice(opIndex, 1)
     },
+    // 添加选项
     opAddBtn (index) {
       this.formConf[index].value.value.push('')
+    },
+    // 确认完成
+    submitBtn () {
+      this.$router.go(-1)
+      // 提交数据
     }
   }
 }
