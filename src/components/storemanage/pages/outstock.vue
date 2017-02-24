@@ -121,10 +121,10 @@
       <ul class="device-data-list">
         <li v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
           <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
-            <b>{{ formStructure[key].name }}:</b><span v-for="option in value">{{option.name}}</span>
+            <b>{{ formStructure[key].name }}</b><span v-for="option in value">{{option.name}}</span>
           </div>
           <div v-else>
-            <b>{{ formStructure[key].name }}:</b>{{value}}
+            <b>{{ formStructure[key].name }}</b>{{value}}
           </div>
         </li>
       </ul>

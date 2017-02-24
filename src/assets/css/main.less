@@ -163,12 +163,34 @@ h1, h2, h3, h4, h5, h6, p {
 .device-data-list {
   display: table;
   border-collapse: collapse;
+  position: relative;
   width: 564px;
   margin-left: auto;
   margin-right: auto;
   padding-left: 0;
   border-right: 1px solid lighten(@textColor, 30%);
   border-bottom: 1px solid lighten(@textColor, 30%);
+
+  &::before,
+  &::after {
+    content: ' ';
+    position: absolute;
+    background-color: lighten(@textColor, 30%);
+  }
+
+  &::before {
+    width: 1px;
+    height: 29px;
+    left: 280px;
+    bottom: 0;
+  }
+
+  &::after {
+    width: 280px;
+    height: 1px;
+    right: 2px;
+    bottom: 28px;
+  }
 
   li {
     display: inline-block;
@@ -184,6 +206,7 @@ h1, h2, h3, h4, h5, h6, p {
       padding: 4px 10px;
       margin-right: 8px;
       background-color: @bgLighter;
+      border-right: 1px solid lighten(@textColor, 30%);
     }
   }
 }
