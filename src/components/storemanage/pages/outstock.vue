@@ -2,7 +2,10 @@
   <div class="outstock">
     <el-row>
       <el-col :sm="24" :md="20" :lg="24">
-        <el-card class="box-card">
+        <el-card
+          class="box-card"
+          v-loading.fullscreen.lock="loading"
+          element-loading-text="拼命加载中">
           <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
@@ -63,9 +66,9 @@
               </el-form-item>
             </div>
             <el-form-item>
-              <el-button type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
-              <el-button type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
-              <el-button @click="onEmptySearch('searchKeys')">清空</el-button>
+              <el-button size="small" type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
+              <el-button size="small" type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
+              <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
 
@@ -142,6 +145,7 @@
   export default {
     data () {
       return {
+        loading: false,
         formStructure: {},
         deviceType: '',
         deviceLoading: false,
@@ -167,11 +171,11 @@
       // this.renderFormStructure()
     },
 
-    watch: {
-      deviceType: function () {
-        this.renderFormStructure()
-      }
-    },
+    // watch: {
+    //   deviceType () {
+    //     this.renderFormStructure()
+    //   }
+    // },
 
     methods: {
       renderDeviceList () { // 渲染设备类型
@@ -207,6 +211,7 @@
       },
 
       onDeviceTypeChange () {
+        this.renderFormStructure()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',
           method: 'GET',
@@ -214,6 +219,7 @@
             object_id: this.deviceType
           }
         }
+        this.loading = true
         this.http.post('', this.parseData(searchAttrData)).then((res) => {
           this.searchKeyList = res.data.data.attr_list
           this.searchKeyList.map(item => {
@@ -223,6 +229,7 @@
               this.$set(this.searchKeys, item.id, '')
             }
           })
+          this.loading = false
         })
       },
 
