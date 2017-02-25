@@ -2,7 +2,10 @@
   <div class="outstock">
     <el-row>
       <el-col :sm="24" :md="20" :lg="24">
-        <el-card class="box-card">
+        <el-card
+          class="box-card"
+          v-loading.fullscreen.lock="loading"
+          element-loading-text="拼命加载中">
           <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
@@ -12,27 +15,30 @@
             </el-form-item>
           </el-form>
 
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
             <div class="form-block">
               <el-form-item v-for="formItem in searchKeyList" :label="formItem.name">
                 <!-- <el-input v-model="searchKeys[key.id]" size="small"></el-input> -->
                 <el-input
                   v-if="formItem.value.type === 'str'"
                   :prop="formItem.id"
-                  v-model="searchKeys[formItem.id]">
+                  v-model="searchKeys[formItem.id]"
+                  size="small">
                 </el-input>
 
                 <el-input
                   v-else-if="formItem.value.type === 'int'"
                   :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
-                  type="number">
+                  type="number"
+                  size="small">
                 </el-input>
 
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
                   :prop="formItem.id"
-                  v-model="searchKeys[formItem.id]">
+                  v-model="searchKeys[formItem.id]"
+                  size="small">
                   <el-option v-for="option in formItem.value.regex"
                     :label="option"
                     :value="option"></el-option>
@@ -42,14 +48,16 @@
                   v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
                   :prop="formItem.id">
                   <el-select
-                    v-model="searchKeys[formItem.id][0]">
+                    v-model="searchKeys[formItem.id][0]"
+                    size="small">
                     <el-option v-for="option in formItem.value.external"
                       :label="option.name"
                       :value="option.org_attr"></el-option>
                   </el-select>
                   <el-input
                     :disabled="!searchKeys[formItem.id][0]"
-                    v-model="searchKeys[formItem.id][1]">
+                    v-model="searchKeys[formItem.id][1]"
+                    size="small">
                   </el-input>
                 </div>
 
@@ -58,14 +66,15 @@
                   :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
                   :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                  placeholder="选择时间">
+                  placeholder="选择时间"
+                  size="small">
                 </el-date-picker>
               </el-form-item>
             </div>
             <el-form-item>
-              <el-button type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
-              <el-button type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
-              <el-button @click="onEmptySearch('searchKeys')">清空</el-button>
+              <el-button size="small" type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
+              <el-button size="small" type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
+              <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
 
@@ -109,13 +118,13 @@
           </tr>
         </tbody>
       </table> -->
-      <ul class="device-data-ul">
+      <ul class="device-data-list">
         <li v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
           <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
-            <h4>{{ formStructure[key].name }}:</h4><span v-for="option in value">{{option.name}}</span>
+            <b>{{ formStructure[key].name }}</b><span v-for="option in value">{{option.name}}</span>
           </div>
           <div v-else>
-            <h4>{{ formStructure[key].name }}:</h4>{{value}}
+            <b>{{ formStructure[key].name }}</b>{{value}}
           </div>
         </li>
       </ul>
@@ -142,6 +151,7 @@
   export default {
     data () {
       return {
+        loading: false,
         formStructure: {},
         deviceType: '',
         deviceLoading: false,
@@ -167,11 +177,11 @@
       // this.renderFormStructure()
     },
 
-    watch: {
-      deviceType: function () {
-        this.renderFormStructure()
-      }
-    },
+    // watch: {
+    //   deviceType () {
+    //     this.renderFormStructure()
+    //   }
+    // },
 
     methods: {
       renderDeviceList () { // 渲染设备类型
@@ -207,6 +217,7 @@
       },
 
       onDeviceTypeChange () {
+        this.renderFormStructure()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',
           method: 'GET',
@@ -214,6 +225,7 @@
             object_id: this.deviceType
           }
         }
+        this.loading = true
         this.http.post('', this.parseData(searchAttrData)).then((res) => {
           this.searchKeyList = res.data.data.attr_list
           this.searchKeyList.map(item => {
@@ -223,13 +235,14 @@
               this.$set(this.searchKeys, item.id, '')
             }
           })
+          this.loading = false
         })
       },
 
       onSearchDevices (page, like) {
         const searchData = this.filterObj(this.searchKeys, like)
         if (this.isEmptyObj(searchData)) {
-          this.$message.info('搜索条件不能为空')
+          this.$message.info('搜索条件不能为空！')
           return false
         }
         this.deviceLoading = true
@@ -245,6 +258,9 @@
           }
         }
         this.http.post('easyops/', this.parseData(searchDeviceData)).then((res) => {
+          if (!res.data.data.data.total) {
+            this.$message.warning('找不到结果！')
+          }
           this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
         })
@@ -304,29 +320,3 @@
     }
   }
 </script>
-<style scoped lang="less">
-  .form-unit {
-    display: flex;
-    .el-select {
-      flex-grow: 1;
-      margin-right: 10px;
-    }
-  }
-  .device-data-ul {
-    display: flex;
-    flex-wrap: wrap;
-    li {
-      display: inline-block;
-      width: 280px;
-      vertical-align: top;
-      padding-top: 15px;
-      padding-bottom: 10px;
-      h4 {
-        width: 100px;
-        display: inline-block;
-        text-align: right;
-        margin: 0 10px;
-      }
-    }
-  }
-</style>

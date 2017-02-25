@@ -74,7 +74,7 @@
         </el-tab-pane>
       </el-tabs>
       <div class="btn-area">
-        <el-button type="primary" class="md" @click="onSubmit">{{ operationType === 'op-1' ? '确认上架' : '确认上架并出库' }}</el-button>
+        <el-button type="primary" class="md" @click="onSubmit">确认上架</el-button>
       </div>
     </el-dialog>
   </div>
@@ -84,7 +84,6 @@
   export default {
     props: {
       deployViewData: { type: Object },
-      operationType: { type: String },
       selectedDevices: { type: Array }
     },
 
