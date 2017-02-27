@@ -2,11 +2,14 @@
   <div class="offshelf">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
-        <el-card class="box-card">
+        <el-card
+        class="box-card"
+        v-loading.fullscreen.lock="loading"
+        element-loading-text="拼命加载中">
           <h3>下架流程</h3>
-          <el-form ref="onForm" label-width="100px">
+          <el-form ref="offForm" label-width="100px">
             <el-form-item label="设备类型">
-              <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
+              <el-radio-group v-model="deviceType">
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
@@ -20,55 +23,54 @@
               </el-form-item>
             </div>
             <div class="form-block" :class="{ expand: isAdvanceSearch }">
-              <el-form-item v-for="formItem in searchKeyList" :label="formItem.name">
-                <!-- <el-input v-model="searchKeys[key.id]" size="small"></el-input> -->
+              <el-form-item v-for="key in searchKeyList" :label="key.name">
                 <el-input
-                  v-if="formItem.value.type === 'str'"
-                  :prop="formItem.id"
-                  v-model="searchKeys[formItem.id]"
+                  v-if="key.value.type === 'str'"
+                  :prop="key.id"
+                  v-model="searchKeys[key.id]"
                   size="small">
                 </el-input>
 
                 <el-input
-                  v-else-if="formItem.value.type === 'int'"
-                  :prop="formItem.id"
-                  v-model="searchKeys[formItem.id]"
+                  v-else-if="key.value.type === 'int'"
+                  :prop="key.id"
+                  v-model="searchKeys[key.id]"
                   type="number"
                   size="small">
                 </el-input>
 
                 <el-select
-                  v-else-if="formItem.value.type === 'enum'"
-                  :prop="formItem.id"
-                  v-model="searchKeys[formItem.id]"
+                  v-else-if="key.value.type === 'enum'"
+                  :prop="key.id"
+                  v-model="searchKeys[key.id]"
                   size="small">
-                  <el-option v-for="option in formItem.value.regex"
+                  <el-option v-for="option in key.value.regex"
                     :label="option"
                     :value="option"></el-option>
                 </el-select>
 
                 <div class="form-unit"
-                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                  :prop="formItem.id">
+                  v-else-if="key.value.type === 'FK' || key.value.type === 'FKs'"
+                  :prop="key.id">
                   <el-select
-                    v-model="searchKeys[formItem.id][0]"
+                    v-model="searchKeys[key.id][0]"
                     size="small">
-                    <el-option v-for="option in formItem.value.external"
+                    <el-option v-for="option in key.value.external"
                       :label="option.name"
                       :value="option.org_attr"></el-option>
                   </el-select>
                   <el-input
-                    :disabled="!searchKeys[formItem.id][0]"
-                    v-model="searchKeys[formItem.id][1]"
+                    :disabled="!searchKeys[key.id][0]"
+                    v-model="searchKeys[key.id][1]"
                     size="small">
                   </el-input>
                 </div>
 
                 <el-date-picker
-                  v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                  :prop="formItem.id"
-                  v-model="searchKeys[formItem.id]"
-                  :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
+                  v-else="key.value.type === 'datetime' || key.value.type === 'date'"
+                  :prop="key.id"
+                  v-model="searchKeys[key.id]"
+                  :type="key.value.type === 'datetime' ? 'datetime' : 'date'"
                   placeholder="选择时间"
                   size="small">
                 </el-date-picker>
@@ -84,7 +86,7 @@
             </el-form-item>
             <br>
             <el-form-item>
-              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '精确搜索' : '模糊搜索' }}</el-button>
+              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
@@ -116,6 +118,15 @@
               </span>
             </el-table-column> -->
           </el-table>
+          <div class="pagination-block clear">
+            <el-pagination
+              class="fr"
+              layout="prev, pager, next"
+              :current-page="devicePage"
+              :page-size="10"
+              @current-change="onDevicePageChange"
+              :total="deviceTotal">
+            </el-pagination>
           <div class="btn-area" style="margin: 15px 0">
             <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至下架</el-button>
           </div>
@@ -142,6 +153,7 @@
               </span>
             </el-table-column>
           </el-table>
+          </div>
           <div class="btn-area" style="margin: 25px 0 12px">
             <el-button class="md" type="primary" @click="onConfirmOff">确认下架</el-button>
             <!-- <el-button @click="onReject">驳回</el-button> -->
@@ -156,28 +168,33 @@
   export default {
     data () {
       return {
-        deviceType: 'server',
-        searchKeys: [],
+        loading: false,
+        isAdvanceSearch: false,
+        deviceType: '',
+        searchKey: '',
+        searchKeys: {},
+        searchKeyList: [],
         deviceLoading: false,
+        deviceListStructure: {},
         deviceTable: [],
         deviceList: [],
-        multipleSelection: [],
+        devicePage: 1,
+        deviceTotal: 0,
+        selectedDevices: [],
         offTabel: []
       }
     },
     created () {
-      this.onDeviceTypeChange()
       this.renderDeviceList()
-      // this.renderFormStructure()
     },
     methods: {
-      renderDeviceList () { // 渲染设备类型
-        var renderDeviceListData = {
+      renderDeviceList () {
+        let postData = {
           action: 'export/device/items',
           method: 'GET',
           data: {}
         }
-        this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
+        this.http.post('custom/', this.parseData(postData)).then((res) => {
           console.log(res)
           this.deviceList = res.data.data.list
           this.deviceType = this.deviceList[0].object_id
@@ -187,23 +204,85 @@
         })
       },
       onDeviceTypeChange () {
-        this.$http.get(`/searchKeys/${this.deviceType}`).then((res) => {
-          this.searchKeys = res.body
+        var postData = {
+          action: 'cmdb/object/search/attr',
+          method: 'GET',
+          data: {
+            object_id: this.deviceType
+          }
+        }
+        this.loading = true
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.searchKeyList = res.data.data.attr_list
+          this.searchKeyList.map(item => {
+            if (item.value.type === 'FK' || item.value.type === 'FKs') {
+              this.$set(this.searchKeys, item.id, [])
+            } else {
+              this.$set(this.searchKeys, item.id, '')
+            }
+          })
+          this.loading = false
         })
       },
-      onSearchDevices () {
-        if (!this.searchKeys.some((key) => key.value)) {
-          this.$message.error('搜索条件不能全空！')
-          return
+      onSearchDevices (isAdvance) {
+        if (!isAdvance) {
+          if (!this.searchKey) {
+            this.$message.warning('请填写关键词！')
+            return false
+          }
+          let postData = {
+            action: 'cmdb/fulltext/search',
+            method: 'POST',
+            data: {
+              object_id: this.deviceType,
+              page: this.devicePage,
+              pageSize: 10,
+              keyword: this.searchKey
+            }
+          }
+          this.deviceLoading = true
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (!res.data.data.data.total) {
+              this.$message.warning('找不到结果！')
+            }
+            this.deviceTotal = res.data.data.data.total
+            this.deviceTable = res.data.data.data.list
+            this.deviceLoading = false
+          })
+        } else {
+          let searchData = this.filterObj(this.searchKeys, isAdvance)
+          if (this.isEmptyObj(searchData)) {
+            this.$message.info('搜索条件不能为空！')
+            return false
+          }
+          let postData = {
+            action: `/object/${this.deviceType}/instance/_search`,
+            method: 'POST',
+            data: {
+              query: searchData,
+              page: this.devicePage,
+              pageSize: 10,
+              fields: {},
+              sort: {}
+            }
+          }
+          this.deviceLoading = true
+          this.http.post('easyops/', this.parseData(postData)).then((res) => {
+            if (!res.data.data.data.total) {
+              this.$message.warning('找不到结果！')
+            }
+            this.deviceTotal = res.data.data.data.total
+            this.deviceTable = res.data.data.data.list
+            this.deviceLoading = false
+          })
         }
-        this.deviceLoading = true
-        this.$http.get('/equipmentData').then((res) => {
-          this.deviceTable = res.body
-          this.deviceLoading = false
-        })
       },
       handleSelectionChange (val) {
-        this.multipleSelection = val
+        this.selectedDevices = val
+      },
+      onDevicePageChange (val) {
+        this.devicePage = val
+        this.onSearchDevices(this.isAdvanceSearch)
       },
       onEmptySearch () {
         for (let key of this.searchKeys) {
@@ -211,9 +290,9 @@
         }
       },
       onAddtoOff () {
-        for (const selection of this.multipleSelection) {
+        for (const selection of this.selectedDevices) {
           if (!this.offTabel.includes(selection)) {
-            if (this.multipleSelection.length > 5) {
+            if (this.selectedDevices.length > 5) {
               this.$message.warning('下架设备最多 5 个！')
             } else {
               this.offTabel = [...this.offTabel, selection]
@@ -229,10 +308,36 @@
         this.offTabel.splice(index, 1)
       },
       onConfirmOff () {
-        this.offTabel = []
-        this.deviceTable = []
-        this.$message.success('成功上架')
-        console.log(this.offTabel)
+        // this.offTabel = []
+        // this.deviceTable = []
+        const deviceIds = []
+        // this.offTabel.map(item => {
+        //   deviceIds.push(item.instanceId)
+        // })
+        this.offTabel.forEach((v, k) => {
+          deviceIds[k] = {}
+          deviceIds[k].instanceId = v.instanceId
+        })
+        const postData = {
+          action: 'runtime/process/instances',
+          method: 'POST',
+          data: {
+            pkey: this.deviceListStructure[this.deviceType],
+            form: {
+              'object_id': this.deviceType,
+              'object_list': deviceIds
+            }
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.$notify({
+            title: '成功',
+            message: `已成功下架`,
+            type: 'success'
+          })
+          this.deviceTable = [] // 清空设备列表
+          this.offTabel = [] // 清空下架列表
+        })
       },
       onReject () {
         this.offTabel = []
