@@ -120,6 +120,16 @@
               </span>
             </el-table-column>
           </el-table>
+          <div class="pagination-block clear">
+            <el-pagination
+              class="fr"
+              layout="prev, pager, next"
+              :current-page="devicePage"
+              :page-size="10"
+              @current-change="onDevicePageChange"
+              :total="deviceTotal">
+            </el-pagination>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -180,6 +190,8 @@
         searchKeys: {},
         searchKeyList: [],
         deviceTable: [],
+        devicePage: 1,
+        deviceTotal: 0,
         retrieveViewData: {
           visible: false,
           device: {}
@@ -272,7 +284,8 @@
             method: 'POST',
             data: {
               object_id: this.deviceType,
-              page: page,
+              page: this.devicePage,
+              pageSize: 10,
               keyword: this.searchKey
             }
           }
@@ -291,7 +304,8 @@
             method: 'POST',
             data: {
               query: searchData,
-              page: page,
+              page: this.devicePage,
+              pageSize: 10,
               fields: {},
               sort: {}
             }
@@ -307,9 +321,15 @@
           if (!res.data.data.data.total) {
             this.$message.warning('找不到结果！')
           }
+          this.deviceTotal = res.data.data.data.total
           this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
         }
+      },
+
+      onDevicePageChange (val) {
+        this.devicePage = val
+        this.onSearchDevices(this.isAdvanceSearch)
       },
 
       onEmptySearch (formName) {
