@@ -1,7 +1,7 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="20" :lg="24">
+      <el-col :sm="24" :md="24" :lg="24">
         <el-card
           class="box-card"
           v-loading.fullscreen.lock="loading"
@@ -16,7 +16,14 @@
           </el-form>
 
           <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
-            <div class="form-block">
+            <div class="form-block" :class="{ expand: !isAdvanceSearch }">
+              <el-form-item label="关键词">
+                <el-input
+                  v-model="searchKey"
+                  size="small"></el-input>
+              </el-form-item>
+            </div>
+            <div class="form-block" :class="{ expand: isAdvanceSearch }">
               <el-form-item v-for="formItem in searchKeyList" :label="formItem.name">
                 <!-- <el-input v-model="searchKeys[key.id]" size="small"></el-input> -->
                 <el-input
@@ -71,9 +78,17 @@
                 </el-date-picker>
               </el-form-item>
             </div>
+
+            <el-form-item label="模糊搜索">
+              <el-switch
+                v-model="isAdvanceSearch"
+                on-text="开启"
+                on-color="#42d885"
+                off-text="关闭"></el-switch>
+            </el-form-item>
+            <br>
             <el-form-item>
-              <el-button size="small" type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
-              <el-button size="small" type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
+              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '精确搜索' : '模糊搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
@@ -86,6 +101,9 @@
             <el-table-column
               prop="instanceId"
               label="编号"></el-table-column>
+            <el-table-column
+              prop="name"
+              label="设备名称"></el-table-column>
             <el-table-column
               prop="hostname"
               label="设备"></el-table-column>
@@ -152,11 +170,13 @@
     data () {
       return {
         loading: false,
+        isAdvanceSearch: false,
         formStructure: {},
         deviceType: '',
         deviceLoading: false,
         deviceList: [],
         deviceListStructure: {},
+        searchKey: '',
         searchKeys: {},
         searchKeyList: [],
         deviceTable: [],
@@ -239,31 +259,55 @@
         })
       },
 
-      onSearchDevices (page, like) {
-        const searchData = this.filterObj(this.searchKeys, like)
-        if (this.isEmptyObj(searchData)) {
-          this.$message.info('搜索条件不能为空！')
-          return false
-        }
-        this.deviceLoading = true
-        var searchDeviceData = {
-          action: `/object/${this.deviceType}/instance/_search`,
-          method: 'POST',
-          data: {
-            query: searchData, // "字典,格式参考:http://www.jb51.net/article/48216.htm"
-            page: page,
-            pageSize: '', // 默认为30
-            fields: {}, // "字典, 过滤字段, 留空代表返回所有字段"
-            sort: {} // "字典, 按字段排序, 留空代表不排序"
+      onSearchDevices (page, isAdvance) {
+        if (!isAdvance) {
+          if (!this.searchKey) {
+            this.$message.warning('请填写关键词！')
+            return false
           }
+          let postData = {
+            action: 'cmdb/fulltext/search',
+            method: 'POST',
+            data: {
+              object_id: this.deviceType,
+              page: page,
+              keyword: this.searchKey
+            }
+          }
+          this.deviceLoading = true
+          this.http.post('', this.parseData(postData)).then((res) => {
+            processRes(res)
+          })
+        } else {
+          let searchData = this.filterObj(this.searchKeys, isAdvance)
+          if (this.isEmptyObj(searchData)) {
+            this.$message.info('搜索条件不能为空！')
+            return false
+          }
+          let postData = {
+            action: `/object/${this.deviceType}/instance/_search`,
+            method: 'POST',
+            data: {
+              query: searchData,
+              page: page,
+              fields: {},
+              sort: {}
+            }
+          }
+          this.deviceLoading = true
+          this.http.post('easyops/', this.parseData(postData)).then((res) => {
+            processRes(res)
+          })
         }
-        this.http.post('easyops/', this.parseData(searchDeviceData)).then((res) => {
+
+        const processRes = (res) => {
+          console.log(res)
           if (!res.data.data.data.total) {
             this.$message.warning('找不到结果！')
           }
           this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
-        })
+        }
       },
 
       onEmptySearch (formName) {

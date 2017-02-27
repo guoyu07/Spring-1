@@ -16,7 +16,14 @@
           </el-form>
           
           <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
-            <div class="form-block">
+            <div class="form-block" :class="{ expand: !isAdvanceSearch }">
+              <el-form-item label="关键词">
+                <el-input
+                  v-model="searchKey"
+                  size="small"></el-input>
+              </el-form-item>
+            </div>
+            <div class="form-block" :class="{ expand: isAdvanceSearch }">
               <el-form-item v-for="key in searchKeyList" :label="key.name">
                 <el-input
                   v-if="key.value.type === 'str'"
@@ -70,16 +77,25 @@
                 </el-date-picker>
               </el-form-item>
             </div>
+            
+            <el-form-item label="模糊搜索">
+              <el-switch
+                v-model="isAdvanceSearch"
+                on-text="开启"
+                on-color="#42d885"
+                off-text="关闭"></el-switch>
+            </el-form-item>
+            <br>
             <el-form-item>
-              <el-button size="small" type="primary" @click="onSearchDevices(1)">精确搜索</el-button>
-              <el-button size="small" type="primary" @click="onSearchDevices(1,'like')">模糊搜索</el-button>
-              <el-button @click="onEmptySearch" size="small">清空</el-button>
+              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '精确搜索' : '模糊搜索' }}</el-button>
+              <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
 
           <el-table
             :data="deviceTable"
             border
+            v-loading.body="deviceLoading"
             @selection-change="onSelectRow"
             style="width: 100%; min-width: 460px">
             <el-table-column
@@ -184,10 +200,13 @@
     data () {
       return {
         loading: false,
+        isAdvanceSearch: false,
         formStructure: {},
         deviceType: '',
         deviceList: [],
+        deviceLoading: false,
         deviceListStructure: {},
+        searchKey: '',
         searchKeys: {},
         searchKeyList: [],
         deviceTable: [],
@@ -259,31 +278,55 @@
         })
       },
 
-      onSearchDevices (page, like) {
-        let searchData = this.filterObj(this.searchKeys, like)
-        if (this.isEmptyObj(searchData)) {
-          this.$message.info('搜索条件不能为空！')
-          return false
-        }
-        this.deviceLoading = true
-        var postData = {
-          action: `/object/${this.deviceType}/instance/_search`,
-          method: 'POST',
-          data: {
-            query: searchData,
-            page: page,
-            pageSize: '',
-            fields: {},
-            sort: {}
+      onSearchDevices (page, isAdvance) {
+        if (!isAdvance) {
+          if (!this.searchKey) {
+            this.$message.warning('请填写关键词！')
+            return false
           }
+          let postData = {
+            action: 'cmdb/fulltext/search',
+            method: 'POST',
+            data: {
+              object_id: this.deviceType,
+              page: page,
+              keyword: this.searchKey
+            }
+          }
+          this.deviceLoading = true
+          this.http.post('', this.parseData(postData)).then((res) => {
+            processRes(res)
+          })
+        } else {
+          let searchData = this.filterObj(this.searchKeys, isAdvance)
+          if (this.isEmptyObj(searchData)) {
+            this.$message.info('搜索条件不能为空！')
+            return false
+          }
+          let postData = {
+            action: `/object/${this.deviceType}/instance/_search`,
+            method: 'POST',
+            data: {
+              query: searchData,
+              page: page,
+              fields: {},
+              sort: {}
+            }
+          }
+          this.deviceLoading = true
+          this.http.post('easyops/', this.parseData(postData)).then((res) => {
+            processRes(res)
+          })
         }
-        this.http.post('easyops/', this.parseData(postData)).then((res) => {
+
+        const processRes = (res) => {
+          console.log(res)
           if (!res.data.data.data.total) {
             this.$message.warning('找不到结果！')
           }
           this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
-        })
+        }
       },
 
       onEmptySearch (formName) {

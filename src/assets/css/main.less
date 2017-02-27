@@ -106,7 +106,7 @@ h1, h2, h3, h4, h5, h6, p {
   .spinner-icon {
     border-left-color: @themeColor;
     border-top-color: @themeColor;
-  }  
+  }
 }
 
 /* 步骤 steps 样式 */
@@ -137,6 +137,14 @@ h1, h2, h3, h4, h5, h6, p {
 .advance-search-form {
   margin-bottom: 24px;
 
+  .form-block {
+    display: none;
+  }
+
+  .form-block.expand {
+    display: block;
+  }
+
   .el-form-item__label {
     font-size: 13px;
   }
@@ -153,6 +161,7 @@ h1, h2, h3, h4, h5, h6, p {
 
 .form-unit {
   display: flex;
+  align-items: center;
 
   .el-select {
     flex-grow: 1;

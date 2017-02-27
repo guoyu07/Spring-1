@@ -26,7 +26,7 @@
                       :prop="'data.' + index + '.' + formItem.id"
                       :label="formItem.name"
                       :rules="{
-                        type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : 'string'), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur'
+                        type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
                       }">
                       <el-input
                         v-if="formItem.value.type === 'str'"
@@ -119,7 +119,7 @@
       if (this.$route.query.instanceId) {
         this.editInfo.instanceId = this.$route.query.instanceId
         this.editInfo.object_id = this.$route.query.object_id
-        // TODO: 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]
+        // 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]
         this.renderEditInfo()
       }
       this.renderDeviceList()
@@ -147,8 +147,13 @@
           data: {}
         }
         this.http.post('easyops/', this.parseData(renderEditData)).then((res) => {
-          console.log(res)
+          console.log('editData', res.data.data.data)
           this.editData = res.data.data.data
+          for (const i in this.editData) {
+            if (this.editData[i] === null) { // 整理返回来的数据，若有 null 转成为空 '' ，为了避免日期时间自动填充为1970的日期
+              this.editData[i] = ''
+            }
+          }
         })
       },
       renderFormData () { // 渲染表单数据
@@ -173,8 +178,25 @@
               }
             })
           })
-          console.log(this.editData)
+          console.log(this.formData)
+          // 如果是修改页面
           if (this.editInfo.instanceId) {
+            this.formData.map(formBlock => {
+              formBlock.value.map(item => {
+                if (item.value.type === 'FK' && this.editData[item.id]) { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
+                  this.editData[item.id] = this.editData[item.id].instanceId
+                } else if (item.value.type === 'FKs' && this.editData[item.id]) { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
+                  const arrdata = this.editData[item.id]
+                  this.editData[item.id] = []
+                  // console.log('arr', arrdata)
+                  arrdata.map(value => {
+                    this.editData[item.id].push(value.instanceId)
+                  })
+                } else if (item.value.type === 'int' && (this.editData[item.id] === '')) {
+                  this.editData[item.id] = 0
+                }
+              })
+            })
             this.instockForm.data[0] = this.editData
           }
           this.loading = false
@@ -228,11 +250,45 @@
                 }
               }
             }
-            this.http.post('', this.parseData(postData)).then((res) => {
-              console.log(res)
-              this.$router.replace('/')
-              this.$message.warning('提交成功！')
-            })
+            const updateData = {}
+            for (const i in this.editData) {
+              if (this.editData[i] !== '') {
+                updateData[i] = this.editData[i]
+              }
+            }
+            console.log(updateData)
+            const updataInstanceData = {
+              action: 'cmdb/update/instance',
+              method: 'PUT',
+              data: {
+                object_id: this.deviceType,
+                instanceId: this.instockForm.data[0].instanceId,
+                object_data: updateData
+              }
+            }
+            if (this.editInfo.instanceId) {
+              this.http.post('', this.parseData(updataInstanceData)).then((res) => {
+                console.log(res)
+                if (res.status === 200) {
+                  this.$notify({
+                    title: '成功',
+                    message: `变更成功！`,
+                    type: 'success'
+                  })
+                } else {
+                  this.$notify.error({
+                    title: '失败',
+                    message: `变更失败！`
+                  })
+                }
+              })
+            } else {
+              this.http.post('', this.parseData(postData)).then((res) => {
+                console.log(res)
+                this.$router.replace('/')
+                this.$message.warning('提交成功！')
+              })
+            }
           } else {
             console.log('error submit!!')
             this.$message.warning('表单未填写完整，提交失败！')

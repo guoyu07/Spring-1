@@ -38,6 +38,34 @@
     methods: {
       onSubmit () {
         console.log(this.deviceViewData)
+        var updataInstanceData = {
+          action: 'cmdb/update/instance',
+          method: 'PUT',
+          data: {
+            object_id: this.deviceViewData.object_id,
+            instanceId: this.deviceViewData.device.instanceId,
+            object_data: {
+              name: this.deviceViewData.device.name,
+              hostname: this.deviceViewData.device.hostname,
+              status: this.deviceViewData.device.status
+            } // "要更新字段及值,字典"
+          }
+        }
+        this.http.post('', this.parseData(updataInstanceData)).then((res) => {
+          console.log(res)
+          if (res.status === 200) {
+            this.$notify({
+              title: '成功',
+              message: `变更成功！`,
+              type: 'success'
+            })
+          } else {
+            this.$notify.error({
+              title: '失败',
+              message: `变更失败！`
+            })
+          }
+        })
       }
     }
   }
