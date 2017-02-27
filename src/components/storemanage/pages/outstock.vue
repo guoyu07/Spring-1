@@ -251,6 +251,7 @@
       },
 
       onDeviceTypeChange () {
+        this.deviceTable = []
         this.renderFormStructure()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',

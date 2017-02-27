@@ -28,6 +28,7 @@
                       :rules="{
                         type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
                       }">
+                      <!-- ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string') -->
                       <el-input
                         v-if="formItem.value.type === 'str'"
                         v-model="item[formItem.id]">
@@ -149,11 +150,18 @@
         this.http.post('easyops/', this.parseData(renderEditData)).then((res) => {
           console.log('editData', res.data.data.data)
           this.editData = res.data.data.data
-          for (const i in this.editData) {
-            if (this.editData[i] === null) { // 整理返回来的数据，若有 null 转成为空 '' ，为了避免日期时间自动填充为1970的日期
-              this.editData[i] = ''
-            }
-          }
+          // for (const i in this.editData) {
+          //   if (this.editData[i] === null) { // 整理返回来的数据，若有 null 转成为空 '' ，为了避免日期时间自动填充为1970的日期
+          //     this.editData[i] = ''
+          //   }
+          // }
+          // for (const i in this.instockForm.data[0]) {
+          //   console.log(i, !this.editData[i])
+          //   if (!this.editData[i]) {
+          //     this.editData[i] = ''
+          //   }
+          // }
+          // console.log(this.instockForm.data)
         })
       },
       renderFormData () { // 渲染表单数据
@@ -173,6 +181,8 @@
                 this.$set(this.instockForm.data[0], item.id, [])
               } else if (item.value.type === 'int') {
                 this.$set(this.instockForm.data[0], item.id, 0)
+              } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                this.$set(this.instockForm.data[0], item.id, undefined)
               } else {
                 this.$set(this.instockForm.data[0], item.id, '')
               }
@@ -183,22 +193,39 @@
           if (this.editInfo.instanceId) {
             this.formData.map(formBlock => {
               formBlock.value.map(item => {
-                if (item.value.type === 'FK' && this.editData[item.id]) { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
-                  this.editData[item.id] = this.editData[item.id].instanceId
-                } else if (item.value.type === 'FKs' && this.editData[item.id]) { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
-                  const arrdata = this.editData[item.id]
-                  this.editData[item.id] = []
-                  // console.log('arr', arrdata)
-                  arrdata.map(value => {
-                    this.editData[item.id].push(value.instanceId)
-                  })
-                } else if (item.value.type === 'int' && (this.editData[item.id] === '')) {
-                  this.editData[item.id] = 0
+                if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
+                  if (this.editData[item.id]) {
+                    this.editData[item.id] = this.editData[item.id].instanceId
+                  } else {
+                    this.editData[item.id] = []
+                  }
+                } else if (item.value.type === 'FKs') { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
+                  if (this.editData[item.id]) {
+                    const arrdata = this.editData[item.id]
+                    this.editData[item.id] = []
+                    // console.log('arr', arrdata)
+                    arrdata.map(value => {
+                      this.editData[item.id].push(value.instanceId)
+                    })
+                  } else {
+                    this.editData[item.id] = []
+                  }
+                } else if (item.value.type === 'int') {
+                  if (!this.editData[item.id]) this.editData[item.id] = 0
+                } else if (item.value.type === 'date') {
+                  if (!this.editData[item.id]) this.editData[item.id] = undefined
+                } else if (item.value.type === 'datetime') {
+                  if (!this.editData[item.id]) this.editData[item.id] = undefined
+                } else if (item.value.type === 'arr') {
+                  if (!this.editData[item.id]) this.editData[item.id] = []
+                } else {
+                  if (!this.editData[item.id]) this.editData[item.id] = ''
                 }
               })
             })
             this.instockForm.data[0] = this.editData
           }
+          console.log(this.instockForm.data[0])
           this.loading = false
         })
       },
@@ -275,6 +302,7 @@
                     message: `变更成功！`,
                     type: 'success'
                   })
+                  this.$router.replace('/storemanage/outstock')
                 } else {
                   this.$notify.error({
                     title: '失败',
@@ -285,8 +313,19 @@
             } else {
               this.http.post('', this.parseData(postData)).then((res) => {
                 console.log(res)
-                this.$router.replace('/')
-                this.$message.warning('提交成功！')
+                if (res.statusCode === 406) {
+                  this.$notify.error({
+                    title: '失败',
+                    message: res.errorMessage
+                  })
+                } else {
+                  this.$notify.success({
+                    title: '成功',
+                    message: '提交成功！'
+                  })
+                  this.$router.replace('/')
+                  this.$message.warning('提交成功！')
+                }
               })
             }
           } else {
