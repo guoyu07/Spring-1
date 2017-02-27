@@ -212,10 +212,12 @@
                   }
                 } else if (item.value.type === 'int') {
                   if (!this.editData[item.id]) this.editData[item.id] = 0
-                } else if (item.value.type === 'date') {
-                  if (!this.editData[item.id]) this.editData[item.id] = undefined
-                } else if (item.value.type === 'datetime') {
-                  if (!this.editData[item.id]) this.editData[item.id] = undefined
+                } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                  if (!this.editData[item.id]) {
+                    this.editData[item.id] = undefined
+                  } else {
+                    this.editData[item.id] = new Date(this.editData[item.id])
+                  }
                 } else if (item.value.type === 'arr') {
                   if (!this.editData[item.id]) this.editData[item.id] = []
                 } else {
@@ -263,6 +265,7 @@
         })
       },
       onConfirm (formName) {
+        console.log('fffff')
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log('submit!')
@@ -279,7 +282,7 @@
             }
             const updateData = {}
             for (const i in this.editData) {
-              if (this.editData[i] !== '') {
+              if (this.editData[i]) {
                 updateData[i] = this.editData[i]
               }
             }
