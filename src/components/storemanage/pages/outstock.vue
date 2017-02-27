@@ -88,7 +88,7 @@
             </el-form-item>
             <br>
             <el-form-item>
-              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '精确搜索' : '模糊搜索' }}</el-button>
+              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
@@ -226,10 +226,12 @@
         this.http.post('easyops/', this.parseData(renderFormStructureData)).then((res) => {
           console.log(res)
           res.data.data.data.map(item => {
+            console.log(item)
             this.formStructure[item.id] = {}
             this.formStructure[item.id].name = item.name
             this.formStructure[item.id].type = item.value.type
           })
+          console.log(this.formStructure)
         })
       },
 
