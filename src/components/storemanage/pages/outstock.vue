@@ -1,7 +1,7 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="20" :lg="24">
+      <el-col :sm="24" :md="24" :lg="24">
         <el-card
           class="box-card"
           v-loading.fullscreen.lock="loading"
@@ -86,6 +86,9 @@
             <el-table-column
               prop="instanceId"
               label="编号"></el-table-column>
+            <el-table-column
+              prop="name"
+              label="设备名称"></el-table-column>
             <el-table-column
               prop="hostname"
               label="设备"></el-table-column>
