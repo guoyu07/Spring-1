@@ -87,7 +87,7 @@
             </el-form-item>
             <br>
             <el-form-item>
-              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '精确搜索' : '模糊搜索' }}</el-button>
+              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
@@ -105,13 +105,22 @@
               prop="name"
               label="设备"></el-table-column>
             <el-table-column
-              prop="number"
-              label="编号"></el-table-column>
+              prop="creator"
+              label="创建者"></el-table-column>
             <el-table-column
-              prop="other"
-              label="其他"></el-table-column>
+              prop="ctime"
+              label="创建时间"></el-table-column>
           </el-table>
-          <br>
+          <div class="pagination-block clear">
+            <el-pagination
+              class="fr"
+              layout="prev, pager, next"
+              :current-page="devicePage"
+              :page-size="10"
+              @current-change="onDevicePageChange"
+              :total="deviceTotal">
+            </el-pagination>
+          </div>
           <div class="btn-area">
             <el-button
               type="primary"
@@ -122,51 +131,27 @@
           </div>
               <!-- </div> -->
               <!-- <div class="step step-3" v-show="deployStep === 3"> -->
-          <h5>下架列表</h5>
+          <h5>上架列表</h5>
           <el-table
             :data="deviceQueue"
             border>
             <el-table-column
               prop="name"
               label="设备"
+              width="120"
               fixed></el-table-column>
             <el-table-column
-              prop="number"
-              label="编号"></el-table-column>
+              prop="creator"
+              label="创建者"></el-table-column>
             <el-table-column
-              prop="other"
-              label="其他"></el-table-column>
+              prop="ctime"
+              label="创建时间"></el-table-column>
             <el-table-column
-              prop="agent"
-              label="是否安装代理">
-              <template scope="scope">
-                {{ scope.row.agent ? '是' : '否' }}
-              </template>
-            </el-table-column>
+              prop="service"
+              label="业务系统"></el-table-column>
             <el-table-column
-              prop="app"
-              label="应用服务"></el-table-column>
-            <el-table-column
-              prop="db"
-              label="数据库"></el-table-column>
-            <el-table-column
-              prop="room"
-              label="机房"></el-table-column>
-            <el-table-column
-              prop="cabinet"
-              label="机柜"></el-table-column>
-            <el-table-column
-              prop="ubit"
-              label="U 位"></el-table-column>
-            <el-table-column
-              prop="os"
-              label="OS"></el-table-column>
-            <el-table-column
-              prop="ip"
-              label="IP"></el-table-column>
-            <el-table-column
-              prop="port"
-              label="端口"></el-table-column>
+              prop="sn"
+              label="SN"></el-table-column>
             <el-table-column
               inline-template
               :context="_self"
@@ -187,15 +172,41 @@
         </el-card>
       </el-col>
     </el-row>
-    <deploy-view
-      :deploy-view-data="deployViewData"
-      :selected-devices="deviceQueue"></deploy-view>
+    <el-dialog
+      title="填写上架信息"
+      v-model="deployViewData.visible"
+      top="10%"
+      :modal="true">
+      <el-tabs type="border-card">
+        <el-tab-pane v-for="(device, index) in deviceQueue" :label="device.name">
+          <el-row>
+            <el-col :span="20" :offset="2">
+              <el-form
+                ref="device"
+                :model="device"
+                label-width="120px">
+                <div v-for="group in formStructure">
+                  <h4>{{group.name}}</h4>
+                  <el-form-item
+                    v-for="field in group.value"
+                    :prop="'data.' + index + '.' + field.id"
+                    :label="field.name"
+                    :rules="{
+                      type: (field.value.type === 'arr' || field.value.type === 'FKs') ? 'array' : (field.value.type === 'int' ? 'number' : ((field.value.type === 'datetime' || field.value.type === 'date') ? 'date' : 'string')), required: field.required === 'true', message: field.name + '不能为空', trigger: 'blur, change'
+                    }">
+                    
+                  </el-form-item>
+                </div>
+              </el-form>
+            </el-col>
+          </el-row>
+        </el-tab-pane>
+      </el-tabs>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-  import deployView from '../../_plugins/_deployView'
-
   export default {
     data () {
       return {
@@ -210,6 +221,8 @@
         searchKeys: {},
         searchKeyList: [],
         deviceTable: [],
+        devicePage: 1,
+        deviceTotal: 0,
         deployViewData: {
           visible: false
         },
@@ -241,16 +254,14 @@
 
       renderFormStructure () {
         let postData = {
-          action: `/object/attr/${this.deviceType}`,
+          action: `cmdb/object/attr`,
           method: 'GET',
-          data: {}
+          data: { object_id: this.deviceType }
         }
-        this.http.post('easyops/', this.parseData(postData)).then((res) => {
-          console.log(res)
-          res.data.data.data.map(item => {
-            this.formStructure[item.id] = {}
-            this.formStructure[item.id].name = item.name
-            this.formStructure[item.id].type = item.value.type
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.formStructure = res.data.data.attr_group
+          this.formStructure.map(group => {
+            //
           })
         })
       },
@@ -278,7 +289,7 @@
         })
       },
 
-      onSearchDevices (page, isAdvance) {
+      onSearchDevices (isAdvance) {
         if (!isAdvance) {
           if (!this.searchKey) {
             this.$message.warning('请填写关键词！')
@@ -289,7 +300,8 @@
             method: 'POST',
             data: {
               object_id: this.deviceType,
-              page: page,
+              page: this.devicePage,
+              pageSize: 10,
               keyword: this.searchKey
             }
           }
@@ -308,7 +320,8 @@
             method: 'POST',
             data: {
               query: searchData,
-              page: page,
+              page: this.devicePage,
+              pageSize: 10,
               fields: {},
               sort: {}
             }
@@ -324,16 +337,21 @@
           if (!res.data.data.data.total) {
             this.$message.warning('找不到结果！')
           }
+          this.deviceTotal = res.data.data.data.total
           this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
         }
+      },
+
+      onDevicePageChange (val) {
+        this.devicePage = val
+        this.onSearchDevices(this.isAdvanceSearch)
       },
 
       onEmptySearch (formName) {
         console.log(this.$refs[formName])
         this.$refs[formName].resetFields()
       },
-      // ＊＊＊＊＊上次接到这里＊＊＊＊＊
 
       onSelectRow (val) {
         this.selectedDevices = val
@@ -355,10 +373,6 @@
         const index = this.deviceQueue.indexOf(device)
         this.deviceQueue.splice(index, 1)
       }
-    },
-
-    components: {
-      deployView
     }
   }
 </script>
