@@ -183,12 +183,13 @@
           if (this.editInfo.instanceId) {
             this.formData.map(formBlock => {
               formBlock.value.map(item => {
-                if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
+                if (item.value.type === 'FK' && this.editData[item.id]) { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
                   this.editData[item.id] = this.editData[item.id].instanceId
-                } else if (item.value.type === 'FKs') { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
-                  const data = this.editData[item.id]
+                } else if (item.value.type === 'FKs' && this.editData[item.id]) { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
+                  const arrdata = this.editData[item.id]
                   this.editData[item.id] = []
-                  data.map(value => {
+                  // console.log('arr', arrdata)
+                  arrdata.map(value => {
                     this.editData[item.id].push(value.instanceId)
                   })
                 }
