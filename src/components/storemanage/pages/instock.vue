@@ -192,6 +192,8 @@
                   arrdata.map(value => {
                     this.editData[item.id].push(value.instanceId)
                   })
+                } else if (item.value.type === 'int' && (this.editData[item.id] === '')) {
+                  this.editData[item.id] = 0
                 }
               })
             })
@@ -248,11 +250,45 @@
                 }
               }
             }
-            this.http.post('', this.parseData(postData)).then((res) => {
-              console.log(res)
-              this.$router.replace('/')
-              this.$message.warning('提交成功！')
-            })
+            const updateData = {}
+            for (const i in this.editData) {
+              if (this.editData[i] !== '') {
+                updateData[i] = this.editData[i]
+              }
+            }
+            console.log(updateData)
+            const updataInstanceData = {
+              action: 'cmdb/update/instance',
+              method: 'PUT',
+              data: {
+                object_id: this.deviceType,
+                instanceId: this.instockForm.data[0].instanceId,
+                object_data: updateData
+              }
+            }
+            if (this.editInfo.instanceId) {
+              this.http.post('', this.parseData(updataInstanceData)).then((res) => {
+                console.log(res)
+                if (res.status === 200) {
+                  this.$notify({
+                    title: '成功',
+                    message: `变更成功！`,
+                    type: 'success'
+                  })
+                } else {
+                  this.$notify.error({
+                    title: '失败',
+                    message: `变更失败！`
+                  })
+                }
+              })
+            } else {
+              this.http.post('', this.parseData(postData)).then((res) => {
+                console.log(res)
+                this.$router.replace('/')
+                this.$message.warning('提交成功！')
+              })
+            }
           } else {
             console.log('error submit!!')
             this.$message.warning('表单未填写完整，提交失败！')
