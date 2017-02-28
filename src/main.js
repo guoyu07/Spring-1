@@ -51,6 +51,9 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
+  if (rs.status === 401) {
+    auth.logout()
+  }
   NProgress.done()
   NProgress.remove()
   return rs
