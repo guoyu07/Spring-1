@@ -78,8 +78,8 @@
       </el-col>
     </el-row>
     <el-row>
-      <el-button @click="submitBtn">确认完成</el-button>
-      <el-button @click="$router.go(-1)">取消</el-button>
+      <el-button icon="fa-check" @click="submitBtn">确认完成</el-button>
+      <el-button icon="fa-undo" @click="$router.go(-1)">取消</el-button>
     </el-row>
   </div>
 </template>

@@ -1,6 +1,14 @@
+<style lang="less">
+  .option-btn {
+    margin: 20px 0 6px;
+  }
+</style>
+
 <template>
   <div class="list-content">
-    <el-button @click="newTaskBtn">新建</el-button>
+    <el-row class="option-btn">
+      <el-button icon="plus" @click="newTaskBtn">新建</el-button>
+    </el-row>
     <el-table :data="tableData">
       <el-table-column label="流程步骤">
         <template scope="scope">
@@ -10,8 +18,8 @@
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" @click="modifyBtn(scope.$index)">修改</el-button>
-          <el-button size="small" type="danger" @click="delBtn(scope.$index)">删除</el-button>
+          <el-button size="small" icon="edit" @click="modifyBtn(scope.$index)">修改</el-button>
+          <el-button size="small" icon="delete" type="danger" @click="delBtn(scope.$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
