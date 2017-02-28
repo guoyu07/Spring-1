@@ -179,8 +179,8 @@
         idcgroup: [],
         applyData: {
           applyType: '新建应用',
-          project: '春秋航空某项目',
-          applicationName: '春秋航空某应用',
+          project: '民生银行某项目',
+          applicationName: '民生银行某应用',
           remark: '',
           data: [{
             id: '123',

@@ -16,7 +16,7 @@
 
       <el-submenu index="/storemanage">
         <template slot="title">仓库管理</template>
-        <el-menu-item index="/storemanage/instock"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
+        <el-menu-item index="/storemanage/instock" @click="this.$router.go(0)"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
         <el-menu-item index="/storemanage/outstock"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
       </el-submenu>
 
