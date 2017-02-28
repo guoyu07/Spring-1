@@ -13,7 +13,7 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-            
+
             <el-form-item label="模糊搜索">
               <el-switch
                 v-model="isAdvanceSearch"
@@ -166,7 +166,6 @@
           <div class="btn-area">
             <el-button type="primary" class="md" @click="bulkEditSheve">批量编辑并上架</el-button>
           </div>
-              <!-- </div> -->
             </el-col>
           </el-row>
         </el-card>
@@ -177,68 +176,68 @@
       v-model="deployViewData.visible"
       top="10%"
       :modal="true">
-      <el-form
-        ref="onShelveData"
-        :model="onShelveData"
-        label-width="120px">
+      <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
-          <el-tab-pane v-for="(device, index) in onShelveData" :label="device.name">
-            <el-row>
-              <el-col :span="20" :offset="2">
-                  <el-form-item
-                    v-for="field in formStructure"
-                    :label="field.name"
-                    :rules="{
-                      type: (field.value.type === 'arr' || field.value.type === 'FKs') ? 'array' : (field.value.type === 'int' ? 'number' : ((field.value.type === 'datetime' || field.value.type === 'date') ? 'date' : 'string')), required: field.required === 'true', message: field.name + '不能为空', trigger: 'blur, change'
-                    }">
-                    <el-input
-                      v-if="field.value.type === 'str'"
-                      v-model="device[field.id]">
-                    </el-input>
+          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
+            <div class="form-block" v-for="formItem in formStructure">
+              <el-form-item
+                :prop="'data.' + index + '.' + formItem.id"
+                :label="formItem.name"
+                :rules="{
+                  type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
+                }">
+                <el-input
+                  v-if="formItem.value.type === 'str'"
+                  v-model="item[formItem.id]">
+                </el-input>
 
-                    <el-input-number
-                      v-else-if="field.value.type === 'int'"
-                      v-model="device[field.id]" :min="0">
-                    </el-input-number>
+                <el-input-number
+                  v-else-if="formItem.value.type === 'int'"
+                  v-model="item[formItem.id]" :min="0">
+                </el-input-number>
 
-                    <el-select
-                      v-else-if="field.value.type === 'enum'"
-                      v-model="device[field.id]">
-                      <el-option v-for="option in field.value.regex"
-                        :label="option"
-                        :value="option"></el-option>
-                    </el-select>
+                <el-select
+                  v-else-if="formItem.value.type === 'enum'"
+                  v-model="item[formItem.id]"
+                  readonly="false">
+                  <el-option v-for="option in formItem.value.regex"
+                    :label="option"
+                    :value="option"></el-option>
+                </el-select>
 
-                    <el-select
-                      v-else-if="field.value.type === 'FK' || field.value.type === 'FKs'"
-                      v-model="device[field.id]"
-                      :multiple="field.value.type === 'FKs'">
-                      <el-option v-for="option in field.value.object_list"
-                        :label="option.name"
-                        :value="option.instanceId"></el-option>
-                    </el-select>
+                <el-select
+                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
+                  v-model="item[formItem.id]"
+                  :multiple="formItem.value.type === 'FKs'">
+                  <el-option v-for="option in formItem.value.object_list"
+                    :label="option.name"
+                    :value="option.instanceId"></el-option>
+                </el-select>
 
-                    <el-select
-                      v-else-if="field.value.type === 'arr'"
-                      v-model="device[field.id]"
-                      multiple
-                      filterable=""
-                      allow-create>
-                      <el-option value="">请创建</el-option>
-                    </el-select>
+                <el-select
+                  v-else-if="formItem.value.type === 'arr'"
+                  v-model="item[formItem.id]"
+                  multiple
+                  filterable=""
+                  allow-create>
+                  <el-option value="">请创建</el-option>
+                </el-select>
 
-                    <el-date-picker
-                      v-else="field.value.type === 'datetime' || field.value.type === 'date'"
-                      v-model="device[field.id]"
-                      :type="field.value.type === 'datetime' ? 'datetime' : 'date'"
-                      placeholder="选择时间">
-                    </el-date-picker>
-                  </el-form-item>
-              </el-col>
-            </el-row>
+                <el-date-picker
+                  v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
+                  v-model="item[formItem.id]"
+                  :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
+                  placeholder="选择时间">
+                </el-date-picker>
+              </el-form-item>
+            </div>
           </el-tab-pane>
         </el-tabs>
       </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deployViewData.visible = false">取 消</el-button>
+        <el-button type="primary" @click="onConfirm('onShelveForm')">确 定</el-button>
+      </span>
     </el-dialog>
   </div>
 </template>
@@ -249,7 +248,7 @@
       return {
         loading: false,
         isAdvanceSearch: false,
-        formStructure: {},
+        formStructure: [],
         deviceType: '',
         deviceList: [],
         deviceLoading: false,
@@ -265,7 +264,9 @@
         },
         selectedDevices: [],
         deviceQueue: [],
-        onShelveData: []
+        onShelveForm: {
+          data: []
+        }
       }
     },
 
@@ -299,16 +300,11 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           console.log(res)
           this.formStructure = res.data.data.attr_list
-          // this.deviceQueue
-          // this.onShelveData
-          // this.formStructure.map(group => {
-          //   //
-          // })
-          console.log(this.deviceQueue)
         })
       },
 
       onDeviceTypeChange () {
+        this.deviceTable = []
         this.renderFormStructure()
         var postData = {
           action: 'cmdb/object/search/attr',
@@ -406,29 +402,34 @@
               this.$message.warning('上架设备最多 5 个！')
             } else {
               this.deviceQueue = [...this.deviceQueue, device]
+              this.deviceQueue.forEach((v, k) => {
+                this.onShelveForm.data[k] = {}
+                this.$set(this.onShelveForm.data[k], 'name', v.name)
+                this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
+                this.formStructure.map(item => {
+                  if (item.value.type === 'arr' || item.value.type === 'FKs') {
+                    this.$set(this.onShelveForm.data[k], item.id, [])
+                  } else if (item.value.type === 'int') {
+                    this.$set(this.onShelveForm.data[k], item.id, 0)
+                  } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                    this.$set(this.onShelveForm.data[k], item.id, undefined)
+                  } else {
+                    this.$set(this.onShelveForm.data[k], item.id, '')
+                  }
+                })
+              })
             }
           }
         }
       },
 
       bulkEditSheve () {
-        this.deviceQueue.forEach((v, k) => {
-          this.onShelveData[k] = {}
-          this.onShelveData[k].name = v.name
-          this.onShelveData[k].instanceId = v.instanceId
-          this.formStructure.map(item => {
-            if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              this.$set(this.onShelveData[k], item.id, [])
-            } else if (item.value.type === 'int') {
-              this.$set(this.onShelveData[k], item.id, 0)
-            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-              this.$set(this.onShelveData[k], item.id, undefined)
-            } else {
-              this.$set(this.onShelveData[k], item.id, '')
-            }
-          })
-        })
         this.deployViewData.visible = true
+      },
+
+      onConfirm (formName) {
+        this.deployViewData.visible = false
+        console.log(formName)
       },
 
       onRemove (device) {
