@@ -10,8 +10,7 @@
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small">执行</el-button>
-          <el-button size="small">修改</el-button>
+          <el-button size="small" @click="modifyBtn(scope.$index)">修改</el-button>
           <el-button size="small" type="danger" @click="delBtn(scope.$index)">删除</el-button>
         </template>
       </el-table-column>
@@ -31,6 +30,10 @@ export default {
   },
   methods: {
     newTaskBtn () {
+      this.$router.push('/part1/editor')
+    },
+    modifyBtn (index) {
+      // console.log(index)
       this.$router.push('/part1/editor')
     },
     delBtn (index) {
