@@ -1,8 +1,17 @@
 <style lang="less" scoped>
   .editor-content {
-    .el-input {
+    .el-input, .conf-btn {
       width: 180px;
       display: inline-block;
+    }
+    .el-row {
+      margin-top: 10px;
+      &:first-child {
+        margin-top: 20px;
+      }
+      .el-col:first-child {
+        line-height: 36px;
+      }
     }
   }
 </style>
@@ -45,19 +54,19 @@
       </el-col>
       <el-col :span="4" v-if="item.type === 'radiobox'">
         <el-popover placement="bottom" title="单选配置" trigger="click">
-          <el-button slot="reference" style="width: 100%">配置选项</el-button>
+          <el-button slot="reference" class="conf-btn">配置选项</el-button>
           <multi-conf :conf-arr="item.value.value"></multi-conf>
         </el-popover>
       </el-col>
       <el-col :span="4" v-if="item.type === 'checkbox'">
         <el-popover placement="bottom" title="多选配置" trigger="click">
-          <el-button slot="reference" style="width: 100%">配置选项</el-button>
+          <el-button slot="reference" class="conf-btn">配置选项</el-button>
           <multi-conf :conf-arr="item.value.value"></multi-conf>
         </el-popover>
       </el-col>
       <el-col :span="4" v-if="item.type === 'select'">
         <el-popover placement="bottom" title="下拉选项配置" trigger="click">
-          <el-button slot="reference" style="width: 100%">配置选项</el-button>
+          <el-button slot="reference" class="conf-btn">配置选项</el-button>
           <multi-conf :conf-arr="item.value.value"></multi-conf>
         </el-popover>
       </el-col>
@@ -68,8 +77,10 @@
         <el-button type="primary" icon="delete" @click="delBtn(index)"></el-button>
       </el-col>
     </el-row>
-    <el-button @click="submitBtn">确认完成</el-button>
-    <el-button @click="$router.go(-1)">取消</el-button>
+    <el-row>
+      <el-button icon="fa-check" @click="submitBtn">确认完成</el-button>
+      <el-button icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+    </el-row>
   </div>
 </template>
 
