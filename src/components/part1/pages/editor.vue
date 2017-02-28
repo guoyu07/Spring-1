@@ -11,7 +11,7 @@
   <div class="editor-content">
     <el-row>
       <label>表单名称：</label>
-      <el-input placeholder="请输入表单名称"></el-input>
+      <el-input v-model="formName" placeholder="请输入表单名称"></el-input>
     </el-row>
     <el-row>
       <label>表单参数：</label>
@@ -69,7 +69,7 @@
       </el-col>
     </el-row>
     <el-button @click="submitBtn">确认完成</el-button>
-      <el-button @click="$router.go(-1)">取消</el-button>
+    <el-button @click="$router.go(-1)">取消</el-button>
   </div>
 </template>
 
@@ -79,6 +79,7 @@ import multiConf from './multiConf'
 export default {
   data () {
     return {
+      formName: '',
       formConf: []
     }
   },
@@ -154,18 +155,17 @@ export default {
     delBtn (index) {
       this.formConf.splice(index, 1)
     },
-    // 删除选项
-    opDelBtn (index, opIndex) {
-      this.formConf[index].value.value.splice(opIndex, 1)
-    },
-    // 添加选项
-    opAddBtn (index) {
-      this.formConf[index].value.value.push('')
-    },
     // 确认完成
     submitBtn () {
       this.$router.go(-1)
       // 提交数据
+      console.log({
+        formName: this.formName,
+        formConf: this.formConf
+      })
+      // 复位
+      this.formName = ''
+      this.formConf = []
     }
   },
   components: {
