@@ -52,13 +52,13 @@
           }
         }
         this.http.post('', this.parseData(updataInstanceData)).then((res) => {
-          console.log(res)
           if (res.status === 200) {
             this.$notify({
               title: '成功',
               message: `变更成功！`,
               type: 'success'
             })
+            this.deviceViewData.visible = false
           } else {
             this.$notify.error({
               title: '失败',
