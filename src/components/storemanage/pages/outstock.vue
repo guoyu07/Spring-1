@@ -13,6 +13,14 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
+
+            <el-form-item label="模糊搜索">
+              <el-switch
+                v-model="isAdvanceSearch"
+                on-text="开启"
+                on-color="#42d885"
+                off-text="关闭"></el-switch>
+            </el-form-item>
           </el-form>
 
           <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
@@ -78,17 +86,9 @@
                 </el-date-picker>
               </el-form-item>
             </div>
-
-            <el-form-item label="模糊搜索">
-              <el-switch
-                v-model="isAdvanceSearch"
-                on-text="开启"
-                on-color="#42d885"
-                off-text="关闭"></el-switch>
-            </el-form-item>
             <br>
             <el-form-item>
-              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '精确搜索' : '模糊搜索' }}</el-button>
+              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
@@ -120,6 +120,16 @@
               </span>
             </el-table-column>
           </el-table>
+          <div class="pagination-block clear" v-if="deviceTotal">
+            <el-pagination
+              class="fr"
+              layout="prev, pager, next"
+              :current-page="devicePage"
+              :page-size="10"
+              @current-change="onDevicePageChange"
+              :total="deviceTotal">
+            </el-pagination>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -180,6 +190,8 @@
         searchKeys: {},
         searchKeyList: [],
         deviceTable: [],
+        devicePage: 1,
+        deviceTotal: 0,
         retrieveViewData: {
           visible: false,
           device: {}
@@ -271,7 +283,8 @@
             method: 'POST',
             data: {
               object_id: this.deviceType,
-              page: page,
+              page: this.devicePage,
+              pageSize: 10,
               keyword: this.searchKey
             }
           }
@@ -290,7 +303,8 @@
             method: 'POST',
             data: {
               query: searchData,
-              page: page,
+              page: this.devicePage,
+              pageSize: 10,
               fields: {},
               sort: {}
             }
@@ -306,9 +320,15 @@
           if (!res.data.data.data.total) {
             this.$message.warning('找不到结果！')
           }
+          this.deviceTotal = res.data.data.data.total
           this.deviceTable = res.data.data.data.list
           this.deviceLoading = false
         }
+      },
+
+      onDevicePageChange (val) {
+        this.devicePage = val
+        this.onSearchDevices(this.isAdvanceSearch)
       },
 
       onEmptySearch (formName) {

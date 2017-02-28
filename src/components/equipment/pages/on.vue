@@ -13,6 +13,14 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
+            
+            <el-form-item label="模糊搜索">
+              <el-switch
+                v-model="isAdvanceSearch"
+                on-text="开启"
+                on-color="#42d885"
+                off-text="关闭"></el-switch>
+            </el-form-item>
           </el-form>
           
           <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
@@ -77,14 +85,6 @@
                 </el-date-picker>
               </el-form-item>
             </div>
-            
-            <el-form-item label="模糊搜索">
-              <el-switch
-                v-model="isAdvanceSearch"
-                on-text="开启"
-                on-color="#42d885"
-                off-text="关闭"></el-switch>
-            </el-form-item>
             <br>
             <el-form-item>
               <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
