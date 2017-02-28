@@ -28,7 +28,6 @@
                       :rules="{
                         type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
                       }">
-                      <!-- ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string') -->
                       <el-input
                         v-if="formItem.value.type === 'str'"
                         v-model="item[formItem.id]">
@@ -265,7 +264,16 @@
         })
       },
       onConfirm (formName) {
-        console.log('fffff')
+        let objectList = []
+        this.instockForm.data.forEach((item, k) => {
+          objectList[k] = {}
+          for (const i in item) {
+            if (item[i]) {
+              objectList[k][i] = item[i]
+            }
+          }
+        })
+        console.log(objectList)
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log('submit!')
@@ -275,7 +283,7 @@
               data: {
                 pkey: this.deviceListStructure[this.deviceType],
                 form: {
-                  'object_list': this.instockForm.data,
+                  'object_list': objectList,
                   'object_id': this.deviceType
                 }
               }
@@ -326,8 +334,8 @@
                     title: '成功',
                     message: '提交成功！'
                   })
-                  this.$router.replace('/')
-                  this.$message.warning('提交成功！')
+                  this.$router.replace('/others/worklist')
+                  // this.$message.warning('提交成功！')
                 }
               })
             }

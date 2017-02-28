@@ -307,12 +307,7 @@
         this.offTabel.splice(index, 1)
       },
       onConfirmOff () {
-        // this.offTabel = []
-        // this.deviceTable = []
         const deviceIds = []
-        // this.offTabel.map(item => {
-        //   deviceIds.push(item.instanceId)
-        // })
         this.offTabel.forEach((v, k) => {
           deviceIds[k] = {}
           deviceIds[k].instanceId = v.instanceId
@@ -337,11 +332,6 @@
           this.deviceTable = [] // 清空设备列表
           this.offTabel = [] // 清空下架列表
         })
-      },
-      onReject () {
-        this.offTabel = []
-        this.$message.success('成功驳回')
-        console.log(this.offTabel)
       },
       handleOpen (key, keyPath) {
         console.log(key, keyPath)
