@@ -13,6 +13,13 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
+            <el-form-item label="模糊搜索">
+              <el-switch
+                v-model="isAdvanceSearch"
+                on-text="开启"
+                on-color="#42d885"
+                off-text="关闭"></el-switch>
+            </el-form-item>
           </el-form>
           <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
             <div class="form-block" :class="{ expand: !isAdvanceSearch }">
@@ -76,14 +83,6 @@
                 </el-date-picker>
               </el-form-item>
             </div>
-
-            <el-form-item label="模糊搜索">
-              <el-switch
-                v-model="isAdvanceSearch"
-                on-text="开启"
-                on-color="#42d885"
-                off-text="关闭"></el-switch>
-            </el-form-item>
             <br>
             <el-form-item>
               <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
@@ -127,6 +126,7 @@
               @current-change="onDevicePageChange"
               :total="deviceTotal">
             </el-pagination>
+          </div>
           <div class="btn-area" style="margin: 15px 0">
             <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至下架</el-button>
           </div>
@@ -153,7 +153,6 @@
               </span>
             </el-table-column>
           </el-table>
-          </div>
           <div class="btn-area" style="margin: 25px 0 12px">
             <el-button class="md" type="primary" @click="onConfirmOff">确认下架</el-button>
             <!-- <el-button @click="onReject">驳回</el-button> -->

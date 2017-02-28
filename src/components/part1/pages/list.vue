@@ -12,7 +12,7 @@
         <template scope="scope">
           <el-button size="small">执行</el-button>
           <el-button size="small">修改</el-button>
-          <el-button size="small" type="danger">删除</el-button>
+          <el-button size="small" type="danger" @click="delBtn(scope.$index)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -26,9 +26,15 @@ export default {
       tableData: [ { name: '流程步骤-1' }, { name: '流程步骤-2' } ]
     }
   },
+  activated () {
+    console.log('拉取数据')
+  },
   methods: {
     newTaskBtn () {
       this.$router.push('/part1/editor')
+    },
+    delBtn (index) {
+      this.tableData.splice(index, 1)
     }
   }
 }
