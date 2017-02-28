@@ -176,60 +176,66 @@
       v-model="deployViewData.visible"
       top="10%"
       :modal="true">
-      <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
+      <el-form
+        ref="onShelveForm"
+        :model="onShelveForm"
+        label-width="120px">
         <el-tabs type="border-card">
-          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
-            <div class="form-block" v-for="formItem in formStructure">
-              <el-form-item
-                :prop="'data.' + index + '.' + formItem.id"
-                :label="formItem.name"
-                :rules="{
-                  type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
-                }">
-                <el-input
-                  v-if="formItem.value.type === 'str'"
-                  v-model="item[formItem.id]">
-                </el-input>
+          <el-tab-pane v-for="(device, index) in onShelveForm" :label="device.name">
+            <el-row>
+              <el-col :span="20" :offset="2">
+                  <el-form-item
+                    v-for="field in formStructure"
+                    :label="field.name"
+                    :prop="index + '.' + field.id"
+                    :rules="{
+                      type: (field.value.type === 'arr' || field.value.type === 'FKs') ? 'array' : (field.value.type === 'int' ? 'number' : ((field.value.type === 'datetime' || field.value.type === 'date') ? 'date' : 'string')), required: field.required === 'true', message: field.name + '不能为空', trigger: 'blur, change'
+                    }">
+                    <el-input
+                      v-if="field.value.type === 'str'"
+                      v-model="device[field.id]">
+                    </el-input>
 
-                <el-input-number
-                  v-else-if="formItem.value.type === 'int'"
-                  v-model="item[formItem.id]" :min="0">
-                </el-input-number>
+                    <el-input-number
+                      v-else-if="field.value.type === 'int'"
+                      v-model="device[field.id]" :min="0">
+                    </el-input-number>
 
-                <el-select
-                  v-else-if="formItem.value.type === 'enum'"
-                  v-model="item[formItem.id]">
-                  <el-option v-for="option in formItem.value.regex"
-                    :label="option"
-                    :value="option"></el-option>
-                </el-select>
+                    <el-select
+                      v-else-if="field.value.type === 'enum'"
+                      v-model="device[field.id]">
+                      <el-option v-for="option in field.value.regex"
+                        :label="option"
+                        :value="option"></el-option>
+                    </el-select>
 
-                <el-select
-                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                  v-model="item[formItem.id]"
-                  :multiple="formItem.value.type === 'FKs'">
-                  <el-option v-for="option in formItem.value.object_list"
-                    :label="option.name"
-                    :value="option.instanceId"></el-option>
-                </el-select>
+                    <el-select
+                      v-else-if="field.value.type === 'FK' || field.value.type === 'FKs'"
+                      v-model="device[field.id]"
+                      :multiple="field.value.type === 'FKs'">
+                      <el-option v-for="option in field.value.object_list"
+                        :label="option.name"
+                        :value="option.instanceId"></el-option>
+                    </el-select>
 
-                <el-select
-                  v-else-if="formItem.value.type === 'arr'"
-                  v-model="item[formItem.id]"
-                  multiple
-                  filterable=""
-                  allow-create>
-                  <el-option value="">请创建</el-option>
-                </el-select>
+                    <el-select
+                      v-else-if="field.value.type === 'arr'"
+                      v-model="device[field.id]"
+                      multiple
+                      filterable=""
+                      allow-create>
+                      <el-option value="">请创建</el-option>
+                    </el-select>
 
-                <el-date-picker
-                  v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                  v-model="item[formItem.id]"
-                  :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                  placeholder="选择时间">
-                </el-date-picker>
-              </el-form-item>
-            </div>
+                    <el-date-picker
+                      v-else="field.value.type === 'datetime' || field.value.type === 'date'"
+                      v-model="device[field.id]"
+                      :type="field.value.type === 'datetime' ? 'datetime' : 'date'"
+                      placeholder="选择时间">
+                    </el-date-picker>
+                  </el-form-item>
+              </el-col>
+            </el-row>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -247,7 +253,7 @@
       return {
         loading: false,
         isAdvanceSearch: false,
-        formStructure: [],
+        formStructure: {},
         deviceType: '',
         deviceList: [],
         deviceLoading: false,
@@ -263,9 +269,7 @@
         },
         selectedDevices: [],
         deviceQueue: [],
-        onShelveForm: {
-          data: []
-        }
+        onShelveForm: []
       }
     },
 
@@ -299,6 +303,12 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           console.log(res)
           this.formStructure = res.data.data.attr_list
+          // this.deviceQueue
+          // this.onShelveForm
+          // this.formStructure.map(group => {
+          //   //
+          // })
+          console.log(this.deviceQueue)
         })
       },
 
@@ -406,20 +416,19 @@
       },
 
       bulkEditSheve () {
-        console.log(this.onShelveForm)
         this.deviceQueue.forEach((v, k) => {
-          this.onShelveForm.data[k] = {}
-          this.$set(this.onShelveForm.data[k], 'name', v.name)
-          this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
+          this.onShelveForm[k] = {}
+          this.$set(this.onShelveForm[k], 'name', v.name)
+          this.$set(this.onShelveForm[k], 'instanceId', v.instanceId)
           this.formStructure.map(item => {
             if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              this.$set(this.onShelveForm.data[k], item.id, [])
+              this.$set(this.onShelveForm[k], item.id, [])
             } else if (item.value.type === 'int') {
-              this.$set(this.onShelveForm.data[k], item.id, 0)
+              this.$set(this.onShelveForm[k], item.id, 0)
             } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-              this.$set(this.onShelveForm.data[k], item.id, undefined)
+              this.$set(this.onShelveForm[k], item.id, undefined)
             } else {
-              this.$set(this.onShelveForm.data[k], item.id, '')
+              this.$set(this.onShelveForm[k], item.id, '')
             }
           })
         })

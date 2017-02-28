@@ -361,9 +361,6 @@
   .form-title {
     margin-bottom: 15px;
   }
-  .margin-top {
-    margin-top: 15px;
-  }
   .margin-bottom {
     margin-bottom: 15px;
   }
