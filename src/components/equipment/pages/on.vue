@@ -13,7 +13,6 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-
             <el-form-item label="模糊搜索">
               <el-switch
                 v-model="isAdvanceSearch"
@@ -22,7 +21,6 @@
                 off-text="关闭"></el-switch>
             </el-form-item>
           </el-form>
-
           <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
             <div class="form-block" :class="{ expand: !isAdvanceSearch }">
               <el-form-item label="关键词">
@@ -39,7 +37,6 @@
                   v-model="searchKeys[key.id]"
                   size="small">
                 </el-input>
-
                 <el-input
                   v-else-if="key.value.type === 'int'"
                   :prop="key.id"
@@ -47,7 +44,6 @@
                   type="number"
                   size="small">
                 </el-input>
-
                 <el-select
                   v-else-if="key.value.type === 'enum'"
                   :prop="key.id"
@@ -57,7 +53,6 @@
                     :label="option"
                     :value="option"></el-option>
                 </el-select>
-
                 <div class="form-unit"
                   v-else-if="key.value.type === 'FK' || key.value.type === 'FKs'"
                   :prop="key.id">
@@ -74,7 +69,6 @@
                     size="small">
                   </el-input>
                 </div>
-
                 <el-date-picker
                   v-else="key.value.type === 'datetime' || key.value.type === 'date'"
                   :prop="key.id"
@@ -91,7 +85,6 @@
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
-
           <el-table
             :data="deviceTable"
             border
@@ -190,12 +183,10 @@
                   v-if="formItem.value.type === 'str'"
                   v-model="item[formItem.id]">
                 </el-input>
-
                 <el-input-number
                   v-else-if="formItem.value.type === 'int'"
                   v-model="item[formItem.id]" :min="0">
                 </el-input-number>
-
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
                   v-model="item[formItem.id]"
@@ -204,7 +195,6 @@
                     :label="option"
                     :value="option"></el-option>
                 </el-select>
-
                 <el-select
                   v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
                   v-model="item[formItem.id]"
@@ -213,7 +203,6 @@
                     :label="option.name"
                     :value="option.instanceId"></el-option>
                 </el-select>
-
                 <el-select
                   v-else-if="formItem.value.type === 'arr'"
                   v-model="item[formItem.id]"
@@ -222,7 +211,6 @@
                   allow-create>
                   <el-option value="">请创建</el-option>
                 </el-select>
-
                 <el-date-picker
                   v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
                   v-model="item[formItem.id]"
@@ -241,7 +229,6 @@
     </el-dialog>
   </div>
 </template>
-
 <script>
   export default {
     data () {
@@ -269,11 +256,9 @@
         }
       }
     },
-
     created () {
       this.renderDeviceList()
     },
-
     methods: {
       renderDeviceList () {
         let postData = {
@@ -290,7 +275,6 @@
           })
         })
       },
-
       renderFormStructure () {
         let postData = {
           action: `cmdb/object/on/attr`,
@@ -302,7 +286,6 @@
           this.formStructure = res.data.data.attr_list
         })
       },
-
       onDeviceTypeChange () {
         this.deviceTable = []
         this.renderFormStructure()
@@ -326,7 +309,6 @@
           this.loading = false
         })
       },
-
       onSearchDevices (isAdvance) {
         if (!isAdvance) {
           if (!this.searchKey) {
@@ -369,7 +351,6 @@
             processRes(res)
           })
         }
-
         const processRes = (res) => {
           console.log(res)
           if (!res.data.data.data.total) {
@@ -380,21 +361,17 @@
           this.deviceLoading = false
         }
       },
-
       onDevicePageChange (val) {
         this.devicePage = val
         this.onSearchDevices(this.isAdvanceSearch)
       },
-
       onEmptySearch (formName) {
         console.log(this.$refs[formName])
         this.$refs[formName].resetFields()
       },
-
       onSelectRow (val) {
         this.selectedDevices = val
       },
-
       onPushInQueue () {
         for (const device of this.selectedDevices) {
           if (!this.deviceQueue.includes(device)) {
@@ -422,16 +399,13 @@
           }
         }
       },
-
       bulkEditSheve () {
         this.deployViewData.visible = true
       },
-
       onConfirm (formName) {
         this.deployViewData.visible = false
         console.log(formName)
       },
-
       onRemove (device) {
         const index = this.deviceQueue.indexOf(device)
         this.deviceQueue.splice(index, 1)

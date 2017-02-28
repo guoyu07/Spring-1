@@ -10,10 +10,6 @@
               :value="apyType.value"></el-option>
           </el-select>
         </el-form-item>
-
-        <!-- <el-form-item prop="applicant" label="申请人">
-          <el-input v-model="applyForm.applicant"></el-input>
-        </el-form-item> -->
         <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="project" label="项目组">
           <el-select v-model="applyForm.project">
             <el-option v-for="project in applyTypes"
@@ -35,14 +31,10 @@
         <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
           <el-input v-model="applyForm.applicationName"></el-input>
         </el-form-item>
-
-        <!-- <el-form-item prop="date" label="申请时间">
-          <el-date-picker type="date" placeholder="选择日期" v-model="applyForm.date" style="width: 100%;"></el-date-picker>
-        </el-form-item> -->
       </el-row>
 
-      <el-button size="small" @click="onAdd('applyForm')" class="margin-bottom" icon="plus">增加服务器</el-button>
-      <el-tabs type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
+      <el-button size="small" @click="onAdd('applyForm')" icon="plus">增加服务器</el-button>
+      <el-tabs class="margin-top" type="card" closable @tab-click="handleClick" @tab-remove="handleRemove">
         <el-tab-pane  v-for="(item, index) in applyForm.data" :key="item.id" :label="'服务资源' + (index + 1)">
           <el-form-item
             label="使用环境"
