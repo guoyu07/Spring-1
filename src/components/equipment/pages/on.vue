@@ -13,7 +13,7 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-            
+
             <el-form-item label="模糊搜索">
               <el-switch
                 v-model="isAdvanceSearch"
@@ -198,7 +198,8 @@
 
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
-                  v-model="item[formItem.id]">
+                  v-model="item[formItem.id]"
+                  readonly="false">
                   <el-option v-for="option in formItem.value.regex"
                     :label="option"
                     :value="option"></el-option>
@@ -303,6 +304,7 @@
       },
 
       onDeviceTypeChange () {
+        this.deviceTable = []
         this.renderFormStructure()
         var postData = {
           action: 'cmdb/object/search/attr',
@@ -400,30 +402,28 @@
               this.$message.warning('上架设备最多 5 个！')
             } else {
               this.deviceQueue = [...this.deviceQueue, device]
+              this.deviceQueue.forEach((v, k) => {
+                this.onShelveForm.data[k] = {}
+                this.$set(this.onShelveForm.data[k], 'name', v.name)
+                this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
+                this.formStructure.map(item => {
+                  if (item.value.type === 'arr' || item.value.type === 'FKs') {
+                    this.$set(this.onShelveForm.data[k], item.id, [])
+                  } else if (item.value.type === 'int') {
+                    this.$set(this.onShelveForm.data[k], item.id, 0)
+                  } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                    this.$set(this.onShelveForm.data[k], item.id, undefined)
+                  } else {
+                    this.$set(this.onShelveForm.data[k], item.id, '')
+                  }
+                })
+              })
             }
           }
         }
       },
 
       bulkEditSheve () {
-        console.log(this.onShelveForm)
-        this.deviceQueue.forEach((v, k) => {
-          this.onShelveForm.data[k] = {}
-          this.$set(this.onShelveForm.data[k], 'name', v.name)
-          this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
-          this.formStructure.map(item => {
-            if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              this.$set(this.onShelveForm.data[k], item.id, [])
-            } else if (item.value.type === 'int') {
-              this.$set(this.onShelveForm.data[k], item.id, 0)
-            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-              this.$set(this.onShelveForm.data[k], item.id, undefined)
-            } else {
-              this.$set(this.onShelveForm.data[k], item.id, '')
-            }
-          })
-        })
-        console.log(this.onShelveForm)
         this.deployViewData.visible = true
       },
 
