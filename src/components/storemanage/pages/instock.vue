@@ -18,7 +18,7 @@
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
               <el-button v-if="!editInfo.instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
               <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
-                <el-tab-pane  v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
+                <el-tab-pane v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                   <div class="form-block" v-for="formBlock in formData">
                     <h4>{{formBlock.name}}</h4>
                     <el-form-item

@@ -164,7 +164,7 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" @click="bulkEditSheve">批量编辑并上架</el-button>
+            <el-button type="primary" class="md" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
           </div>
             </el-col>
           </el-row>
@@ -178,8 +178,9 @@
       :modal="true">
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
-          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
+          <el-tab-pane v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
             <div class="form-block" v-for="formItem in formStructure">
+              <!-- <h4>{{formItem.tag[0]}}</h4> -->
               <el-form-item
                 :prop="'data.' + index + '.' + formItem.id"
                 :label="formItem.name"
@@ -198,8 +199,7 @@
 
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
-                  v-model="item[formItem.id]"
-                  readonly="false">
+                  v-model="item[formItem.id]">
                   <el-option v-for="option in formItem.value.regex"
                     :label="option"
                     :value="option"></el-option>
@@ -275,6 +275,7 @@
     },
 
     methods: {
+
       renderDeviceList () {
         let postData = {
           action: 'export/device/items',
@@ -423,7 +424,7 @@
         }
       },
 
-      bulkEditSheve () {
+      bulkEditAndDeploy () {
         this.deployViewData.visible = true
       },
 
