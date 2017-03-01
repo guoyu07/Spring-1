@@ -14,36 +14,34 @@
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="模糊搜索">
+            <!-- <el-form-item label="模糊搜索">
               <el-switch
                 v-model="isAdvanceSearch"
                 on-text="开启"
                 on-color="#42d885"
                 off-text="关闭"></el-switch>
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
 
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
-            <div class="form-block" :class="{ expand: !isAdvanceSearch }">
+          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+            <!-- <div class="form-block" v-show="!isAdvanceSearch">
               <el-form-item label="关键词">
                 <el-input
-                  v-model="searchKey"
+                  v-model="searchKeys.searchKey"
                   size="small"></el-input>
               </el-form-item>
-            </div>
-            <div class="form-block" :class="{ expand: isAdvanceSearch }">
-              <el-form-item v-for="formItem in searchKeyList" :label="formItem.name">
-                <!-- <el-input v-model="searchKeys[key.id]" size="small"></el-input> -->
+            </div> -->
+             <!-- v-show="isAdvanceSearch" -->
+            <div class="form-block">
+              <el-form-item v-for="formItem in searchKeyList" :label="formItem.name" :prop="formItem.id">
                 <el-input
-                  v-if="formItem.value.type === 'str'"
-                  :prop="formItem.id"
+                  v-if="formItem.value.type === 'str' || formItem.value.type === 'arr'"
                   v-model="searchKeys[formItem.id]"
                   size="small">
                 </el-input>
 
                 <el-input
                   v-else-if="formItem.value.type === 'int'"
-                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
                   type="number"
                   size="small">
@@ -51,7 +49,6 @@
 
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
-                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
                   size="small">
                   <el-option v-for="option in formItem.value.regex"
@@ -59,9 +56,17 @@
                     :value="option"></el-option>
                 </el-select>
 
+                <!-- <el-select
+                  v-else-if="formItem.value.type === 'arr'"
+                  v-model="searchKeys[formItem.id]"
+                  multiple
+                  filterable=""
+                  allow-create
+                  placeholder="请创建">
+                </el-select> -->
+
                 <div class="form-unit"
-                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                  :prop="formItem.id">
+                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'">
                   <el-select
                     v-model="searchKeys[formItem.id][0]"
                     size="small">
@@ -78,7 +83,6 @@
 
                 <el-date-picker
                   v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                  :prop="formItem.id"
                   v-model="searchKeys[formItem.id]"
                   :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
                   placeholder="选择时间"
@@ -89,7 +93,7 @@
             <br>
             <el-form-item>
               <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
-              <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
+              <el-button size="small" @click="resetForm('searchKeys')">清空</el-button>
             </el-form-item>
           </el-form>
 
@@ -180,14 +184,15 @@
     data () {
       return {
         loading: false,
-        isAdvanceSearch: false,
+        isAdvanceSearch: true,
         formStructure: {},
         deviceType: '',
         deviceLoading: false,
         deviceList: [],
         deviceListStructure: {},
-        searchKey: '',
-        searchKeys: {},
+        searchKeys: {
+          searchKey: ''
+        },
         searchKeyList: [],
         deviceTable: [],
         devicePage: 1,
@@ -273,47 +278,47 @@
       },
 
       onSearchDevices (page, isAdvance) {
-        if (!isAdvance) {
-          if (!this.searchKey) {
-            this.$message.warning('请填写关键词！')
-            return false
-          }
-          let postData = {
-            action: 'cmdb/fulltext/search',
-            method: 'POST',
-            data: {
-              object_id: this.deviceType,
-              page: this.devicePage,
-              pageSize: 10,
-              keyword: this.searchKey
-            }
-          }
-          this.deviceLoading = true
-          this.http.post('', this.parseData(postData)).then((res) => {
-            processRes(res)
-          })
-        } else {
-          let searchData = this.filterObj(this.searchKeys, isAdvance)
-          if (this.isEmptyObj(searchData)) {
-            this.$message.info('搜索条件不能为空！')
-            return false
-          }
-          let postData = {
-            action: `/object/${this.deviceType}/instance/_search`,
-            method: 'POST',
-            data: {
-              query: searchData,
-              page: this.devicePage,
-              pageSize: 10,
-              fields: {},
-              sort: {}
-            }
-          }
-          this.deviceLoading = true
-          this.http.post('easyops/', this.parseData(postData)).then((res) => {
-            processRes(res)
-          })
+        // if (!isAdvance) {
+          // if (!this.searchKeys.searchKey) {
+          //   this.$message.warning('请填写关键词！')
+          //   return false
+          // }
+          // let postData = {
+          //   action: 'cmdb/fulltext/search',
+          //   method: 'POST',
+          //   data: {
+          //     object_id: this.deviceType,
+          //     page: this.devicePage,
+          //     pageSize: 10,
+          //     keyword: this.searchKeys.searchKey
+          //   }
+          // }
+          // this.deviceLoading = true
+          // this.http.post('', this.parseData(postData)).then((res) => {
+          //   processRes(res)
+          // })
+        // } else {}
+        this.searchKeys.searchKey = ''
+        let searchData = this.filterObj(this.searchKeys, isAdvance)
+        if (this.isEmptyObj(searchData)) {
+          this.$message.info('搜索条件不能为空！')
+          return false
         }
+        let postData = {
+          action: `/object/${this.deviceType}/instance/_search`,
+          method: 'POST',
+          data: {
+            query: searchData,
+            page: this.devicePage,
+            pageSize: 10,
+            fields: {},
+            sort: {}
+          }
+        }
+        this.deviceLoading = true
+        this.http.post('easyops/', this.parseData(postData)).then((res) => {
+          processRes(res)
+        })
 
         const processRes = (res) => {
           console.log(res)
@@ -331,8 +336,7 @@
         this.onSearchDevices(this.isAdvanceSearch)
       },
 
-      onEmptySearch (formName) {
-        console.log(this.$refs[formName])
+      resetForm (formName) {
         this.$refs[formName].resetFields()
       },
 

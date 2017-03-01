@@ -60,8 +60,8 @@
                         v-model="item[formItem.id]"
                         multiple
                         filterable=""
-                        allow-create>
-                        <el-option value="">请创建</el-option>
+                        allow-create
+                        placeholder="请创建">
                       </el-select>
 
                       <el-date-picker
@@ -76,6 +76,7 @@
               </el-tabs>
             </el-form>
             <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')">确认</el-button>
+            <el-button class="margin-top" @click="resetForm('instockForm')">清空</el-button>
           </div>
         </el-card>
       </el-col>
@@ -262,6 +263,9 @@
             return false
           }
         })
+      },
+      resetForm (formName) {
+        this.$refs[formName].resetFields()
       },
       onConfirm (formName) {
         let objectList = []

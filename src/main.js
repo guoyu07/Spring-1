@@ -57,7 +57,15 @@ http.interceptors.response.use(rs => {
   NProgress.done()
   NProgress.remove()
   return rs
-}, err => Promise.reject(err))
+}, err => {
+  Promise.reject(err)
+  console.log(err.response)
+  new Vue({}).$notify({
+    title: '诶呀，出错了',
+    message: `${err.response.data.errorMessage}`,
+    type: 'success'
+  })
+})
 
 Vue.prototype.http = http
 
