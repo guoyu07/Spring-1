@@ -178,8 +178,7 @@
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
           <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
-            <div class="form-block" v-for="formItem in formStructure">
-              <!-- <h4>{{formItem.tag[0]}}</h4> -->
+            <!-- <div class="form-block" v-for="formItem in formStructure">
               <el-form-item
                 :prop="'data.' + index + '.' + formItem.id"
                 :label="formItem.name"
@@ -224,7 +223,8 @@
                   placeholder="选择时间">
                 </el-date-picker>
               </el-form-item>
-            </div>
+            </div> -->
+            <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -237,13 +237,17 @@
 </template>
 <script>
   import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import formStructure from '../../_plugins/_formStructure'
 
   export default {
     data () {
       return {
         loading: false,
         isAdvanceSearch: true,
-        formStructure: [],
+        formStructure: [{
+          name: '',
+          value: []
+        }],
         deviceType: '',
         deviceList: [],
         deviceLoading: false,
@@ -269,7 +273,7 @@
     },
     methods: {
       renderDeviceList () {
-        let postData = {
+        const postData = {
           action: 'on/device/items',
           method: 'GET',
           data: {}
@@ -292,7 +296,7 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           console.log(res)
-          this.formStructure = res.data.data.attr_list
+          this.formStructure[0].value = res.data.data.attr_list
         })
       },
 
@@ -398,7 +402,7 @@
                 this.onShelveForm.data[k] = {}
                 this.$set(this.onShelveForm.data[k], 'name', v.name)
                 this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
-                this.formStructure.map(item => {
+                this.formStructure[0].value.map(item => {
                   if (item.value.type === 'arr' || item.value.type === 'FKs') {
                     this.$set(this.onShelveForm.data[k], item.id, [])
                   } else if (item.value.type === 'int') {
@@ -430,7 +434,8 @@
       }
     },
     components: {
-      searchFormStructure
+      searchFormStructure,
+      formStructure
     }
   }
 </script>

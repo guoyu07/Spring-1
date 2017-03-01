@@ -1,6 +1,6 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <h3>系统上线列表</h3>
+    <h3>资源申请列表</h3>
     <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
     <el-table
       :data="applylist"

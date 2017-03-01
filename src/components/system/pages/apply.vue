@@ -4,28 +4,28 @@
     <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="85px" :inline="true">
       <el-row :gutter="10" class="m-top">
         <el-form-item prop="applyType" label="申请类型">
-          <el-select v-model="applyForm.applyType">
+          <el-select v-model="applyForm.applyType" @change="onChangeType">
             <el-option v-for="apyType in applyTypes"
               :label="apyType.label"
               :value="apyType.value"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="project" label="项目组">
-          <el-select v-model="applyForm.project">
-            <el-option v-for="project in applyTypes"
-              :label="project.label"
-              :value="project.value"></el-option> <!-- 因为这个project可以选填可以输入，所以只取字符串 -->
+        <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="business" label="项目组">
+          <el-select v-model="applyForm.business">
+            <el-option v-for="business in businessList"
+              :label="business.name"
+              :value="business.instanceId"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
           </el-select>
         </el-form-item>
-        <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="project" label="所属业务">
-          <el-input v-model="applyForm.project"></el-input>
+        <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="business" label="所属业务">
+          <el-input v-model="applyForm.business"></el-input>
         </el-form-item>
 
         <el-form-item v-if="applyForm.applyType === 'newGroup'" prop="applicationName" label="应用名">
           <el-select v-model="applyForm.applicationName">
-            <el-option v-for="application in applyTypes"
-              :label="application.label"
-              :value="application.value"></el-option>
+            <el-option v-for="app in appList"
+              :label="app.name"
+              :value="app.instanceId"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
@@ -40,12 +40,12 @@
             label="使用环境"
             :prop="'data.' + index + '.environment'"
             :rules="{
-              required: true, message: '使用环境不能为空', trigger: 'change', type: 'object'
+              required: true, message: '使用环境不能为空', trigger: 'change'
             }">
             <el-select v-model="item.environment" placeholder="请选择使用环境">
               <el-option v-for="envir in environmentList"
                 :label="envir.label"
-                :value="envir"></el-option>
+                :value="envir.value"></el-option>
             </el-select>
           </el-form-item>
 
@@ -53,12 +53,12 @@
             label="OS"
             :prop="'data.' + index + '.operateSystem'"
             :rules="{
-              type: 'object', required: true, message: 'OS不能为空', trigger: 'change'
+              required: true, message: 'OS不能为空', trigger: 'change'
             }">
             <el-select v-model="item.operateSystem" placeholder="请选择OS">
               <el-option v-for="system in systemsList"
                 :label="system.label"
-                :value="system"></el-option>
+                :value="system.value"></el-option>
             </el-select>
           </el-form-item>
 
@@ -66,12 +66,12 @@
             label="主机"
             :prop="'data.' + index + '.hostType'"
             :rules="{
-              type: 'object', required: true, message: '主机类型不能为空', trigger: 'change'
+              required: true, message: '主机类型不能为空', trigger: 'change'
             }">
             <el-select v-model="item.hostType" placeholder="请选择主机类型">
               <el-option v-for="host in hostTypeList"
                 :label="host.label"
-                :value="host"></el-option>
+                :value="host.value"></el-option>
             </el-select>
           </el-form-item>
 
@@ -133,7 +133,7 @@
       return {
         applyForm: {
           applyType: '',
-          project: '',
+          business: '',
           applicationName: '',
           remark: '',
           data: [{
@@ -155,8 +155,8 @@
           label: '新建集群节点',
           value: 'newGroup'
         }],
-        projectList: [],
-        applicationNameList: [],
+        businessList: [],
+        appList: [],
         environmentList: [{
           label: '质量测试环境',
           value: 'qutityTesting'
@@ -210,7 +210,7 @@
             { required: true, message: '请选择申请类型', trigger: 'change' }
             // { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
           ],
-          project: [
+          business: [
             { required: true, message: '请输入所属业务', trigger: 'change, blur' }
           ],
           applicationName: [
@@ -219,7 +219,47 @@
         }
       }
     },
+    created () {
+      this.renderAppList()
+      this.renderBusinessList()
+    },
     methods: {
+      renderAppList () {
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'APP'
+            // page: "不传则获取该对象所有实例",
+            // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          console.log(res, res.data.data.list)
+          this.appList = res.data.data.list
+        })
+      },
+      renderBusinessList () {
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'BUSINESS'
+            // page: "不传则获取该对象所有实例",
+            // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          console.log(res, res.data.data.list)
+          this.businessList = res.data.data.list
+        })
+      },
+      onChangeType () {
+        this.applyForm.applicationName = ''
+        this.applyForm.business = ''
+      },
       handleRemove (tab) {
         this.applyForm.data.splice(tab.index, 1)
         // console.log(tab.index, this.instockForm.data)
@@ -240,11 +280,34 @@
         }, 1000)
       },
       onSubmit (applyForm) {
+        console.log(this.applyForm)
         this.$refs[applyForm].validate((valid) => {
           if (valid) {
-            console.log('submit!')
+            const postData = {
+              action: 'runtime/process/instances',
+              method: 'POST',
+              data: {
+                pkey: 'host_apply',
+                form: this.applyForm,
+                pass: 0
+              }
+            }
+            this.http.post('', this.parseData(postData))
+            .then((res) => {
+              console.log(res, res.data.data)
+              if ((res && res.status === 200) || (res && res.status === 201)) {
+                this.$notify.success({
+                  title: '成功',
+                  message: '已成功创建申请单'
+                })
+                this.$router.replace('/system/applylist')
+              }
+            })
           } else {
-            console.log('error submit!!')
+            this.$notify.error({
+              title: '错误',
+              message: '请填写完整表单'
+            })
             return false
           }
         })
