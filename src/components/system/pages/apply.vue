@@ -154,9 +154,6 @@
         }, {
           label: '新建集群节点',
           value: 'newGroup'
-        }, {
-          label: '新建业务',
-          value: 'newBusiness'
         }],
         projectList: [],
         applicationNameList: [],
