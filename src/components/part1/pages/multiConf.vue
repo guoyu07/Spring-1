@@ -4,16 +4,21 @@
       width: 180px;
       display: inline-block;
     }
+    .el-row {
+      margin-top: 4px;
+    }
   }  
 </style>
 
 <template>
   <div class="conf-contain">
-    <div v-for="(op, index) of confArr">
+    <el-row v-for="(op, index) of confArr">
       <el-input v-model="confArr[index]" size="mini" placeholder="输入选项label" />
       <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index)" />
-    </div>
-    <el-button size="mini" icon="plus" type="primary" @click="opAddBtn" />
+    </el-row>
+    <el-row>
+      <el-button size="mini" icon="plus" type="primary" @click="opAddBtn" />
+    </el-row>
   </div>
 </template>
 
