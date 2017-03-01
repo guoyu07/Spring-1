@@ -38,9 +38,6 @@ const routes = [{
       path: '/equipment/off',
       component: require('./components/equipment/pages/off.vue')
     }, {
-      path: '/equipment/check',
-      component: require('./components/equipment/pages/check.vue')
-    }, {
       path: '/equipment/on-review',
       component: require('./components/equipment/pages/onReview.vue')
     }, {

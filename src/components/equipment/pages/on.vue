@@ -157,7 +157,7 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
+            <el-button type="primary" class="md" :disabled="!onShelveForm.data.length" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
           </div>
             </el-col>
           </el-row>
@@ -413,8 +413,47 @@
       },
 
       onConfirm (formName) {
-        this.deployViewData.visible = false
-        console.log(formName)
+        // this.deployViewData.visible = false
+        let objectList = this.onShelveForm.data
+        // for (const form in this.onShelveForm.data) {
+        //   objectList.push(form)
+        // }
+        // console.log(objectList)
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            console.log('submit!')
+            const postData = {
+              action: 'runtime/process/instances',
+              method: 'POST',
+              data: {
+                pkey: this.deviceListStructure[this.deviceType],
+                form: {
+                  'object_list': objectList,
+                  'object_id': this.deviceType
+                }
+              }
+            }
+            this.http.post('', this.parseData(postData)).then((res) => {
+              console.log(res)
+              if (res.statusCode === 406) {
+                this.$notify.error({
+                  title: '失败',
+                  message: res.errorMessage
+                })
+              } else {
+                this.$notify.success({
+                  title: '成功',
+                  message: '提交成功！'
+                })
+                // this.$router.replace('/others/worklist')
+              }
+            })
+          } else {
+            console.log('error submit!!')
+            this.$message.warning('表单未填写完整，提交失败！')
+            return false
+          }
+        })
       },
 
       onRemove (device) {
