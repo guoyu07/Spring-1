@@ -29,7 +29,7 @@
                   size="small"></el-input>
               </el-form-item>
             </div> -->
-            <div class="form-block">
+            <!-- <div class="form-block">
               <el-form-item v-for="key in searchKeyList" :label="key.name">
                 <el-input
                   v-if="key.value.type === 'str'"
@@ -78,8 +78,14 @@
                   size="small">
                 </el-date-picker>
               </el-form-item>
-            </div>
-            <br>
+            </div> -->
+            <search-form-structure
+              :search-key-list="searchKeyList"
+              :search-keys="searchKeys"
+              :is-advance-search="isAdvanceSearch"
+              :device-type="deviceType">
+            </search-form-structure>
+
             <el-form-item>
               <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
@@ -171,11 +177,7 @@
       :modal="true">
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
-<<<<<<< HEAD
           <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
-=======
-          <el-tab-pane v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
->>>>>>> e3509a56be26d7177b8a4ce5a1c5797416875062
             <div class="form-block" v-for="formItem in formStructure">
               <!-- <h4>{{formItem.tag[0]}}</h4> -->
               <el-form-item
@@ -234,6 +236,8 @@
   </div>
 </template>
 <script>
+  import searchFormStructure from '../../_plugins/_searchFormStructure'
+
   export default {
     data () {
       return {
@@ -424,6 +428,9 @@
         const index = this.deviceQueue.indexOf(device)
         this.deviceQueue.splice(index, 1)
       }
+    },
+    components: {
+      searchFormStructure
     }
   }
 </script>
