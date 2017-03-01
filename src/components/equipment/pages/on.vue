@@ -21,7 +21,7 @@
                 off-text="关闭"></el-switch>
             </el-form-item> -->
           </el-form>
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
             <!-- <div class="form-block" :class="{ expand: !isAdvanceSearch }">
               <el-form-item label="关键词">
                 <el-input
@@ -171,11 +171,7 @@
       :modal="true">
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
-<<<<<<< HEAD
-          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
-=======
           <el-tab-pane v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
->>>>>>> e3509a56be26d7177b8a4ce5a1c5797416875062
             <div class="form-block" v-for="formItem in formStructure">
               <!-- <h4>{{formItem.tag[0]}}</h4> -->
               <el-form-item
@@ -266,7 +262,7 @@
     methods: {
       renderDeviceList () {
         let postData = {
-          action: 'export/device/items',
+          action: 'on/device/items',
           method: 'GET',
           data: {}
         }
@@ -337,7 +333,8 @@
         //     processRes(res)
         //   })
         // } else {
-        let searchData = this.filterObj(this.searchKeys, isAdvance)
+        let searchData = { status: '已出库', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
+        console.log(searchData)
         if (this.isEmptyObj(searchData)) {
           this.$message.info('搜索条件不能为空！')
           return false
@@ -439,21 +436,14 @@
             this.http.post('', this.parseData(postData)).then((res) => {
               console.log(res)
               if (res.statusCode === 406) {
-                this.$notify.error({
-                  title: '失败',
-                  message: res.errorMessage
-                })
+                this.$message.error(res.errorMessage)
               } else {
-                this.$notify.success({
-                  title: '成功',
-                  message: '提交成功！'
-                })
-                // this.$router.replace('/others/worklist')
+                this.$message.success('提交成功！')
+                this.$router.replace('/others/worklist')
               }
             })
           } else {
-            console.log('error submit!!')
-            this.$message.warning('表单未填写完整，提交失败！')
+            this.$message.warning('表单未填写完整！')
             return false
           }
         })

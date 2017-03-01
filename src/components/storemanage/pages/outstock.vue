@@ -23,7 +23,7 @@
             </el-form-item> -->
           </el-form>
 
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
             <!-- <div class="form-block" v-show="!isAdvanceSearch">
               <el-form-item label="关键词">
                 <el-input

@@ -60,11 +60,7 @@ http.interceptors.response.use(rs => {
 }, err => {
   Promise.reject(err)
   console.log(err.response)
-  new Vue({}).$notify({
-    title: '诶呀，出错了',
-    message: `${err.response.data.errorMessage}`,
-    type: 'success'
-  })
+  new Vue({}).$message.error(err.response.data.errorMessage)
 })
 
 Vue.prototype.http = http
