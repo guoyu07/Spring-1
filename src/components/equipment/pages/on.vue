@@ -157,7 +157,7 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" @click="bulkEditSheve">批量编辑并上架</el-button>
+            <el-button type="primary" class="md" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
           </div>
             </el-col>
           </el-row>
@@ -171,8 +171,13 @@
       :modal="true">
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
+<<<<<<< HEAD
           <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
+=======
+          <el-tab-pane v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
+>>>>>>> e3509a56be26d7177b8a4ce5a1c5797416875062
             <div class="form-block" v-for="formItem in formStructure">
+              <!-- <h4>{{formItem.tag[0]}}</h4> -->
               <el-form-item
                 :prop="'data.' + index + '.' + formItem.id"
                 :label="formItem.name"
@@ -189,8 +194,7 @@
                 </el-input-number>
                 <el-select
                   v-else-if="formItem.value.type === 'enum'"
-                  v-model="item[formItem.id]"
-                  readonly="false">
+                  v-model="item[formItem.id]">
                   <el-option v-for="option in formItem.value.regex"
                     :label="option"
                     :value="option"></el-option>
@@ -275,6 +279,7 @@
           })
         })
       },
+
       renderFormStructure () {
         let postData = {
           action: `cmdb/object/on/attr`,
@@ -286,6 +291,7 @@
           this.formStructure = res.data.data.attr_list
         })
       },
+
       onDeviceTypeChange () {
         this.deviceTable = []
         this.renderFormStructure()
@@ -309,6 +315,7 @@
           this.loading = false
         })
       },
+
       onSearchDevices (isAdvance) {
         // if (!isAdvance) {
           // if (!this.searchKey) {
@@ -361,17 +368,21 @@
           this.deviceLoading = false
         }
       },
+
       onDevicePageChange (val) {
         this.devicePage = val
         this.onSearchDevices(this.isAdvanceSearch)
       },
+
       onEmptySearch (formName) {
         console.log(this.$refs[formName])
         this.$refs[formName].resetFields()
       },
+
       onSelectRow (val) {
         this.selectedDevices = val
       },
+
       onPushInQueue () {
         for (const device of this.selectedDevices) {
           if (!this.deviceQueue.includes(device)) {
@@ -399,13 +410,16 @@
           }
         }
       },
-      bulkEditSheve () {
+
+      bulkEditAndDeploy () {
         this.deployViewData.visible = true
       },
+
       onConfirm (formName) {
         this.deployViewData.visible = false
         console.log(formName)
       },
+
       onRemove (device) {
         const index = this.deviceQueue.indexOf(device)
         this.deviceQueue.splice(index, 1)
