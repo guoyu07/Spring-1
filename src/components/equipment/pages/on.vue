@@ -270,7 +270,7 @@
     methods: {
       renderDeviceList () {
         let postData = {
-          action: 'export/device/items',
+          action: 'on/device/items',
           method: 'GET',
           data: {}
         }
