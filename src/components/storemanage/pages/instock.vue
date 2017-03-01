@@ -17,7 +17,8 @@
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
               <el-button v-if="!editInfo.instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
-              <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
+              <form-structure :form-data="formData" :post-data="instockForm.data" :closable="closable"></form-structure>
+              <!-- <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                 <el-tab-pane v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                   <div class="form-block" v-for="formBlock in formData">
                     <h4>{{formBlock.name}}</h4>
@@ -60,8 +61,8 @@
                         v-model="item[formItem.id]"
                         multiple
                         filterable=""
-                        allow-create>
-                        <el-option value="">请创建</el-option>
+                        allow-create
+                        placeholder="请创建">
                       </el-select>
 
                       <el-date-picker
@@ -73,9 +74,10 @@
                     </el-form-item>
                   </div>
                 </el-tab-pane>
-              </el-tabs>
+              </el-tabs> -->
             </el-form>
             <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')">确认</el-button>
+            <el-button class="margin-top" @click="resetForm('instockForm')">清空</el-button>
           </div>
         </el-card>
       </el-col>
@@ -84,9 +86,12 @@
 </template>
 
 <script>
+  import formStructure from '../../_plugins/_formStructure'
+
   export default {
     data () {
       return {
+        closable: true,
         loading: false,
         editInfo: {
           instanceId: '',
@@ -190,6 +195,7 @@
           console.log(this.formData)
           // 如果是修改页面
           if (this.editInfo.instanceId) {
+            this.closable = false
             this.formData.map(formBlock => {
               formBlock.value.map(item => {
                 if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
@@ -262,6 +268,9 @@
             return false
           }
         })
+      },
+      resetForm (formName) {
+        this.$refs[formName].resetFields()
       },
       onConfirm (formName) {
         let objectList = []
@@ -349,7 +358,7 @@
     },
 
     components: {
-      // deviceView
+      formStructure
     }
   }
 </script>

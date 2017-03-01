@@ -13,23 +13,23 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="模糊搜索">
+            <!-- <el-form-item label="模糊搜索">
               <el-switch
                 v-model="isAdvanceSearch"
                 on-text="开启"
                 on-color="#42d885"
                 off-text="关闭"></el-switch>
-            </el-form-item>
+            </el-form-item> -->
           </el-form>
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" class="advance-search-form" :inline="true">
-            <div class="form-block" :class="{ expand: !isAdvanceSearch }">
+          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+            <!-- <div class="form-block" :class="{ expand: !isAdvanceSearch }">
               <el-form-item label="关键词">
                 <el-input
                   v-model="searchKey"
                   size="small"></el-input>
               </el-form-item>
-            </div>
-            <div class="form-block" :class="{ expand: isAdvanceSearch }">
+            </div> -->
+            <div class="form-block">
               <el-form-item v-for="key in searchKeyList" :label="key.name">
                 <el-input
                   v-if="key.value.type === 'str'"
@@ -171,7 +171,11 @@
       :modal="true">
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
+<<<<<<< HEAD
+          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
+=======
           <el-tab-pane v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
+>>>>>>> e3509a56be26d7177b8a4ce5a1c5797416875062
             <div class="form-block" v-for="formItem in formStructure">
               <!-- <h4>{{formItem.tag[0]}}</h4> -->
               <el-form-item
@@ -234,7 +238,7 @@
     data () {
       return {
         loading: false,
-        isAdvanceSearch: false,
+        isAdvanceSearch: true,
         formStructure: [],
         deviceType: '',
         deviceList: [],
@@ -313,48 +317,47 @@
       },
 
       onSearchDevices (isAdvance) {
-        if (!isAdvance) {
-          if (!this.searchKey) {
-            this.$message.warning('请填写关键词！')
-            return false
-          }
-          let postData = {
-            action: 'cmdb/fulltext/search',
-            method: 'POST',
-            data: {
-              object_id: this.deviceType,
-              page: this.devicePage,
-              pageSize: 10,
-              keyword: this.searchKey
-            }
-          }
-          this.deviceLoading = true
-          this.http.post('', this.parseData(postData)).then((res) => {
-            processRes(res)
-          })
-        } else {
-          let searchData = this.filterObj(this.searchKeys, isAdvance)
-          if (this.isEmptyObj(searchData)) {
-            this.$message.info('搜索条件不能为空！')
-            return false
-          }
-          let postData = {
-            action: `/object/${this.deviceType}/instance/_search`,
-            method: 'POST',
-            data: {
-              query: searchData,
-              page: this.devicePage,
-              pageSize: 10,
-              fields: {},
-              sort: {}
-            }
-          }
-          this.deviceLoading = true
-          this.http.post('easyops/', this.parseData(postData)).then((res) => {
-            processRes(res)
-          })
+        // if (!isAdvance) {
+          // if (!this.searchKey) {
+          //   this.$message.warning('请填写关键词！')
+          //   return false
+          // }
+        //   let postData = {
+        //     action: 'cmdb/fulltext/search',
+        //     method: 'POST',
+        //     data: {
+        //       object_id: this.deviceType,
+        //       page: this.devicePage,
+        //       pageSize: 10,
+        //       keyword: this.searchKey
+        //     }
+        //   }
+        //   this.deviceLoading = true
+        //   this.http.post('', this.parseData(postData)).then((res) => {
+        //     processRes(res)
+        //   })
+        // } else {
+        let searchData = this.filterObj(this.searchKeys, isAdvance)
+        if (this.isEmptyObj(searchData)) {
+          this.$message.info('搜索条件不能为空！')
+          return false
         }
-
+        let postData = {
+          action: `/object/${this.deviceType}/instance/_search`,
+          method: 'POST',
+          data: {
+            query: searchData,
+            page: this.devicePage,
+            pageSize: 10,
+            fields: {},
+            sort: {}
+          }
+        }
+        this.deviceLoading = true
+        this.http.post('easyops/', this.parseData(postData)).then((res) => {
+          processRes(res)
+        })
+        // }
         const processRes = (res) => {
           console.log(res)
           if (!res.data.data.data.total) {
