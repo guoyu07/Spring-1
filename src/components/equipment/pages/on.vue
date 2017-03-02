@@ -29,7 +29,7 @@
                   size="small"></el-input>
               </el-form-item>
             </div> -->
-            <div class="form-block">
+            <!-- <div class="form-block">
               <el-form-item v-for="key in searchKeyList" :label="key.name">
                 <el-input
                   v-if="key.value.type === 'str'"
@@ -78,8 +78,14 @@
                   size="small">
                 </el-date-picker>
               </el-form-item>
-            </div>
-            <br>
+            </div> -->
+            <search-form-structure
+              :search-key-list="searchKeyList"
+              :search-keys="searchKeys"
+              :is-advance-search="isAdvanceSearch"
+              :device-type="deviceType">
+            </search-form-structure>
+
             <el-form-item>
               <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
@@ -171,54 +177,8 @@
       :modal="true">
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
-          <el-tab-pane v-for="(item, index) in onShelveForm.data" :key="item.id" :label="item.name">
-            <div class="form-block" v-for="formItem in formStructure">
-              <!-- <h4>{{formItem.tag[0]}}</h4> -->
-              <el-form-item
-                :prop="'data.' + index + '.' + formItem.id"
-                :label="formItem.name"
-                :rules="{
-                  type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
-                }">
-                <el-input
-                  v-if="formItem.value.type === 'str'"
-                  v-model="item[formItem.id]">
-                </el-input>
-                <el-input-number
-                  v-else-if="formItem.value.type === 'int'"
-                  v-model="item[formItem.id]" :min="0">
-                </el-input-number>
-                <el-select
-                  v-else-if="formItem.value.type === 'enum'"
-                  v-model="item[formItem.id]">
-                  <el-option v-for="option in formItem.value.regex"
-                    :label="option"
-                    :value="option"></el-option>
-                </el-select>
-                <el-select
-                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                  v-model="item[formItem.id]"
-                  :multiple="formItem.value.type === 'FKs'">
-                  <el-option v-for="option in formItem.value.object_list"
-                    :label="option.name"
-                    :value="option.instanceId"></el-option>
-                </el-select>
-                <el-select
-                  v-else-if="formItem.value.type === 'arr'"
-                  v-model="item[formItem.id]"
-                  multiple
-                  filterable=""
-                  allow-create>
-                  <el-option value="">请创建</el-option>
-                </el-select>
-                <el-date-picker
-                  v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                  v-model="item[formItem.id]"
-                  :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                  placeholder="选择时间">
-                </el-date-picker>
-              </el-form-item>
-            </div>
+          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
+            <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -230,12 +190,18 @@
   </div>
 </template>
 <script>
+  import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import formStructure from '../../_plugins/_formStructure'
+
   export default {
     data () {
       return {
         loading: false,
         isAdvanceSearch: true,
-        formStructure: [],
+        formStructure: [{
+          name: '',
+          value: []
+        }],
         deviceType: '',
         deviceList: [],
         deviceLoading: false,
@@ -284,7 +250,7 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           console.log(res)
-          this.formStructure = res.data.data.attr_list
+          this.formStructure[0].value = res.data.data.attr_list
         })
       },
 
@@ -391,7 +357,7 @@
                 this.onShelveForm.data[k] = {}
                 this.$set(this.onShelveForm.data[k], 'name', v.name)
                 this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
-                this.formStructure.map(item => {
+                this.formStructure[0].value.map(item => {
                   if (item.value.type === 'arr' || item.value.type === 'FKs') {
                     this.$set(this.onShelveForm.data[k], item.id, [])
                   } else if (item.value.type === 'int') {
@@ -453,6 +419,10 @@
         const index = this.deviceQueue.indexOf(device)
         this.deviceQueue.splice(index, 1)
       }
+    },
+    components: {
+      searchFormStructure,
+      formStructure
     }
   }
 </script>

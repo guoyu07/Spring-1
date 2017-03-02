@@ -36,10 +36,10 @@
         <!-- <el-menu-item index="/system/online"><i class="el-icon-star-on"></i>上线流程</el-menu-item> -->
         <el-menu-item-group>
           <template slot="title">上线流程</template>
-          <el-menu-item index="/system/apply"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
-          <el-menu-item index="/system/applylist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
+          <el-menu-item index="/system/applylist"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
+          <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
         </el-menu-item-group>
-        <el-menu-item index="/system/offline"><i class="el-icon-star-off"></i>下线流程</el-menu-item>
+        <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item>
       </el-submenu>
 
       <el-submenu index="/publish">

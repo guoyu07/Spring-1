@@ -32,7 +32,7 @@
               </el-form-item>
             </div> -->
              <!-- v-show="isAdvanceSearch" -->
-            <div class="form-block">
+            <!-- <div class="form-block">
               <el-form-item v-for="key in searchKeyList" :label="key.name" :prop="key.id">
                 <el-input
                   v-if="key.value.type === 'str'"
@@ -80,7 +80,14 @@
                   size="small">
                 </el-date-picker>
               </el-form-item>
-            </div>
+            </div> -->
+            <search-form-structure
+              :search-key-list="searchKeyList"
+              :search-keys="searchKeys"
+              :is-advance-search="isAdvanceSearch"
+              :device-type="deviceType">
+            </search-form-structure>
+
             <el-form-item>
               <el-button size="small" :type="isAdvanceSearch ? 'success' : 'primary'" @click="onSearchDevices(isAdvanceSearch)">{{ isAdvanceSearch ? '高级搜索' : '搜索' }}</el-button>
               <el-button size="small" @click="resetForm('searchKeys')">清空</el-button>
@@ -160,6 +167,7 @@
 </template>
 
 <script>
+  import searchFormStructure from '../../_plugins/_searchFormStructure'
   export default {
     data () {
       return {
@@ -186,7 +194,7 @@
     methods: {
       renderDeviceList () {
         let postData = {
-          action: 'export/device/items',
+          action: 'off/device/items',
           method: 'GET',
           data: {}
         }
@@ -344,6 +352,9 @@
       deviceType: function () {
         this.onDeviceTypeChange()
       }
+    },
+    components: {
+      searchFormStructure
     }
   }
 </script>

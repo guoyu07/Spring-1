@@ -17,10 +17,10 @@
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
               <el-button v-if="!editInfo.instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
-              <form-structure :form-data="formData" :post-data="instockForm.data" :closable="closable"></form-structure>
-              <!-- <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
+              <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                 <el-tab-pane v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
-                  <div class="form-block" v-for="formBlock in formData">
+                  <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
+                  <!-- <div class="form-block" v-for="formBlock in formData">
                     <h4>{{formBlock.name}}</h4>
                     <el-form-item
                       v-for="formItem in formBlock.value"
@@ -72,9 +72,9 @@
                         placeholder="选择时间">
                       </el-date-picker>
                     </el-form-item>
-                  </div>
+                  </div> -->
                 </el-tab-pane>
-              </el-tabs> -->
+              </el-tabs>
             </el-form>
             <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')">确认</el-button>
             <el-button class="margin-top" @click="resetForm('instockForm')">清空</el-button>

@@ -54,8 +54,11 @@ const routes = [{
       path: '/system/assign',
       component: require('./components/system/pages/assign.vue')
     }, {
-      path: '/system/offline',
-      component: require('./components/system/pages/offline.vue')
+      path: '/system/offlinelist',
+      component: require('./components/system/pages/offlinelist.vue')
+    }, {
+      path: '/system/onlinelist',
+      component: require('./components/system/pages/onlinelist.vue')
     }]
   }, {
     path: '/orders',
