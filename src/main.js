@@ -32,6 +32,10 @@ const setConfigs = () => {
   Vue.http.headers.common['Authorization'] = auth.getAuthHeader()['Authorization']
 }
 
+// custom filters
+// this one converts TZ format to locale format
+Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
+
 // Ajax 全局配置
 // Vue.http.options.root = 'http://192.168.10.28:8002/api' // dev
 // Vue.http.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
