@@ -343,7 +343,7 @@
                     title: '成功',
                     message: '提交成功！'
                   })
-                  this.$router.replace('/others/worklist')
+                  this.$router.replace('/orders')
                   // this.$message.warning('提交成功！')
                 }
               })

@@ -16,6 +16,51 @@
       font-size: 12px;
     }
   }
+
+  .expanded-form {
+    font-size: 0;
+
+    label {
+      width: 80px;
+      color: #99a9bf;
+      padding-top: 9px;
+      padding-bottom: 9px;
+    }
+
+    .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+
+      &__content {
+        line-height: 32px;
+      }
+    }
+  }
+
+  .el-collapse {
+
+    .el-form {
+      font-size: 0;
+    }
+
+    label {
+      min-width: 72px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .el-form-item {
+      font-size: 13px;
+      width: 50%;
+      margin-right: 0;
+      margin-bottom: 0;
+
+      &__content {
+        line-height: 24px;
+      }
+    }
+  }
 </style>
 
 <template>
@@ -102,7 +147,69 @@
         </el-card>
       </el-col>
     </el-row>
+  
+    <div class="device-view">
+      <el-dialog
+        :title="deviceViewData.device.name"
+        v-model="deviceViewData.visible"
+        top="10%"
+        :modal="true">
+        <el-row>
+          <el-col :span="20" :offset="2">
+            <el-form label-position="left" inline class="expanded-form">
+              <el-form-item label="任务名称">
+                <span>{{deviceViewData.device.name}}</span>
+              </el-form-item>
+              <el-form-item label="任务 ID">
+                <span>{{deviceViewData.device.id}}</span>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.assignee" label="指派者">
+                <span>{{deviceViewData.device.assignee}}</span>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.claimTime" label="认领时间">
+                <small>{{deviceViewData.device.claimTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.createTime" label="创建时间">
+                <small>{{deviceViewData.device.createTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.startTime" label="起始时间">
+                <small>{{deviceViewData.device.startTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.endTime" label="终止时间">
+                <small>{{deviceViewData.device.endTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.priority" label="优先度">
+                <span>{{deviceViewData.device.priority}}</span>
+              </el-form-item>
+            </el-form>
+            <h5><i class="el-icon-information"></i> 历史步骤</h5>
+            <el-collapse v-if="deviceViewData.device.variables">
+              <el-collapse-item v-for="task in deviceViewData.device.variables.message" :title="task.task_name">
+                <el-form label-position="left" inline>
+                  <el-form-item v-if="task.author" label="发起者">
+                    <span>{{task.author}}</span>
+                  </el-form-item>
+                  <el-form-item v-if="task.operator.name" label="操作者">
+                    <span>{{task.operator.name}}</span>
+                  </el-form-item>
+                  <el-form-item v-if="task.operator.time" label="时间">
+                    <small>{{task.time}}</small>
+                  </el-form-item>
+                  <el-form-item v-if="task.form.applyType" label="申请类型">
+                    <span>{{task.form.applyType}}</span>
+                  </el-form-item>
+                  <el-form-item label="备注">
+                    <span>{{task.form.remark || '无'}}</span>
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
+            </el-collapse>
+          </el-col>
+        </el-row>
+      </el-dialog>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -119,7 +226,11 @@
         filteredList: [],
         currentPage: 1,
         pageSize: 10,
-        totalFiltered: 0
+        totalFiltered: 0,
+        deviceViewData: {
+          visible: false,
+          device: {}
+        }
       }
     },
 
@@ -174,8 +285,7 @@
       onReject (task) {
         this.$prompt(`请输入对「${task.name}」的驳回意见：`, '确定驳回？', {
           confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
+          cancelButtonText: '取消'
         }).then(({ remark }) => {
           let postData = {
             action: 'runtime/task/complete',
@@ -193,6 +303,11 @@
             this.getFilteredList()
           })
         })
+      },
+
+      onView (task) {
+        this.deviceViewData.visible = true
+        this.deviceViewData.device = task
       }
     }
   }
