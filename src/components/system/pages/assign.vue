@@ -297,6 +297,7 @@
       table-layout: fixed;
       th, td {
         padding: 5px 10px;
+        word-wrap: break-word;
       }
     }
   }

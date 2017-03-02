@@ -7,14 +7,14 @@
           <el-select v-model="applyForm.applyType" @change="onChangeType">
             <el-option v-for="apyType in applyTypes"
               :label="apyType.label"
-              :value="apyType.value"></el-option>
+              :value="apyType.label"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="business" label="项目组">
           <el-select v-model="applyForm.business">
             <el-option v-for="business in businessList"
               :label="business.name"
-              :value="business.instanceId"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
+              :value="business.name"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
           </el-select>
         </el-form-item>
         <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="business" label="所属业务">
@@ -25,7 +25,7 @@
           <el-select v-model="applyForm.applicationName">
             <el-option v-for="app in appList"
               :label="app.name"
-              :value="app.instanceId"></el-option>
+              :value="app.name"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
@@ -45,7 +45,7 @@
             <el-select v-model="item.environment" placeholder="请选择使用环境">
               <el-option v-for="envir in environmentList"
                 :label="envir.label"
-                :value="envir.value"></el-option>
+                :value="envir.label"></el-option>
             </el-select>
           </el-form-item>
 
@@ -58,7 +58,7 @@
             <el-select v-model="item.operateSystem" placeholder="请选择OS">
               <el-option v-for="system in systemsList"
                 :label="system.label"
-                :value="system.value"></el-option>
+                :value="system.label"></el-option>
             </el-select>
           </el-form-item>
 
@@ -71,7 +71,7 @@
             <el-select v-model="item.hostType" placeholder="请选择主机类型">
               <el-option v-for="host in hostTypeList"
                 :label="host.label"
-                :value="host.value"></el-option>
+                :value="host.label"></el-option>
             </el-select>
           </el-form-item>
 
