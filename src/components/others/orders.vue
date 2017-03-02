@@ -107,7 +107,7 @@
 
     methods: {
       getFilteredList () {
-        const postData = {
+        let postData = {
           action: this.filters[this.filter],
           method: 'GET',
           data: {}
@@ -124,17 +124,44 @@
       },
 
       onClaim (task) {
-        console.log(task.name)
+        this.$confirm(`确定认领任务「${task.name}」吗？`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }).then(() => {
+          let postData = {
+            action: 'runtime/task/claim',
+            method: 'POST',
+            data: { tid: task.id }
+          }
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('已认领！')
+            }
+            this.getFilteredList()
+          })
+        })
       },
 
       onReject (task) {
         this.$prompt(`请输入对「${task.name}」的驳回意见：`, '确定驳回？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
-        }).then(({ value }) => {
-          this.$message({
-            type: 'success',
-            message: '已驳回！'
+        }).then(({ remark }) => {
+          let postData = {
+            action: 'runtime/task/complete',
+            method: 'POST',
+            data: {
+              tid: task.id,
+              form: { remark },
+              pass: -1
+            }
+          }
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('已驳回！')
+            }
+            this.getFilteredList()
           })
         })
       }
