@@ -6,6 +6,61 @@
       float: left;
     }
   }
+
+  .el-dropdown-menu__item {
+    line-height: 28px;
+    font-size: 14px;
+
+    i {
+      width: 14px;
+      font-size: 12px;
+    }
+  }
+
+  .expanded-form {
+    font-size: 0;
+
+    label {
+      width: 80px;
+      color: #99a9bf;
+      padding-top: 9px;
+      padding-bottom: 9px;
+    }
+
+    .el-form-item {
+      margin-right: 0;
+      margin-bottom: 0;
+      width: 50%;
+
+      &__content {
+        line-height: 32px;
+      }
+    }
+  }
+
+  .el-collapse {
+
+    .el-form {
+      font-size: 0;
+    }
+
+    label {
+      min-width: 72px;
+      padding-top: 5px;
+      padding-bottom: 5px;
+    }
+
+    .el-form-item {
+      font-size: 13px;
+      width: 50%;
+      margin-right: 0;
+      margin-bottom: 0;
+
+      &__content {
+        line-height: 24px;
+      }
+    }
+  }
 </style>
 
 <template>
@@ -15,7 +70,7 @@
         <el-card class="box-card">
           <div class="tag-container clear">
             <h3><i class="el-icon-document"></i> {{filter}}工单</h3>
-            <el-radio-group v-model="filter" @change="getFilteredList" size="small" class="fr">
+            <el-radio-group v-model="filter" @change="onFilterChange" size="small" class="fr">
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
           </div>
@@ -27,46 +82,57 @@
               prop="name"
               label="任务"></el-table-column>
             <el-table-column
+              prop="variables.author"
+              label="创建者"></el-table-column>
+            <el-table-column
               prop="assignee"
-              label="指派者"></el-table-column>
+              label="指派者"
+              v-if="filter === '已审核' || filter === '待审核'"></el-table-column>
             <el-table-column
-              label="创建时间"
+              :label="filter === '已审核' ? '认领时间' : '创建时间'"
               inline-template
-              :context="_self">
-              <template>{{ row.createTime | convertTime }}</template>
-            </el-table-column>
-            <el-table-column
-              label="优先级"
-              width="80"
-              inline-template
+              v-if="filter !== '已参与'"
               :context="_self">
               <template>
-                <el-tag :type="row.priority > 50 ? 'danger' : 'primary'">{{row.priority}}</el-tag>
+                <small>{{ (filter === '已审核' ? row.claimTime : row.createTime) | convertTime }}</small>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="起始时间"
+              inline-template
+              :context="_self"
+              v-if="filter === '已参与'">
+              <template>
+                <small>{{ row.startTime | convertTime }}</small>
+              </template>
+            </el-table-column>
+            <el-table-column
+              label="终止时间"
+              inline-template
+              :context="_self"
+              v-if="filter === '已参与'">
+              <template>
+                <small>{{ row.endTime | convertTime }}</small>
               </template>
             </el-table-column>
             <el-table-column
               inline-template
               :context="_self"
-              label="操作"
-              width="150">
+              label="操作">
               <template>
-                <el-button size="small" v-if="filter === '待认领'" @click="onClaim(row)">认领</el-button>
-                <el-button size="small" type="success" v-if="filter === '待审核'">通过</el-button>
-                <el-button size="small" type="danger" v-if="filter === '待审核'" @click="onReject(row)">驳回</el-button>
-                <el-button size="small" v-if="filter === '已审核'">查看</el-button>
+                <el-dropdown trigger="click" menu-align="start">
+                  <span class="el-dropdown-link">
+                    操作<i class="el-icon-caret-bottom el-icon--right"></i>
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item v-if="filter === '待认领'" @click.native="onClaim(row)"><i class="el-icon-check"></i> 认领</el-dropdown-item>
+                    <el-dropdown-item v-if="filter === '待审核'" @click.native="onApprove(row)"><i class="el-icon-check"></i> 通过</el-dropdown-item>
+                    <el-dropdown-item v-if="filter === '待审核'" @click.native="onReject(row)"><i class="el-icon-close"></i> 驳回</el-dropdown-item>
+                    <el-dropdown-item :divided="filter !== '已审核' && filter !== '已参与'" @click.native="onView(row)"><i class="el-icon-view"></i> 查看</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
               </template>
             </el-table-column>
-            <!-- <el-table-column
-              label="标签"
-              width="100"
-              :filters="[{ text: '待认领', value: '待认领' }, { text: '待审核', value: '待审核' }, { text: '已审核', value: '已审核' }]"
-              :filter-method="getFilteredList">
-              <template scope="scope">
-                <el-tag
-                  :type="filter === '待认领' ? 'danger' : 'success'"
-                  close-transition>{{filter}}</el-tag>
-              </template>
-            </el-table-column> -->
           </el-table>
           <div class="pagination-block clear">
             <el-pagination
@@ -81,7 +147,68 @@
         </el-card>
       </el-col>
     </el-row>
+  
+    <div class="device-view">
+      <el-dialog
+        :title="deviceViewData.device.name"
+        v-model="deviceViewData.visible"
+        :modal="true">
+        <el-row>
+          <el-col :span="20" :offset="2">
+            <el-form label-position="left" inline class="expanded-form">
+              <el-form-item label="任务名称">
+                <span>{{deviceViewData.device.name}}</span>
+              </el-form-item>
+              <el-form-item label="任务 ID">
+                <span>{{deviceViewData.device.id}}</span>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.assignee" label="指派者">
+                <span>{{deviceViewData.device.assignee}}</span>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.claimTime" label="认领时间">
+                <small>{{deviceViewData.device.claimTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.createTime" label="创建时间">
+                <small>{{deviceViewData.device.createTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.startTime" label="起始时间">
+                <small>{{deviceViewData.device.startTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.endTime" label="终止时间">
+                <small>{{deviceViewData.device.endTime | convertTime}}</small>
+              </el-form-item>
+              <el-form-item v-if="deviceViewData.device.priority" label="优先度">
+                <span>{{deviceViewData.device.priority}}</span>
+              </el-form-item>
+            </el-form>
+            <h5><i class="el-icon-information"></i> 历史步骤</h5>
+            <el-collapse v-if="deviceViewData.device.variables">
+              <el-collapse-item v-for="task in deviceViewData.device.variables.message" :title="task.task_name">
+                <el-form label-position="left" inline>
+                  <el-form-item v-if="task.author" label="发起者">
+                    <span>{{task.author}}</span>
+                  </el-form-item>
+                  <el-form-item v-if="task.operator.name" label="操作者">
+                    <span>{{task.operator.name}}</span>
+                  </el-form-item>
+                  <el-form-item v-if="task.operator.time" label="时间">
+                    <small>{{task.time}}</small>
+                  </el-form-item>
+                  <el-form-item v-if="task.form.applyType" label="申请类型">
+                    <span>{{task.form.applyType}}</span>
+                  </el-form-item>
+                  <el-form-item label="备注">
+                    <span>{{task.form.remark || '无'}}</span>
+                  </el-form-item>
+                </el-form>
+              </el-collapse-item>
+            </el-collapse>
+          </el-col>
+        </el-row>
+      </el-dialog>
+    </div>
   </div>
+
 </template>
 
 <script>
@@ -92,12 +219,17 @@
         filters: {
           '待认领': 'runtime/tasks/assignee',
           '待审核': 'runtime/tasks/self',
-          '已审核': 'history/tasks/self'
+          '已审核': 'history/tasks/self',
+          '已参与': 'history/process/instances/self'
         },
         filteredList: [],
         currentPage: 1,
         pageSize: 10,
-        totalFiltered: 0
+        totalFiltered: 0,
+        deviceViewData: {
+          visible: false,
+          device: {}
+        }
       }
     },
 
@@ -106,11 +238,16 @@
     },
 
     methods: {
+      onFilterChange () {
+        this.currentPage = 1
+        this.getFilteredList()
+      },
+
       getFilteredList () {
         let postData = {
           action: this.filters[this.filter],
           method: 'GET',
-          data: {}
+          data: { page: this.currentPage }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           console.log(res)
@@ -119,7 +256,8 @@
         })
       },
 
-      onPageChange () {
+      onPageChange (val) {
+        this.currentPage = val
         this.getFilteredList()
       },
 
@@ -148,6 +286,10 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({ remark }) => {
+          if (!remark) {
+            this.$message.error('失败：驳回意见不可留空！')
+            return
+          }
           let postData = {
             action: 'runtime/task/complete',
             method: 'POST',
@@ -164,6 +306,11 @@
             this.getFilteredList()
           })
         })
+      },
+
+      onView (task) {
+        this.deviceViewData.visible = true
+        this.deviceViewData.device = task
       }
     }
   }

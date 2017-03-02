@@ -76,7 +76,7 @@
                 </el-tab-pane>
               </el-tabs>
             </el-form>
-            <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')">确认</el-button>
+            <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')" :loading="isSubmitting">确认</el-button>
             <el-button class="margin-top" @click="resetForm('instockForm')">清空</el-button>
           </div>
         </el-card>
@@ -116,7 +116,8 @@
           if (value && !value.match(reg)) {
             cb(new Error('请输入正确的IP地址'))
           }
-        }
+        },
+        isSubmitting: false
       }
     },
     created () {
@@ -313,6 +314,7 @@
                 object_data: updateData
               }
             }
+            this.isSubmitting = true
             if (this.editInfo.instanceId) {
               this.http.post('', this.parseData(updataInstanceData)).then((res) => {
                 console.log(res)
@@ -329,23 +331,20 @@
                     message: `变更失败！`
                   })
                 }
+                this.isSubmitting = false
               })
             } else {
+              this.isSubmitting = true
               this.http.post('', this.parseData(postData)).then((res) => {
                 console.log(res)
-                if (res.statusCode === 406) {
-                  this.$notify.error({
-                    title: '失败',
-                    message: res.errorMessage
-                  })
+                if (res.status === 406) {
+                  this.$message.error(res.errorMessage)
                 } else {
-                  this.$notify.success({
-                    title: '成功',
-                    message: '提交成功！'
-                  })
-                  this.$router.replace('/others/worklist')
+                  this.$message.success('提交成功！')
                   // this.$message.warning('提交成功！')
+                  this.$router.replace('/orders')
                 }
+                this.isSubmitting = false
               })
             }
           } else {
