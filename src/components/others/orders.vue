@@ -152,7 +152,6 @@
       <el-dialog
         :title="deviceViewData.device.name"
         v-model="deviceViewData.visible"
-        top="10%"
         :modal="true">
         <el-row>
           <el-col :span="20" :offset="2">
@@ -287,6 +286,10 @@
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({ remark }) => {
+          if (!remark) {
+            this.$message.error('失败：驳回意见不可留空！')
+            return
+          }
           let postData = {
             action: 'runtime/task/complete',
             method: 'POST',
