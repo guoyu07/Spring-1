@@ -1,91 +1,101 @@
 <template>
-  <div id="item1-side" class="wrapper">
-    <h3>资源申请列表</h3>
-    <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
-    <el-table
-      :data="applylist"
-      border
-      style="width: 100%; min-width: 460px">
-      <el-table-column type="expand">
-        <template scope="props">
-          <div class="item-block" v-for="item in props.row.data">
-            <p>主机: {{ item.hostType }}</p>
-            <p>环境: {{ item.environment }}</p>
-            <p>数量: {{ item.quantity }}</p>
-            <p>OS: {{ item.operateSystem }}</p>
-            <p>CPU: {{ item.cpu }}</p>
-            <p>内存(G): {{ item.internalStorage }}</p>
-            <p>硬盘(G): {{ item.hardDisk }}</p>
-            <p>资源分数: {{ item.score }}</p>
+  <div>
+    <el-row>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
+          <h3>资源申请列表</h3>
+          <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
+          <el-table
+            :data="applyList"
+            border
+            style="width: 100%; min-width: 460px">
+            <el-table-column type="expand">
+              <template scope="props">
+                <div class="item-block" v-for="item in props.row.data">
+                  <p>主机: {{ item.hostType }}</p>
+                  <p>环境: {{ item.environment }}</p>
+                  <p>数量: {{ item.quantity }}</p>
+                  <p>OS: {{ item.operateSystem }}</p>
+                  <p>CPU: {{ item.cpu }}</p>
+                  <p>内存(G): {{ item.internalStorage }}</p>
+                  <p>硬盘(G): {{ item.hardDisk }}</p>
+                  <p>资源分数: {{ item.score }}</p>
+                </div>
+              </template>
+            </el-table-column>
+            <el-table-column
+              prop="applicationName"
+              label="应用名"></el-table-column>
+            <el-table-column
+              prop="applyType"
+              label="申请类型"></el-table-column>
+            <el-table-column
+              prop="business"
+              label="项目组"></el-table-column>
+            <el-table-column
+              inline-template
+              :context="_self"
+              label="操作">
+              <div class="btn-block">
+                <router-link :to="{ path: '/system/assign', query: { id: row.id }}" class="el-button el-button--primary el-button--small">资源分配</router-link>
+                <el-button type="text" @click="showDialogReject(row)">驳回</el-button>
+              </div>
+            </el-table-column>
+          </el-table>
+          <div class="pagination-block clear">
+            <el-pagination
+              class="fr"
+              layout="prev, pager, next"
+              :current-page="currentPage"
+              :page-size="pageSize"
+              @current-change="onPageChange"
+              :total="totalFiltered">
+            </el-pagination>
           </div>
-        </template>
-      </el-table-column>
-      <el-table-column
-        prop="applicationName"
-        label="应用名"></el-table-column>
-      <el-table-column
-        prop="applyType"
-        label="申请类型"></el-table-column>
-      <el-table-column
-        prop="business"
-        label="项目组"></el-table-column>
-      <el-table-column
-        inline-template
-        :context="_self"
-        label="操作">
-        <div class="btn-block">
-          <el-button type="text" @click="onAssign(row)">资源分配</el-button>
-          <el-button type="text" @click="showDialogReject(row)">驳回</el-button>
-
-          <el-dialog title="提示" v-model="dialogReject" size="tiny">
-            <span>驳回后不可恢复，确定要驳回此申请吗？</span>
-            <span slot="footer" class="dialog-footer">
-              <el-button @click="onCancel">取 消</el-button>
-              <el-button type="primary" @click="onReject(row)">确 定</el-button>
-            </span>
-          </el-dialog>
-
-        </div>
-      </el-table-column>
-    </el-table>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
+
 <script>
   export default {
     data () {
       return {
-        dialogReject: false,
-        applylist: []
+        applyList: [],
+        currentPage: 1,
+        pageSize: 10,
+        totalFiltered: 0,
+        dialogReject: false
       }
     },
+
     created () {
-      console.log('created')
-      this.onloadlist()
+      this.getApplyList()
     },
-    mounted () {
-      console.log('mounted')
-    },
+
     methods: {
-      onloadlist () {
-        const postData = {
+      getApplyList () {
+        let postData = {
           action: 'runtime/tasks/self',
           method: 'GET',
           data: {}
         }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          const all = res.data.data.data
-          all.forEach((list, k) => {
+        this.http.post('', this.parseData(postData)).then((res) => {
+          res.data.data.data.forEach((list, k) => {
             list.variables.message.map(item => {
               if (item.task_key === 'start') {
-                this.applylist[k] = item.form
+                this.applyList[k] = item.form
+                this.applyList[k].id = list.id
               }
             })
           })
+          this.totalFiltered = res.data.data.total
         })
       },
-      onAssign (row) {
-        this.$router.replace('/system/assign')
+
+      onPageChange () {
+        this.getApplyList()
       },
       showDialogReject (row) {
         this.dialogReject = true
@@ -96,12 +106,6 @@
       },
       onCancel () {
         this.dialogReject = false
-      },
-      removeItem (item) {
-        var index = this.applyForm.data.indexOf(item)
-        if (index !== -1) {
-          this.applyForm.data.splice(index, 1)
-        }
       }
     }
   }
@@ -131,5 +135,7 @@
 .margin-bottom {
   margin-bottom: 15px;
 }
+.el-button:hover{
+  text-decoration: none;
+}
 </style>
-

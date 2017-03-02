@@ -22,65 +22,6 @@
             </el-form-item> -->
           </el-form>
           <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-            <!-- <div class="form-block" v-show="!isAdvanceSearch">
-              <el-form-item
-                label="关键词"
-                prop="searchKey">
-                <el-input
-                  v-model="searchKeys.searchKey"
-                  size="small"></el-input>
-              </el-form-item>
-            </div> -->
-             <!-- v-show="isAdvanceSearch" -->
-            <!-- <div class="form-block">
-              <el-form-item v-for="key in searchKeyList" :label="key.name" :prop="key.id">
-                <el-input
-                  v-if="key.value.type === 'str'"
-                  v-model="searchKeys[key.id]"
-                  size="small">
-                </el-input>
-
-                <el-input
-                  v-else-if="key.value.type === 'int'"
-                  v-model="searchKeys[key.id]"
-                  type="number"
-                  size="small">
-                </el-input>
-
-                <el-select
-                  v-else-if="key.value.type === 'enum'"
-                  v-model="searchKeys[key.id]"
-                  size="small">
-                  <el-option v-for="option in key.value.regex"
-                    :label="option"
-                    :value="option"></el-option>
-                </el-select>
-
-                <div class="form-unit"
-                  v-else-if="key.value.type === 'FK' || key.value.type === 'FKs'">
-                  <el-select
-                    v-model="searchKeys[key.id][0]"
-                    size="small">
-                    <el-option v-for="option in key.value.external"
-                      :label="option.name"
-                      :value="option.org_attr"></el-option>
-                  </el-select>
-                  <el-input
-                    :disabled="!searchKeys[key.id][0]"
-                    v-model="searchKeys[key.id][1]"
-                    size="small">
-                  </el-input>
-                </div>
-
-                <el-date-picker
-                  v-else="key.value.type === 'datetime' || key.value.type === 'date'"
-                  v-model="searchKeys[key.id]"
-                  :type="key.value.type === 'datetime' ? 'datetime' : 'date'"
-                  placeholder="选择时间"
-                  size="small">
-                </el-date-picker>
-              </el-form-item>
-            </div> -->
             <search-form-structure
               :search-key-list="searchKeyList"
               :search-keys="searchKeys"
@@ -112,14 +53,6 @@
             <el-table-column
               prop="other"
               label="其他"></el-table-column>
-            <!-- <el-table-column
-              inline-template
-              :context="_self"
-              label="操作">
-              <span>
-                <el-button type="text" @click="onDeploy(row)">下架</el-button>
-              </span>
-            </el-table-column> -->
           </el-table>
           <div class="pagination-block clear">
             <el-pagination
@@ -262,6 +195,8 @@
           this.$message.info('搜索条件不能为空！')
           return false
         }
+        searchData.status = '使用中'
+        searchData.isapply = 'no'
         let postData = {
           action: `/object/${this.deviceType}/instance/_search`,
           method: 'POST',

@@ -76,6 +76,16 @@ Vue.prototype.parseData = obj => {
   return result + encodeURI(JSON.stringify(obj.data))
 }
 
+// 逆向寻找匹配的 task_key
+Vue.prototype.findTaskMsgR = (arrMsg, arrTaskKey) => {
+  for (let i = arrMsg.length - 1; i >= 0; i--) {
+    if (arrTaskKey.indexOf(arrMsg[i]['task_key']) !== -1) {
+      return arrMsg[i]
+    }
+  }
+  return false
+}
+
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
   let data = {}
   for (const key in obj) {

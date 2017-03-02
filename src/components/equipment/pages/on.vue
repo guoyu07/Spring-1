@@ -163,7 +163,7 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" :disabled="!onShelveForm.data.length" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
+            <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
           </div>
             </el-col>
           </el-row>
@@ -353,28 +353,29 @@
               this.$message.warning('上架设备最多 5 个！')
             } else {
               this.deviceQueue = [...this.deviceQueue, device]
-              this.deviceQueue.forEach((v, k) => {
-                this.onShelveForm.data[k] = {}
-                this.$set(this.onShelveForm.data[k], 'name', v.name)
-                this.$set(this.onShelveForm.data[k], 'instanceId', v.instanceId)
-                this.formStructure[0].value.map(item => {
-                  if (item.value.type === 'arr' || item.value.type === 'FKs') {
-                    this.$set(this.onShelveForm.data[k], item.id, [])
-                  } else if (item.value.type === 'int') {
-                    this.$set(this.onShelveForm.data[k], item.id, 0)
-                  } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-                    this.$set(this.onShelveForm.data[k], item.id, undefined)
-                  } else {
-                    this.$set(this.onShelveForm.data[k], item.id, '')
-                  }
-                })
-              })
             }
           }
         }
       },
 
       bulkEditAndDeploy () {
+        this.deviceQueue.forEach((v, k) => {
+          let data = {}
+          this.formStructure[0].value.map(item => {
+            if (item.value.type === 'arr' || item.value.type === 'FKs') {
+              data[item.id] = []
+            } else if (item.value.type === 'int') {
+              data[item.id] = 0
+            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+              data[item.id] = undefined
+            } else {
+              data[item.id] = ''
+            }
+          })
+          data.name = v.name
+          data.instanceId = v.instanceId
+          this.onShelveForm.data.push(data)
+        })
         this.deployViewData.visible = true
       },
 
