@@ -38,15 +38,6 @@ const routes = [{
       path: '/equipment/off',
       component: require('./components/equipment/pages/off.vue')
     }, {
-      path: '/equipment/check',
-      component: require('./components/equipment/pages/check.vue')
-    }, {
-      path: '/equipment/on-review',
-      component: require('./components/equipment/pages/onReview.vue')
-    }, {
-      path: '/equipment/on-confirm',
-      component: require('./components/equipment/pages/onConfirm.vue')
-    }, {
       path: '/equipment/off-review',
       component: require('./components/equipment/pages/offReview.vue')
     }]
@@ -69,6 +60,9 @@ const routes = [{
       path: '/system/onlinelist',
       component: require('./components/system/pages/onlinelist.vue')
     }]
+  }, {
+    path: '/orders',
+    component: require('./components/others/orders')
   }, {
     path: '/part1',
     component: require('./components/part1/Index'),

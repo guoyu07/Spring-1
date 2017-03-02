@@ -30,6 +30,7 @@
               :is-advance-search="isAdvanceSearch"
               :device-type="deviceType">
             </search-form-structure>
+
             <el-form-item>
               <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(1, isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
               <el-button size="small" @click="resetForm('searchKeys')">清空</el-button>

@@ -32,6 +32,10 @@ const setConfigs = () => {
   Vue.http.headers.common['Authorization'] = auth.getAuthHeader()['Authorization']
 }
 
+// custom filters
+// this one converts TZ format to locale format
+Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
+
 // Ajax 全局配置
 // Vue.http.options.root = 'http://192.168.10.28:8002/api' // dev
 // Vue.http.headers.post['Content-Type'] = 'application/x-www-form-urlencoded; charset=UTF-8'
@@ -60,11 +64,7 @@ http.interceptors.response.use(rs => {
 }, err => {
   Promise.reject(err)
   console.log(err.response)
-  new Vue({}).$notify({
-    title: '诶呀，出错了',
-    message: `${err.response.data.errorMessage}`,
-    type: 'success'
-  })
+  new Vue({}).$message.error(err.response.data.errorMessage)
 })
 
 Vue.prototype.http = http

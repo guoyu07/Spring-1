@@ -54,7 +54,7 @@
         <el-menu-item index="/authority/role"><i class="el-icon-menu"></i>角色管理</el-menu-item>
       </el-submenu>
 
-      <el-menu-item index="/others/worklist"><i class="el-icon-date"></i>工单管理</el-menu-item>
+      <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
       <el-menu-item index="/others/manhour"><i class="el-icon-time"></i>标准工时统计</el-menu-item>
       <el-menu-item index="/part1">创建流程表单（测试）</el-menu-item>
       <el-menu-item index="/part1/part13"><i class="el-icon-menu"></i>自订表单（客户端测试）</el-menu-item>

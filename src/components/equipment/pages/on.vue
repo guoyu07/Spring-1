@@ -21,7 +21,7 @@
                 off-text="关闭"></el-switch>
             </el-form-item> -->
           </el-form>
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
             <!-- <div class="form-block" :class="{ expand: !isAdvanceSearch }">
               <el-form-item label="关键词">
                 <el-input
@@ -163,7 +163,7 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
+            <el-button type="primary" class="md" :disabled="!onShelveForm.data.length" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
           </div>
             </el-col>
           </el-row>
@@ -178,52 +178,6 @@
       <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
         <el-tabs type="border-card">
           <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
-            <!-- <div class="form-block" v-for="formItem in formStructure">
-              <el-form-item
-                :prop="'data.' + index + '.' + formItem.id"
-                :label="formItem.name"
-                :rules="{
-                  type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
-                }">
-                <el-input
-                  v-if="formItem.value.type === 'str'"
-                  v-model="item[formItem.id]">
-                </el-input>
-                <el-input-number
-                  v-else-if="formItem.value.type === 'int'"
-                  v-model="item[formItem.id]" :min="0">
-                </el-input-number>
-                <el-select
-                  v-else-if="formItem.value.type === 'enum'"
-                  v-model="item[formItem.id]">
-                  <el-option v-for="option in formItem.value.regex"
-                    :label="option"
-                    :value="option"></el-option>
-                </el-select>
-                <el-select
-                  v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                  v-model="item[formItem.id]"
-                  :multiple="formItem.value.type === 'FKs'">
-                  <el-option v-for="option in formItem.value.object_list"
-                    :label="option.name"
-                    :value="option.instanceId"></el-option>
-                </el-select>
-                <el-select
-                  v-else-if="formItem.value.type === 'arr'"
-                  v-model="item[formItem.id]"
-                  multiple
-                  filterable=""
-                  allow-create>
-                  <el-option value="">请创建</el-option>
-                </el-select>
-                <el-date-picker
-                  v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                  v-model="item[formItem.id]"
-                  :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                  placeholder="选择时间">
-                </el-date-picker>
-              </el-form-item>
-            </div> -->
             <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
           </el-tab-pane>
         </el-tabs>
@@ -273,7 +227,7 @@
     },
     methods: {
       renderDeviceList () {
-        const postData = {
+        let postData = {
           action: 'on/device/items',
           method: 'GET',
           data: {}
@@ -345,7 +299,8 @@
         //     processRes(res)
         //   })
         // } else {
-        let searchData = this.filterObj(this.searchKeys, isAdvance)
+        let searchData = { status: '已出库', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
+        console.log(searchData)
         if (this.isEmptyObj(searchData)) {
           this.$message.info('搜索条件不能为空！')
           return false
@@ -424,8 +379,40 @@
       },
 
       onConfirm (formName) {
-        this.deployViewData.visible = false
-        console.log(formName)
+        // this.deployViewData.visible = false
+        let objectList = this.onShelveForm.data
+        // for (const form in this.onShelveForm.data) {
+        //   objectList.push(form)
+        // }
+        // console.log(objectList)
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            console.log('submit!')
+            const postData = {
+              action: 'runtime/process/instances',
+              method: 'POST',
+              data: {
+                pkey: this.deviceListStructure[this.deviceType],
+                form: {
+                  'object_list': objectList,
+                  'object_id': this.deviceType
+                }
+              }
+            }
+            this.http.post('', this.parseData(postData)).then((res) => {
+              console.log(res)
+              if (res.statusCode === 406) {
+                this.$message.error(res.errorMessage)
+              } else {
+                this.$message.success('提交成功！')
+                this.$router.replace('/others/worklist')
+              }
+            })
+          } else {
+            this.$message.warning('表单未填写完整！')
+            return false
+          }
+        })
       },
 
       onRemove (device) {

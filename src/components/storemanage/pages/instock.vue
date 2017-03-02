@@ -350,7 +350,7 @@
             }
           } else {
             console.log('error submit!!')
-            this.$message.warning('表单未填写完整，提交失败！')
+            this.$message.warning('表单未填写完整！')
             return false
           }
         })
