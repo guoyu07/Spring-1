@@ -6,17 +6,13 @@
       :data="applylist"
       border
       style="width: 100%; min-width: 460px">
-     <!--  <el-table-column
-        type="selection"
-        width="55">
-      </el-table-column> -->
       <el-table-column type="expand">
         <template scope="props">
           <div class="item-block" v-for="item in props.row.data">
-            <p>主机: {{ item.host }}</p>
-            <p>环境: {{ item.envirnment }}</p>
-            <p>数量: {{ item.number }}</p>
-            <p>OS: {{ item.operationSystem }}</p>
+            <p>主机: {{ item.hostType }}</p>
+            <p>环境: {{ item.environment }}</p>
+            <p>数量: {{ item.quantity }}</p>
+            <p>OS: {{ item.operateSystem }}</p>
             <p>CPU: {{ item.cpu }}</p>
             <p>内存(G): {{ item.internalStorage }}</p>
             <p>硬盘(G): {{ item.hardDisk }}</p>
@@ -31,7 +27,7 @@
         prop="applyType"
         label="申请类型"></el-table-column>
       <el-table-column
-        prop="project"
+        prop="business"
         label="项目组"></el-table-column>
       <el-table-column
         inline-template
@@ -63,16 +59,33 @@
       }
     },
     created () {
+      console.log('created')
       this.onloadlist()
+    },
+    mounted () {
+      console.log('mounted')
     },
     methods: {
       onloadlist () {
-        this.$http.get('/applylist').then((res) => {
-          this.applylist = res.body
+        const postData = {
+          action: 'runtime/tasks/self',
+          method: 'GET',
+          data: {}
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          const all = res.data.data.data
+          all.forEach((list, k) => {
+            list.variables.message.map(item => {
+              if (item.task_key === 'start') {
+                this.applylist[k] = item.form
+              }
+            })
+          })
         })
       },
       onAssign (row) {
-        this.$router.push('/system/assign')
+        this.$router.replace('/system/assign')
       },
       showDialogReject (row) {
         this.dialogReject = true
