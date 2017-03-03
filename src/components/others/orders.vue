@@ -182,7 +182,7 @@
                 <span>{{deviceViewData.device.priority}}</span>
               </el-form-item>
             </el-form>
-            <h5 style="margin-top: 12px;"><i class="el-icon-information"></i> 历史步骤</h5>
+            <h5 style="margin-top: 12px;"><i class="el-icon-information"></i> 历史步骤（共 {{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.variables">
               <el-collapse-item v-for="task in deviceViewData.device.variables.message" :title="task.task_name">
                 <el-form label-position="left" inline>

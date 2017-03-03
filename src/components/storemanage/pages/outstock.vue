@@ -110,7 +110,8 @@
             v-model="retrieveViewData.location"
             filterable
             allow-create
-            placeholder="请选择／新增出库指定地点...">
+            placeholder="请选择／新增出库指定地点..."
+            style="width: 100%">
             <el-option
               v-for="loc in retrieveLocations"
               :label="loc.name"

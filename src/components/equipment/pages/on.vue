@@ -374,7 +374,9 @@
           })
           data.name = v.name
           data.instanceId = v.instanceId
-          this.onShelveForm.data.push(data)
+          if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
+            this.onShelveForm.data.push(data)
+          }
         })
         this.deployViewData.visible = true
       },
