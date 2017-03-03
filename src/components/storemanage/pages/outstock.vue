@@ -59,7 +59,7 @@
               :context="_self"
               label="操作">
               <span>
-                <el-button size="small" @click="onRetrieve(row)">出库</el-button>
+                <el-button size="small" @click="onRetrieve(row)" v-if="row.status !== '已出库'">出库</el-button>
                 <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button>
               </span>
             </el-table-column>
@@ -114,7 +114,7 @@
             <el-option
               v-for="loc in retrieveLocations"
               :label="loc.name"
-              :value="loc.value"></el-option>
+              :value="loc.name"></el-option>
           </el-select>
         </el-col>
       </el-row>
@@ -157,7 +157,8 @@
         }],
         retrieveViewData: {
           visible: false,
-          device: {}
+          device: {},
+          location: ''
         },
         deviceViewData: {
           visible: false,
@@ -169,6 +170,7 @@
 
     created () {
       this.renderDeviceList()
+      this.getLocationList()
       // this.renderFormStructure()
     },
 
@@ -192,6 +194,18 @@
           this.deviceList.map(item => {
             this.deviceListStructure[item.object_id] = item.pkey
           })
+        })
+      },
+
+      getLocationList () {
+        let postData = {
+          action: '/object/location/instance/_search',
+          method: 'POST',
+          data: { 'query': {} }
+        }
+        this.http.post('easyops/', this.parseData(postData)).then((res) => {
+          console.log(res)
+          this.retrieveLocations = res.data.data.data.list
         })
       },
 
@@ -310,7 +324,23 @@
           this.$message.error('请填写出库地点！')
           return
         }
-        const postData = {
+        if (!this.retrieveLocations.some(loc => loc.name === location)) { // 若地点为新增，则先进行新增请求
+          let locPostData = {
+            action: `/object/instance/location`,
+            method: 'POST',
+            data: { name: location }
+          }
+          this.http.post('easyops/', this.parseData(locPostData)).then((res) => {
+            // 新增毕，方出库
+            this._submitMethod(device, location)
+          })
+        } else {  // 直接出库
+          this._submitMethod(device, location)
+        }
+      },
+
+      _submitMethod (device, location) {
+        let postData = {
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
@@ -332,6 +362,7 @@
           })
           this.retrieveViewData.visible = false
           this.deviceViewData.location = ''
+          this.renderDeviceList()
         })
       },
 
