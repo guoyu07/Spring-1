@@ -23,7 +23,7 @@
             </el-form-item> -->
           </el-form>
 
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
             <search-form-structure
               :search-key-list="searchKeyList"
               :search-keys="searchKeys"
@@ -103,9 +103,19 @@
       <el-row>
         <el-col :span="14" :offset="5">
           <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
-          <el-input
+          <!-- <el-input
             placeholder="请输入出库指定地点..."
-            v-model="retrieveViewData.location"></el-input>
+            v-model="retrieveViewData.location"></el-input> -->
+          <el-select
+            v-model="retrieveViewData.location"
+            filterable
+            allow-create
+            placeholder="请选择／新增出库指定地点...">
+            <el-option
+              v-for="loc in retrieveLocations"
+              :label="loc.name"
+              :value="loc.value"></el-option>
+          </el-select>
         </el-col>
       </el-row>
       <span class="dialog-footer" slot="footer">
@@ -138,6 +148,13 @@
         deviceTable: [],
         devicePage: 1,
         deviceTotal: 0,
+        retrieveLocations: [{
+          name: '東京',
+          value: 'tokyo'
+        }, {
+          name: '大阪',
+          value: 'osaka'
+        }],
         retrieveViewData: {
           visible: false,
           device: {}
