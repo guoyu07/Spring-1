@@ -80,8 +80,17 @@
             stripe
             border>
             <el-table-column
-              prop="name"
-              label="任务"></el-table-column>
+              v-if="filter !== '已参与'"
+              label="流程—任务"
+              width="200"
+              inline-template
+              :context="_self">
+              <template>{{row.pname}}—{{row.name}}</template>
+            </el-table-column>
+            <el-table-column
+              v-if="filter === '已参与'"
+              label="流程"
+              prop="pname"></el-table-column>
             <el-table-column
               prop="variables.author"
               label="创建者"></el-table-column>
