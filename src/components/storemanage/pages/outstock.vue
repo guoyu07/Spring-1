@@ -173,11 +173,21 @@
     created () {
       this.renderDeviceList()
       this.getLocationList()
-      console.log(this.$route.params)
       if (this.$route.params.edit) {
         this.edit = this.$route.params.edit
       }
-      // this.renderFormStructure()
+    },
+
+    watch: {
+      '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象,此时生命周期钩子失效
+        if (this.$route.params.edit) {
+          this.edit = this.$route.params.edit
+        } else {
+          this.edit = ''
+        }
+        this.deviceTable = []
+        this.onSearchDevices()
+      }
     },
 
     methods: {
@@ -228,6 +238,7 @@
       onDeviceTypeChange () {
         this.deviceTable = []
         this.renderFormStructure()
+        this.onSearchDevices()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',
           method: 'GET',
@@ -272,10 +283,10 @@
         // } else {}
         this.searchKeys.searchKey = ''
         let searchData = this.filterObj(this.searchKeys, isAdvance)
-        if (this.isEmptyObj(searchData)) {
-          this.$message.info('搜索条件不能为空！')
-          return false
-        }
+        // if (this.isEmptyObj(searchData)) {
+        //   this.$message.info('搜索条件不能为空！')
+        //   return false
+        // }
         let postData = {
           action: `/object/${this.deviceType}/instance/_search`,
           method: 'POST',
