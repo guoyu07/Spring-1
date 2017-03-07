@@ -175,12 +175,6 @@
       // this.renderFormStructure()
     },
 
-    // watch: {
-    //   deviceType () {
-    //     this.renderFormStructure()
-    //   }
-    // },
-
     methods: {
       renderDeviceList () { // 渲染设备类型
         var renderDeviceListData = {
@@ -363,7 +357,7 @@
           })
           this.retrieveViewData.visible = false
           this.deviceViewData.location = ''
-          this.renderDeviceList()
+          this.onSearchDevices()
         })
       },
 
