@@ -157,10 +157,10 @@
         <el-row>
           <el-col :span="20" :offset="2">
             <el-form label-position="left" inline class="expanded-form">
-              <el-form-item label="任务名称：">
+              <el-form-item v-if="deviceViewData.device.name" label="任务名称：">
                 <span>{{deviceViewData.device.name}}</span>
               </el-form-item>
-              <el-form-item label="任务 ID：">
+              <el-form-item v-if="deviceViewData.device.id" label="任务 ID：">
                 <span>{{deviceViewData.device.id}}</span>
               </el-form-item>
               <el-form-item v-if="deviceViewData.device.assignee" label="指派者：">
@@ -182,7 +182,7 @@
                 <span>{{deviceViewData.device.priority}}</span>
               </el-form-item>
             </el-form>
-            <h5 style="margin-top: 12px;"><i class="el-icon-information"></i> 历史步骤（共 {{ deviceViewData.device.variables.message.length }}）</h5>
+            <h5 style="margin-top: 12px;" v-if="deviceViewData.device.variables"><i class="el-icon-information"></i> 历史步骤（共 {{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.variables">
               <el-collapse-item v-for="task in deviceViewData.device.variables.message" :title="task.task_name">
                 <el-form label-position="left" inline>
