@@ -121,17 +121,7 @@
               :context="_self"
               label="操作">
               <template>
-                <el-dropdown trigger="click" menu-align="start">
-                  <span class="el-dropdown-link">
-                    操作<i class="el-icon-caret-bottom el-icon--right"></i>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item v-if="filter === '待认领'" @click.native="onClaim(row)"><i class="el-icon-check text-success"></i> 认领</el-dropdown-item>
-                    <el-dropdown-item v-if="filter === '待审核'" @click.native="onApprove(row)"><i class="el-icon-check text-success"></i> 通过</el-dropdown-item>
-                    <el-dropdown-item v-if="filter === '待审核'" @click.native="onReject(row)"><i class="el-icon-close text-danger"></i> 驳回</el-dropdown-item>
-                    <el-dropdown-item :divided="filter !== '已审核' && filter !== '已参与'" @click.native="onView(row)"><i class="el-icon-view"></i> 查看</el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                <el-button size="small" @click="onView(row)">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -206,6 +196,11 @@
             </el-collapse>
           </el-col>
         </el-row>
+        <span class="dialog-footer" slot="footer">
+          <el-button v-if="filter === '待认领'" type="info" @click="onClaim(deviceViewData.device)"><i class="el-icon-check"></i> 认领</el-button>
+          <el-button v-if="filter === '待审核'" type="success" @click="onApprove(deviceViewData.device)"><i class="el-icon-more"></i> 审批</el-button>
+          <el-button v-if="filter === '待审核'" type="danger" @click="onReject(deviceViewData.device)"><i class="el-icon-close"></i> 驳回</el-button>
+        </span>
       </el-dialog>
     </div>
   </div>
@@ -278,6 +273,7 @@
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
+              this.deviceViewData.visible = false
               this.$message.success('已认领！')
             }
             this.getFilteredList()
@@ -305,6 +301,7 @@
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
+              this.deviceViewData.visible = false
               this.$message.success('已驳回！')
             }
             this.getFilteredList()
