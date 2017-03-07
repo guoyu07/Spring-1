@@ -30,6 +30,9 @@ const routes = [{
     }, {
       path: '/storemanage/outstock',
       component: require('./components/storemanage/pages/outstock.vue')
+    }, {
+      path: '/storemanage/outstock/:edit',
+      component: require('./components/storemanage/pages/outstock.vue')
     }]
   }, {
     path: '/equipment',
@@ -43,9 +46,6 @@ const routes = [{
     }, {
       path: '/equipment/off-review',
       component: require('./components/equipment/pages/offReview.vue')
-    }, {
-      path: '/equipment/edit',
-      component: require('./components/equipment/pages/edit.vue')
     }]
   }, {
     path: '/system',
