@@ -51,19 +51,7 @@ const routes = [{
       path: '/system/applylist',
       component: require('./components/system/pages/applylist.vue')
     }, {
-      path: '/system/assign', // 准备服务器资源
-      component: require('./components/system/pages/assign.vue')
-    }, {
-      path: '/system/approve', // 服务器资源审批
-      component: require('./components/system/pages/approve.vue')
-    }, {
-      path: '/system/virtualip', // 分配虚拟IP
-      component: require('./components/system/pages/virtualip.vue')
-    }, {
-      path: '/system/createvirtual', // 创建虚拟机
-      component: require('./components/system/pages/createvirtual.vue')
-    }, {
-      path: '/system/:step/:id/:name', // 上线评审
+      path: '/system/:step/:id/:name', // 具体步骤操作
       component: require('./components/system/pages/step.vue')
     }, {
       path: '/system/offlinelist',

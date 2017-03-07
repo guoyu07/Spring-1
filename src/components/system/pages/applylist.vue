@@ -33,11 +33,14 @@
               prop="business"
               label="项目组"></el-table-column>
             <el-table-column
+              prop="name"
+              label="当前任务"></el-table-column>
+            <el-table-column
               inline-template
               :context="_self"
               label="操作">
               <div class="btn-block">
-                <router-link :to="{ path: '/system/assign', query: { id: row.id }}" class="el-button el-button--primary el-button--small">资源分配</router-link>
+                <router-link :to="{ path: `/system/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
                 <el-button type="text" @click="showDialogReject(row)">驳回</el-button>
               </div>
             </el-table-column>
@@ -89,6 +92,8 @@
               if (item.task_key === 'start') {
                 this.applyList[k] = item.form
                 this.applyList[k].id = list.id
+                this.applyList[k].taskDefinitionKey = list.taskDefinitionKey
+                this.applyList[k].name = list.name
               }
             })
           })
