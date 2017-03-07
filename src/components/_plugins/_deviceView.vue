@@ -20,7 +20,7 @@
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">完成变更</el-button>
-              <router-link :to="{ path: '/storemanage/instock', query: { instanceId: deviceViewData.device.instanceId, object_id: deviceViewData.object_id }}" class="el-button el-button--text">查看更多</router-link>
+              <router-link :to="{ path: `/storemanage/instock/${deviceViewData.device.instanceId}`, query: { object_id: deviceViewData.object_id }}" class="el-button el-button--text">查看更多</router-link>
             </el-form-item>
           </el-form>
         </el-col>

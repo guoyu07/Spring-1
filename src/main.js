@@ -34,7 +34,11 @@ const setConfigs = () => {
 
 // custom filters
 // this one converts TZ format to locale format
-Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
+// Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
+Vue.filter('convertTime', (val) => {
+  let date = new Date(val)
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+})
 
 // Ajax 全局配置
 // Vue.http.options.root = 'http://192.168.10.28:8002/api' // dev
@@ -77,13 +81,31 @@ Vue.prototype.parseData = obj => {
 }
 
 // 逆向寻找匹配的 task_key
-Vue.prototype.findTaskMsgR = (arrMsg, arrTaskKey) => {
+var findTaskMsgR = (arrMsg, arrTaskKey) => {
   for (let i = arrMsg.length - 1; i >= 0; i--) {
     if (arrTaskKey.indexOf(arrMsg[i]['task_key']) !== -1) {
       return arrMsg[i]
     }
   }
   return false
+}
+
+Vue.prototype.findTaskMsgR = findTaskMsgR
+
+// 收集所有最新 task_key 数据
+Vue.prototype.getTaskInfo = (arrMsg) => {
+  const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM', 'judge', 'monitor']
+  const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
+  taskKeyArr
+    .filter(t => findTaskMsgR(arrMsg, [t]))
+    .map(t => findTaskMsgR(arrMsg, [t]).form.data)
+    .map(tsk => {
+      if (Array.isArray(tsk)) {
+        !rs.data.length && tsk.forEach(t => rs.data.push({}))
+        tsk.map((host, index) => Object.assign(rs.data[index], host))
+      }
+    })
+  return rs
 }
 
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段

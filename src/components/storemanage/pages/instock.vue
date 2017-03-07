@@ -122,13 +122,22 @@
     },
     created () {
       // this.renderFormData()
-      if (this.$route.query.instanceId) {
-        this.editInfo.instanceId = this.$route.query.instanceId
+      console.log(this.$route.params)
+      if (this.$route.params.id) {
+        this.editInfo.instanceId = this.$route.params.id
         this.editInfo.object_id = this.$route.query.object_id
         // 根据 instanceId 去查询单个实例的所有值，并返回给 this.instockForm.data[0]
         this.renderEditInfo()
       }
       this.renderDeviceList()
+    },
+    watch: {
+      '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
+        this.editInfo = {
+          instanceId: '',
+          object_id: ''
+        }
+      }
     },
     methods: {
       renderDeviceList () { // 渲染设备类型

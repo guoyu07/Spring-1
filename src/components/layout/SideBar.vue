@@ -24,6 +24,7 @@
         <template slot="title">设备上下架</template>
         <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
         <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item>
+        <el-menu-item index="/equipment/edit"><i class="el-icon-fa-edit"></i>更改流程</el-menu-item>
         <!-- <el-menu-item index="/equipment/check"><i class="el-icon-fa-stethoscope"></i>审核上下架流程</el-menu-item> -->
         <!-- <el-submenu index="1-4">
           <template slot="title">选项4</template>
@@ -36,8 +37,8 @@
         <!-- <el-menu-item index="/system/online"><i class="el-icon-star-on"></i>上线流程</el-menu-item> -->
         <el-menu-item-group>
           <template slot="title">上线流程</template>
-          <el-menu-item index="/system/apply"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
-          <el-menu-item index="/system/applylist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
+          <el-menu-item index="/system/applylist"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
+          <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
         </el-menu-item-group>
         <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item>
       </el-submenu>
@@ -55,7 +56,7 @@
       </el-submenu>
 
       <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
-      <el-menu-item index="/others/manhour"><i class="el-icon-time"></i>标准工时统计</el-menu-item>
+      <el-menu-item index="/hours"><i class="el-icon-time"></i>标准工时统计</el-menu-item>
       <el-menu-item index="/part1">创建流程表单（测试）</el-menu-item>
       <el-menu-item index="/select-form">选择流程表单（测试）</el-menu-item>
       <el-menu-item index="/part1/part13"><i class="el-icon-menu"></i>自订表单（客户端测试）</el-menu-item>

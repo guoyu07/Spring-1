@@ -6,7 +6,7 @@
           class="box-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
+          <h3><i class="el-icon-fa-sign-out"></i>更改流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
@@ -59,8 +59,7 @@
               :context="_self"
               label="操作">
               <span>
-                <el-button size="small" @click="onRetrieve(row)" v-if="row.status !== '已出库'">出库</el-button>
-                <!-- <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button> -->
+                <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button>
               </span>
             </el-table-column>
           </el-table>
@@ -77,59 +76,12 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog
-      title="出库操作"
-      v-model="retrieveViewData.visible"
-      size="small"
-      :modal="true">
-      <!-- <table class="device-data-table">
-        <tbody>
-          <tr v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
-            <td><b>{{ formStructure[key] }}</b></td>
-            <td>{{value}}</td>
-          </tr>
-        </tbody>
-      </table> -->
-      <ul class="device-data-list">
-        <li v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
-          <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
-            <b>{{ formStructure[key].name }}</b><span v-for="option in value">{{option.name}}</span>
-          </div>
-          <div v-else>
-            <b>{{ formStructure[key].name }}</b>{{value}}
-          </div>
-        </li>
-      </ul>
-      <el-row>
-        <el-col :span="14" :offset="5">
-          <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
-          <!-- <el-input
-            placeholder="请输入出库指定地点..."
-            v-model="retrieveViewData.location"></el-input> -->
-          <el-select
-            v-model="retrieveViewData.location"
-            filterable
-            allow-create
-            placeholder="请选择／新增出库指定地点..."
-            style="width: 100%">
-            <el-option
-              v-for="loc in retrieveLocations"
-              :label="loc.name"
-              :value="loc.name"></el-option>
-          </el-select>
-        </el-col>
-      </el-row>
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="retrieveViewData.visible = false">取消</el-button>
-        <el-button type="primary" @click="onConfirmRetrieve(retrieveViewData.device, retrieveViewData.location)">确认出库</el-button>
-      </span>
-    </el-dialog>
-    <!-- <device-view :device-view-data="deviceViewData"></device-view> -->
+    <device-view :device-view-data="deviceViewData"></device-view>
   </div>
 </template>
 
 <script>
-  // import deviceView from '../../_plugins/_deviceView'
+  import deviceView from '../../_plugins/_deviceView'
   import searchFormStructure from '../../_plugins/_searchFormStructure'
 
   export default {
@@ -171,7 +123,6 @@
 
     created () {
       this.renderDeviceList()
-      this.getLocationList()
       // this.renderFormStructure()
     },
 
@@ -189,18 +140,6 @@
           this.deviceList.map(item => {
             this.deviceListStructure[item.object_id] = item.pkey
           })
-        })
-      },
-
-      getLocationList () {
-        let postData = {
-          action: '/object/location/instance/_search',
-          method: 'POST',
-          data: { 'query': {} }
-        }
-        this.http.post('easyops/', this.parseData(postData)).then((res) => {
-          console.log(res)
-          this.retrieveLocations = res.data.data.data.list
         })
       },
 
@@ -307,69 +246,15 @@
         this.$refs[formName].resetFields()
       },
 
-      onRetrieve (device) {
-        console.log(this.formStructure)
-        // this.renderFormStructure()
-        this.retrieveViewData.visible = true
-        this.retrieveViewData.device = device
-      },
-
-      onConfirmRetrieve (device, location) {
-        if (!location) {
-          this.$message.error('请填写出库地点！')
-          return
-        }
-        if (!this.retrieveLocations.some(loc => loc.name === location)) { // 若地点为新增，则先进行新增请求
-          let locPostData = {
-            action: `/object/instance/location`,
-            method: 'POST',
-            data: { name: location }
-          }
-          this.http.post('easyops/', this.parseData(locPostData)).then((res) => {
-            // 新增毕，方出库
-            this._submitMethod(device, location)
-          })
-        } else {  // 直接出库
-          this._submitMethod(device, location)
-        }
-      },
-
-      _submitMethod (device, location) {
-        let postData = {
-          action: 'runtime/process/instances',
-          method: 'POST',
-          data: {
-            pkey: this.deviceListStructure[this.deviceType],
-            form: {
-              'object_id': this.deviceType,
-              'object_list': [{
-                instanceId: device.instanceId,
-                location: location
-              }]
-            }
-          }
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          this.$notify({
-            title: '成功',
-            message: `已成功将设备「${device.name}」出库至${location}！`,
-            type: 'success'
-          })
-          this.retrieveViewData.visible = false
-          this.deviceViewData.location = ''
-          this.onSearchDevices()
-        })
+      onEdit (device) {
+        this.deviceViewData.visible = true
+        this.deviceViewData.device = device
+        this.deviceViewData.object_id = this.deviceType
       }
-
-      // onEdit (device) {
-      //   this.deviceViewData.visible = true
-      //   this.deviceViewData.device = device
-      //   this.deviceViewData.object_id = this.deviceType
-      // }
     },
 
     components: {
-      // deviceView,
+      deviceView,
       searchFormStructure
     }
   }
