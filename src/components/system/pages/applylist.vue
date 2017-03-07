@@ -83,7 +83,7 @@
           action: 'runtime/tasks/self',
           method: 'GET',
           data: {
-            taskDefinitionKey: 'restart'
+            processDefinitionKey: 'host_apply'
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
