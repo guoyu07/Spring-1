@@ -1,7 +1,8 @@
 {
   "header": [
     {
-      "id": "1",
+      "id": "0",
+      "name": "字符串",
       "value": {
         "type": "str",
         "regex": "默认值"
@@ -12,7 +13,20 @@
       "need_submit": true
     },
     {
+      "id": "1",
+      "name": "文本",
+      "value": {
+        "type": "strArea",
+        "regex": "默认值"
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
       "id": "2",
+      "name": "数字",
       "value": {
         "type": "int",
         "regex": "2"
@@ -24,6 +38,7 @@
     },
     {
       "id": "3",
+      "name": "数组",
       "value": {
         "type": "arr",
         "regex": []
@@ -35,6 +50,7 @@
     },
     {
       "id": "4",
+      "name": "枚举",
       "value": {
         "type": "enum",
         "regex": [ "试试", "哈哈哈", "hhh" ]
@@ -46,6 +62,7 @@
     },
     {
       "id": "5",
+      "name": "日期",
       "value": {
         "type": "date"
       },
@@ -56,6 +73,7 @@
     },
     {
       "id": "6",
+      "name": "时间",
       "value": {
         "type": "datetime"
       },
@@ -100,11 +118,6 @@
       "min": 1,
       "max": 5
     }
-    // "count": {
-    //   "type": "message_header", //来源于流程 message header 变量
-    //   "id": "tkey",
-    //   "key_path": ""
-    // }
   },
   "action": [
     {
@@ -119,7 +132,7 @@
     },
     {
       "name": "下载XX",
-      "url": "/download/XX/?tid=", //加上 task_id
+      "url": "/download/XX/?tid=", 
       "type": "target"
     }
   ]
