@@ -24,6 +24,7 @@
         <template slot="title">设备上下架</template>
         <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
         <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item>
+        <el-menu-item index="/equipment/edit"><i class="el-icon-fa-edit"></i>更改流程</el-menu-item>
         <!-- <el-menu-item index="/equipment/check"><i class="el-icon-fa-stethoscope"></i>审核上下架流程</el-menu-item> -->
         <!-- <el-submenu index="1-4">
           <template slot="title">选项4</template>

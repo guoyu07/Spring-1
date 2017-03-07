@@ -25,6 +25,9 @@ const routes = [{
       path: '/storemanage/instock',
       component: require('./components/storemanage/pages/instock.vue')
     }, {
+      path: '/storemanage/instock/:id',
+      component: require('./components/storemanage/pages/instock.vue')
+    }, {
       path: '/storemanage/outstock',
       component: require('./components/storemanage/pages/outstock.vue')
     }]
@@ -40,6 +43,9 @@ const routes = [{
     }, {
       path: '/equipment/off-review',
       component: require('./components/equipment/pages/offReview.vue')
+    }, {
+      path: '/equipment/edit',
+      component: require('./components/equipment/pages/edit.vue')
     }]
   }, {
     path: '/system',

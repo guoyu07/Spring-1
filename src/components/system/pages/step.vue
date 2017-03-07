@@ -15,6 +15,15 @@
         <el-form-item label="备注">
           {{ applyData.mark }}
         </el-form-item>
+        <el-form-item
+          v-if="routerInfo.step==='approve'"
+          label=""
+          prop="approve"
+          style="width:1%;display:none;">
+          <el-input
+            v-model="assignForm.approve">
+          </el-input>
+        </el-form-item>
       </el-row>
       <el-tabs type="card" @tab-click="handleClick">
         <el-tab-pane class="m-pane" v-for="(data, index) in applyData.data" :label="data.environment">
@@ -46,25 +55,31 @@
               </tr>
               <template v-if="data.hostType === '虚拟机'">
                 <tr>
-                  <th>IDC</th>
-                  <td>{{ data.idc }}</td>
-                  <th>IDC集群</th>
-                  <td>{{ data.idcgroup }}</td>
-                  <th>IP</th>
-                  <td>{{ data.ip }}</td>
+                  <template v-if="data.idc">
+                    <th>IDC</th>
+                    <td>{{ data.idc }}</td>
+                    <th>IDC集群</th>
+                    <td>{{ data.idcgroup }}</td>
+                  </template>
+                  <template v-if="data.ip">
+                    <th>IP</th>
+                    <td>{{ data.ip }}</td>
+                  </template>
                 </tr>
-                <tr>
-                  <th>创建虚拟机</th>
-                  <td>{{ data.setVirtual ? '是' : '否' }}</td>
-                  <th>配置IP</th>
-                  <td>{{ data.setIP ? '是' : '否' }}</td>
-                  <th>安装Agent</th>
-                  <td>{{ data.setAgent ? '是' : '否' }}</td>
-                </tr>
-                <tr>
-                  <th>描述文件URL</th>
-                  <td colspan="5"><a :href="data.url" target="new_blank">{{ data.url }}</a></td>
-                </tr>
+                <template v-if="data.setAgent">
+                  <tr>
+                    <th>创建虚拟机</th>
+                    <td>{{ data.setVirtual ? '是' : '否' }}</td>
+                    <th>配置IP</th>
+                    <td>{{ data.setIP ? '是' : '否' }}</td>
+                    <th>安装Agent</th>
+                    <td>{{ data.setAgent ? '是' : '否' }}</td>
+                  </tr>
+                  <tr>
+                    <th>描述文件URL</th>
+                    <td colspan="5"><a :href="data.url" target="new_blank">{{ data.url }}</a></td>
+                  </tr>
+                </template>
               </template>
             </table>
           </div>
@@ -125,7 +140,7 @@
                 </el-switch>
               </el-form-item>
               <el-form-item label="描述文件URL" style="width:80%;" label-width="100px">
-                <el-input v-model="assignForm.data[index].url"></el-input>
+                <el-input v-model="assignForm.data[index].url" placeholder="http://"></el-input>
               </el-form-item>
             </div>
           </div>
@@ -210,7 +225,7 @@
       </el-tabs>
       <el-form-item class="margin-top">
         <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
-        <el-button @click="cancel">取消</el-button>
+        <el-button @click="onReject(applyData)">驳回</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -346,42 +361,50 @@ export default {
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
         this.applyData = this.getTaskInfo(message)
-        let virtualData = {}
-        let machineData = {}
-        switch (this.routerInfo.step) {
-          case 'createVM':
-            virtualData = {
-              setVirtual: false,
-              setIP: false,
-              setAgent: false,
-              url: ''
-            }
-            break
-
-          case 'restart':
-            virtualData = {
-              idc: '',
-              idcgroup: ''
-            }
-            machineData = {
-              machines: []
-            }
-            break
-
-          case 'assignIP':
-            virtualData = {
-              ip: ''
-            }
-            break
-
-          default:
-            return false
-        }
         this.applyData.data.forEach((item, k) => {
           if (item.hostType === '虚拟机') {
-            this.assignForm.data.push(virtualData)
+            switch (this.routerInfo.step) {
+              case 'createVM':
+                this.assignForm.data.push({
+                  setVirtual: false,
+                  setIP: false,
+                  setAgent: false,
+                  url: ''
+                })
+                break
+
+              case 'restart':
+                this.assignForm.data.push({
+                  idc: '',
+                  idcgroup: ''
+                })
+                break
+
+              case 'assignIP':
+                this.assignForm.data.push({
+                  ip: ''
+                })
+                break
+
+              default:
+                if (this.assignForm.data) {
+                  this.assignForm.data.push({})
+                }
+            }
           } else {
-            this.assignForm.data.push(machineData) // 这样对应上是第几个环境才设置了IP
+            switch (this.routerInfo.step) {
+              case 'restart':
+                this.assignForm.data.push({
+                  machines: []
+                })
+                break
+
+              default:
+                if (this.assignForm.data) {
+                  this.assignForm.data.push({})
+                }
+            }
+            // this.assignForm.data.push(machineData) // 这样对应上是第几个环境才设置了IP
           }
         })
       })
@@ -399,10 +422,12 @@ export default {
       }).then(() => {
         this.$refs[assignForm].validate((valid) => {
           if (valid) {
-            for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
-              if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
-                this.$message.warning('未分配完！')
-                return false
+            if (this.assignForm.data) {
+              for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
+                if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
+                  this.$message.warning('未分配完！')
+                  return false
+                }
               }
             }
             const postData = {
@@ -517,6 +542,32 @@ export default {
           this.$message.warning(`下架列表中已存在${selection.name}`)
         }
       }
+    },
+    onReject (task) {
+      this.$prompt(`请输入对「${task.applicationName}」的驳回意见：`, '确定驳回？', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(({value}) => {
+        if (!value) {
+          this.$message.error('失败：驳回意见不可留空！')
+          return
+        }
+        let postData = {
+          action: 'runtime/task/complete',
+          method: 'POST',
+          data: {
+            tid: task.id,
+            form: { value },
+            pass: 2
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已驳回！')
+          }
+          this.$router.go(-1) // 跳转历史的上一页
+        })
+      })
     },
     onRemove (row) {
       const index = this.assignForm.data[this.index].machines.indexOf(row)

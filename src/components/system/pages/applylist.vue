@@ -9,7 +9,7 @@
             :data="applyList"
             border
             style="width: 100%; min-width: 460px">
-            <el-table-column type="expand">
+            <!-- <el-table-column type="expand">
               <template scope="props">
                 <div class="item-block" v-for="item in props.row.data">
                   <p>主机: {{ item.hostType }}</p>
@@ -22,7 +22,7 @@
                   <p>资源分数: {{ item.score }}</p>
                 </div>
               </template>
-            </el-table-column>
+            </el-table-column> -->
             <el-table-column
               prop="applicationName"
               label="应用名"></el-table-column>
@@ -41,7 +41,7 @@
               label="操作">
               <div class="btn-block">
                 <router-link :to="{ path: `/system/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
-                <el-button type="text" @click="showDialogReject(row)">驳回</el-button>
+                <el-button type="text" @click="onReject(row)">驳回</el-button>
               </div>
             </el-table-column>
           </el-table>
@@ -107,9 +107,31 @@
       showDialogReject (row) {
         this.dialogReject = true
       },
-      onReject (row) {
-        console.log(row)
-        this.dialogReject = false
+      onReject (task) {
+        this.$prompt(`请输入对「${task.name}」的驳回意见：`, '确定驳回？', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({value}) => {
+          if (!value) {
+            this.$message.error('失败：驳回意见不可留空！')
+            return
+          }
+          let postData = {
+            action: 'runtime/task/complete',
+            method: 'POST',
+            data: {
+              tid: task.id,
+              form: { value },
+              pass: 2
+            }
+          }
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('已驳回！')
+            }
+            this.getApplyList()
+          })
+        })
       },
       onCancel () {
         this.dialogReject = false
