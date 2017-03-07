@@ -53,7 +53,13 @@
       "name": "枚举",
       "value": {
         "type": "enum",
-        "regex": [ "试试", "哈哈哈", "hhh" ]
+        "regex": "",
+        "options": [
+          { "label": "标签1", "value": "value1"},
+          { "label": "标签2", "value": "value2"},
+          { "label": "标签3", "value": "value3"},
+          { "label": "标签4", "value": "value4"}
+        ]
       },
       "required": true,
       "unique": true,

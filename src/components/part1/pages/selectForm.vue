@@ -8,15 +8,16 @@
           <el-input v-model="formItem.value.regex"></el-input>
         </template>
         <template v-if="formItem.value.type === 'int'">
-          <el-input-number v-model="testForm.testInt"></el-input-number>
+          <el-input-number v-model="formItem.value.regex"></el-input-number>
         </template>
         <template v-if="formItem.value.type === 'arr'">
-          <el-input-tag :tags="testForm.testArr"></el-input-tag>
+          <el-input-tag :tags="formItem.value.regex"></el-input-tag>
         </template>
         <template v-if="formItem.value.type === 'enum'">
-          <el-select v-model="testForm.testEnum" placeholder="枚举类型">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
+          <el-select v-model="formItem.value.regex" placeholder="枚举类型">
+            <el-option v-for="op of formItem.value.options"
+              :label="op.label" :value="op.value">
+            </el-option>
           </el-select>
         </template>
         <template v-if="formItem.value.type === 'date'">
@@ -35,7 +36,7 @@
       </el-form-item>
     </el-form>
   </div>
-</template>
+</template> 
 
 <script>
   import elInputTag from '../../_plugins/inputTag'
