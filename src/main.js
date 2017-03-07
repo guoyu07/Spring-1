@@ -34,7 +34,11 @@ const setConfigs = () => {
 
 // custom filters
 // this one converts TZ format to locale format
-Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
+// Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
+Vue.filter('convertTime', (val) => {
+  let date = new Date(val)
+  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+})
 
 // Ajax 全局配置
 // Vue.http.options.root = 'http://192.168.10.28:8002/api' // dev

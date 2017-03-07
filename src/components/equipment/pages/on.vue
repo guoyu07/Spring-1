@@ -299,12 +299,12 @@
         //     processRes(res)
         //   })
         // } else {
-        let searchData = { status: '已出库', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
-        console.log(searchData)
-        if (this.isEmptyObj(searchData)) {
+        if (this.isEmptyObj(this.filterObj(this.searchKeys, isAdvance))) {
           this.$message.info('搜索条件不能为空！')
           return false
         }
+        let searchData = { status: '已出库', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
+        console.log(searchData)
         let postData = {
           action: `/object/${this.deviceType}/instance/_search`,
           method: 'POST',
@@ -374,7 +374,9 @@
           })
           data.name = v.name
           data.instanceId = v.instanceId
-          this.onShelveForm.data.push(data)
+          if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
+            this.onShelveForm.data.push(data)
+          }
         })
         this.deployViewData.visible = true
       },

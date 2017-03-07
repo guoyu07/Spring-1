@@ -23,7 +23,7 @@
             </el-form-item> -->
           </el-form>
 
-          <el-form ref="searchKeys" :model="searchKeys" label-width="100px" :inline="true">
+          <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
             <search-form-structure
               :search-key-list="searchKeyList"
               :search-keys="searchKeys"
@@ -59,7 +59,7 @@
               :context="_self"
               label="操作">
               <span>
-                <el-button size="small" @click="onRetrieve(row)">出库</el-button>
+                <el-button size="small" @click="onRetrieve(row)" v-if="row.status !== '已出库'">出库</el-button>
                 <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button>
               </span>
             </el-table-column>
@@ -103,9 +103,20 @@
       <el-row>
         <el-col :span="14" :offset="5">
           <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
-          <el-input
+          <!-- <el-input
             placeholder="请输入出库指定地点..."
-            v-model="retrieveViewData.location"></el-input>
+            v-model="retrieveViewData.location"></el-input> -->
+          <el-select
+            v-model="retrieveViewData.location"
+            filterable
+            allow-create
+            placeholder="请选择／新增出库指定地点..."
+            style="width: 100%">
+            <el-option
+              v-for="loc in retrieveLocations"
+              :label="loc.name"
+              :value="loc.name"></el-option>
+          </el-select>
         </el-col>
       </el-row>
       <span class="dialog-footer" slot="footer">
@@ -138,9 +149,17 @@
         deviceTable: [],
         devicePage: 1,
         deviceTotal: 0,
+        retrieveLocations: [{
+          name: '東京',
+          value: 'tokyo'
+        }, {
+          name: '大阪',
+          value: 'osaka'
+        }],
         retrieveViewData: {
           visible: false,
-          device: {}
+          device: {},
+          location: ''
         },
         deviceViewData: {
           visible: false,
@@ -152,14 +171,9 @@
 
     created () {
       this.renderDeviceList()
+      this.getLocationList()
       // this.renderFormStructure()
     },
-
-    // watch: {
-    //   deviceType () {
-    //     this.renderFormStructure()
-    //   }
-    // },
 
     methods: {
       renderDeviceList () { // 渲染设备类型
@@ -175,6 +189,18 @@
           this.deviceList.map(item => {
             this.deviceListStructure[item.object_id] = item.pkey
           })
+        })
+      },
+
+      getLocationList () {
+        let postData = {
+          action: '/object/location/instance/_search',
+          method: 'POST',
+          data: { 'query': {} }
+        }
+        this.http.post('easyops/', this.parseData(postData)).then((res) => {
+          console.log(res)
+          this.retrieveLocations = res.data.data.data.list
         })
       },
 
@@ -293,7 +319,23 @@
           this.$message.error('请填写出库地点！')
           return
         }
-        const postData = {
+        if (!this.retrieveLocations.some(loc => loc.name === location)) { // 若地点为新增，则先进行新增请求
+          let locPostData = {
+            action: `/object/instance/location`,
+            method: 'POST',
+            data: { name: location }
+          }
+          this.http.post('easyops/', this.parseData(locPostData)).then((res) => {
+            // 新增毕，方出库
+            this._submitMethod(device, location)
+          })
+        } else {  // 直接出库
+          this._submitMethod(device, location)
+        }
+      },
+
+      _submitMethod (device, location) {
+        let postData = {
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
@@ -315,6 +357,7 @@
           })
           this.retrieveViewData.visible = false
           this.deviceViewData.location = ''
+          this.onSearchDevices()
         })
       },
 

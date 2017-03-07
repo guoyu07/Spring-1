@@ -63,7 +63,7 @@ const routes = [{
   }, {
     path: '/orders',
     component: require('./components/others/orders')
-  }, {
+  }, { // 定义表单，提交给数据库存储，删
     path: '/part1',
     component: require('./components/part1/Index'),
     children: [{
@@ -76,6 +76,9 @@ const routes = [{
       path: '/part1/part13',
       component: require('./components/part1/pages/Part13.vue')
     }]
+  }, { // 获取数据，渲染成表单，删
+    path: '/select-form',
+    component: require('./components/part1/pages/selectForm.vue')
   }, {
     path: '/part2',
     component: require('./components/part2/Index')

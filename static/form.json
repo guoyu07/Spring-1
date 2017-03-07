@@ -1,0 +1,126 @@
+{
+  "header": [
+    {
+      "id": "1",
+      "value": {
+        "type": "str",
+        "regex": "默认值"
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "id": "2",
+      "value": {
+        "type": "int",
+        "regex": "2"
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "id": "3",
+      "value": {
+        "type": "arr",
+        "regex": []
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "id": "4",
+      "value": {
+        "type": "enum",
+        "regex": [ "试试", "哈哈哈", "hhh" ]
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "id": "5",
+      "value": {
+        "type": "date"
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "id": "6",
+      "value": {
+        "type": "datetime"
+      },
+      "required": true,
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    }
+  ],
+  "body": {
+    "attr_list": [
+      {
+        "id": "7",
+        "value": {
+          "type": "dict/dicts",
+          "count": {
+            "type": "static",
+            "min": 1,
+            "max": 5
+          },
+          "source": {
+            "url": "api/test",
+            "data":{
+              "action": "activiti/task/form",
+              "method": "POST/GET",
+              "params": [
+                {
+                  "id": "8",
+                  "value": {
+                    "type": "static",
+                    "value": "value"
+                  }
+                }
+              ]
+            }
+          }
+        }
+      }
+    ],
+    "count": {
+      "type": "static",
+      "min": 1,
+      "max": 5
+    }
+    // "count": {
+    //   "type": "message_header", //来源于流程 message header 变量
+    //   "id": "tkey",
+    //   "key_path": ""
+    // }
+  },
+  "action": [
+    {
+      "name": "确认",
+      "pass": 0,
+      "type": "submit"
+    },
+    {
+      "name": "驳回XX",
+      "pass": 1,
+      "type": "back"
+    },
+    {
+      "name": "下载XX",
+      "url": "/download/XX/?tid=", //加上 task_id
+      "type": "target"
+    }
+  ]
+}
