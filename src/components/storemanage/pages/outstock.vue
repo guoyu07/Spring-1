@@ -59,8 +59,8 @@
               :context="_self"
               label="操作">
               <span>
-                <el-button size="small" @click="onRetrieve(row)" v-if="row.status !== '已出库'">出库</el-button>
-                <!-- <el-button size="small" type="warning" @click="onEdit(row)">变更</el-button> -->
+                <el-button size="small" @click="onRetrieve(row)" v-if="(row.status !== '已出库') && (!edit)">出库</el-button>
+                <el-button size="small" type="warning" @click="onEdit(row)" v-if="edit">变更</el-button>
               </span>
             </el-table-column>
           </el-table>
@@ -124,17 +124,18 @@
         <el-button type="primary" @click="onConfirmRetrieve(retrieveViewData.device, retrieveViewData.location)">确认出库</el-button>
       </span>
     </el-dialog>
-    <!-- <device-view :device-view-data="deviceViewData"></device-view> -->
+    <device-view :device-view-data="deviceViewData"></device-view>
   </div>
 </template>
 
 <script>
-  // import deviceView from '../../_plugins/_deviceView'
+  import deviceView from '../../_plugins/_deviceView'
   import searchFormStructure from '../../_plugins/_searchFormStructure'
 
   export default {
     data () {
       return {
+        edit: '',
         loading: false,
         isAdvanceSearch: true,
         formStructure: {},
@@ -172,7 +173,21 @@
     created () {
       this.renderDeviceList()
       this.getLocationList()
-      // this.renderFormStructure()
+      if (this.$route.params.edit) {
+        this.edit = this.$route.params.edit
+      }
+    },
+
+    watch: {
+      '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象,此时生命周期钩子失效
+        if (this.$route.params.edit) {
+          this.edit = this.$route.params.edit
+        } else {
+          this.edit = ''
+        }
+        this.deviceTable = []
+        this.onSearchDevices()
+      }
     },
 
     methods: {
@@ -223,6 +238,7 @@
       onDeviceTypeChange () {
         this.deviceTable = []
         this.renderFormStructure()
+        this.onSearchDevices()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',
           method: 'GET',
@@ -267,10 +283,10 @@
         // } else {}
         this.searchKeys.searchKey = ''
         let searchData = this.filterObj(this.searchKeys, isAdvance)
-        if (this.isEmptyObj(searchData)) {
-          this.$message.info('搜索条件不能为空！')
-          return false
-        }
+        // if (this.isEmptyObj(searchData)) {
+        //   this.$message.info('搜索条件不能为空！')
+        //   return false
+        // }
         let postData = {
           action: `/object/${this.deviceType}/instance/_search`,
           method: 'POST',
@@ -359,17 +375,17 @@
           this.deviceViewData.location = ''
           this.onSearchDevices()
         })
-      }
+      },
 
-      // onEdit (device) {
-      //   this.deviceViewData.visible = true
-      //   this.deviceViewData.device = device
-      //   this.deviceViewData.object_id = this.deviceType
-      // }
+      onEdit (device) {
+        this.deviceViewData.visible = true
+        this.deviceViewData.device = device
+        this.deviceViewData.object_id = this.deviceType
+      }
     },
 
     components: {
-      // deviceView,
+      deviceView,
       searchFormStructure
     }
   }
