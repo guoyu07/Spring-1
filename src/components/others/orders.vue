@@ -80,7 +80,7 @@
             border>
             <el-table-column
               prop="name"
-              label="任务"></el-table-column>
+              label="当前任务"></el-table-column>
             <el-table-column
               prop="variables.author"
               label="创建者"></el-table-column>
@@ -147,7 +147,7 @@
         </el-card>
       </el-col>
     </el-row>
-  
+
     <div class="device-view">
       <el-dialog
         :title="deviceViewData.device.name"

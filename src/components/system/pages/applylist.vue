@@ -79,7 +79,9 @@
         let postData = {
           action: 'runtime/tasks/self',
           method: 'GET',
-          data: {}
+          data: {
+            taskDefinitionKey: 'restart'
+          }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           res.data.data.data.forEach((list, k) => {
