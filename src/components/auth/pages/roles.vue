@@ -1,27 +1,3 @@
-<style lang="less">
-  .btn-area {
-    margin-top: 12px;
-
-    .el-tooltip.fr:first-of-type {
-      margin-left: 6px;
-    }
-  }
-
-  .uncheckable {
-    .el-checkbox__input {
-      display: none;
-    }
-  }
-
-  .el-table__expanded-cell {
-    .el-button.empty {
-      span {
-        margin-left: 0;
-      }
-    }
-  }
-</style>
-
 <template>
   <div class="roles">
     <el-row>
@@ -35,7 +11,9 @@
             <el-table-column type="expand">
               <template scope="props">
                 <div class="btn-area clear">
-                  <h5 class="sub-title fl" style="margin-top: 0;"><i class="el-icon-fa-users"></i> 属于{{props.row.role}}角色的用户 ({{props.row.user.length}})：</h5>
+                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="props.row.user.length"><i class="el-icon-fa-users"></i> 属于{{props.row.role}}角色的用户 ({{props.row.user.length}})：</h5>
+                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="!props.row.user.length"><i class="el-icon-warning"></i> 暂无属于{{props.row.role}}角色的用户！</h5>
+                  <el-button v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
                   <el-tooltip content="移除用户" placement="right" class="fr" v-if="props.row.user.length">
                     <el-button
                       icon="minus"
@@ -49,11 +27,11 @@
                       icon="plus"
                       type="success"
                       size="small"
-                      @click="onAdd(props.row.id)">
+                      @click="onAdd(props.row.id, props.row.user)">
                     </el-button>
                   </el-tooltip>
                 </div>
-                <el-checkbox-group v-model="usersToDelete" @change="onCheckUsers" :class="{ uncheckable: !isCheckable }">
+                <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
                   <el-checkbox v-for="user in props.row.user" :label="user">{{user}}</el-checkbox>
                 </el-checkbox-group>
               </template>
@@ -65,12 +43,13 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog title="加入用户" v-model="userViewData.visible">
+    <el-dialog title="加入用户" size="tiny" v-model="userViewData.visible">
+      <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
       <el-checkbox-group v-model="usersToAdd">
-        <el-checkbox v-for="user in userList" :label="user">{{user}}</el-checkbox>
+        <el-checkbox v-for="user in userList" :label="user.user" :disabled="user.exsting">{{user.user}}</el-checkbox>
       </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
-        <el-button @click="onAdd" icon="check" type="success">确认加入</el-button>
+        <el-button @click="onAdd" size="small" icon="check" type="success">确认加入</el-button>
       </span>
     </el-dialog>
   </div>
@@ -87,13 +66,15 @@
         usersToDelete: [],
         isCheckable: false,
         userViewData: {
-          visible: false
+          visible: false,
+          roleId: ''
         }
       }
     },
 
     created () {
       this.getRoleList()
+      this.getUserList()
     },
 
     methods: {
@@ -113,14 +94,19 @@
 
       getUserList () {},
 
-      onCheckUsers () {
-        console.log(this.usersToDelete)
-      },
-
-      onAdd (id) {
+      onAdd (id, users = []) {
         if (!this.userViewData.visible) {
           this.userViewData.visible = true
           this.userViewData.roleId = id
+          let userList = ['easyops', 'foo', 'bar', 'baz']
+          for (let user of userList) {
+            if (users.includes(user)) {
+              this.userList.push({ user, exsting: true })
+            } else {
+              this.userList.push({ user, exsting: false })
+            }
+          }
+          console.log(this.userList)
           return
         }
         let postData = {
@@ -164,8 +150,42 @@
             this.$message.success('移除成功！')
             this.getRoleList()
           })
+        }).catch(() => {
+          this.usersToDelete = []
         })
       }
     }
   }
 </script>
+
+<style lang="less">
+  .btn-area {
+    margin-top: 12px;
+
+    .el-tooltip.fr:first-of-type {
+      margin-left: 6px;
+    }
+
+    .cancel-btn {
+      margin-left: 6px;
+
+      span {
+        border-bottom: 1px solid;
+      }
+    }
+  }
+
+  .uncheckable {
+    .el-checkbox__input {
+      display: none;
+    }
+  }
+
+  .el-table__expanded-cell {
+    .el-button.empty {
+      span {
+        margin-left: 0;
+      }
+    }
+  }
+</style>
