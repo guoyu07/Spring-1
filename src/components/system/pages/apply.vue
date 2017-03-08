@@ -294,7 +294,7 @@
             }
             this.http.post('', this.parseData(postData))
             .then((res) => {
-              console.log(res, res.data.data)
+              // console.log(res, res.data.data)
               if ((res && res.status === 200) || (res && res.status === 201)) {
                 this.$notify.success({
                   title: '成功',

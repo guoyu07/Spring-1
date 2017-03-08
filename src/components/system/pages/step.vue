@@ -544,6 +544,7 @@ export default {
       }
     },
     onReject (task) {
+      console.log(task)
       this.$prompt(`请输入对「${task.applicationName}」的驳回意见：`, '确定驳回？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
@@ -556,7 +557,7 @@ export default {
           action: 'runtime/task/complete',
           method: 'POST',
           data: {
-            tid: task.id,
+            tid: this.routerInfo.id,
             form: { value },
             pass: 2
           }

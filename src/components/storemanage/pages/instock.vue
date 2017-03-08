@@ -10,7 +10,7 @@
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio :disabled="editInfo.instanceId !== ''" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+                <el-radio :disabled="$route.params.id" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
           </el-form>
@@ -94,7 +94,6 @@
         closable: true,
         loading: false,
         editInfo: {
-          instanceId: '',
           object_id: ''
         },
         deviceType: '',
@@ -122,7 +121,7 @@
     },
     created () {
       // this.renderFormData()
-      console.log(this.$route.params)
+      console.log(this.$route.params, this.$route.query.object_id)
       if (this.$route.params.id) {
         this.editInfo.instanceId = this.$route.params.id
         this.editInfo.object_id = this.$route.query.object_id
@@ -149,7 +148,11 @@
         this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
           console.log(res)
           this.deviceList = res.data.data.list
-          this.deviceType = this.deviceList[0].object_id
+          if (!this.editInfo.object_id) {
+            this.deviceType = this.deviceList[0].object_id
+          } else {
+            this.deviceType = this.editInfo.object_id
+          }
           this.deviceList.map(item => {
             this.deviceListStructure[item.object_id] = item.pkey
           })
