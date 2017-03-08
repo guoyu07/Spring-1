@@ -49,10 +49,10 @@
         <el-menu-item index="/publish/others"><i class="el-icon-more"></i>其他发布</el-menu-item>
       </el-submenu>
 
-      <el-submenu index="/authority">
+      <el-submenu index="/auth">
         <template slot="title">权限管理</template>
-        <el-menu-item index="/authority/user"><i class="el-icon-setting"></i>用户管理</el-menu-item>
-        <el-menu-item index="/authority/role"><i class="el-icon-menu"></i>角色管理</el-menu-item>
+        <el-menu-item index="/auth/users"><i class="el-icon-setting"></i>用户管理</el-menu-item>
+        <el-menu-item index="/auth/roles"><i class="el-icon-menu"></i>角色管理</el-menu-item>
       </el-submenu>
 
       <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>

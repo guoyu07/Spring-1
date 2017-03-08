@@ -67,6 +67,16 @@ const routes = [{
       component: require('./components/system/pages/onlinelist.vue')
     }]
   }, {
+    path: '/auth',
+    component: require('./components/auth/index'),
+    children: [{
+      path: '/auth/users',
+      component: require('./components/auth/pages/users.vue')
+    }, {
+      path: '/auth/roles',
+      component: require('./components/auth/pages/roles.vue')
+    }]
+  }, {
     path: '/orders',
     component: require('./components/others/orders')
   }, { // 定义表单，提交给数据库存储，删
