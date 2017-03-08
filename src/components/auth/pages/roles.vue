@@ -4,42 +4,38 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3><i class="el-icon-menu"></i> 角色管理</h3>
-          <el-table
-            :data="roleList"
-            border
-            v-loading.body="roleLoading">
-            <el-table-column type="expand">
-              <template scope="props">
-                <div class="btn-area clear">
-                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="props.row.user.length"><i class="el-icon-fa-users"></i> 属于{{props.row.role}}角色的用户 ({{props.row.user.length}})：</h5>
-                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="!props.row.user.length"><i class="el-icon-warning"></i> 暂无属于{{props.row.role}}角色的用户！</h5>
-                  <el-button v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
-                  <el-tooltip content="移除用户" placement="right" class="fr" v-if="props.row.user.length">
-                    <el-button
-                      icon="minus"
-                      type="danger"
-                      size="small"
-                      :class="{ empty: !isCheckable }"
-                      @click="onDelete(props.row.id)">{{ isCheckable ? '移除所选' : '' }}</el-button>
-                  </el-tooltip>
-                  <el-tooltip content="加入用户" placement="left" class="fr">
-                    <el-button
-                      icon="plus"
-                      type="success"
-                      size="small"
-                      @click="onAdd(props.row.id, props.row.user)">
-                    </el-button>
-                  </el-tooltip>
-                </div>
-                <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                  <el-checkbox v-for="user in props.row.user" :label="user">{{user}}</el-checkbox>
-                </el-checkbox-group>
-              </template>
-            </el-table-column>
-            <el-table-column
-              prop="role"
-              label="角色"></el-table-column>
-          </el-table>
+          <el-collapse accordion>
+            <el-collapse-item v-for="role in roleList" :title="role.role">
+              <el-row>
+                <el-col :span="20" :offset="2">
+                  <div class="btn-area clear">
+                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="role.user.length"><i class="el-icon-fa-users"></i> 属于{{role.role}}角色的用户 ({{role.user.length}})：</h5>
+                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="!role.user.length"><i class="el-icon-warning"></i> 暂无属于{{role.role}}角色的用户！</h5>
+                    <el-button v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
+                    <el-tooltip content="移除用户" placement="right" class="fr" v-if="role.user.length">
+                      <el-button
+                        icon="minus"
+                        type="danger"
+                        size="small"
+                        :class="{ empty: !isCheckable }"
+                        @click="onDelete(role.id)">{{ isCheckable ? '移除所选' : '' }}</el-button>
+                    </el-tooltip>
+                    <el-tooltip content="加入用户" placement="left" class="fr">
+                      <el-button
+                        icon="plus"
+                        type="success"
+                        size="small"
+                        @click="onAdd(role.id, role.user)">
+                      </el-button>
+                    </el-tooltip>
+                  </div>
+                  <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
+                    <el-checkbox v-for="user in role.user" :label="user">{{user}}</el-checkbox>
+                  </el-checkbox-group>
+                </el-col>
+              </el-row>
+            </el-collapse-item>
+          </el-collapse>
         </el-card>
       </el-col>
     </el-row>
@@ -99,6 +95,7 @@
           this.userViewData.visible = true
           this.userViewData.roleId = id
           let userList = ['easyops', 'foo', 'bar', 'baz']
+          this.userList = []
           for (let user of userList) {
             if (users.includes(user)) {
               this.userList.push({ user, exsting: true })
@@ -181,7 +178,7 @@
     }
   }
 
-  .el-table__expanded-cell {
+  .el-collapse-item__content {
     .el-button.empty {
       span {
         margin-left: 0;
