@@ -1,12 +1,12 @@
 <template>
   <div class="onshelf">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="20">
+      <el-col :sm="24" :md="24" :lg="24">
         <el-card
           class="box-card step-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3><i class="el-icon-fa-upload"></i> 上架流程</h3>
+          <h3>上架流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
@@ -22,63 +22,6 @@
             </el-form-item> -->
           </el-form>
           <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-            <!-- <div class="form-block" :class="{ expand: !isAdvanceSearch }">
-              <el-form-item label="关键词">
-                <el-input
-                  v-model="searchKey"
-                  size="small"></el-input>
-              </el-form-item>
-            </div> -->
-            <!-- <div class="form-block">
-              <el-form-item v-for="key in searchKeyList" :label="key.name">
-                <el-input
-                  v-if="key.value.type === 'str'"
-                  :prop="key.id"
-                  v-model="searchKeys[key.id]"
-                  size="small">
-                </el-input>
-                <el-input
-                  v-else-if="key.value.type === 'int'"
-                  :prop="key.id"
-                  v-model="searchKeys[key.id]"
-                  type="number"
-                  size="small">
-                </el-input>
-                <el-select
-                  v-else-if="key.value.type === 'enum'"
-                  :prop="key.id"
-                  v-model="searchKeys[key.id]"
-                  size="small">
-                  <el-option v-for="option in key.value.regex"
-                    :label="option"
-                    :value="option"></el-option>
-                </el-select>
-                <div class="form-unit"
-                  v-else-if="key.value.type === 'FK' || key.value.type === 'FKs'"
-                  :prop="key.id">
-                  <el-select
-                    v-model="searchKeys[key.id][0]"
-                    size="small">
-                    <el-option v-for="option in key.value.external"
-                      :label="option.name"
-                      :value="option.org_attr"></el-option>
-                  </el-select>
-                  <el-input
-                    :disabled="!searchKeys[key.id][0]"
-                    v-model="searchKeys[key.id][1]"
-                    size="small">
-                  </el-input>
-                </div>
-                <el-date-picker
-                  v-else="key.value.type === 'datetime' || key.value.type === 'date'"
-                  :prop="key.id"
-                  v-model="searchKeys[key.id]"
-                  :type="key.value.type === 'datetime' ? 'datetime' : 'date'"
-                  placeholder="选择时间"
-                  size="small">
-                </el-date-picker>
-              </el-form-item>
-            </div> -->
             <search-form-structure
               :search-key-list="searchKeyList"
               :search-keys="searchKeys"
@@ -254,7 +197,9 @@
       },
 
       onDeviceTypeChange () {
-        this.deviceTable = []
+        // this.deviceTable = [] // 清空搜索列表
+        this.onSearchDevices() // 不用清空，就是取到当前设备的所有数据
+        this.deviceQueue = [] // 清空上架列表
         this.renderFormStructure()
         var postData = {
           action: 'cmdb/object/search/attr',
@@ -298,10 +243,10 @@
         //     processRes(res)
         //   })
         // } else {
-        if (this.isEmptyObj(this.filterObj(this.searchKeys, isAdvance))) {
-          this.$message.info('搜索条件不能为空！')
-          return false
-        }
+        // if (this.isEmptyObj(this.filterObj(this.searchKeys, isAdvance))) {
+        //   this.$message.info('搜索条件不能为空！')
+        //   return false
+        // }
         let searchData = { status: '已出库', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
         console.log(searchData)
         let postData = {
@@ -407,7 +352,7 @@
                 this.$message.error(res.errorMessage)
               } else {
                 this.$message.success('提交成功！')
-                this.$router.replace('/others/worklist')
+                this.$router.replace('/orders')
               }
             })
           } else {

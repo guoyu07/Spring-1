@@ -46,12 +46,18 @@ const routes = [{
     }, {
       path: '/equipment/off-review',
       component: require('./components/equipment/pages/offReview.vue')
+    }, {
+      path: '/equipment/:step/:id/:name', // 具体步骤操作
+      component: require('./components/equipment/pages/step.vue')
     }]
   }, {
     path: '/system',
     component: require('./components/system/index'),
     children: [{
       path: '/system/apply',
+      component: require('./components/system/pages/apply.vue')
+    }, {
+      path: '/system/apply/:id',
       component: require('./components/system/pages/apply.vue')
     }, {
       path: '/system/applylist',

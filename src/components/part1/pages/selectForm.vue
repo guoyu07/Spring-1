@@ -31,8 +31,7 @@
         </template>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm">立即创建</el-button>
-        <el-button @click="resetForm">重置</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -67,7 +66,7 @@
     },
     methods: {
       submitForm () {
-        this.$refs.testForm.validate(valid => {
+        this.$refs.formRef.validate(valid => {
           if (valid) {
             console.log('submit!!')
           } else {
@@ -75,9 +74,6 @@
             return false
           }
         })
-      },
-      resetForm () {
-        this.$refs.testForm.resetFields()
       }
     },
     components: {

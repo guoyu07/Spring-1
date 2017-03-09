@@ -2,29 +2,6 @@
   <div id="item1-side" class="wrapper">
     <h3 class="form-title">{{ routerInfo.name }}</h3>
     <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
-      <el-row :gutter="10">
-        <el-form-item label="申请类型">
-          {{ applyData.applyType }}
-        </el-form-item>
-        <el-form-item label="项目组">
-          {{ applyData.business }}
-        </el-form-item>
-        <el-form-item label="应用名">
-          {{ applyData.applicationName }}
-        </el-form-item>
-        <el-form-item label="备注">
-          {{ applyData.mark }}
-        </el-form-item>
-        <el-form-item
-          v-if="routerInfo.step==='approve'"
-          label=""
-          prop="approve"
-          style="width:1%;display:none;">
-          <el-input
-            v-model="assignForm.approve">
-          </el-input>
-        </el-form-item>
-      </el-row>
       <el-tabs type="card" @tab-click="handleClick">
         <el-tab-pane class="m-pane" v-for="(data, index) in applyData.data" :label="data.environment">
           <div class="el-table el-table--fit el-table--border el-table--enable-row-hover el-table--enable-row-transition">
@@ -365,53 +342,38 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
-        this.applyData = this.getTaskInfo(message)
+        this.applyData = this.getTask(message)
         this.applyData.action = res.data.data.action
-        this.applyData.data.forEach((item, k) => {
-          if (item.hostType === '虚拟机') {
-            switch (this.routerInfo.step) {
-              case 'createVM':
-                this.assignForm.data.push({
-                  setVirtual: false,
-                  setIP: false,
-                  setAgent: false,
-                  url: ''
-                })
-                break
+        this.applyData.forEach((item, k) => {
+          console.dir(item, k)
+          // switch (this.routerInfo.step) {
+          //   case 'createVM':
+          //     this.assignForm.data.push({
+          //       setVirtual: false,
+          //       setIP: false,
+          //       setAgent: false,
+          //       url: ''
+          //     })
+          //     break
 
-              case 'restart':
-                this.assignForm.data.push({
-                  idc: '',
-                  idcgroup: ''
-                })
-                break
+          //   case 'restart':
+          //     this.assignForm.data.push({
+          //       idc: '',
+          //       idcgroup: ''
+          //     })
+          //     break
 
-              case 'assignIP':
-                this.assignForm.data.push({
-                  ip: ''
-                })
-                break
+          //   case 'assignIP':
+          //     this.assignForm.data.push({
+          //       ip: ''
+          //     })
+          //     break
 
-              default:
-                if (this.assignForm.data) {
-                  this.assignForm.data.push({})
-                }
-            }
-          } else {
-            switch (this.routerInfo.step) {
-              case 'restart':
-                this.assignForm.data.push({
-                  machines: []
-                })
-                break
-
-              default:
-                if (this.assignForm.data) {
-                  this.assignForm.data.push({})
-                }
-            }
-            // this.assignForm.data.push(machineData) // 这样对应上是第几个环境才设置了IP
-          }
+          //   default:
+          //     if (this.assignForm.data) {
+          //       this.assignForm.data.push({})
+          //     }
+          // }
         })
       })
     },

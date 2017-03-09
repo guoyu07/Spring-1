@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-row>
-      <el-col :sm="24" :md="24" :lg="20">
+      <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3>资源申请列表</h3>
           <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
@@ -40,8 +40,12 @@
               :context="_self"
               label="操作">
               <div class="btn-block">
-                <router-link :to="{ path: `/system/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
-                <el-button type="text" @click="onReject(row)">驳回</el-button>
+                <router-link v-if="row.name==='填写申请单'" :to="{ path: `/system/apply/${row.id}`}" class="el-button el-button--primary el-button--small">填写</router-link>
+                <span v-else v-for="action in row.action">
+                  <router-link v-if="action.type==='submit'" :to="{ path: `/system/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
+                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" size="small" @click="onReject(row, action)">{{action.name}}</el-button>
+                  <!-- action.pass===1?'驳回':'撤销' -->
+                </span>
               </div>
             </el-table-column>
           </el-table>
@@ -94,6 +98,7 @@
                 this.applyList[k].id = list.id
                 this.applyList[k].taskDefinitionKey = list.taskDefinitionKey
                 this.applyList[k].name = list.name
+                this.applyList[k].action = list.action
               }
             })
           })
@@ -107,8 +112,8 @@
       showDialogReject (row) {
         this.dialogReject = true
       },
-      onReject (task) {
-        this.$prompt(`请输入对「${task.name}」的驳回意见：`, '确定驳回？', {
+      onReject (task, action) {
+        this.$prompt('请输入对「' + task.applicationName + '」的' + action.name + '意见：', '确定' + action.name + '？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({value}) => {
@@ -122,14 +127,15 @@
             data: {
               tid: task.id,
               form: { value },
-              pass: 2
+              pass: action.pass
             }
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.$message.success('已驳回！')
+              this.$message.success('已' + action.name)
             }
-            this.getApplyList()
+            // this.applyList = [] // 清空表格数据
+            this.getApplyList() // 重新请求数据
           })
         })
       },
@@ -141,13 +147,14 @@
 </script>
 <style lang="less" scoped>
 .btn-block {
+  padding: 8px 0;
+  display: flex;
+  flex-wrap: wrap;
+  align-content: space-around;
   .el-button {
-    margin-right: 10px;
-    margin-left: 0;
-
-    &:last-child {
-      margin-right: 0;
-    }
+    margin-right: 5px;
+    margin-bottom: 2px;
+    margin-top: 2px;
   }
 }
 .item-block {
@@ -163,6 +170,9 @@
 }
 .margin-bottom {
   margin-bottom: 15px;
+}
+.margin-left {
+  margin-left: 10px;
 }
 .el-button:hover{
   text-decoration: none;

@@ -1,7 +1,5 @@
 <template>
   <div>
-    <!-- <el-tabs type="border-card" :closable="closable" @tab-click="handleClick" @tab-remove="handleRemove">
-      <el-tab-pane v-for="(item, index) in postData" :key="item.id" :label="'设备' + (index + 1)"> -->
     <div class="form-block" v-for="formBlock in formData">
       <h4>{{formBlock.name}}</h4>
       <el-form-item
@@ -55,8 +53,6 @@
         </el-date-picker>
       </el-form-item>
     </div>
-      <!-- </el-tab-pane>
-    </el-tabs> -->
   </div>
 </template>
 

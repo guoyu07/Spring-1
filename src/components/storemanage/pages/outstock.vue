@@ -6,7 +6,7 @@
           class="box-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3><i class="el-icon-fa-sign-out"></i> 出库流程</h3>
+          <h3>{{ edit ? '信息变更' : '出库流程'}}</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
@@ -82,14 +82,6 @@
       v-model="retrieveViewData.visible"
       size="small"
       :modal="true">
-      <!-- <table class="device-data-table">
-        <tbody>
-          <tr v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
-            <td><b>{{ formStructure[key] }}</b></td>
-            <td>{{value}}</td>
-          </tr>
-        </tbody>
-      </table> -->
       <el-row>
         <el-col :span="20" :offset="2">
           <el-form label-position="left" inline class="expanded-form">
@@ -103,46 +95,62 @@
         </el-col>
       </el-row>
       <el-row>
-        <el-col :span="14" :offset="5">
-          <h4 class="sub-title"><i class="el-icon-information"></i> 请指定出库后的所在地点：</h4>
-          <!-- <el-input
-            placeholder="请输入出库指定地点..."
-            v-model="retrieveViewData.location"></el-input> -->
-          <el-select
-            v-model="retrieveViewData.location"
-            filterable
-            allow-create
-            placeholder="请选择／新增出库指定地点..."
-            style="width: 100%">
-            <el-option
-              v-for="loc in retrieveLocations"
-              :label="loc.name"
-              :value="loc.name"></el-option>
-          </el-select>
+        <el-col :span="24">
+          <h4 class="sub-title"><i class="el-icon-information"></i> 请填写出库信息：</h4>
+          <el-form ref="outstockForm" :model="outstockForm" :inline="true" label-width="80px">
+            <form-structure-without-title :form-block="exportAttr" :item="outstockForm" :application="true"></form-structure-without-title>
+          </el-form>
         </el-col>
       </el-row>
       <span class="dialog-footer" slot="footer">
         <el-button @click="retrieveViewData.visible = false">取消</el-button>
-        <el-button type="primary" @click="onConfirmRetrieve(retrieveViewData.device, retrieveViewData.location)">确认出库</el-button>
+        <el-button type="primary" @click="onConfirmRetrieve(retrieveViewData.device, outstockForm.location)">确认出库</el-button>
       </span>
     </el-dialog>
-    <device-view :device-view-data="deviceViewData"></device-view>
+    <el-dialog
+      title="信息变更"
+      v-model="deviceViewData.visible"
+      size="small"
+      :modal="true">
+      <el-row>
+        <el-col :span="24">
+          <el-form ref="outstockForm" :model="outstockForm" :inline="true" label-width="80px">
+            <form-structure-without-title :form-block="exportAttr" :item="outstockForm" :application="true" :status="true"></form-structure-without-title>
+            <el-form-item>
+              <router-link :to="{ path: `/storemanage/instock/${deviceViewData.device.instanceId}`, query: { object_id: deviceViewData.object_id }}" class="el-button el-button--text">变更更多...</router-link>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="deviceViewData.visible = false">取消</el-button>
+        <el-button type="primary" @click="onConfirmRetrieve(deviceViewData.device, outstockForm.location)">确认</el-button>
+      </span>
+    </el-dialog>
+    <!-- <device-view :device-view-data="deviceViewData"></device-view> -->
   </div>
 </template>
 
 <script>
-  import deviceView from '../../_plugins/_deviceView'
+  // import deviceView from '../../_plugins/_deviceView'
   import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import formStructureWithoutTitle from '../../_plugins/_formStructureWithoutTitle'
 
   export default {
     data () {
       return {
+        userInfo: {},
         edit: '',
         loading: false,
         isAdvanceSearch: true,
         formStructure: {},
+        outstockForm: {
+          application: '',
+          status: ''
+        },
         deviceType: '',
         deviceLoading: false,
+        exportAttr: [],
         deviceList: [],
         deviceListStructure: {},
         searchKeys: {
@@ -152,13 +160,7 @@
         deviceTable: [],
         devicePage: 1,
         deviceTotal: 0,
-        retrieveLocations: [{
-          name: '東京',
-          value: 'tokyo'
-        }, {
-          name: '大阪',
-          value: 'osaka'
-        }],
+        retrieveLocations: [],
         retrieveViewData: {
           visible: false,
           device: {},
@@ -173,6 +175,7 @@
     },
 
     created () {
+      this.userInfo = window.localStorage
       this.renderDeviceList()
       this.getLocationList()
       if (this.$route.params.edit) {
@@ -193,6 +196,28 @@
     },
 
     methods: {
+      renderExportAttr () { // 渲染出库属性
+        const postData = {
+          action: 'cmdb/object/export/attr',
+          method: 'GET',
+          data: {
+            object_id: this.deviceType
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.exportAttr = res.data.data.attr_list
+          this.exportAttr.map(item => {
+            if (item.value.type === 'arr' || item.value.type === 'FKs') {
+              this.$set(this.outstockForm, item.id, [])
+            } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
+              this.$set(this.outstockForm, item.id, undefined)
+            } else {
+              this.$set(this.outstockForm, item.id, '')
+            }
+          })
+        })
+      },
+
       renderDeviceList () { // 渲染设备类型
         var renderDeviceListData = {
           action: 'export/device/items',
@@ -203,6 +228,7 @@
           console.log(res)
           this.deviceList = res.data.data.list
           this.deviceType = this.deviceList[0].object_id
+          this.renderExportAttr()
           this.deviceList.map(item => {
             this.deviceListStructure[item.object_id] = item.pkey
           })
@@ -241,6 +267,7 @@
         this.deviceTable = []
         this.renderFormStructure()
         this.onSearchDevices()
+        this.renderExportAttr()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',
           method: 'GET',
@@ -284,11 +311,12 @@
           // })
         // } else {}
         this.searchKeys.searchKey = ''
-        let searchData = this.filterObj(this.searchKeys, isAdvance)
-        // if (this.isEmptyObj(searchData)) {
-        //   this.$message.info('搜索条件不能为空！')
-        //   return false
-        // }
+        let searchData = {}
+        if (this.edit) {
+          searchData = this.filterObj(this.searchKeys, isAdvance)
+        } else {
+          searchData = { status: '空闲', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
+        }
         let postData = {
           action: `/object/${this.deviceType}/instance/_search`,
           method: 'POST',
@@ -326,54 +354,68 @@
       },
 
       onRetrieve (device) {
-        console.log(this.formStructure)
-        // this.renderFormStructure()
+        for (const i in this.outstockForm) { // 清空值
+          if (this.outstockForm[i]) {
+            this.outstockForm[i] = ''
+          }
+        }
         this.retrieveViewData.visible = true
         this.retrieveViewData.device = device
       },
 
       onConfirmRetrieve (device, location) {
-        if (!location) {
+        if (!location && !this.edit) { // 以后自定义的表单自带验证，这一步不需要
           this.$message.error('请填写出库地点！')
           return
         }
-        if (!this.retrieveLocations.some(loc => loc.name === location)) { // 若地点为新增，则先进行新增请求
-          let locPostData = {
-            action: `/object/instance/location`,
-            method: 'POST',
-            data: { name: location }
-          }
-          this.http.post('easyops/', this.parseData(locPostData)).then((res) => {
-            // 新增毕，方出库
-            this._submitMethod(device, location)
-          })
-        } else {  // 直接出库
-          this._submitMethod(device, location)
-        }
+        // if (!this.retrieveLocations.some(loc => loc.name === location)) { // 若地点为新增，则先进行新增请求
+        //   let locPostData = {
+        //     action: `/object/instance/location`,
+        //     method: 'POST',
+        //     data: { name: location }
+        //   }
+        //   this.http.post('easyops/', this.parseData(locPostData)).then((res) => {
+        //     // 新增毕，方出库
+        //     this._submitMethod(device, location)
+        //   })
+        // } else {  // 直接出库
+        // }
+        this._submitMethod(device, location)
       },
 
       _submitMethod (device, location) {
+        let pkey = ''
+        if (this.edit) {
+          pkey = 'alter_device'
+        } else {
+          pkey = this.deviceListStructure[this.deviceType]
+        }
         let postData = {
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
-            pkey: this.deviceListStructure[this.deviceType],
+            pkey: pkey,
             form: {
               'object_id': this.deviceType,
-              'object_list': [{
-                instanceId: device.instanceId,
-                location: location
-              }]
+              'application': this.outstockForm.application,
+              'object_list': [Object.assign({instanceId: device.instanceId}, this.outstockForm)]
             }
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
+          let notice = ''
+          if (this.edit) {
+            notice = `成功更改「${device.name}」`
+            this.deviceViewData.visible = false
+          } else {
+            notice = `已成功将设备「${device.name}」出库至${location}！`
+            this.retrieveViewData.visible = false
+          }
           this.$notify({
             title: '成功',
-            message: `已成功将设备「${device.name}」出库至${location}！`,
+            message: notice,
             type: 'success'
           })
-          this.retrieveViewData.visible = false
           this.deviceViewData.location = ''
           this.onSearchDevices()
         })
@@ -382,13 +424,33 @@
       onEdit (device) {
         this.deviceViewData.visible = true
         this.deviceViewData.device = device
+        console.log(device)
+        for (const key in this.outstockForm) {
+          if (device[key]) {
+            this.outstockForm[key] = device[key]
+          } else {
+            this.outstockForm[key] = ''
+            this.outstockForm.application = this.userInfo.userName
+          }
+        }
         this.deviceViewData.object_id = this.deviceType
       }
     },
 
     components: {
-      deviceView,
-      searchFormStructure
+      // deviceView,
+      searchFormStructure,
+      formStructureWithoutTitle
     }
   }
 </script>
+<style scoped>
+  .sub-title {
+    /*text-align: center;*/
+    margin: 15px 0 20px;
+  }
+  /*.layout-center {
+    display: flex;
+    justify-content: center;
+  }*/
+</style>

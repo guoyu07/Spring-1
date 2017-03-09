@@ -10,25 +10,25 @@
               :value="apyType.label"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="applyForm.applyType !== 'newBusiness'" prop="business" label="项目组">
+        <el-form-item prop="business" label="项目组">
           <el-select v-model="applyForm.business">
             <el-option v-for="business in businessList"
               :label="business.name"
               :value="business.name"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
           </el-select>
         </el-form-item>
-        <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="business" label="所属业务">
+        <!-- <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="business" label="所属业务">
           <el-input v-model="applyForm.business"></el-input>
-        </el-form-item>
+        </el-form-item> -->
 
-        <el-form-item v-if="applyForm.applyType === 'newGroup'" prop="applicationName" label="应用名">
+        <el-form-item v-if="applyForm.applyType === '新建集群节点'" prop="applicationName" label="应用名">
           <el-select v-model="applyForm.applicationName">
             <el-option v-for="app in appList"
               :label="app.name"
               :value="app.name"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item v-if="applyForm.applyType !== 'newGroup'" prop="applicationName" label="应用名">
+        <el-form-item v-if="applyForm.applyType !== '新建集群节点'" prop="applicationName" label="应用名">
           <el-input v-model="applyForm.applicationName"></el-input>
         </el-form-item>
       </el-row>
@@ -122,7 +122,7 @@
       <br>
       <el-form-item>
         <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
-        <el-button @click="resetForm('applyForm')">重置</el-button>
+        <el-button v-if="!editInfo.id" @click="resetForm('applyForm')">重置</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -131,6 +131,13 @@
   export default {
     data () {
       return {
+        editInfo: {
+          id: ''
+        },
+        editData: {
+          applicationName: '',
+          business: ''
+        },
         applyForm: {
           applyType: '',
           business: '',
@@ -220,10 +227,37 @@
       }
     },
     created () {
+      if (this.$route.params.id) {
+        this.editInfo.id = this.$route.params.id
+        this.renderInstanceDetail()
+      }
       this.renderAppList()
       this.renderBusinessList()
     },
+    watch: {
+      '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
+        this.editInfo = {
+          id: ''
+        }
+      }
+    },
     methods: {
+      renderInstanceDetail () {
+        let postData = {
+          action: 'runtime/task',
+          method: 'GET',
+          data: {
+            taskId: this.editInfo.id
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          const message = res.data.data.variables.message
+          this.applyForm = this.findTaskMsgR(message, ['start']).form
+          this.editData.applicationName = this.applyForm.applicationName
+          this.editData.business = this.applyForm.business
+          console.log(this.editData)
+        })
+      },
       renderAppList () {
         const postData = {
           action: 'object/instance/list',
@@ -238,6 +272,7 @@
         .then((res) => {
           console.log(res, res.data.data.list)
           this.appList = res.data.data.list
+          this.applyForm.applicationName = this.editData.applicationName
         })
       },
       renderBusinessList () {
@@ -252,8 +287,8 @@
         }
         this.http.post('', this.parseData(postData))
         .then((res) => {
-          console.log(res, res.data.data.list)
           this.businessList = res.data.data.list
+          this.applyForm.business = this.editData.business
         })
       },
       onChangeType () {
@@ -283,13 +318,26 @@
         console.log(this.applyForm)
         this.$refs[applyForm].validate((valid) => {
           if (valid) {
-            const postData = {
-              action: 'runtime/process/instances',
-              method: 'POST',
-              data: {
-                pkey: 'host_apply',
-                form: this.applyForm,
-                pass: 0
+            let postData = {}
+            if (this.editInfo.id) {
+              postData = {
+                action: 'runtime/task/complete',
+                method: 'POST',
+                data: {
+                  tid: this.editInfo.id,
+                  form: this.applyForm // 通过审批 需要判断一下登录的账号的角色身份
+                    // pass: "流程走向控制变量,整型(可选,默认为0)"
+                }
+              }
+            } else {
+              postData = {
+                action: 'runtime/process/instances',
+                method: 'POST',
+                data: {
+                  pkey: 'host_apply',
+                  form: this.applyForm,
+                  pass: 0
+                }
               }
             }
             this.http.post('', this.parseData(postData))
