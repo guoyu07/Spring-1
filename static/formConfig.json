@@ -1,129 +1,114 @@
 {
   "header": [
     {
-      "id": "0",
+      "type": "str",
       "name": "字符串",
-      "value": {
-        "type": "str",
-        "regex": "默认值"
-      },
       "required": true,
+      "regex": "",
       "unique": true,
       "category": "",
       "need_submit": true
     },
     {
-      "id": "1",
+      "type": "strArea",
       "name": "文本",
-      "value": {
-        "type": "strArea",
-        "regex": "默认值"
-      },
       "required": true,
+      "regex": "",
       "unique": true,
       "category": "",
       "need_submit": true
     },
     {
-      "id": "2",
+      "type": "int",
       "name": "数字",
-      "value": {
-        "type": "int",
-        "regex": "2"
-      },
       "required": true,
+      "regex": "",
       "unique": true,
       "category": "",
       "need_submit": true
     },
     {
-      "id": "3",
+      "type": "arr",
       "name": "数组",
-      "value": {
-        "type": "arr",
-        "regex": []
-      },
       "required": true,
+      "regex": "",
       "unique": true,
       "category": "",
       "need_submit": true
     },
     {
-      "id": "4",
-      "name": "枚举",
-      "value": {
-        "type": "enum",
-        "regex": "",
-        "options": [
-          { "label": "标签1", "value": "value1"},
-          { "label": "标签2", "value": "value2"},
-          { "label": "标签3", "value": "value3"},
-          { "label": "标签4", "value": "value4"}
-        ]
-      },
-      "required": true,
-      "unique": true,
-      "category": "",
-      "need_submit": true
-    },
-    {
-      "id": "5",
       "name": "日期",
-      "value": {
-        "type": "date"
-      },
+      "type": "date",
       "required": true,
+      "regex": "",
       "unique": true,
       "category": "",
       "need_submit": true
     },
     {
-      "id": "6",
       "name": "时间",
-      "value": {
-        "type": "datetime"
+      "type": "datetime",
+      "required": true,
+      "regex": "",
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "type": "enum",
+      "name": "枚举",
+      "options": [
+        { "label": "标签1", "value": "value1" },
+        { "label": "标签2", "value": "value2" },
+        { "label": "标签3", "value": "value3" },
+        { "label": "标签4", "value": "value4" }
+      ],
+      "required": true,
+      "regex": "",
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "type": "enum/multi",
+      "name": "枚举",
+      "options": [
+        { "label": "标签1", "value": "value1" },
+        { "label": "标签2", "value": "value2" },
+        { "label": "标签3", "value": "value3" },
+        { "label": "标签4", "value": "value4" }
+      ],
+      "required": true,
+      "regex": "",
+      "unique": true,
+      "category": "",
+      "need_submit": true
+    },
+    {
+      "type": "enum/dynamic",
+      "name": "枚举",
+      "options": {
+        "url": "",
+        "params": {
+          "action": "",
+          "method": "",
+          "data": {}
+        }
       },
       "required": true,
+      "regex": "",
       "unique": true,
       "category": "",
       "need_submit": true
     }
   ],
   "body": {
-    "attr_list": [
-      {
-        "id": "7",
-        "value": {
-          "type": "dict/dicts",
-          "count": {
-            "type": "static",
-            "min": 1,
-            "max": 5
-          },
-          "source": {
-            "url": "api/test",
-            "data":{
-              "action": "activiti/task/form",
-              "method": "POST/GET",
-              "params": [
-                {
-                  "id": "8",
-                  "value": {
-                    "type": "static",
-                    "value": "value"
-                  }
-                }
-              ]
-            }
-          }
-        }
-      }
-    ],
     "count": {
       "type": "static",
       "min": 1,
       "max": 5
-    }
+    },
+    "attr_list": []
   },
   "action": [
     {
