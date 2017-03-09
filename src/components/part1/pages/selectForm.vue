@@ -1,6 +1,6 @@
 <template>
   <div class="select-form">
-    <el-form :model="formData" ref="formRef" label-width="100px">
+    <el-form :model="formData" ref="testForm" label-width="100px">
       <el-form-item v-for="formItem of formConfig"
         v-if="['str','int','arr','enum','date','datetime','strArea'].indexOf(formItem.type) !== -1"
         :label="formItem.name" :required="formItem.required">

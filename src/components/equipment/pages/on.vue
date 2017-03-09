@@ -108,8 +108,6 @@
           <div class="btn-area">
             <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
           </div>
-            </el-col>
-          </el-row>
         </el-card>
       </el-col>
     </el-row>
@@ -132,6 +130,7 @@
     </el-dialog>
   </div>
 </template>
+
 <script>
   import searchFormStructure from '../../_plugins/_searchFormStructure'
   import formStructure from '../../_plugins/_formStructure'
