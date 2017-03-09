@@ -7,23 +7,23 @@
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
           <h3>{{ editInfo.instanceId ? '更改信息' : '入库流程'}}</h3>
-          <el-form label-position="left" label-width="100px" :inline="true" ref="instockForm" :model="instockForm">
+          <el-form label-position="left" label-width="80px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
                 <el-radio :disabled="$route.params.id" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-            <br>
             <el-form-item label="申请人">
               <el-select
-                v-model="instockForm.application">
+                v-model="application">
                 <el-option v-for="option in applicationList"
                   :label="option.name"
                   :value="option.name"></el-option>
               </el-select>
             </el-form-item>
-          <!-- </el-form> -->
+          </el-form>
           <div class="step step-2">
+            <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
             <!-- <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm"> -->
               <el-button v-if="!editInfo.instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
               <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
@@ -52,6 +52,7 @@
         editInfo: {
           object_id: ''
         },
+        application: '',
         deviceType: '',
         instockForm: {
           application: '',
@@ -80,7 +81,7 @@
     },
     created () {
       this.userInfo = window.localStorage
-      this.instockForm.application = this.userInfo.userName // 默认申请人为填写人
+      this.application = this.userInfo.userName // 默认申请人为填写人
       if (this.$route.params.id) {
         this.editInfo.instanceId = this.$route.params.id
         this.editInfo.object_id = this.$route.query.object_id
@@ -260,7 +261,6 @@
       },
       onConfirm (formName) {
         let objectList = {
-          application: this.instockForm.application,
           data: []
         }
         this.instockForm.data.forEach((item, k) => {
@@ -280,8 +280,9 @@
               data: {
                 pkey: this.deviceListStructure[this.deviceType],
                 form: {
-                  'object_list': objectList,
-                  'object_id': this.deviceType
+                  'object_list': objectList.data,
+                  'object_id': this.deviceType,
+                  'application': this.application
                 }
               }
             }

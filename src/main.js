@@ -108,6 +108,23 @@ Vue.prototype.getTaskInfo = (arrMsg) => {
   return rs
 }
 
+// 收集所有最新 task_key 数据
+Vue.prototype.getTask = (arrMsg) => {
+  const taskKeyArr = ['start', 'approve']
+  let rs = []
+  // const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
+  taskKeyArr
+    .filter(t => findTaskMsgR(arrMsg, [t]))
+    .map(t => findTaskMsgR(arrMsg, [t]).form.object_list)
+    .map(tsk => {
+      if (Array.isArray(tsk)) {
+        !rs.length && tsk.forEach(t => rs.push({}))
+        tsk.map((host, index) => Object.assign(rs[index], host))
+      }
+    })
+  return rs
+}
+
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
   let data = {}
   for (const key in obj) {
