@@ -42,13 +42,16 @@
           action: 'cmdb/update/instance',
           method: 'PUT',
           data: {
-            object_id: this.deviceViewData.object_id,
-            instanceId: this.deviceViewData.device.instanceId,
-            object_data: {
-              name: this.deviceViewData.device.name,
-              hostname: this.deviceViewData.device.hostname,
-              status: this.deviceViewData.device.status
-            } // "要更新字段及值,字典"
+            pkey: 'alter_device',
+            form: {
+              object_id: this.deviceViewData.object_id,
+              instanceId: this.deviceViewData.device.instanceId,
+              object_list: {
+                name: this.deviceViewData.device.name,
+                hostname: this.deviceViewData.device.hostname,
+                status: this.deviceViewData.device.status
+              } // "要更新字段及值,字典"
+            }
           }
         }
         this.http.post('', this.parseData(updataInstanceData)).then((res) => {

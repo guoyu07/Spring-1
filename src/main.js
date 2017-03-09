@@ -94,7 +94,7 @@ Vue.prototype.findTaskMsgR = findTaskMsgR
 
 // 收集所有最新 task_key 数据
 Vue.prototype.getTaskInfo = (arrMsg) => {
-  const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM', 'judge', 'monitor']
+  const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM']
   const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
   taskKeyArr
     .filter(t => findTaskMsgR(arrMsg, [t]))
@@ -103,6 +103,23 @@ Vue.prototype.getTaskInfo = (arrMsg) => {
       if (Array.isArray(tsk)) {
         !rs.data.length && tsk.forEach(t => rs.data.push({}))
         tsk.map((host, index) => Object.assign(rs.data[index], host))
+      }
+    })
+  return rs
+}
+
+// 收集所有最新 task_key 数据
+Vue.prototype.getTask = (arrMsg) => {
+  const taskKeyArr = ['start', 'approve']
+  let rs = []
+  // const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
+  taskKeyArr
+    .filter(t => findTaskMsgR(arrMsg, [t]))
+    .map(t => findTaskMsgR(arrMsg, [t]).form.object_list)
+    .map(tsk => {
+      if (Array.isArray(tsk)) {
+        !rs.length && tsk.forEach(t => rs.push({}))
+        tsk.map((host, index) => Object.assign(rs[index], host))
       }
     })
   return rs
