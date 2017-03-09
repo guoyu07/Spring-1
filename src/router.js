@@ -88,9 +88,6 @@ const routes = [{
     }, {
       path: '/part1/editor',
       component: require('./components/part1/pages/editor.vue')
-    }, {
-      path: '/part1/part13',
-      component: require('./components/part1/pages/Part13.vue')
     }]
   }, { // 获取数据，渲染成表单，删
     path: '/select-form',

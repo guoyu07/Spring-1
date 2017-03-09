@@ -1,14 +1,14 @@
 Arguments: 
-  /usr/local/bin/node /usr/local/bin/yarn -v
+  /usr/local/bin/node /usr/local/bin/yarn add vue-loader@9.8.0 --dev
 
 PATH: 
   /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin
 
 Yarn version: 
-  0.20.3
+  0.21.3
 
 Node version: 
-  7.4.0
+  6.10.0
 
 Platform: 
   darwin x64
@@ -37,6 +37,7 @@ npm manifest:
     },
     "devDependencies": {
       "autoprefixer": "^6.4.0",
+      "axios": "^0.15.3",
       "babel-core": "^6.0.0",
       "babel-eslint": "^7.0.0",
       "babel-loader": "^6.0.0",
@@ -63,7 +64,7 @@ npm manifest:
       "file-loader": "^0.9.0",
       "function-bind": "^1.0.2",
       "html-webpack-plugin": "^2.8.1",
-      "http-proxy-middleware": "^0.17.2",
+      "http-proxy-middleware": "^0.17.3",
       "json-loader": "^0.5.4",
       "less": "^2.7.1",
       "less-loader": "^2.2.3",
@@ -4558,10 +4559,10 @@ Lockfile:
 
 Trace: 
   SyntaxError: Unknown token 1056:1
-      at Parser.unexpected (/usr/local/Cellar/yarn/0.20.3/libexec/lib/node_modules/yarn/lib/lockfile/parse.js:224:11)
-      at Parser.parse (/usr/local/Cellar/yarn/0.20.3/libexec/lib/node_modules/yarn/lib/lockfile/parse.js:329:14)
-      at exports.default (/usr/local/Cellar/yarn/0.20.3/libexec/lib/node_modules/yarn/lib/lockfile/parse.js:13:17)
-      at /usr/local/Cellar/yarn/0.20.3/libexec/lib/node_modules/yarn/lib/lockfile/wrapper.js:129:60
-      at Generator.next (<anonymous>)
-      at step (/usr/local/Cellar/yarn/0.20.3/libexec/lib/node_modules/yarn/node_modules/babel-runtime/helpers/asyncToGenerator.js:17:30)
-      at /usr/local/Cellar/yarn/0.20.3/libexec/lib/node_modules/yarn/node_modules/babel-runtime/helpers/asyncToGenerator.js:28:13
+      at Parser.unexpected (/usr/local/Cellar/yarn/0.21.3/libexec/lib/node_modules/yarn/lib/lockfile/parse.js:224:11)
+      at Parser.parse (/usr/local/Cellar/yarn/0.21.3/libexec/lib/node_modules/yarn/lib/lockfile/parse.js:329:14)
+      at exports.default (/usr/local/Cellar/yarn/0.21.3/libexec/lib/node_modules/yarn/lib/lockfile/parse.js:13:17)
+      at /usr/local/Cellar/yarn/0.21.3/libexec/lib/node_modules/yarn/lib/lockfile/wrapper.js:129:60
+      at next (native)
+      at step (/usr/local/Cellar/yarn/0.21.3/libexec/lib/node_modules/yarn/node_modules/babel-runtime/helpers/asyncToGenerator.js:17:30)
+      at /usr/local/Cellar/yarn/0.21.3/libexec/lib/node_modules/yarn/node_modules/babel-runtime/helpers/asyncToGenerator.js:28:13

@@ -10,13 +10,13 @@
             :model="deviceViewData.device"
             label-width="80px">
             <el-form-item label="设备名称">
-              <el-input v-model="deviceViewData.device.name">
+              <el-input v-model="deviceViewData.device.name"></el-input>
             </el-form-item>
             <el-form-item label="设备">
-              <el-input v-model="deviceViewData.device.hostname">
+              <el-input v-model="deviceViewData.device.hostname"></el-input>
             </el-form-item>
             <el-form-item label="状态">
-              <el-input v-model="deviceViewData.device.status">
+              <el-input v-model="deviceViewData.device.status"></el-input>
             </el-form-item>
             <el-form-item>
               <el-button type="primary" @click="onSubmit">完成变更</el-button>

@@ -59,7 +59,6 @@
       <el-menu-item index="/hours"><i class="el-icon-time"></i>标准工时统计</el-menu-item>
       <el-menu-item index="/part1">创建流程表单（测试）</el-menu-item>
       <el-menu-item index="/select-form">选择流程表单（测试）</el-menu-item>
-      <el-menu-item index="/part1/part13"><i class="el-icon-menu"></i>自订表单（客户端测试）</el-menu-item>
 
     </el-menu>
   </aside>
