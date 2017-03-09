@@ -9,17 +9,17 @@
     <el-row class="option-btn">
       <el-button icon="plus" @click="newTaskBtn">新建</el-button>
     </el-row>
-    <el-table :data="tableData">
+    <el-table :data="$store.state.formConfigList">
       <el-table-column label="流程步骤">
         <template scope="scope">
           <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.name }}</span>
+          <span style="margin-left: 10px">{{ scope.row.formName }}</span>
         </template>
       </el-table-column>
       <el-table-column label="操作">
         <template scope="scope">
-          <el-button size="small" icon="edit" @click="modifyBtn(scope.$index)">修改</el-button>
-          <el-button size="small" icon="delete" type="danger" @click="delBtn(scope.$index)">删除</el-button>
+          <el-button size="small" icon="edit" @click="modifyBtn(scope.row.id)">修改</el-button>
+          <el-button size="small" icon="delete" type="danger" @click="delBtn(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -27,25 +27,24 @@
 </template>
 
 <script>
+import { DEL_CONF } from '../../../store/mutation-types'
+
 export default {
   data () {
-    return {
-      tableData: [ { name: '流程步骤-1' }, { name: '流程步骤-2' } ]
-    }
+    return {}
   },
   activated () {
-    console.log('拉取数据')
+    console.log('假装在 拉取 服务器 数据')
   },
   methods: {
     newTaskBtn () {
       this.$router.push('/part1/editor')
     },
-    modifyBtn (index) {
-      // console.log(index)
-      this.$router.push('/part1/editor')
+    modifyBtn (id) {
+      this.$router.push({ path: '/part1/editor', query: { id } })
     },
-    delBtn (index) {
-      this.tableData.splice(index, 1)
+    delBtn (id) {
+      this.$store.commit(DEL_CONF, id)
     }
   }
 }

@@ -54,12 +54,24 @@
 
 <script>
 import multiConf from './multiConf'
+import { ADD_CONF, DEL_CONF } from '../../../store/mutation-types'
 
 export default {
   data () {
     return {
+      id: '',
       formName: '',
       formConf: []
+    }
+  },
+  activated () {
+    this.id = this.$route.query.id
+    if (this.id) {
+      // 待修改的
+      const formConfigList = this.$store.state.formConfigList
+      const formConfig = formConfigList.find(item => item.id === this.id)
+      this.formName = formConfig.formName
+      this.formConf = formConfig.formConf
     }
   },
   methods: {
@@ -83,8 +95,13 @@ export default {
     // 确认完成
     submitBtn () {
       this.$router.go(-1)
+      // 如果是修改操作，先把旧数据删除
+      if (this.id) {
+        this.$store.commit(DEL_CONF, this.id)
+      }
       // 提交数据
-      console.log({
+      this.$store.commit(ADD_CONF, {
+        id: +new Date(),
         formName: this.formName,
         formConf: this.formConf
       })
