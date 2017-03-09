@@ -208,7 +208,8 @@
         </el-row>
         <span class="dialog-footer" slot="footer">
           <el-button v-if="filter === '待认领'" type="info" @click="onClaim(deviceViewData.device)"><i class="el-icon-check"></i> 认领</el-button>
-          <el-button v-if="filter === '待审核'" type="success" @click="onApprove(deviceViewData.device)"><i class="el-icon-more"></i> 审批</el-button>
+          <router-link v-if="deviceViewData.device.pkey==='equipment_on' && filter === '待审核'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">审批</router-link>
+          <!-- <el-button v-if="filter === '待审核'" type="success" @click="onApprove(deviceViewData.device)"><i class="el-icon-more"></i> 审批</el-button> -->
           <el-button v-if="filter === '待审核'" type="danger" @click="onReject(deviceViewData.device)"><i class="el-icon-close"></i> 驳回</el-button>
         </span>
       </el-dialog>

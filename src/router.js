@@ -47,7 +47,7 @@ const routes = [{
       path: '/equipment/off-review',
       component: require('./components/equipment/pages/offReview.vue')
     }, {
-      path: '/equipment/:step/:id/:name', // 具体步骤操作
+      path: '/equipment/:objectid/:step/:id/:name', // 具体步骤操作
       component: require('./components/equipment/pages/step.vue')
     }]
   }, {

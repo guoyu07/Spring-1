@@ -305,7 +305,9 @@
 
       bulkEditAndDeploy () {
         this.deviceQueue.forEach((v, k) => {
-          let data = {}
+          let data = {
+            // data: {}
+          }
           this.formStructure[0].value.map(item => {
             if (item.value.type === 'arr' || item.value.type === 'FKs') {
               data[item.id] = []
@@ -319,6 +321,7 @@
           })
           data.name = v.name
           data.instanceId = v.instanceId
+          // data.data = v
           if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
             this.onShelveForm.data.push(data)
           }

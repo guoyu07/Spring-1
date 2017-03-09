@@ -365,7 +365,8 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
-        this.applyData = this.getTaskInfo(message)
+        const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM']
+        this.applyData = this.getTaskInfo(message, taskKeyArr)
         this.applyData.action = res.data.data.action
         this.applyData.data.forEach((item, k) => {
           if (item.hostType === '虚拟机') {
