@@ -1,6 +1,6 @@
 <template>
   <div class="select-form">
-    <el-form :model="formData" ref="formRef" label-width="100px">
+    <el-form :model="formData" ref="testForm" label-width="100px">
       <el-form-item v-for="formItem of formConfig"
         v-if="['str','int','arr','enum','date','datetime','strArea'].indexOf(formItem.type) !== -1"
         :label="formItem.name" :required="formItem.required">
@@ -31,8 +31,7 @@
         </template>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="submitForm">立即创建</el-button>
-        <el-button @click="resetForm">重置</el-button>
+        <el-button type="primary" @click="submitForm">确定</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -67,7 +66,7 @@
     },
     methods: {
       submitForm () {
-        this.$refs.testForm.validate(valid => {
+        this.$refs.formRef.validate(valid => {
           if (valid) {
             console.log('submit!!')
           } else {
@@ -75,9 +74,6 @@
             return false
           }
         })
-      },
-      resetForm () {
-        this.$refs.testForm.resetFields()
       }
     },
     components: {

@@ -1,7 +1,7 @@
 <style lang="less" scoped>
   .conf-contain {
     .el-input {
-      width: 180px;
+      width: 100px;
       display: inline-block;
     }
     .el-row {
@@ -13,7 +13,10 @@
 <template>
   <div class="conf-contain">
     <el-row v-for="(op, index) of confArr">
-      <el-input v-model="confArr[index]" size="mini" placeholder="输入选项label" />
+      <label>标签 :</label>
+      <el-input v-model="op.label" size="mini" placeholder="输入 label" />
+      <label>值 :</label>
+      <el-input v-model="op.value" size="mini" placeholder="输入 value" />
       <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index)" />
     </el-row>
     <el-row>

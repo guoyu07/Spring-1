@@ -1,17 +1,14 @@
 <style lang="less" scoped>
   .editor-content {
     .el-input, .conf-btn {
-      width: 180px;
+      max-width: 180px;
       display: inline-block;
     }
     .el-row {
-      margin-top: 10px;
-      &:first-child {
-        margin-top: 20px;
-      }
-      .el-col:first-child {
-        line-height: 36px;
-      }
+      margin: 10px 0;
+    }
+    label {
+      line-height: 36px;
     }
   }
 </style>
@@ -21,62 +18,33 @@
     <el-row>
       <label>表单名称：</label>
       <el-input v-model="formName" placeholder="请输入表单名称"></el-input>
+      <el-button icon="plus" type="primary" @click="addBtn">添加表单字段</el-button>
     </el-row>
-    <el-row>
-      <label>表单参数：</label>
-      <el-dropdown trigger="click" @command="addBtn">
-        <el-button>新增参数<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
-        <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item command="text">文本输入</el-dropdown-item>
-          <el-dropdown-item command="number">数字输入</el-dropdown-item>
-          <el-dropdown-item command="radiobox">单选</el-dropdown-item>
-          <el-dropdown-item command="checkbox">多选</el-dropdown-item>
-          <el-dropdown-item command="select">下拉框</el-dropdown-item>
-          <el-dropdown-item command="data">日期输入</el-dropdown-item>
-        </el-dropdown-menu>
-      </el-dropdown>
-    </el-row>
-    <el-row v-for="(item, index) of formConf">
-      <el-col :span="2">
-        <el-checkbox v-model="item.required">必填</el-checkbox>
-      </el-col>
-      <el-col :span="4">
-        <el-input v-model="item.label" placeholder="请输入标签"></el-input>
-      </el-col>
-      <el-col :span="4">
-        <el-input v-model="item.name" placeholder="请输入提交字段名"></el-input>
-      </el-col>
-      <el-col :span="4" v-if="item.type === 'text'">
-        <el-input v-model="item.value" placeholder="请输入初始值"></el-input>
-      </el-col>
-      <el-col :span="4" v-if="item.type === 'number'">
-        <el-input-number v-model="item.value"></el-input-number>
-      </el-col>
-      <el-col :span="4" v-if="item.type === 'radiobox'">
-        <el-popover placement="bottom" title="单选配置" trigger="click">
-          <el-button slot="reference" class="conf-btn">配置选项</el-button>
-          <multi-conf :conf-arr="item.value.value"></multi-conf>
+    <el-collapse v-if="formConf.length">
+      <el-collapse-item v-for="itemConf of formConf" :title="itemConf.name">
+        <el-checkbox v-model="itemConf.required">备选项</el-checkbox>
+        <label>字段名称：</label>
+        <el-input v-model="itemConf.name"></el-input>
+        <label>表单形式：</label>
+        <el-select v-model="itemConf.type">
+          <el-option label="字符串" value="str"></el-option>
+          <el-option label="长文本" value="strArea"></el-option>
+          <el-option label="数字" value="int"></el-option>
+          <el-option label="数组" value="arr"></el-option>
+          <el-option label="日期" value="date"></el-option>
+          <el-option label="时间" value="datetime"></el-option>
+          <el-option label="下拉单选" value="enum"></el-option>
+          <el-option label="下拉多选" value="enum/multi"></el-option>
+        </el-select>
+        <!--暂不细分 动态获取选项-->
+        <el-popover v-if="['enum', 'enum/multi'].indexOf(itemConf.type) !== -1"
+          placement="bottom" title="" trigger="click" @show="itemConf.options = []">
+          <el-button slot="reference">配置选项</el-button>
+          <multi-conf :conf-arr="itemConf.options"></multi-conf>
         </el-popover>
-      </el-col>
-      <el-col :span="4" v-if="item.type === 'checkbox'">
-        <el-popover placement="bottom" title="多选配置" trigger="click">
-          <el-button slot="reference" class="conf-btn">配置选项</el-button>
-          <multi-conf :conf-arr="item.value.value"></multi-conf>
-        </el-popover>
-      </el-col>
-      <el-col :span="4" v-if="item.type === 'select'">
-        <el-popover placement="bottom" title="下拉选项配置" trigger="click">
-          <el-button slot="reference" class="conf-btn">配置选项</el-button>
-          <multi-conf :conf-arr="item.value.value"></multi-conf>
-        </el-popover>
-      </el-col>
-      <el-col :span="4">
-        <el-input v-model="item.description" placeholder="请输入说明文本"></el-input>
-      </el-col>
-      <el-col :span="2">
-        <el-button type="primary" icon="delete" @click="delBtn(index)"></el-button>
-      </el-col>
-    </el-row>
+        <el-button type="danger" icon="delete" @click="delBtn(itemConf)"></el-button>
+      </el-collapse-item>
+    </el-collapse>
     <el-row>
       <el-button icon="fa-check" @click="submitBtn">确认完成</el-button>
       <el-button icon="fa-undo" @click="$router.go(-1)">取消</el-button>
@@ -86,91 +54,54 @@
 
 <script>
 import multiConf from './multiConf'
+import { ADD_CONF, DEL_CONF } from '../../../store/mutation-types'
 
 export default {
   data () {
     return {
+      id: '',
       formName: '',
       formConf: []
     }
   },
+  activated () {
+    this.id = this.$route.query.id
+    if (this.id) {
+      // 待修改的
+      const formConfigList = this.$store.state.formConfigList
+      const formConfig = formConfigList.find(item => item.id === this.id)
+      this.formName = formConfig.formName
+      this.formConf = formConfig.formConf
+    }
+  },
   methods: {
-    // 添加一条
-    addBtn (cmd) {
-      // 添加表单项
-      switch (cmd) {
-        case 'text':
-          this.formConf.push({
-            type: 'text',
-            required: false,
-            label: '',
-            name: '',
-            description: '',
-            value: ''
-          })
-          break
-        case 'number':
-          this.formConf.push({
-            type: 'number',
-            required: false,
-            label: '',
-            name: '',
-            description: '',
-            value: 0
-          })
-          break
-        case 'radiobox':
-          this.formConf.push({
-            type: 'radiobox',
-            required: false,
-            label: '',
-            name: '',
-            description: '',
-            value: {
-              checkboxTypeCode: 'radioboxOne',
-              value: ['单选 1', '单选 3']
-            }
-          })
-          break
-        case 'checkbox':
-          this.formConf.push({
-            type: 'checkbox',
-            required: false,
-            label: '',
-            name: '',
-            description: '',
-            value: {
-              checkboxTypeCode: 'checkboxOne',
-              value: ['多选 1', '多选 3']
-            }
-          })
-          break
-        case 'select':
-          this.formConf.push({
-            type: 'select',
-            required: false,
-            label: '',
-            name: '',
-            description: '',
-            value: {
-              checkboxTypeCode: 'checkboxOne',
-              value: ['选项 1', '选项 3']
-            }
-          })
-          break
-        default:
-          console.log('none')
-      }
+    // 添加一个字段
+    addBtn () {
+      this.formConf.push({
+        type: '',
+        name: '',
+        options: null,
+        required: true,
+        regex: '',
+        unique: true,
+        category: '',
+        need_submit: true
+      })
     },
-    // 删除一条
-    delBtn (index) {
-      this.formConf.splice(index, 1)
+    // 删除一个字段
+    delBtn (itemConf) {
+      this.formConf.splice(this.formConf.indexOf(itemConf), 1)
     },
     // 确认完成
     submitBtn () {
       this.$router.go(-1)
+      // 如果是修改操作，先把旧数据删除
+      if (this.id) {
+        this.$store.commit(DEL_CONF, this.id)
+      }
       // 提交数据
-      console.log({
+      this.$store.commit(ADD_CONF, {
+        id: +new Date(),
         formName: this.formName,
         formConf: this.formConf
       })

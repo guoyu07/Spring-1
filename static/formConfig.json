@@ -37,8 +37,8 @@
       "need_submit": true
     },
     {
-      "name": "日期",
       "type": "date",
+      "name": "日期",
       "required": true,
       "regex": "",
       "unique": true,
@@ -46,8 +46,8 @@
       "need_submit": true
     },
     {
-      "name": "时间",
       "type": "datetime",
+      "name": "时间",
       "required": true,
       "regex": "",
       "unique": true,

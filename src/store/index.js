@@ -6,7 +6,8 @@ import actions from './actions'
 Vue.use(Vuex)
 
 const state = {
-  isRequesting: false
+  isRequesting: false,
+  formConfigList: []
 }
 
 export default new Vuex.Store({
@@ -14,4 +15,3 @@ export default new Vuex.Store({
   mutations,
   actions
 })
-
