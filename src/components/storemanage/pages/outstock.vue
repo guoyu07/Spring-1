@@ -398,7 +398,7 @@
             form: {
               'object_id': this.deviceType,
               'application': this.outstockForm.application,
-              'object_list': [Object.assign({instanceId: device.instanceId}, this.outstockForm)]
+              'object_list': [Object.assign({instanceId: device.instanceId, name: device.name}, this.outstockForm)]
             }
           }
         }

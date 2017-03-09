@@ -33,6 +33,9 @@ const routes = [{
     }, {
       path: '/storemanage/outstock/:edit',
       component: require('./components/storemanage/pages/outstock.vue')
+    }, {
+      path: '/storemanage/:objectid/:pkey/:step/:id/:name',
+      component: require('./components/storemanage/pages/step.vue')
     }]
   }, {
     path: '/equipment',
