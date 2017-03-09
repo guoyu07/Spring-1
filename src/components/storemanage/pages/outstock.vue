@@ -82,16 +82,18 @@
       v-model="retrieveViewData.visible"
       size="small"
       :modal="true">
-      <ul class="device-data-list">
-        <li v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]">
-          <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
-            <b>{{ formStructure[key].name }}</b><span v-for="option in value">{{option.name}}</span>
-          </div>
-          <div v-else>
-            <b>{{ formStructure[key].name }}</b>{{value}}
-          </div>
-        </li>
-      </ul>
+      <el-row>
+        <el-col :span="20" :offset="2">
+          <el-form label-position="left" inline class="expanded-form">
+            <el-form-item v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]" :label="formStructure[key].name + '：'">
+              <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
+                <span v-for="option in value">{{option.name}}</span>
+              </div>
+              <span v-else>{{value}}</span>
+            </el-form-item>
+          </el-form>
+        </el-col>
+      </el-row>
       <el-row>
         <el-col :span="24">
           <h4 class="sub-title"><i class="el-icon-information"></i> 请填写出库信息：</h4>

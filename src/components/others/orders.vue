@@ -127,6 +127,7 @@
             </el-table-column>
             <el-table-column
               inline-template
+              width="120"
               :context="_self"
               label="操作">
               <template>
@@ -150,7 +151,7 @@
 
     <div class="device-view">
       <el-dialog
-        :title="deviceViewData.device.name"
+        :title="deviceViewData.device.name ? deviceViewData.device.pname + '—' + deviceViewData.device.name : deviceViewData.device.pname"
         v-model="deviceViewData.visible"
         :modal="true">
         <el-row>
@@ -181,9 +182,9 @@
                 <span>{{deviceViewData.device.priority}}</span>
               </el-form-item>
             </el-form>
-            <h5 style="margin-top: 12px;" v-if="deviceViewData.device.variables"><i class="el-icon-information"></i> 历史步骤（共 {{ deviceViewData.device.variables.message.length }}）</h5>
+            <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.variables">
-              <el-collapse-item v-for="task in deviceViewData.device.variables.message" :title="task.task_name">
+              <el-collapse-item v-for="(task, key) in deviceViewData.device.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
                 <el-form label-position="left" inline>
                   <el-form-item v-if="task.author" label="发起者">
                     <span>{{task.author}}</span>
@@ -291,7 +292,7 @@
       },
 
       onReject (task) {
-        this.$prompt(`请输入对「${task.name}」的驳回意见：`, '确定驳回？', {
+        this.$prompt(`请输入对 ${task.pname}—${task.name} 的驳回意见：`, '确定驳回？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({ remark }) => {
