@@ -54,6 +54,9 @@ const routes = [{
       path: '/system/apply',
       component: require('./components/system/pages/apply.vue')
     }, {
+      path: '/system/apply/:id',
+      component: require('./components/system/pages/apply.vue')
+    }, {
       path: '/system/applylist',
       component: require('./components/system/pages/applylist.vue')
     }, {

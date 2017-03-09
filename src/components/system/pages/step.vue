@@ -223,9 +223,15 @@
           </div>
         </el-tab-pane>
       </el-tabs>
-      <el-form-item class="margin-top">
-        <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
-        <el-button @click="onReject(applyData)">驳回</el-button>
+      <el-form-item>
+        <div class="btn-area">
+          <span v-for="action in applyData.action">
+            <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+            <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+          </span>
+        </div>
+        <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
+        <el-button @click="onReject(applyData)">驳回</el-button> -->
       </el-form-item>
     </el-form>
   </div>
@@ -274,9 +280,9 @@ export default {
       case 'approve':
         this.assignForm = {'approve': '通过'}
         break
-      case 'judge':
-        this.assignForm = {'judge': '通过'}
-        break
+      // case 'judge':
+      //   this.assignForm = {'judge': '通过'}
+      //   break
       default:
         return false
     }
@@ -350,7 +356,6 @@ export default {
       })
     },
     renderInstanceDetail () {
-      console.log(this.routerInfo.id)
       let postData = {
         action: 'runtime/task',
         method: 'GET',
@@ -361,6 +366,7 @@ export default {
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
         this.applyData = this.getTaskInfo(message)
+        this.applyData.action = res.data.data.action
         this.applyData.data.forEach((item, k) => {
           if (item.hostType === '虚拟机') {
             switch (this.routerInfo.step) {
@@ -543,9 +549,9 @@ export default {
         }
       }
     },
-    onReject (task) {
-      console.log(task)
-      this.$prompt(`请输入对「${task.applicationName}」的驳回意见：`, '确定驳回？', {
+    onReject (task, action) {
+      console.log(task, action.pass)
+      this.$prompt('请输入对「' + task.applicationName + '」的' + action.name + '意见：', '确定' + action.name + '？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({value}) => {
@@ -559,7 +565,7 @@ export default {
           data: {
             tid: this.routerInfo.id,
             form: { value },
-            pass: 2
+            pass: action.pass
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
@@ -583,10 +589,9 @@ export default {
 <style lang="less" scoped>
 .btn-area {
   margin: 15px 0;
-}
-
-.margin-top {
-  margin-top: 15px;
+  .el-button {
+    margin-right: 8px;
+  }
 }
 
 .form-block {

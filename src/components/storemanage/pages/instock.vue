@@ -7,72 +7,28 @@
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
           <h3>{{ editInfo.instanceId ? '更改信息' : '入库流程'}}</h3>
-          <el-form label-position="left" label-width="100px">
+          <el-form label-position="left" label-width="100px" :inline="true" ref="instockForm" :model="instockForm">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
                 <el-radio :disabled="$route.params.id" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-          </el-form>
+            <br>
+            <el-form-item label="申请人">
+              <el-select
+                v-model="instockForm.application">
+                <el-option v-for="option in applicationList"
+                  :label="option.name"
+                  :value="option.name"></el-option>
+              </el-select>
+            </el-form-item>
+          <!-- </el-form> -->
           <div class="step step-2">
-            <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
+            <!-- <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm"> -->
               <el-button v-if="!editInfo.instanceId" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
               <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
                 <el-tab-pane v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
                   <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
-                  <!-- <div class="form-block" v-for="formBlock in formData">
-                    <h4>{{formBlock.name}}</h4>
-                    <el-form-item
-                      v-for="formItem in formBlock.value"
-                      :prop="'data.' + index + '.' + formItem.id"
-                      :label="formItem.name"
-                      :rules="{
-                        type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
-                      }">
-                      <el-input
-                        v-if="formItem.value.type === 'str'"
-                        v-model="item[formItem.id]">
-                      </el-input>
-
-                      <el-input-number
-                        v-else-if="formItem.value.type === 'int'"
-                        v-model="item[formItem.id]" :min="0">
-                      </el-input-number>
-
-                      <el-select
-                        v-else-if="formItem.value.type === 'enum'"
-                        v-model="item[formItem.id]">
-                        <el-option v-for="option in formItem.value.regex"
-                          :label="option"
-                          :value="option"></el-option>
-                      </el-select>
-
-                      <el-select
-                        v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-                        v-model="item[formItem.id]"
-                        :multiple="formItem.value.type === 'FKs'">
-                        <el-option v-for="option in formItem.value.object_list"
-                          :label="option.name"
-                          :value="option.instanceId"></el-option>
-                      </el-select>
-
-                      <el-select
-                        v-else-if="formItem.value.type === 'arr'"
-                        v-model="item[formItem.id]"
-                        multiple
-                        filterable=""
-                        allow-create
-                        placeholder="请创建">
-                      </el-select>
-
-                      <el-date-picker
-                        v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
-                        v-model="item[formItem.id]"
-                        :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
-                        placeholder="选择时间">
-                      </el-date-picker>
-                    </el-form-item>
-                  </div> -->
                 </el-tab-pane>
               </el-tabs>
             </el-form>
@@ -98,8 +54,10 @@
         },
         deviceType: '',
         instockForm: {
+          application: '',
           data: [{}]
         },
+        applicationList: [],
         deviceList: [],
         deviceListStructure: {},
         formData: [],
@@ -116,12 +74,13 @@
             cb(new Error('请输入正确的IP地址'))
           }
         },
-        isSubmitting: false
+        isSubmitting: false,
+        userInfo: {}
       }
     },
     created () {
-      // this.renderFormData()
-      console.log(this.$route.params, this.$route.query.object_id)
+      this.userInfo = window.localStorage
+      this.instockForm.application = this.userInfo.userName // 默认申请人为填写人
       if (this.$route.params.id) {
         this.editInfo.instanceId = this.$route.params.id
         this.editInfo.object_id = this.$route.query.object_id
@@ -129,6 +88,7 @@
         this.renderEditInfo()
       }
       this.renderDeviceList()
+      this.renderApplicationList() // 渲染申请人列表
     },
     watch: {
       '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
@@ -139,6 +99,21 @@
       }
     },
     methods: {
+      renderApplicationList () { // 渲染申请人列表
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'USER'
+            // page: "不传则获取该对象所有实例",
+            // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          this.applicationList = res.data.data.list
+        })
+      },
       renderDeviceList () { // 渲染设备类型
         var renderDeviceListData = {
           action: 'import/device/items',
@@ -196,9 +171,7 @@
             group.value.map(item => {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
                 this.$set(this.instockForm.data[0], item.id, [])
-              } else if (item.value.type === 'int') {
-                this.$set(this.instockForm.data[0], item.id, 0)
-              } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+              } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
                 this.$set(this.instockForm.data[0], item.id, undefined)
               } else {
                 this.$set(this.instockForm.data[0], item.id, '')
@@ -286,16 +259,18 @@
         this.$refs[formName].resetFields()
       },
       onConfirm (formName) {
-        let objectList = []
+        let objectList = {
+          application: this.instockForm.application,
+          data: []
+        }
         this.instockForm.data.forEach((item, k) => {
-          objectList[k] = {}
+          objectList.data[k] = {}
           for (const i in item) {
             if (item[i]) {
-              objectList[k][i] = item[i]
+              objectList.data[k][i] = item[i]
             }
           }
         })
-        console.log(objectList)
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log('submit!')
@@ -349,7 +324,7 @@
               this.isSubmitting = true
               this.http.post('', this.parseData(postData)).then((res) => {
                 console.log(res)
-                if (res.status === 406) {
+                if (res && res.status === 406) {
                   this.$message.error(res.errorMessage)
                 } else {
                   this.$message.success('提交成功！')

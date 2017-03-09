@@ -94,7 +94,7 @@ Vue.prototype.findTaskMsgR = findTaskMsgR
 
 // 收集所有最新 task_key 数据
 Vue.prototype.getTaskInfo = (arrMsg) => {
-  const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM', 'judge', 'monitor']
+  const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM']
   const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
   taskKeyArr
     .filter(t => findTaskMsgR(arrMsg, [t]))

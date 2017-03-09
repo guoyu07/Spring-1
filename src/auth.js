@@ -13,7 +13,7 @@ export default {
   login (context, creds, redirect) {
     console.log(creds)
     context.http.post('', creds).then(response => {
-      window.localStorage.setItem('id_token', response.user)
+      window.localStorage.setItem('userName', response.data.data.name)
       this.authenticated = true
       // 跳转至指定目的
       if (redirect) {
@@ -27,13 +27,13 @@ export default {
   },
 
   logout () {
-    window.localStorage.removeItem('id_token')
+    window.localStorage.removeItem('userName')
     router.replace('/login')
     this.authenticated = false
   },
 
   checkAuth () {
-    const jwt = window.localStorage.getItem('id_token')
+    const jwt = window.localStorage.getItem('userName')
     if (jwt) {
       this.authenticated = true
     } else {
@@ -44,7 +44,7 @@ export default {
   // 供需要验证头部的请求使用
   getAuthHeader () {
     return {
-      'Authorization': 'Bearer' + window.localStorage.getItem('id_token')
+      'Authorization': 'Bearer' + window.localStorage.getItem('userName')
     }
   }
 }
