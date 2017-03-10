@@ -392,7 +392,7 @@ export default {
     },
     onReject (task, action) {
       console.log(task, action.pass)
-      this.$prompt('请输入对「' + task.applicationName + '」的' + action.name + '意见：', '确定' + action.name + '？', {
+      this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({value}) => {
@@ -413,7 +413,7 @@ export default {
           if (res.status === 200) {
             this.$message.success('已驳回！')
           }
-          this.$router.go(-1) // 跳转历史的上一页
+          this.$router.replace('orders') // 跳转历史的上一页
         })
       })
     },

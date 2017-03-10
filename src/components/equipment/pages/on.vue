@@ -44,6 +44,10 @@
               width="55"
               type="selection"></el-table-column>
             <el-table-column
+              v-for="item in searchKeyList"
+              :prop="item.id"
+              :label="item.name"></el-table-column>
+            <!-- <el-table-column
               prop="name"
               label="设备"></el-table-column>
             <el-table-column
@@ -51,7 +55,7 @@
               label="创建者"></el-table-column>
             <el-table-column
               prop="ctime"
-              label="创建时间"></el-table-column>
+              label="创建时间"></el-table-column> -->
           </el-table>
           <div class="pagination-block clear">
             <el-pagination
@@ -106,7 +110,7 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="bulkEditAndDeploy">批量编辑并上架</el-button>
+            <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="bulkEditAndDeploy">填写上架信息</el-button>
           </div>
         </el-card>
       </el-col>

@@ -43,9 +43,14 @@
             v-loading.body="deviceLoading"
             style="width: 100%; min-width: 460px">
             <el-table-column
-              prop="instanceId"
-              label="编号"></el-table-column>
+              v-if="!edit"
+              width="55"
+              type="selection"></el-table-column>
             <el-table-column
+              v-for="item in searchKeyList"
+              :prop="item.id"
+              :label="item.name"></el-table-column>
+            <!-- <el-table-column
               prop="name"
               label="设备名称"></el-table-column>
             <el-table-column
@@ -53,13 +58,14 @@
               label="设备"></el-table-column>
             <el-table-column
               prop="status"
-              label="状态"></el-table-column>
+              label="状态"></el-table-column> -->
             <el-table-column
+              v-if="edit"
               inline-template
               :context="_self"
               label="操作">
               <span>
-                <el-button size="small" @click="onRetrieve(row)" v-if="(row.status !== '已出库') && (!edit)">出库</el-button>
+                <!-- <el-button size="small" @click="onRetrieve(row)" v-if="(row.status !== '已出库') && (!edit)">出库</el-button> -->
                 <el-button size="small" type="warning" @click="onEdit(row)" v-if="edit">变更</el-button>
               </span>
             </el-table-column>
