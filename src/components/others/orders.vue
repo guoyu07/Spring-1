@@ -288,6 +288,18 @@
               this.deviceViewData.visible = false
               this.$message.success('已认领！')
             }
+            // this.$router.replace(``)
+            switch (task.pkey) {
+              case 'host_apply':
+                this.$router.replace(`/system/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+                break
+              case 'equipment_on':
+                this.$router.replace(`/equipment/${task.variables.message[0].form.object_id}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+                break
+              default:
+                console.log('default')
+                break
+            }
             this.getFilteredList()
           })
         })
