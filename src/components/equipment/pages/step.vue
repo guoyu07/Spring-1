@@ -17,23 +17,36 @@
             <el-form-item v-for="formstru in formStructure" :label="formstru.name">
               {{data[formstru.id]}}
             </el-form-item>
-            <el-form-item v-if="data.ip" label="IP">
-              {{data.ip}}
+            <el-form-item label="IP">
+              {{data.ip?data.ip:'未分配'}}
             </el-form-item>
-            <el-form-item v-if="data.ports" label="端口">
-              <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
+            <el-form-item label="端口">
+              <span v-if="data.ports" v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
+              <span v-else>未分配</span>
             </el-form-item>
-            <el-form-item v-if="data.engineRoom" label="机房">
-              {{data.engineRoom}}
+            <el-form-item label="机房">
+              {{data.engineRoom?data.engineRoom:'未分配'}}
             </el-form-item>
-            <el-form-item v-if="data.cabinet" label="机柜">
-              {{data.cabinet}}
+            <el-form-item label="机柜">
+              {{data.cabinet?data.cabinet:'未分配'}}
             </el-form-item>
-            <el-form-item v-if="data.approve" label="运维主管审批">
-              {{data.approve}}
+            <el-form-item label="运维主管审批">
+              {{data.approve?data.approve:'未审批'}}
             </el-form-item>
             <el-form-item v-if="data.netline" label="网线连接">
               {{data.netline?'已安装':'未安装'}}
+            </el-form-item>
+            <el-form-item label="挂牌与搬迁">
+              {{data.move?'已完成':'未完成'}}
+            </el-form-item>
+            <el-form-item v-if="data.osip" label="安装OS及配置IP">
+              {{data.osip?'已完成':'未完成'}}
+            </el-form-item>
+            <el-form-item v-if="data.agent" label="安装Agent">
+              {{data.agent?'已完成':'未完成'}}
+            </el-form-item>
+            <el-form-item v-if="data.database_info && data.dba" label="DBA安装数据库">
+              {{data.dba?'已完成':'未完成'}}
             </el-form-item>
           </el-form>
           <h5>填写信息</h5>
@@ -109,6 +122,11 @@
               <el-checkbox v-if="data.database_info" v-model="assignForm.data[index].dba">DBA安装数据库</el-checkbox>
             </el-form-item>
           </div>
+          <div v-if="routerInfo.step==='installDB'">
+            <el-form-item label="是否完成" :prop="'data.' + index + '.installdb'">
+              <el-checkbox v-model="assignForm.data[index].installdb">安装数据库</el-checkbox>
+            </el-form-item>
+          </div>
         </el-tab-pane>
       </el-tabs>
       <el-form-item>
@@ -161,23 +179,6 @@ export default {
     this.deviceType = this.routerInfo.objectid
     this.renderInstanceDetail() // 通过 id 渲染本实例
     this.renderFormStructure()
-    // switch (this.routerInfo.step) {
-    //   // case 'restart':
-    //   //   this.renderIDCList()
-    //   //   this.renderIDCGroupList()
-    //   //   break
-    //   // case 'assignIP':
-    //   //   this.renderIPList()
-    //   //   break
-    //   case 'approve':
-    //     this.assignForm = {'approve': '通过'}
-    //     break
-    //   // case 'judge':
-    //   //   this.assignForm = {'judge': '通过'}
-    //   //   break
-    //   default:
-    //     return false
-    // }
   },
   methods: {
     renderFormStructure () {
@@ -267,7 +268,7 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
-        const taskKeyArr = ['ipinfo', 'approve', 'netLine']
+        const taskKeyArr = ['ipinfo', 'approve', 'netLine', 'deviceMove']
         this.applyData = this.getTask(message, taskKeyArr)
         this.applyData.action = res.data.data.action
         this.applyData.data.forEach((item, k) => {
@@ -285,7 +286,8 @@ export default {
 
             case 'approve':
               this.assignForm.data.push({
-                approve: '通过'
+                approve: '通过',
+                instanceId: item.instanceId
               })
               break
 
@@ -294,7 +296,8 @@ export default {
                 ip: item.ip,
                 cabinet: item.cabinet,
                 engineRoom: item.engineRoom,
-                netline: false
+                netline: false,
+                instanceId: item.instanceId
               })
               break
 
@@ -303,7 +306,15 @@ export default {
                 move: false,
                 osip: false,
                 agent: false,
-                dba: false
+                dba: false,
+                instanceId: item.instanceId
+              })
+              break
+
+            case 'installDB':
+              this.assignForm.data.push({
+                installdb: false,
+                instanceId: item.instanceId
               })
               break
 
