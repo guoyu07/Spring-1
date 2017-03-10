@@ -35,7 +35,7 @@
         this.confArr.splice(index, 1)
       },
       opAddBtn () {
-        this.confArr.push('')
+        this.confArr.push({ label: '', value: '' })
       }
     }
   }

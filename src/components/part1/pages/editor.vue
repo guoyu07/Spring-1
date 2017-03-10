@@ -22,7 +22,7 @@
     </el-row>
     <el-collapse v-if="formConf.length">
       <el-collapse-item v-for="itemConf of formConf" :title="itemConf.name">
-        <el-checkbox v-model="itemConf.required">备选项</el-checkbox>
+        <el-checkbox v-model="itemConf.required">必选项</el-checkbox>
         <label>字段名称：</label>
         <el-input v-model="itemConf.name"></el-input>
         <label>表单形式：</label>
@@ -38,7 +38,7 @@
         </el-select>
         <!--暂不细分 动态获取选项-->
         <el-popover v-if="['enum', 'enum/multi'].indexOf(itemConf.type) !== -1"
-          placement="bottom" title="" trigger="click" @show="itemConf.options = []">
+          placement="bottom" title="" trigger="click" @show="showMultiConf(itemConf)">
           <el-button slot="reference">配置选项</el-button>
           <multi-conf :conf-arr="itemConf.options"></multi-conf>
         </el-popover>
@@ -64,7 +64,7 @@ export default {
       formConf: []
     }
   },
-  activated () {
+  created () {
     this.id = this.$route.query.id
     if (this.id) {
       // 待修改的
@@ -87,6 +87,9 @@ export default {
         category: '',
         need_submit: true
       })
+    },
+    showMultiConf (itemConf) {
+      if (!itemConf.options) itemConf.options = []
     },
     // 删除一个字段
     delBtn (itemConf) {
