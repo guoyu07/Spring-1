@@ -17,7 +17,7 @@
       </el-select>
     </el-row>
     <el-row>
-      <el-form :model="formData" ref="testForm" label-width="100px">
+      <el-form :inline="true" :model="formData" ref="testForm" label-width="100px">
         <el-form-item v-for="formItem of formConfig"
           v-if="['str','int','arr','enum','date','datetime','strArea'].indexOf(formItem.type) !== -1"
           :label="formItem.name" :required="formItem.required">
@@ -47,10 +47,10 @@
             <el-time-picker type="fixed-time" placeholder="选择时间" v-model="formData[formItem.key]"></el-time-picker>
           </template>
         </el-form-item>
-        <el-form-item v-if="formConfig.length">
-          <el-button type="primary" @click="submitForm">确定</el-button>
-        </el-form-item>
       </el-form>
+      <template v-if="formConfig.length">
+        <el-button type="primary" @click="submitForm">确定</el-button>
+      </template>
     </el-row>
   </div>
 </template>
