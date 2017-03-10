@@ -29,7 +29,14 @@
             <el-form-item v-if="data.cabinet" label="机柜">
               {{data.cabinet}}
             </el-form-item>
+            <el-form-item v-if="data.approve" label="运维主管审批">
+              {{data.approve}}
+            </el-form-item>
+            <el-form-item v-if="data.netline" label="网线连接">
+              {{data.netline?'已安装':'未安装'}}
+            </el-form-item>
           </el-form>
+          <h5>填写信息</h5>
           <div v-if="routerInfo.step==='ipinfo'">
             <el-form-item label="IP"
               :prop="'data.' + index + '.ip'"
@@ -66,38 +73,40 @@
               <el-input v-model="assignForm.data[index].cabinet" placeholder="请填写机柜"></el-input>
             </el-form-item>
           </div>
-          <div v-if="routerInfo.step==='assignIP'">
-            <el-form-item
-              label="IP"
+          <div v-if="routerInfo.step==='netLine'">
+            <br>
+            <el-form-item label="IP"
               :prop="'data.' + index + '.ip'"
-              :rules="{ validator: validateIP, trigger: 'blur' }">
-              <el-select v-model="assignForm.data[index].ip" placeholder="请选择IP">
-                <el-option v-for="ip in ipList" :label="ip.name" :value="ip.name"></el-option>
-              </el-select>
+              :rules="{
+                required: true, validator: validateIP, trigger: 'blur'
+              }">
+              <el-input v-model="assignForm.data[index].ip"></el-input>
+            </el-form-item>
+            <el-form-item label="机房"
+              :prop="'data.' + index + '.engineRoom'"
+              :rules="{
+                required: true, message: '机房不能为空', trigger: 'blur'
+              }">
+              <el-input v-model="assignForm.data[index].engineRoom"></el-input>
+            </el-form-item>
+            <el-form-item label="机柜"
+              :prop="'data.' + index + '.cabinet'"
+              :rules="{
+                required: true, message: '机柜不能为空', trigger: 'blur'
+              }">
+              <el-input v-model="assignForm.data[index].cabinet"></el-input>
+            </el-form-item>
+            <br>
+            <el-form-item label="是否完成">
+              <el-checkbox v-model="assignForm.data[index].netline">准备网线连接</el-checkbox>
             </el-form-item>
           </div>
-          <div v-if="routerInfo.step==='createVM'">
-            <h5>安装信息</h5>
-            <el-form-item
-              label="创建虚拟机"
-              :prop="'data.' + index + '.setVirtual'">
-              <el-switch on-text="" off-text="" v-model="assignForm.data[index].setVirtual">
-              </el-switch>
-            </el-form-item>
-            <el-form-item
-              label="配置IP"
-              :prop="'data.' + index + '.setIP'">
-              <el-switch on-text="" off-text="" v-model="assignForm.data[index].setIP">
-              </el-switch>
-            </el-form-item>
-            <el-form-item
-              label="安装Agent"
-              :prop="'data.' + index + '.setAgent'">
-              <el-switch on-text="" off-text="" v-model="assignForm.data[index].setAgent">
-              </el-switch>
-            </el-form-item>
-            <el-form-item label="描述文件URL" style="width:80%;" label-width="100px">
-              <el-input v-model="assignForm.data[index].url" placeholder="http://"></el-input>
+          <div v-if="routerInfo.step==='deviceMove'">
+            <el-form-item label="是否完成" :prop="'data.' + index + '.devicemove'">
+              <el-checkbox v-model="assignForm.data[index].move">挂牌与搬迁</el-checkbox>
+              <el-checkbox v-model="assignForm.data[index].osip">安装OS及配置IP</el-checkbox>
+              <el-checkbox v-model="assignForm.data[index].agent">安装Agent</el-checkbox>
+              <el-checkbox v-if="data.database_info" v-model="assignForm.data[index].dba">DBA安装数据库</el-checkbox>
             </el-form-item>
           </div>
         </el-tab-pane>
@@ -152,23 +161,23 @@ export default {
     this.deviceType = this.routerInfo.objectid
     this.renderInstanceDetail() // 通过 id 渲染本实例
     this.renderFormStructure()
-    switch (this.routerInfo.step) {
-      // case 'restart':
-      //   this.renderIDCList()
-      //   this.renderIDCGroupList()
-      //   break
-      // case 'assignIP':
-      //   this.renderIPList()
-      //   break
-      case 'approve':
-        this.assignForm = {'approve': '通过'}
-        break
-      // case 'judge':
-      //   this.assignForm = {'judge': '通过'}
-      //   break
-      default:
-        return false
-    }
+    // switch (this.routerInfo.step) {
+    //   // case 'restart':
+    //   //   this.renderIDCList()
+    //   //   this.renderIDCGroupList()
+    //   //   break
+    //   // case 'assignIP':
+    //   //   this.renderIPList()
+    //   //   break
+    //   case 'approve':
+    //     this.assignForm = {'approve': '通过'}
+    //     break
+    //   // case 'judge':
+    //   //   this.assignForm = {'judge': '通过'}
+    //   //   break
+    //   default:
+    //     return false
+    // }
   },
   methods: {
     renderFormStructure () {
@@ -258,7 +267,7 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
-        const taskKeyArr = ['ipinfo', 'approve']
+        const taskKeyArr = ['ipinfo', 'approve', 'netLine']
         this.applyData = this.getTask(message, taskKeyArr)
         this.applyData.action = res.data.data.action
         this.applyData.data.forEach((item, k) => {
@@ -274,18 +283,29 @@ export default {
               })
               break
 
-            // case 'restart':
-            //   this.assignForm.data.push({
-            //     idc: '',
-            //     idcgroup: ''
-            //   })
-            //   break
+            case 'approve':
+              this.assignForm.data.push({
+                approve: '通过'
+              })
+              break
 
-            // case 'assignIP':
-            //   this.assignForm.data.push({
-            //     ip: ''
-            //   })
-            //   break
+            case 'netLine':
+              this.assignForm.data.push({
+                ip: item.ip,
+                cabinet: item.cabinet,
+                engineRoom: item.engineRoom,
+                netline: false
+              })
+              break
+
+            case 'deviceMove':
+              this.assignForm.data.push({
+                move: false,
+                osip: false,
+                agent: false,
+                dba: false
+              })
+              break
 
             default:
               if (this.assignForm.data) {
@@ -306,6 +326,7 @@ export default {
         cancelButtonText: '取消',
         type: 'info'
       }).then(() => {
+        // console.log(this.$refs[assignForm])
         this.$refs[assignForm].validate((valid) => {
           if (valid) {
             if (this.assignForm.data) {
@@ -397,7 +418,7 @@ export default {
 </script>
 <style lang="less" scoped>
 .el-form-item {
-  margin-bottom: 0;
+  margin-bottom: 8px;
 }
 .btn-area {
   margin: 15px 0;

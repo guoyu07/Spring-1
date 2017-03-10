@@ -2,44 +2,44 @@
   <div id="item1-side" class="wrapper">
     <h3 class="form-title">{{ routerInfo.pkey==='export_device'?'出库':'入库'}}{{ routerInfo.name }}</h3>
     <el-form ref="assignForm" :model="assignForm" :inline="true" label-width="80">
-      <!-- <el-row :gutter="20"> -->
-      <el-col
-        v-if="routerInfo.pkey==='export_device'"
-        :span="6">
-        <el-table
-          :data="applyData.object_list"
-          style="width: 100%">
-          <el-table-column
-            prop="name"
-            label="设备名称">
-          </el-table-column>
-          <el-table-column
-            prop="application"
-            label="申请人">
-          </el-table-column>
-          <el-table-column
-            prop="location"
-            label="地点">
-          </el-table-column>
-          <el-table-column
-            prop="status"
-            label="状态">
-          </el-table-column>
-        </el-table>
-      </el-col>
-      <el-col :span="24" v-else>
-        <el-tabs type="border-card" closable @tab-click="handleClick">
-          <el-tab-pane v-for="(item, index) in applyData.object_list" :key="item.id" :label="'设备' + (index + 1)">
-            <div v-for="formblock in formData">
-              <h5>{{formblock.name}}</h5>
-              <el-form-item v-for="form in formblock.value" :label="form.name">
-                {{item[form.id]}}
-              </el-form-item>
-            </div>
-          </el-tab-pane>
-        </el-tabs>
-      </el-col>
-      <!-- </el-row> -->
+      <el-row :gutter="20">
+        <el-col
+          v-if="routerInfo.pkey==='export_device'"
+          :span="12">
+          <el-table
+            :data="applyData.object_list"
+            style="width: 100%">
+            <el-table-column
+              prop="name"
+              label="设备名称">
+            </el-table-column>
+            <el-table-column
+              prop="application"
+              label="申请人">
+            </el-table-column>
+            <el-table-column
+              prop="location"
+              label="地点">
+            </el-table-column>
+            <!-- <el-table-column
+              prop="status"
+              label="状态">
+            </el-table-column> -->
+          </el-table>
+        </el-col>
+        <el-col :span="24" v-else>
+          <el-tabs type="border-card" closable @tab-click="handleClick">
+            <el-tab-pane v-for="(item, index) in applyData.object_list" :key="item.id" :label="'设备' + (index + 1)">
+              <div v-for="formblock in formData">
+                <h5>{{formblock.name}}</h5>
+                <el-form-item v-for="form in formblock.value" :label="form.name">
+                  {{item[form.id]}}
+                </el-form-item>
+              </div>
+            </el-tab-pane>
+          </el-tabs>
+        </el-col>
+      </el-row>
       <el-form-item>
         <div class="btn-area">
           <span v-for="action in applyData.action">
