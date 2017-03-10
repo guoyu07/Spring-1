@@ -190,8 +190,8 @@
         } else {
           this.edit = ''
         }
-        this.deviceTable = []
-        this.onSearchDevices()
+        // this.deviceTable = []
+        this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
       }
     },
 
@@ -264,9 +264,10 @@
       },
 
       onDeviceTypeChange () {
-        this.deviceTable = []
+        // this.deviceTable = []
         this.renderFormStructure()
-        this.onSearchDevices()
+        // this.onSearchDevices()
+        this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
         this.renderExportAttr()
         var searchAttrData = {
           action: 'cmdb/object/search/attr',
@@ -346,7 +347,7 @@
 
       onDevicePageChange (val) {
         this.devicePage = val
-        this.onSearchDevices(this.isAdvanceSearch)
+        this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
       },
 
       resetForm (formName) {
@@ -417,7 +418,7 @@
             type: 'success'
           })
           this.deviceViewData.location = ''
-          this.onSearchDevices()
+          this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
         })
       },
 
