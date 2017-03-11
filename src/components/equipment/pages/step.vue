@@ -233,8 +233,8 @@
             <el-collapse-item title="设备信息" name="2">
               <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
                 <el-form-item v-for="form in searchKeyList" :label="form.name">
-                  <span v-if="routerInfo.step==='start'">{{data.data[form.id]}}</span>
-                  <span v-else>{{data.data.data[form.id]}}</span>
+                  <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
+                  <span>{{data.data[form.id]}}</span>
                 </el-form-item>
               </el-form>
             </el-collapse-item>

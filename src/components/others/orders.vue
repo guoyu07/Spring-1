@@ -208,10 +208,22 @@
         </el-row>
         <span class="dialog-footer" slot="footer">
           <el-button v-if="filter === '待认领'" type="info" @click="onClaim(deviceViewData.device)"><i class="el-icon-check"></i> 认领</el-button>
-          <router-link v-if="deviceViewData.device.pkey==='equipment_on' && filter === '待审核'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">审批</router-link>
-          <router-link v-if="(deviceViewData.device.pkey==='export_device' || deviceViewData.device.pkey==='import_device') && filter === '待审核'" :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">审批</router-link>
+
+          <span v-if="(deviceViewData.device.pkey==='export_device' || deviceViewData.device.pkey==='import_device') && filter === '待审核'">
+            <span v-for="action in deviceViewData.device.action">
+              <router-link v-if="action.type==='submit'" :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
+              <router-link v-else-if="action.type==='back'" :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
+            </span>
+          </span>
+
+          <span v-if="deviceViewData.device.pkey==='equipment_on' && filter === '待审核'">
+            <span v-for="action in deviceViewData.device.action">
+              <router-link v-if="action.type==='submit'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
+              <router-link v-else-if="action.type==='back'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
+            </span>
+          </span>
           <!-- <el-button v-if="filter === '待审核'" type="success" @click="onApprove(deviceViewData.device)"><i class="el-icon-more"></i> 审批</el-button> -->
-          <el-button v-if="filter === '待审核'" type="danger" @click="onReject(deviceViewData.device)"><i class="el-icon-close"></i> 驳回</el-button>
+          <!-- <el-button v-if="filter === '待审核'" type="danger" @click="onReject(deviceViewData.device)"><i class="el-icon-close"></i> 驳回</el-button> -->
         </span>
       </el-dialog>
     </div>
