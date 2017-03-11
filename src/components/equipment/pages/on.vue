@@ -82,22 +82,9 @@
             :data="deviceQueue"
             border>
             <el-table-column
-              prop="name"
-              label="设备"
-              width="120"
-              fixed></el-table-column>
-            <el-table-column
-              prop="creator"
-              label="创建者"></el-table-column>
-            <el-table-column
-              prop="ctime"
-              label="创建时间"></el-table-column>
-            <el-table-column
-              prop="service"
-              label="业务系统"></el-table-column>
-            <el-table-column
-              prop="sn"
-              label="SN"></el-table-column>
+              v-for="item in searchKeyList"
+              :prop="item.id"
+              :label="item.name"></el-table-column>
             <el-table-column
               inline-template
               :context="_self"
@@ -124,6 +111,11 @@
         <el-tabs type="border-card">
           <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
             <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
+            <el-form inline class="form-display-info">
+              <el-form-item v-for="form in searchKeyList" :label="form.name">
+                <span>{{ item.data[form.id] }}</span>
+              </el-form-item>
+            </el-form>
           </el-tab-pane>
         </el-tabs>
       </el-form>
@@ -324,7 +316,7 @@
           })
           data.name = v.name
           data.instanceId = v.instanceId
-          // data.data = v
+          data.data = v
           if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
             this.onShelveForm.data.push(data)
           }

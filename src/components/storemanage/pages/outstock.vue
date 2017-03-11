@@ -41,6 +41,7 @@
             :data="deviceTable"
             border
             v-loading.body="deviceLoading"
+            @selection-change="onSelectRow"
             style="width: 100%; min-width: 460px">
             <el-table-column
               v-if="!edit"
@@ -50,15 +51,6 @@
               v-for="item in searchKeyList"
               :prop="item.id"
               :label="item.name"></el-table-column>
-            <!-- <el-table-column
-              prop="name"
-              label="设备名称"></el-table-column>
-            <el-table-column
-              prop="hostname"
-              label="设备"></el-table-column>
-            <el-table-column
-              prop="status"
-              label="状态"></el-table-column> -->
             <el-table-column
               v-if="edit"
               inline-template
@@ -80,37 +72,67 @@
               :total="deviceTotal">
             </el-pagination>
           </div>
+          <div v-if="!edit">
+            <div class="btn-area">
+              <el-button
+                type="primary"
+                size="small"
+                class="md"
+                :disabled="!selectedDevices.length"
+                @click="onPushInQueue">加入出库队列</el-button>
+            </div>
+            <h5>出库列表</h5>
+            <el-table
+              :data="deviceQueue">
+              <el-table-column
+                v-for="item in searchKeyList"
+                :prop="item.id"
+                :label="item.name"></el-table-column>
+              <el-table-column
+                inline-template
+                :context="_self"
+                label="操作">
+                <template>
+                  <el-button size="small" type="warning" @click="onRemove(row)">移除</el-button>
+                </template>
+              </el-table-column>
+            </el-table>
+            <br>
+            <div class="btn-area">
+              <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="bulkEditAndDeploy">填写出库信息</el-button>
+            </div>
+          </div>
         </el-card>
       </el-col>
     </el-row>
     <el-dialog
-      title="出库操作"
-      v-model="retrieveViewData.visible"
-      size="small"
+      title="填写出库信息"
+      v-model="deployViewData.visible"
+      top="10%"
       :modal="true">
-      <el-row>
-        <el-col :span="20" :offset="2">
-          <el-form label-position="left" inline class="expanded-form">
-            <el-form-item v-for="(value, key) in retrieveViewData.device" v-if="formStructure[key]" :label="formStructure[key].name + '：'">
-              <div v-if="formStructure[key].type === 'FK' || formStructure[key].type === 'FKs' || formStructure[key].type === 'arr'">
-                <span v-for="option in value">{{option.name}}</span>
-              </div>
-              <span v-else>{{value}}</span>
-            </el-form-item>
-          </el-form>
-        </el-col>
-      </el-row>
-      <el-row>
-        <el-col :span="24">
-          <h4 class="sub-title"><i class="el-icon-information"></i> 请填写出库信息：</h4>
-          <el-form ref="outstockForm" :model="outstockForm" :inline="true" label-width="80px">
-            <form-structure-without-title :form-block="exportAttr" :item="outstockForm" :application="true"></form-structure-without-title>
-          </el-form>
-        </el-col>
-      </el-row>
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="retrieveViewData.visible = false">取消</el-button>
-        <el-button type="primary" @click="onConfirmRetrieve(retrieveViewData.device, outstockForm.location)">确认出库</el-button>
+      <el-form label-position="left" label-width="60px" :inline="true" ref="outstockList" :model="outstockList">
+        <el-form-item label="申请人">
+          <el-select
+            v-model="outstockList.application">
+            <el-option v-for="option in applicationList"
+              :label="option.name"
+              :value="option.name"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-tabs type="border-card">
+          <el-tab-pane  v-for="(item, index) in outstockList.data" :key="item.instanceId" :label="item.name">
+            <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
+            <el-form label-position="left" inline class="form-display-info">
+              <el-form-item v-for="form in searchKeyList" :label="form.name">
+                <span>{{ item.data[form.id] }}</span>
+              </el-form-item>
+            </el-form>
+          </el-tab-pane>
+        </el-tabs>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="deployViewData.visible = false">取 消</el-button>
+        <el-button type="primary" @click="onConfirmOutstockList('outstockList')">确 定</el-button>
       </span>
     </el-dialog>
     <el-dialog
@@ -141,15 +163,20 @@
   // import deviceView from '../../_plugins/_deviceView'
   import searchFormStructure from '../../_plugins/_searchFormStructure'
   import formStructureWithoutTitle from '../../_plugins/_formStructureWithoutTitle'
+  import formStructure from '../../_plugins/_formStructure'
 
   export default {
     data () {
       return {
         userInfo: {},
+        applicationList: [],
         edit: '',
         loading: false,
         isAdvanceSearch: true,
-        formStructure: {},
+        formStructure: [{
+          name: '',
+          value: []
+        }],
         outstockForm: {
           application: '',
           status: ''
@@ -176,12 +203,23 @@
           visible: false,
           location: '',
           device: {}
+        },
+        selectedDevices: [],
+        deviceQueue: [],
+        deployViewData: {
+          visible: false
+        },
+        outstockList: {
+          application: '',
+          data: []
         }
       }
     },
 
     created () {
       this.userInfo = window.localStorage
+      this.renderApplicationList() // 渲染申请人列表
+      this.outstockList.application = this.userInfo.userName // 默认申请人为填写人
       this.renderDeviceList()
       this.getLocationList()
       if (this.$route.params.edit) {
@@ -202,6 +240,22 @@
     },
 
     methods: {
+      renderApplicationList () { // 渲染申请人列表
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'USER'
+            // page: "不传则获取该对象所有实例",
+            // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          this.applicationList = res.data.data.list
+        })
+      },
+
       renderExportAttr () { // 渲染出库属性
         const postData = {
           action: 'cmdb/object/export/attr',
@@ -212,6 +266,7 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           this.exportAttr = res.data.data.attr_list
+          this.formStructure[0].value = res.data.data.attr_list
           this.exportAttr.map(item => {
             if (item.value.type === 'arr' || item.value.type === 'FKs') {
               this.$set(this.outstockForm, item.id, [])
@@ -272,6 +327,7 @@
       onDeviceTypeChange () {
         // this.deviceTable = []
         this.renderFormStructure()
+        this.deviceQueue = [] // 清空出库队列
         // this.onSearchDevices()
         this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
         this.renderExportAttr()
@@ -390,18 +446,45 @@
         this._submitMethod(device, location)
       },
 
+      onConfirmOutstockList (formName) {
+        let objectList = this.outstockList.data
+        this.$refs[formName].validate((valid) => {
+          if (valid) {
+            console.log('submit!')
+            const postData = {
+              action: 'runtime/process/instances',
+              method: 'POST',
+              data: {
+                pkey: this.deviceListStructure[this.deviceType],
+                form: {
+                  'object_list': objectList,
+                  'object_id': this.deviceType,
+                  'application': this.outstockList.application
+                }
+              }
+            }
+            this.http.post('', this.parseData(postData)).then((res) => {
+              console.log(res)
+              if (res.statusCode === 406) {
+                this.$message.error(res.errorMessage)
+              } else {
+                this.$message.success('提交成功！')
+                this.$router.replace('/orders')
+              }
+            })
+          } else {
+            this.$message.warning('表单未填写完整！')
+            return false
+          }
+        })
+      },
+
       _submitMethod (device, location) {
-        let pkey = ''
-        if (this.edit) {
-          pkey = 'alter_device'
-        } else {
-          pkey = this.deviceListStructure[this.deviceType]
-        }
         let postData = {
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
-            pkey: pkey,
+            pkey: 'alter_device',
             form: {
               'object_id': this.deviceType,
               'application': this.outstockForm.application,
@@ -441,13 +524,61 @@
           }
         }
         this.deviceViewData.object_id = this.deviceType
+      },
+
+      onSelectRow (val) {
+        this.selectedDevices = val
+      },
+
+      onPushInQueue () {
+        for (const device of this.selectedDevices) {
+          if (!this.deviceQueue.includes(device)) {
+            if (this.selectedDevices.length > 5) {
+              this.$message.warning('上架设备最多 5 个！')
+            } else {
+              this.deviceQueue = [...this.deviceQueue, device]
+            }
+          }
+        }
+      },
+
+      bulkEditAndDeploy () {
+        this.deviceQueue.forEach((v, k) => {
+          let data = {
+            // data: {}
+          }
+          this.formStructure[0].value.map(item => {
+            if (item.value.type === 'arr' || item.value.type === 'FKs') {
+              data[item.id] = []
+            } else if (item.value.type === 'int') {
+              data[item.id] = 0
+            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+              data[item.id] = undefined
+            } else {
+              data[item.id] = ''
+            }
+          })
+          data.name = v.name
+          data.instanceId = v.instanceId
+          data.data = v
+          if (!this.outstockList.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
+            this.outstockList.data.push(data)
+          }
+        })
+        this.deployViewData.visible = true
+      },
+
+      onRemove (device) {
+        const index = this.deviceQueue.indexOf(device)
+        this.deviceQueue.splice(index, 1)
       }
     },
 
     components: {
       // deviceView,
       searchFormStructure,
-      formStructureWithoutTitle
+      formStructureWithoutTitle,
+      formStructure
     }
   }
 </script>
