@@ -8,18 +8,27 @@
   <div class="list-content">
     <el-row class="option-btn">
       <el-button icon="plus" @click="newTaskBtn">新建</el-button>
+      <el-select v-model="selectedProcess" placeholder="请选择流程" @change="getFormList">
+        <el-option
+          v-for="process in processList"
+          :label="process.pname"
+          :value="process.pkey">
+        </el-option>
+      </el-select>
     </el-row>
-    <el-table :data="$store.state.formConfigList">
-      <el-table-column label="流程步骤">
+    <el-table
+      :data="formList"
+      border
+      v-loading.body="formListLoading">
+      <el-table-column
+        label="任务名称"
+        prop="tname"></el-table-column>
+      <el-table-column
+        label="操作"
+        width="240">
         <template scope="scope">
-          <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.formName }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column label="操作">
-        <template scope="scope">
-          <el-button size="small" icon="edit" @click="modifyBtn(scope.row.id)">修改</el-button>
-          <el-button size="small" icon="delete" type="danger" @click="delBtn(scope.row.id)">删除</el-button>
+          <el-button size="small" icon="edit" @click="onEdit(scope.row.id)">修改</el-button>
+          <el-button size="small" icon="delete" type="danger" @click="onDelete(scope.row.id)">删除</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -31,19 +40,55 @@ import { DEL_CONF } from '../../../store/mutation-types'
 
 export default {
   data () {
-    return {}
+    return {
+      selectedProcess: '',
+      processList: [],
+      formList: [],
+      formListLoading: false
+    }
   },
-  activated () {
-    console.log('假装在 拉取 服务器 数据')
+  created () {
+    this.getProcessList()
   },
   methods: {
+    // 获取所有流程，
+    // 供选择框用
+    getProcessList () {
+      const postData = {
+        action: 'activiti/process/definition',
+        method: 'GET',
+        data: {}
+      }
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.processList = res.data.data.list
+        console.log(this.processList)
+      })
+    },
+
+    // 根据所选流程 pkey 获取流程下表单
+    getFormList (pkey) {
+      const postData = {
+        action: 'activiti/task/form',
+        method: 'GET',
+        data: { pkey }
+      }
+      this.formListLoading = true
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.formList = res.data.data.list
+        console.log(this.formList)
+        this.formListLoading = false
+      })
+    },
+
     newTaskBtn () {
       this.$router.push('/part1/editor')
     },
-    modifyBtn (id) {
+
+    onEdit (id) {
       this.$router.push({ path: '/part1/editor', query: { id } })
     },
-    delBtn (id) {
+
+    onDelete (id) {
       this.$store.commit(DEL_CONF, id)
     }
   }

@@ -33,7 +33,7 @@
             <el-form-item v-if="applyForm.applyType !== '新建集群节点'" prop="applicationName" label="应用名">
               <el-input v-model="applyForm.applicationName"></el-input>
             </el-form-item>
-
+            <br>
             <el-form-item>
               <el-button size="small" @click="onAdd('applyForm')" icon="plus">增加服务器</el-button>
             </el-form-item>
