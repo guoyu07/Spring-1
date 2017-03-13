@@ -4,33 +4,34 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3><i class="el-icon-menu"></i> 角色管理</h3>
+          <el-button icon="plus" @click="addedRoleData.visible = true" style="margin-bottom: 12px">新建角色</el-button>
           <el-collapse accordion>
-            <el-collapse-item v-for="role in roleList" :title="role.role">
+            <el-collapse-item v-for="role in roleList" :title="role.name">
               <el-row>
                 <el-col :span="20" :offset="2">
                   <div class="btn-area clear">
-                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="role.user.length"><i class="el-icon-fa-users"></i> 属于{{role.role}}角色的用户 ({{role.user.length}})：</h5>
-                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="!role.user.length"><i class="el-icon-warning"></i> 暂无属于{{role.role}}角色的用户！</h5>
+                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="role.users.length"><i class="el-icon-fa-users"></i> 属于{{role.role}}角色的用户 ({{role.users.length}})：</h5>
+                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="!role.users.length"><i class="el-icon-warning"></i> 暂无属于{{role.name}}角色的用户！</h5>
                     <el-button v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
-                    <el-tooltip content="移除用户" placement="right" class="fr" v-if="role.user.length">
+                    <el-tooltip content="移除用户" placement="right" class="fr" v-if="role.users.length">
                       <el-button
                         icon="minus"
                         type="danger"
                         size="small"
                         :class="{ empty: !isCheckable }"
-                        @click="onDelete(role.id)">{{ isCheckable ? '移除所选' : '' }}</el-button>
+                        @click="onDeleteUser(role.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
                     </el-tooltip>
                     <el-tooltip content="加入用户" placement="left" class="fr">
                       <el-button
                         icon="plus"
                         type="success"
                         size="small"
-                        @click="onAdd(role.id, role.user)">
+                        @click="onAddUser(role.key, role.users)">
                       </el-button>
                     </el-tooltip>
                   </div>
                   <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                    <el-checkbox v-for="user in role.user" :label="user">{{user}}</el-checkbox>
+                    <el-checkbox v-for="user in role.users" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
                   </el-checkbox-group>
                 </el-col>
               </el-row>
@@ -42,10 +43,24 @@
     <el-dialog title="加入用户" size="tiny" v-model="userViewData.visible">
       <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
       <el-checkbox-group v-model="usersToAdd">
-        <el-checkbox v-for="user in userList" :label="user.user" :disabled="user.exsting">{{user.user}}</el-checkbox>
+        <el-checkbox v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
       </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
-        <el-button @click="onAdd" size="small" icon="check" type="success">确认加入</el-button>
+        <el-button @click="onAddUser" size="small" icon="check" type="success">确认加入</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
+      <el-form label-width="72px" class="advance-search-form">
+        <el-form-item label="角色 Key">
+          <el-input v-model="addedRoleData.role.key" placeholder="请填写英文"></el-input>
+        </el-form-item>
+        <el-form-item label="角色名称">
+          <el-input v-model="addedRoleData.role.name" placeholder="请填写中文"></el-input>
+        </el-form-item>
+      </el-form>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="onAddRole(addedRoleData.role)" icon="check" type="info">确认新建</el-button>
       </span>
     </el-dialog>
   </div>
@@ -64,6 +79,13 @@
         userViewData: {
           visible: false,
           roleId: ''
+        },
+        addedRoleData: {
+          visible: false,
+          role: {
+            name: '',
+            key: ''
+          }
         }
       }
     },
@@ -83,24 +105,46 @@
         this.roleLoading = true
         this.http.post('', this.parseData(postData)).then((res) => {
           console.log(res)
-          this.roleList = res.data.data.list
+          this.roleList = res.data.data
           this.roleLoading = false
         })
       },
 
-      getUserList () {},
+      getUserList () {
+        let postData = {
+          action: 'permission/users',
+          method: 'GET',
+          data: {}
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.userList = res.data.data
+          console.log(this.userList)
+        })
+      },
 
-      onAdd (id, users = []) {
+      onAddRole ({ name, key }) {
+        let postData = {
+          action: 'permission/role',
+          method: 'POST',
+          data: { name, key }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.addedRoleData.visible = false
+          this.$message.success(`成功新建角色 ${name}！`)
+          this.getRoleList()
+        })
+      },
+
+      onAddUser (key, users = []) {
         if (!this.userViewData.visible) {
           this.userViewData.visible = true
-          this.userViewData.roleId = id
-          let userList = ['easyops', 'foo', 'bar', 'baz']
-          this.userList = []
-          for (let user of userList) {
+          this.userViewData.roleKey = key
+          console.log(users)
+          for (let user of this.userList) {
             if (users.includes(user)) {
-              this.userList.push({ user, exsting: true })
+              user.exsting = true
             } else {
-              this.userList.push({ user, exsting: false })
+              user.exsting = false
             }
           }
           console.log(this.userList)
@@ -111,17 +155,18 @@
           method: 'POST',
           data: {
             users: this.usersToAdd,
-            id: this.userViewData.roleId
+            key: this.userViewData.roleKey
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          this.$message.success('加入成功！')
+          console.log(res)
           this.userViewData.visible = false
+          this.$message.success('成功添加用户！')
           this.getRoleList()
         })
       },
 
-      onDelete (id) {
+      onDeleteUser (key) {
         if (!this.isCheckable) {
           this.isCheckable = true
           return
@@ -130,6 +175,7 @@
           this.$message.warning('请选择用户！')
           return
         }
+        console.log(this.usersToDelete)
         this.$confirm('此操作将移除该角色下的所选用户，是否继续？', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -140,7 +186,7 @@
             method: 'DELETE',
             data: {
               users: this.usersToDelete,
-              id
+              key
             }
           }
           this.http.post('', this.parseData(postData)).then((res) => {
