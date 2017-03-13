@@ -1,13 +1,13 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card
           class="box-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
           <h3>{{ editInfo.instanceId ? '更改信息' : '入库流程'}}</h3>
-          <el-form label-position="left" label-width="80px">
+          <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
                 <el-radio :disabled="$route.params.id" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>

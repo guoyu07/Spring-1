@@ -1,127 +1,133 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <h3 class="form-title">{{ routerInfo.name }}</h3>
-    <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
-      <el-form-item
-        v-if="routerInfo.step==='approve'"
-        label=""
-        prop="approve"
-        style="width:1%;display:none;">
-        <el-input
-          v-model="assignForm.approve">
-        </el-input>
-      </el-form-item>
-      <el-tabs type="card" @tab-click="handleClick">
-        <el-tab-pane class="m-pane" v-for="(data, index) in applyData.data" :label="data.name">
-          <el-form :inline="true" label-position="left" label-width="100px">
-            <el-form-item v-for="formstru in formStructure" :label="formstru.name">
-              {{data[formstru.id]}}
+    <el-row>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
+          <h3 class="form-title">{{ routerInfo.name }}</h3>
+          <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
+            <el-form-item
+              v-if="routerInfo.step==='approve'"
+              label=""
+              prop="approve"
+              style="width:1%;display:none;">
+              <el-input
+                v-model="assignForm.approve">
+              </el-input>
             </el-form-item>
-            <el-form-item v-if="data.ip" label="IP">
-              {{data.ip}}
-            </el-form-item>
-            <el-form-item v-if="data.ports" label="端口">
-              <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
-            </el-form-item>
-            <el-form-item v-if="data.engineRoom" label="机房">
-              {{data.engineRoom}}
-            </el-form-item>
-            <el-form-item v-if="data.cabinet" label="机柜">
-              {{data.cabinet}}
-            </el-form-item>
-            <el-form-item v-if="data.approve" label="运维主管审批">
-              {{data.approve}}
-            </el-form-item>
-            <el-form-item v-if="data.netline" label="网线连接">
-              {{data.netline?'已安装':'未安装'}}
+            <el-tabs type="card" @tab-click="handleClick">
+              <el-tab-pane class="m-pane" v-for="(data, index) in applyData.data" :label="data.name">
+                <el-form :inline="true" label-position="left" label-width="100px">
+                  <el-form-item v-for="formstru in formStructure" :label="formstru.name">
+                    {{data[formstru.id]}}
+                  </el-form-item>
+                  <el-form-item v-if="data.ip" label="IP">
+                    {{data.ip}}
+                  </el-form-item>
+                  <el-form-item v-if="data.ports" label="端口">
+                    <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
+                  </el-form-item>
+                  <el-form-item v-if="data.engineRoom" label="机房">
+                    {{data.engineRoom}}
+                  </el-form-item>
+                  <el-form-item v-if="data.cabinet" label="机柜">
+                    {{data.cabinet}}
+                  </el-form-item>
+                  <el-form-item v-if="data.approve" label="运维主管审批">
+                    {{data.approve}}
+                  </el-form-item>
+                  <el-form-item v-if="data.netline" label="网线连接">
+                    {{data.netline?'已安装':'未安装'}}
+                  </el-form-item>
+                </el-form>
+                <h5>填写信息</h5>
+                <div v-if="routerInfo.step==='ipinfo'">
+                  <el-form-item label="IP"
+                    :prop="'data.' + index + '.ip'"
+                    :rules="{
+                      required: true, validator: validateIP, trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].ip" placeholder="请填写IP"></el-input>
+                  </el-form-item>
+                  <el-form-item label="端口"
+                    :prop="'data.' + index + '.ports'"
+                    :rules="{
+                      required: true, message: '端口号不能为空', trigger: 'blur, change', type: 'array'
+                    }">
+                    <el-select
+                      v-model="assignForm.data[index].ports"
+                      multiple
+                      filterable
+                      allow-create
+                      placeholder="请填写端口号">
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="机房"
+                    :prop="'data.' + index + '.engineRoom'"
+                    :rules="{
+                      required: true, message: '机房不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].engineRoom" placeholder="请填写机房"></el-input>
+                  </el-form-item>
+                  <el-form-item label="机柜"
+                    :prop="'data.' + index + '.cabinet'"
+                    :rules="{
+                      required: true, message: '机柜不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].cabinet" placeholder="请填写机柜"></el-input>
+                  </el-form-item>
+                </div>
+                <div v-if="routerInfo.step==='netLine'">
+                  <br>
+                  <el-form-item label="IP"
+                    :prop="'data.' + index + '.ip'"
+                    :rules="{
+                      required: true, validator: validateIP, trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].ip"></el-input>
+                  </el-form-item>
+                  <el-form-item label="机房"
+                    :prop="'data.' + index + '.engineRoom'"
+                    :rules="{
+                      required: true, message: '机房不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].engineRoom"></el-input>
+                  </el-form-item>
+                  <el-form-item label="机柜"
+                    :prop="'data.' + index + '.cabinet'"
+                    :rules="{
+                      required: true, message: '机柜不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].cabinet"></el-input>
+                  </el-form-item>
+                  <br>
+                  <el-form-item label="是否完成">
+                    <el-checkbox v-model="assignForm.data[index].netline">准备网线连接</el-checkbox>
+                  </el-form-item>
+                </div>
+                <div v-if="routerInfo.step==='deviceMove'">
+                  <el-form-item label="是否完成" :prop="'data.' + index + '.devicemove'">
+                    <el-checkbox v-model="assignForm.data[index].move">挂牌与搬迁</el-checkbox>
+                    <el-checkbox v-model="assignForm.data[index].osip">安装OS及配置IP</el-checkbox>
+                    <el-checkbox v-model="assignForm.data[index].agent">安装Agent</el-checkbox>
+                    <el-checkbox v-if="data.database_info" v-model="assignForm.data[index].dba">DBA安装数据库</el-checkbox>
+                  </el-form-item>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
+            <el-form-item>
+              <div class="btn-area">
+                <span v-for="action in applyData.action">
+                  <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                </span>
+              </div>
+              <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
+              <el-button @click="onReject(applyData)">驳回</el-button> -->
             </el-form-item>
           </el-form>
-          <h5>填写信息</h5>
-          <div v-if="routerInfo.step==='ipinfo'">
-            <el-form-item label="IP"
-              :prop="'data.' + index + '.ip'"
-              :rules="{
-                required: true, validator: validateIP, trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].ip" placeholder="请填写IP"></el-input>
-            </el-form-item>
-            <el-form-item label="端口"
-              :prop="'data.' + index + '.ports'"
-              :rules="{
-                required: true, message: '端口号不能为空', trigger: 'blur, change', type: 'array'
-              }">
-              <el-select
-                v-model="assignForm.data[index].ports"
-                multiple
-                filterable
-                allow-create
-                placeholder="请填写端口号">
-              </el-select>
-            </el-form-item>
-            <el-form-item label="机房"
-              :prop="'data.' + index + '.engineRoom'"
-              :rules="{
-                required: true, message: '机房不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].engineRoom" placeholder="请填写机房"></el-input>
-            </el-form-item>
-            <el-form-item label="机柜"
-              :prop="'data.' + index + '.cabinet'"
-              :rules="{
-                required: true, message: '机柜不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].cabinet" placeholder="请填写机柜"></el-input>
-            </el-form-item>
-          </div>
-          <div v-if="routerInfo.step==='netLine'">
-            <br>
-            <el-form-item label="IP"
-              :prop="'data.' + index + '.ip'"
-              :rules="{
-                required: true, validator: validateIP, trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].ip"></el-input>
-            </el-form-item>
-            <el-form-item label="机房"
-              :prop="'data.' + index + '.engineRoom'"
-              :rules="{
-                required: true, message: '机房不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].engineRoom"></el-input>
-            </el-form-item>
-            <el-form-item label="机柜"
-              :prop="'data.' + index + '.cabinet'"
-              :rules="{
-                required: true, message: '机柜不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].cabinet"></el-input>
-            </el-form-item>
-            <br>
-            <el-form-item label="是否完成">
-              <el-checkbox v-model="assignForm.data[index].netline">准备网线连接</el-checkbox>
-            </el-form-item>
-          </div>
-          <div v-if="routerInfo.step==='deviceMove'">
-            <el-form-item label="是否完成" :prop="'data.' + index + '.devicemove'">
-              <el-checkbox v-model="assignForm.data[index].move">挂牌与搬迁</el-checkbox>
-              <el-checkbox v-model="assignForm.data[index].osip">安装OS及配置IP</el-checkbox>
-              <el-checkbox v-model="assignForm.data[index].agent">安装Agent</el-checkbox>
-              <el-checkbox v-if="data.database_info" v-model="assignForm.data[index].dba">DBA安装数据库</el-checkbox>
-            </el-form-item>
-          </div>
-        </el-tab-pane>
-      </el-tabs>
-      <el-form-item>
-        <div class="btn-area">
-          <span v-for="action in applyData.action">
-            <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-            <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
-          </span>
-        </div>
-        <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
-        <el-button @click="onReject(applyData)">驳回</el-button> -->
-      </el-form-item>
-    </el-form>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>
