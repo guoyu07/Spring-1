@@ -1,257 +1,263 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <!-- <progress-wrap :progress="4"></progress-wrap> -->
-    <h3 class="form-title">{{ routerInfo.name }}</h3>
-    <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
-      <el-form-item
-        v-if="routerInfo.step==='approve'"
-        label=""
-        prop="approve"
-        style="width:1%;display:none;">
-        <el-input
-          v-model="assignForm.approve">
-        </el-input>
-      </el-form-item>
-      <el-tabs type="card" @tab-click="handleClick">
-        <el-tab-pane v-for="(data, index) in applyData.data" :label="data.name">
-          <h5 v-if="routerInfo.step!=='approve'">填写信息</h5>
-          <div v-if="routerInfo.step==='start'">
-            <form-structure :form-data="formStructureTofill" :item="assignForm.data[index]" :index="index"></form-structure>
-          </div>
-          <div v-if="routerInfo.step==='ipinfo'">
-            <el-form-item label="IP"
-              :prop="'data.' + index + '.ip'"
-              :rules="{
-                required: true, validator: validateIP, trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].ip" placeholder="请填写IP"></el-input>
-            </el-form-item>
-            <el-form-item label="端口"
-              :prop="'data.' + index + '.ports'"
-              :rules="{
-                required: true, message: '端口号不能为空', trigger: 'blur, change', type: 'array'
-              }">
-              <el-select
-                v-model="assignForm.data[index].ports"
-                multiple
-                filterable
-                allow-create
-                placeholder="请填写端口号">
-              </el-select>
-            </el-form-item>
-            <el-form-item label="机房"
-              :prop="'data.' + index + '.engineRoom'"
-              :rules="{
-                required: true, message: '机房不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].engineRoom" placeholder="请填写机房"></el-input>
-            </el-form-item>
-            <el-form-item label="机柜"
-              :prop="'data.' + index + '.cabinet'"
-              :rules="{
-                required: true, message: '机柜不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].cabinet" placeholder="请填写机柜"></el-input>
-            </el-form-item>
-          </div>
-          <div v-if="routerInfo.step==='netLine'">
-            <br>
-            <el-form-item label="IP"
-              :prop="'data.' + index + '.ip'"
-              :rules="{
-                required: true, validator: validateIP, trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].ip"></el-input>
-            </el-form-item>
-            <el-form-item label="机房"
-              :prop="'data.' + index + '.engineRoom'"
-              :rules="{
-                required: true, message: '机房不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].engineRoom"></el-input>
-            </el-form-item>
-            <el-form-item label="机柜"
-              :prop="'data.' + index + '.cabinet'"
-              :rules="{
-                required: true, message: '机柜不能为空', trigger: 'blur'
-              }">
-              <el-input v-model="assignForm.data[index].cabinet"></el-input>
-            </el-form-item>
-            <br>
+    <el-row>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
+          <!-- <progress-wrap :progress="4"></progress-wrap> -->
+          <h3 class="form-title">{{ routerInfo.name }}</h3>
+          <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
             <el-form-item
-              :prop="'data.' + index + '.netline'"
-              label="是否完成"
-              :rules="{
-                type: 'boolean', required: true, message: '网线连接未填写', trigger: 'blur, change'
-              }">
-              <el-checkbox
-                v-model="assignForm.data[index].netline">
-                准备网线连接
-              </el-checkbox>
-            </el-form-item>
-          </div>
-          <div v-if="routerInfo.step==='deviceMove'">
-            <el-form-item label="是否完成"
-              :prop="'data.' + index + '.move.finished'"
-              :rules="{
-                type: 'boolean', required: true, message: '挂牌与搬迁未填写', trigger: 'blur, change'
-              }">
-              <el-checkbox v-model="assignForm.data[index].move.finished">挂牌与搬迁</el-checkbox>
-            </el-form-item>
-            <el-form-item label="参与人"
-              :prop="'data.' + index + '.move.menber'"
-              :rules="{
-                type: 'array', required: true, message: '挂牌与搬迁的参与人未填写', trigger: 'blur, change'
-              }">
-              <el-select
-                multiple
-                filterable
-                v-model="assignForm.data[index].move.menber">
-                <el-option v-for="option in applicationList"
-                  :label="option.name"
-                  :value="option.name"></el-option>
-              </el-select>
-            </el-form-item>
-            <br>
-            <el-form-item label=""
-              :prop="'data.' + index + '.osip.finished'"
-              :rules="{
-                type: 'boolean', required: true, message: '安装OS及配置IP未填写', trigger: 'blur, change'
-              }">
-              <el-checkbox v-model="assignForm.data[index].osip.finished">安装OS及配置IP</el-checkbox>
-            </el-form-item>
-            <el-form-item label="参与人"
-              :prop="'data.' + index + '.osip.menber'"
-              :rules="{
-                type: 'array', required: true, message: '安装OS及配置IP的参与人未填写', trigger: 'blur, change'
-              }">
-              <el-select
-                multiple
-                filterable
-                v-model="assignForm.data[index].osip.menber">
-                <el-option v-for="option in applicationList"
-                  :label="option.name"
-                  :value="option.name"></el-option>
-              </el-select>
-            </el-form-item>
-            <br>
-            <el-form-item label=""
-              :prop="'data.' + index + '.installagent.finished'"
-              :rules="{
-                type: 'boolean', required: true, message: '安装Agent未填写', trigger: 'blur, change'
-              }">
-              <el-checkbox v-model="assignForm.data[index].installagent.finished">安装Agent</el-checkbox>
-            </el-form-item>
-            <el-form-item label="参与人"
-              :prop="'data.' + index + '.installagent.menber'"
-              :rules="{
-                type: 'array', required: true, message: '安装Agent的参与人未填写', trigger: 'blur, change'
-              }">
-              <el-select
-                multiple
-                filterable
-                v-model="assignForm.data[index].installagent.menber">
-                <el-option v-for="option in applicationList"
-                  :label="option.name"
-                  :value="option.name"></el-option>
-              </el-select>
-            </el-form-item>
-            <br>
-            <el-form-item
-              v-if="data.database_info"
+              v-if="routerInfo.step==='approve'"
               label=""
-              :prop="'data.' + index + '.dba.finished'"
-              :rules="{
-                type: 'boolean', required: true, message: 'DBA安装数据库未填写', trigger: 'blur, change'
-              }">
-              <el-checkbox v-model="assignForm.data[index].dba.finished">DBA安装数据库</el-checkbox>
+              prop="approve"
+              style="width:1%;display:none;">
+              <el-input
+                v-model="assignForm.approve">
+              </el-input>
             </el-form-item>
-            <el-form-item label="参与人"
-              :prop="'data.' + index + '.dba.menber'"
-              :rules="{
-                type: 'array', required: true, message: 'DBA安装数据库的参与人未填写', trigger: 'blur, change'
-              }">
-              <el-select
-                multiple
-                filterable
-                v-model="assignForm.data[index].dba.menber">
-                <el-option v-for="option in applicationList"
-                  :label="option.name"
-                  :value="option.name"></el-option>
-              </el-select>
-            </el-form-item>
-          </div>
-          <div v-if="routerInfo.step==='installDB'">
-            <el-form-item label="是否完成"
-              :prop="'data.' + index + '.installdb'"
-              :rules="{
-                type: 'boolean', required: true, message: '安装数据库未填写', trigger: 'blur, change'
-              }">
-              <el-checkbox v-model="assignForm.data[index].installdb">安装数据库</el-checkbox>
-            </el-form-item>
-          </div>
-          <el-collapse v-model="data.activeNames" @change="handleChange">
-            <el-collapse-item title="历史分配信息" name="1">
-              <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
-                <el-form-item v-for="formstru in formStructure" :label="formstru.name">
-                  {{data[formstru.id]}}
-                </el-form-item>
-                <el-form-item v-if="data.ip" label="IP">
-                  {{data.ip}}
-                </el-form-item>
-                <el-form-item v-if="data.ports" label="端口">
-                  <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
-                </el-form-item>
-                <el-form-item v-if="data.engineRoom" label="机房">
-                  {{data.engineRoom}}
-                </el-form-item>
-                <el-form-item v-if="data.cabinet" label="机柜">
-                  {{data.cabinet}}
-                </el-form-item>
-                <el-form-item v-if="data.approve" label="运维主管审批">
-                  {{data.approve}}
-                </el-form-item>
-                <el-form-item v-if="data.netline" label="网线连接">
-                  {{data.netline}}
-                </el-form-item>
-                <el-form-item v-if="data.move" label="挂牌与搬迁">
-                  {{data.move.finished?'已完成':''}}
+            <el-tabs type="card" @tab-click="handleClick">
+              <el-tab-pane v-for="(data, index) in applyData.data" :label="data.name">
+                <h5 v-if="routerInfo.step!=='approve'">填写信息</h5>
+                <div v-if="routerInfo.step==='start'">
+                  <form-structure :form-data="formStructureTofill" :item="assignForm.data[index]" :index="index"></form-structure>
+                </div>
+                <div v-if="routerInfo.step==='ipinfo'">
+                  <el-form-item label="IP"
+                    :prop="'data.' + index + '.ip'"
+                    :rules="{
+                      required: true, validator: validateIP, trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].ip" placeholder="请填写IP"></el-input>
+                  </el-form-item>
+                  <el-form-item label="端口"
+                    :prop="'data.' + index + '.ports'"
+                    :rules="{
+                      required: true, message: '端口号不能为空', trigger: 'blur, change', type: 'array'
+                    }">
+                    <el-select
+                      v-model="assignForm.data[index].ports"
+                      multiple
+                      filterable
+                      allow-create
+                      placeholder="请填写端口号">
+                    </el-select>
+                  </el-form-item>
+                  <el-form-item label="机房"
+                    :prop="'data.' + index + '.engineRoom'"
+                    :rules="{
+                      required: true, message: '机房不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].engineRoom" placeholder="请填写机房"></el-input>
+                  </el-form-item>
+                  <el-form-item label="机柜"
+                    :prop="'data.' + index + '.cabinet'"
+                    :rules="{
+                      required: true, message: '机柜不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].cabinet" placeholder="请填写机柜"></el-input>
+                  </el-form-item>
+                </div>
+                <div v-if="routerInfo.step==='netLine'">
                   <br>
-                  <span class="menber-detail" v-for="menber in data.move.menber">{{menber}}</span>
-                </el-form-item>
-                <el-form-item v-if="data.osip" label="安装OS及配置IP">
-                  {{data.osip.finished?'已完成':''}}
-                </el-form-item>
-                <el-form-item v-if="data.installagent" label="Agent安装">
-                  {{data.installagent.finished?'已完成':''}}
-                </el-form-item>
-                <el-form-item v-if="data.database_info && data.dba" label="DBA安装数据库">
-                  {{data.dba.finished?'已完成':''}}
-                </el-form-item>
-              </el-form>
-            </el-collapse-item>
-            <el-collapse-item title="设备信息" name="2">
-              <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
-                <el-form-item v-for="form in searchKeyList" :label="form.name">
-                  <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
-                  <span>{{data.data[form.id]}}</span>
-                </el-form-item>
-              </el-form>
-            </el-collapse-item>
-          </el-collapse>
-        </el-tab-pane>
-      </el-tabs>
-      <el-form-item>
-        <div class="btn-area">
-          <span v-for="action in applyData.action">
-            <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-            <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
-          </span>
-        </div>
-        <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
-        <el-button @click="onReject(applyData)">驳回</el-button> -->
-      </el-form-item>
-    </el-form>
+                  <el-form-item label="IP"
+                    :prop="'data.' + index + '.ip'"
+                    :rules="{
+                      required: true, validator: validateIP, trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].ip"></el-input>
+                  </el-form-item>
+                  <el-form-item label="机房"
+                    :prop="'data.' + index + '.engineRoom'"
+                    :rules="{
+                      required: true, message: '机房不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].engineRoom"></el-input>
+                  </el-form-item>
+                  <el-form-item label="机柜"
+                    :prop="'data.' + index + '.cabinet'"
+                    :rules="{
+                      required: true, message: '机柜不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].cabinet"></el-input>
+                  </el-form-item>
+                  <br>
+                  <el-form-item
+                    :prop="'data.' + index + '.netline'"
+                    label="是否完成"
+                    :rules="{
+                      type: 'boolean', required: true, message: '网线连接未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox
+                      v-model="assignForm.data[index].netline">
+                      准备网线连接
+                    </el-checkbox>
+                  </el-form-item>
+                </div>
+                <div v-if="routerInfo.step==='deviceMove'">
+                  <el-form-item label="是否完成"
+                    :prop="'data.' + index + '.move.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '挂牌与搬迁未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].move.finished">挂牌与搬迁</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.move.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: '挂牌与搬迁的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].move.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <br>
+                  <el-form-item label=""
+                    :prop="'data.' + index + '.osip.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '安装OS及配置IP未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].osip.finished">安装OS及配置IP</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.osip.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: '安装OS及配置IP的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].osip.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <br>
+                  <el-form-item label=""
+                    :prop="'data.' + index + '.installagent.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '安装Agent未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].installagent.finished">安装Agent</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.installagent.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: '安装Agent的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].installagent.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <br>
+                  <el-form-item
+                    v-if="data.database_info"
+                    label=""
+                    :prop="'data.' + index + '.dba.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: 'DBA安装数据库未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].dba.finished">DBA安装数据库</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.dba.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: 'DBA安装数据库的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].dba.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                </div>
+                <div v-if="routerInfo.step==='installDB'">
+                  <el-form-item label="是否完成"
+                    :prop="'data.' + index + '.installdb'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '安装数据库未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].installdb">安装数据库</el-checkbox>
+                  </el-form-item>
+                </div>
+                <el-collapse v-model="data.activeNames" @change="handleChange">
+                  <el-collapse-item title="历史分配信息" name="1">
+                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
+                      <el-form-item v-for="formstru in formStructure" :label="formstru.name">
+                        {{data[formstru.id]}}
+                      </el-form-item>
+                      <el-form-item v-if="data.ip" label="IP">
+                        {{data.ip}}
+                      </el-form-item>
+                      <el-form-item v-if="data.ports" label="端口">
+                        <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
+                      </el-form-item>
+                      <el-form-item v-if="data.engineRoom" label="机房">
+                        {{data.engineRoom}}
+                      </el-form-item>
+                      <el-form-item v-if="data.cabinet" label="机柜">
+                        {{data.cabinet}}
+                      </el-form-item>
+                      <el-form-item v-if="data.approve" label="运维主管审批">
+                        {{data.approve}}
+                      </el-form-item>
+                      <el-form-item v-if="data.netline" label="网线连接">
+                        {{data.netline}}
+                      </el-form-item>
+                      <el-form-item v-if="data.move" label="挂牌与搬迁">
+                        {{data.move.finished?'已完成':''}}
+                        <br>
+                        <span class="menber-detail" v-for="menber in data.move.menber">{{menber}}</span>
+                      </el-form-item>
+                      <el-form-item v-if="data.osip" label="安装OS及配置IP">
+                        {{data.osip.finished?'已完成':''}}
+                      </el-form-item>
+                      <el-form-item v-if="data.installagent" label="Agent安装">
+                        {{data.installagent.finished?'已完成':''}}
+                      </el-form-item>
+                      <el-form-item v-if="data.database_info && data.dba" label="DBA安装数据库">
+                        {{data.dba.finished?'已完成':''}}
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                  <el-collapse-item title="设备信息" name="2">
+                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
+                      <el-form-item v-for="form in searchKeyList" :label="form.name">
+                        <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
+                        <span>{{data.data[form.id]}}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-tab-pane>
+            </el-tabs>
+            <el-form-item>
+              <div class="btn-area">
+                <span v-for="action in applyData.action">
+                  <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                </span>
+              </div>
+              <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
+              <el-button @click="onReject(applyData)">驳回</el-button> -->
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>

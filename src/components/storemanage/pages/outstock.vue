@@ -1,7 +1,7 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card
           class="box-card"
           v-loading.fullscreen.lock="loading"
@@ -144,9 +144,7 @@
         <el-col :span="24">
           <el-form ref="outstockForm" :model="outstockForm" :inline="true" label-width="80px">
             <form-structure-without-title :form-block="exportAttr" :item="outstockForm" :application="true" :status="true"></form-structure-without-title>
-            <el-form-item>
-              <router-link :to="{ path: `/storemanage/instock/${deviceViewData.device.instanceId}`, query: { object_id: deviceViewData.object_id }}" class="el-button el-button--text">变更更多...</router-link>
-            </el-form-item>
+            <router-link :to="{ path: `/storemanage/instock/${deviceViewData.device.instanceId}`, query: { object_id: deviceViewData.object_id }}" class="el-button el-button--text fr"><i class="el-icon-more"></i> 变更更多</router-link>
           </el-form>
         </el-col>
       </el-row>
@@ -582,13 +580,15 @@
     }
   }
 </script>
-<style scoped>
-  .sub-title {
-    /*text-align: center;*/
-    margin: 15px 0 20px;
+<style lang="less">
+  .outstock {
+    .sub-title {
+      /*text-align: center;*/
+      margin: 15px 0 20px;
+    }
+
+    .el-dialog__body {
+      padding-bottom: 20px;
+    }
   }
-  /*.layout-center {
-    display: flex;
-    justify-content: center;
-  }*/
 </style>

@@ -1,63 +1,69 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <h3 class="form-title">{{ routerInfo.pkey==='export_device'?'出库':'入库'}}{{ routerInfo.name }}</h3>
-    <el-form ref="assignForm" :model="assignForm" :inline="true" label-width="80">
-      <el-row :gutter="20">
-        <el-col
-          v-if="routerInfo.pkey==='export_device'"
-          :span="12">
-          <el-table
-            :data="applyData.object_list"
-            style="width: 100%">
-            <el-table-column
-              prop="name"
-              label="设备名称">
-            </el-table-column>
-            <el-table-column
-              prop="application"
-              label="申请人">
-            </el-table-column>
-            <el-table-column
-              prop="location"
-              label="地点">
-            </el-table-column>
-            <!-- <el-table-column
-              prop="status"
-              label="状态">
-            </el-table-column> -->
-          </el-table>
-        </el-col>
-        <el-col :span="24" v-else>
-          <el-tabs type="border-card" closable @tab-click="handleClick">
-            <el-tab-pane v-for="(item, index) in applyData.object_list" :key="item.id" :label="'设备' + (index + 1)">
-              <div v-for="formblock in formData">
-                <h5>{{formblock.name}}</h5>
-                <el-form-item v-for="form in formblock.value" :label="form.name">
-                  {{item[form.id]}}
-                </el-form-item>
+    <el-row>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
+          <h3 class="form-title">{{ routerInfo.pkey==='export_device'?'出库':'入库'}}{{ routerInfo.name }}</h3>
+          <el-form ref="assignForm" :model="assignForm" :inline="true" class="advance-search-form" label-width="80">
+            <el-row :gutter="20">
+              <el-col
+                v-if="routerInfo.pkey==='export_device'"
+                :span="12">
+                <el-table
+                  :data="applyData.object_list"
+                  style="width: 100%">
+                  <el-table-column
+                    prop="name"
+                    label="设备名称">
+                  </el-table-column>
+                  <el-table-column
+                    prop="application"
+                    label="申请人">
+                  </el-table-column>
+                  <el-table-column
+                    prop="location"
+                    label="地点">
+                  </el-table-column>
+                  <!-- <el-table-column
+                    prop="status"
+                    label="状态">
+                  </el-table-column> -->
+                </el-table>
+              </el-col>
+              <el-col :span="24" v-else>
+                <el-tabs type="border-card" closable @tab-click="handleClick">
+                  <el-tab-pane v-for="(item, index) in applyData.object_list" :key="item.id" :label="'设备' + (index + 1)">
+                    <div v-for="formblock in formData">
+                      <h5>{{formblock.name}}</h5>
+                      <el-form-item v-for="form in formblock.value" :label="form.name">
+                        {{item[form.id]}}
+                      </el-form-item>
+                    </div>
+                  </el-tab-pane>
+                </el-tabs>
+              </el-col>
+            </el-row>
+            <el-form-item>
+              <div class="btn-area">
+                <span v-for="action in applyData.action">
+                  <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                </span>
               </div>
-            </el-tab-pane>
-          </el-tabs>
-        </el-col>
-      </el-row>
-      <el-form-item>
-        <div class="btn-area">
-          <span v-for="action in applyData.action">
-            <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-            <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
-          </span>
-        </div>
-      </el-form-item>
-      <el-form-item
-        v-if="routerInfo.step==='approve'"
-        label=""
-        prop="approve"
-        style="width:1%;display:none;">
-        <el-input
-          v-model="assignForm.approve">
-        </el-input>
-      </el-form-item>
-    </el-form>
+            </el-form-item>
+            <el-form-item
+              v-if="routerInfo.step==='approve'"
+              label=""
+              prop="approve"
+              style="width:1%;display:none;">
+              <el-input
+                v-model="assignForm.approve">
+              </el-input>
+            </el-form-item>
+          </el-form>
+        </el-card>
+      </el-col>
+    </el-row>
   </div>
 </template>
 <script>

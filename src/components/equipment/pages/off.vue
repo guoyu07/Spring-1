@@ -191,10 +191,10 @@
         // } else {
         this.searchKeys.searchKey = ''
         let searchData = this.filterObj(this.searchKeys, isAdvance)
-        if (this.isEmptyObj(searchData)) {
-          this.$message.info('搜索条件不能为空！')
-          return false
-        }
+        // if (this.isEmptyObj(searchData)) {
+        //   this.$message.info('搜索条件不能为空！')
+        //   return false
+        // }
         searchData.status = '使用中'
         searchData.isapply = 'no'
         let postData = {
