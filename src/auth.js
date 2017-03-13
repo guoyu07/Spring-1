@@ -13,7 +13,9 @@ export default {
   login (context, creds, redirect) {
     console.log(creds)
     context.http.post('', creds).then(response => {
-      window.localStorage.setItem('userName', response.data.data.name)
+      window.localStorage.setItem('userName', response.data.data.userId)
+      window.localStorage.setItem('isAdmin', response.data.data.admin)
+      window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)
       this.authenticated = true
       // 跳转至指定目的
       if (redirect) {
@@ -22,7 +24,7 @@ export default {
       // 发射 login 事件
       eventHub.$emit('login')
     }, response => {
-      // error callback
+      return false
     })
   },
 

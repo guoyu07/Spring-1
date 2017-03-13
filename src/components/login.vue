@@ -57,7 +57,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-input placeholder="请输入密码" type="password" icon="edit" auto-complete="off" v-model="credentials.password"></el-input>
+            <el-input placeholder="请输入密码" type="password" icon="fa-lock" auto-complete="off" v-model="credentials.password"></el-input>
           </el-col>
         </el-row>
         <el-row>
