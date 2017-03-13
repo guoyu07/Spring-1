@@ -11,9 +11,7 @@
 		</el-row>
 		<!-- 主体 -->
 		<el-row>
-			<keep-alive>
-				<router-view></router-view>
-			</keep-alive>
+			<router-view></router-view>
 		</el-row>
 	</div>
 </template>

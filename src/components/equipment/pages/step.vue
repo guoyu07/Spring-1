@@ -3,8 +3,9 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
+          <!-- <progress-wrap :progress="4"></progress-wrap> -->
           <h3 class="form-title">{{ routerInfo.name }}</h3>
-          <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
+          <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
             <el-form-item
               v-if="routerInfo.step==='approve'"
               label=""
@@ -15,31 +16,11 @@
               </el-input>
             </el-form-item>
             <el-tabs type="card" @tab-click="handleClick">
-              <el-tab-pane class="m-pane" v-for="(data, index) in applyData.data" :label="data.name">
-                <el-form :inline="true" label-position="left" label-width="100px">
-                  <el-form-item v-for="formstru in formStructure" :label="formstru.name">
-                    {{data[formstru.id]}}
-                  </el-form-item>
-                  <el-form-item v-if="data.ip" label="IP">
-                    {{data.ip}}
-                  </el-form-item>
-                  <el-form-item v-if="data.ports" label="端口">
-                    <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
-                  </el-form-item>
-                  <el-form-item v-if="data.engineRoom" label="机房">
-                    {{data.engineRoom}}
-                  </el-form-item>
-                  <el-form-item v-if="data.cabinet" label="机柜">
-                    {{data.cabinet}}
-                  </el-form-item>
-                  <el-form-item v-if="data.approve" label="运维主管审批">
-                    {{data.approve}}
-                  </el-form-item>
-                  <el-form-item v-if="data.netline" label="网线连接">
-                    {{data.netline?'已安装':'未安装'}}
-                  </el-form-item>
-                </el-form>
-                <h5>填写信息</h5>
+              <el-tab-pane v-for="(data, index) in applyData.data" :label="data.name">
+                <h5 v-if="routerInfo.step!=='approve'">填写信息</h5>
+                <div v-if="routerInfo.step==='start'">
+                  <form-structure :form-data="formStructureTofill" :item="assignForm.data[index]" :index="index"></form-structure>
+                </div>
                 <div v-if="routerInfo.step==='ipinfo'">
                   <el-form-item label="IP"
                     :prop="'data.' + index + '.ip'"
@@ -100,18 +81,167 @@
                     <el-input v-model="assignForm.data[index].cabinet"></el-input>
                   </el-form-item>
                   <br>
-                  <el-form-item label="是否完成">
-                    <el-checkbox v-model="assignForm.data[index].netline">准备网线连接</el-checkbox>
+                  <el-form-item
+                    :prop="'data.' + index + '.netline'"
+                    label="是否完成"
+                    :rules="{
+                      type: 'boolean', required: true, message: '网线连接未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox
+                      v-model="assignForm.data[index].netline">
+                      准备网线连接
+                    </el-checkbox>
                   </el-form-item>
                 </div>
                 <div v-if="routerInfo.step==='deviceMove'">
-                  <el-form-item label="是否完成" :prop="'data.' + index + '.devicemove'">
-                    <el-checkbox v-model="assignForm.data[index].move">挂牌与搬迁</el-checkbox>
-                    <el-checkbox v-model="assignForm.data[index].osip">安装OS及配置IP</el-checkbox>
-                    <el-checkbox v-model="assignForm.data[index].agent">安装Agent</el-checkbox>
-                    <el-checkbox v-if="data.database_info" v-model="assignForm.data[index].dba">DBA安装数据库</el-checkbox>
+                  <el-form-item label="是否完成"
+                    :prop="'data.' + index + '.move.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '挂牌与搬迁未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].move.finished">挂牌与搬迁</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.move.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: '挂牌与搬迁的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].move.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <br>
+                  <el-form-item label=""
+                    :prop="'data.' + index + '.osip.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '安装OS及配置IP未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].osip.finished">安装OS及配置IP</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.osip.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: '安装OS及配置IP的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].osip.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <br>
+                  <el-form-item label=""
+                    :prop="'data.' + index + '.installagent.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '安装Agent未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].installagent.finished">安装Agent</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.installagent.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: '安装Agent的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].installagent.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <br>
+                  <el-form-item
+                    v-if="data.database_info"
+                    label=""
+                    :prop="'data.' + index + '.dba.finished'"
+                    :rules="{
+                      type: 'boolean', required: true, message: 'DBA安装数据库未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].dba.finished">DBA安装数据库</el-checkbox>
+                  </el-form-item>
+                  <el-form-item label="参与人"
+                    :prop="'data.' + index + '.dba.menber'"
+                    :rules="{
+                      type: 'array', required: true, message: 'DBA安装数据库的参与人未填写', trigger: 'blur, change'
+                    }">
+                    <el-select
+                      multiple
+                      filterable
+                      v-model="assignForm.data[index].dba.menber">
+                      <el-option v-for="option in applicationList"
+                        :label="option.name"
+                        :value="option.name"></el-option>
+                    </el-select>
                   </el-form-item>
                 </div>
+                <div v-if="routerInfo.step==='installDB'">
+                  <el-form-item label="是否完成"
+                    :prop="'data.' + index + '.installdb'"
+                    :rules="{
+                      type: 'boolean', required: true, message: '安装数据库未填写', trigger: 'blur, change'
+                    }">
+                    <el-checkbox v-model="assignForm.data[index].installdb">安装数据库</el-checkbox>
+                  </el-form-item>
+                </div>
+                <el-collapse v-model="data.activeNames" @change="handleChange">
+                  <el-collapse-item title="历史分配信息" name="1">
+                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
+                      <el-form-item v-for="formstru in formStructure" :label="formstru.name">
+                        {{data[formstru.id]}}
+                      </el-form-item>
+                      <el-form-item v-if="data.ip" label="IP">
+                        {{data.ip}}
+                      </el-form-item>
+                      <el-form-item v-if="data.ports" label="端口">
+                        <span v-for="port in data.ports" style="margin-right:5px;">{{port}}</span>
+                      </el-form-item>
+                      <el-form-item v-if="data.engineRoom" label="机房">
+                        {{data.engineRoom}}
+                      </el-form-item>
+                      <el-form-item v-if="data.cabinet" label="机柜">
+                        {{data.cabinet}}
+                      </el-form-item>
+                      <el-form-item v-if="data.approve" label="运维主管审批">
+                        {{data.approve}}
+                      </el-form-item>
+                      <el-form-item v-if="data.netline" label="网线连接">
+                        {{data.netline}}
+                      </el-form-item>
+                      <el-form-item v-if="data.move" label="挂牌与搬迁">
+                        {{data.move.finished?'已完成':''}}
+                        <br>
+                        <span class="menber-detail" v-for="menber in data.move.menber">{{menber}}</span>
+                      </el-form-item>
+                      <el-form-item v-if="data.osip" label="安装OS及配置IP">
+                        {{data.osip.finished?'已完成':''}}
+                      </el-form-item>
+                      <el-form-item v-if="data.installagent" label="Agent安装">
+                        {{data.installagent.finished?'已完成':''}}
+                      </el-form-item>
+                      <el-form-item v-if="data.database_info && data.dba" label="DBA安装数据库">
+                        {{data.dba.finished?'已完成':''}}
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                  <el-collapse-item title="设备信息" name="2">
+                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
+                      <el-form-item v-for="form in searchKeyList" :label="form.name">
+                        <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
+                        <span>{{data.data[form.id]}}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                </el-collapse>
               </el-tab-pane>
             </el-tabs>
             <el-form-item>
@@ -132,6 +262,8 @@
 </template>
 <script>
 import searchFormStructure from '../../_plugins/_searchFormStructure'
+import formStructure from '../../_plugins/_formStructure'
+import progressWrap from '../../_plugins/_progress'
 export default {
   data () {
     return {
@@ -152,6 +284,12 @@ export default {
       idcList: [],
       idcGroupList: [],
       formStructure: [],
+      formStructureTofill: [{
+        name: '',
+        value: []
+      }],
+      applicationList: [],
+      userInfo: {},
       validateIP: (rule, value, cb) => {
         const reg = /^(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])$/
         if (value && !value.match(reg)) {
@@ -167,25 +305,28 @@ export default {
     this.deviceType = this.routerInfo.objectid
     this.renderInstanceDetail() // 通过 id 渲染本实例
     this.renderFormStructure()
-    // switch (this.routerInfo.step) {
-    //   // case 'restart':
-    //   //   this.renderIDCList()
-    //   //   this.renderIDCGroupList()
-    //   //   break
-    //   // case 'assignIP':
-    //   //   this.renderIPList()
-    //   //   break
-    //   case 'approve':
-    //     this.assignForm = {'approve': '通过'}
-    //     break
-    //   // case 'judge':
-    //   //   this.assignForm = {'judge': '通过'}
-    //   //   break
-    //   default:
-    //     return false
-    // }
+    this.renderSearchKeyList()
+    if (this.routerInfo.step === 'deviceMove') {
+      this.userInfo = window.localStorage
+      this.renderApplicationList() // 渲染申请人列表
+    }
   },
   methods: {
+    renderApplicationList () { // 渲染申请人列表
+      const postData = {
+        action: 'object/instance/list',
+        method: 'GET',
+        data: {
+          object_id: 'USER'
+          // page: "不传则获取该对象所有实例",
+          // pageSize: "默认30"
+        }
+      }
+      this.http.post('', this.parseData(postData))
+      .then((res) => {
+        this.applicationList = res.data.data.list
+      })
+    },
     renderFormStructure () {
       let postData = {
         action: `cmdb/object/on/attr`,
@@ -194,6 +335,27 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         this.formStructure = res.data.data.attr_list
+        this.formStructureTofill[0].value = this.formStructure
+        if (this.routerInfo.step === 'start') {
+          this.applyData.data.forEach((v, k) => {
+            let data = {}
+            this.formStructureTofill[0].value.map(item => {
+              if (item.value.type === 'arr' || item.value.type === 'FKs') {
+                data[item.id] = []
+              } else if (item.value.type === 'int') {
+                data[item.id] = 0
+              } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                data[item.id] = undefined
+              } else {
+                data[item.id] = ''
+              }
+            })
+            data.name = v.name
+            data.instanceId = v.instanceId
+            data.data = v
+            this.assignForm.data.push(data)
+          })
+        }
       })
     },
     renderIPList () {
@@ -273,12 +435,15 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
-        const taskKeyArr = ['ipinfo', 'approve', 'netLine']
+        const taskKeyArr = ['ipinfo', 'approve', 'netLine', 'deviceMove']
         this.applyData = this.getTask(message, taskKeyArr)
         this.applyData.action = res.data.data.action
         this.applyData.data.forEach((item, k) => {
-          console.dir(item, k)
+          item.activeNames = ['1', '2']
           switch (this.routerInfo.step) {
+            case 'start':
+              break
+
             case 'ipinfo':
               this.assignForm.data.push({
                 ip: '',
@@ -291,7 +456,8 @@ export default {
 
             case 'approve':
               this.assignForm.data.push({
-                approve: '通过'
+                approve: '通过',
+                instanceId: item.instanceId
               })
               break
 
@@ -300,16 +466,37 @@ export default {
                 ip: item.ip,
                 cabinet: item.cabinet,
                 engineRoom: item.engineRoom,
-                netline: false
+                netline: false,
+                instanceId: item.instanceId
               })
               break
 
             case 'deviceMove':
               this.assignForm.data.push({
-                move: false,
-                osip: false,
-                agent: false,
-                dba: false
+                move: {
+                  finished: false,
+                  menber: [this.userInfo.userName]
+                },
+                osip: {
+                  finished: false,
+                  menber: [this.userInfo.userName]
+                },
+                installagent: {
+                  finished: false,
+                  menber: [this.userInfo.userName]
+                },
+                dba: {
+                  finished: false,
+                  menber: [this.userInfo.userName]
+                },
+                instanceId: item.instanceId
+              })
+              break
+
+            case 'installDB':
+              this.assignForm.data.push({
+                installdb: false,
+                instanceId: item.instanceId
               })
               break
 
@@ -343,12 +530,19 @@ export default {
                 }
               }
             }
+            let postform = {}
+            if (this.routerInfo.step === 'start') {
+              postform.object_id = this.routerInfo.objectid
+              postform.object_list = this.assignForm.data
+            } else {
+              postform = this.assignForm
+            }
             const postData = {
               action: 'runtime/task/complete',
               method: 'POST',
               data: {
                 tid: this.routerInfo.id,
-                form: this.assignForm // 通过审批 需要判断一下登录的账号的角色身份
+                form: postform // 通过审批 需要判断一下登录的账号的角色身份
                   // pass: "流程走向控制变量,整型(可选,默认为0)"
               }
             }
@@ -387,7 +581,7 @@ export default {
     },
     onReject (task, action) {
       console.log(task, action.pass)
-      this.$prompt('请输入对「' + task.applicationName + '」的' + action.name + '意见：', '确定' + action.name + '？', {
+      this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
         confirmButtonText: '确定',
         cancelButtonText: '取消'
       }).then(({value}) => {
@@ -408,24 +602,26 @@ export default {
           if (res.status === 200) {
             this.$message.success('已驳回！')
           }
-          this.$router.go(-1) // 跳转历史的上一页
+          this.$router.replace('/orders') // 跳转历史的上一页
         })
       })
     },
     onRemove (row) {
       const index = this.assignForm.data[this.index].machines.indexOf(row)
       this.assignForm.data[this.index].machines.splice(index, 1)
+    },
+    handleChange (index) {
+      console.log(index)
     }
   },
   components: {
-    searchFormStructure
+    searchFormStructure,
+    formStructure,
+    progressWrap
   }
 }
 </script>
 <style lang="less" scoped>
-.el-form-item {
-  margin-bottom: 8px;
-}
 .btn-area {
   margin: 15px 0;
   .el-button {
@@ -445,6 +641,19 @@ export default {
 
 .el-form--inline .el-form-item {
   min-width: 280px;
+}
+
+.menber {
+  font-size: 8px;
+  color: #ccc;
+}
+
+.menber-detail {
+  font-size: 8px;
+  background-color: #dde8f9;
+  padding: 2px;
+  border-radius: 3px;
+  margin-right: 2px;
 }
 
 .el-table {

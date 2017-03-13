@@ -15,7 +15,8 @@
             </el-form-item>
             <el-form-item label="申请人">
               <el-select
-                v-model="application">
+                v-model="application"
+                filterable>
                 <el-option v-for="option in applicationList"
                   :label="option.name"
                   :value="option.name"></el-option>

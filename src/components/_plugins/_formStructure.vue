@@ -52,6 +52,14 @@
           placeholder="选择时间">
         </el-date-picker>
       </el-form-item>
+      <el-form-item label="申请人" v-if="application">
+        <el-select
+          v-model="item.application">
+          <el-option v-for="option in applicationList"
+            :label="option.name"
+            :value="option.name"></el-option>
+        </el-select>
+      </el-form-item>
     </div>
   </div>
 </template>
@@ -61,19 +69,39 @@
     props: {
       item: { type: Object },
       index: { type: Number },
-      formData: { type: Array }
+      formData: { type: Array },
+      application: { type: Boolean }
     },
 
     data () {
       return {
+        userInfo: {},
+        applicationList: []
       }
     },
+    created () {
+      if (this.application) {
+        this.userInfo = window.localStorage
+        this.renderApplicationList() // 渲染申请人列表
+        this.item.application = this.userInfo.userName // 默认申请人为填写人
+      }
+    },
+
     methods: {
-      handleRemove (tab) {
-        this.postData.splice(tab.index, 1)
-      },
-      handleClick (tab, event) {
-        // console.log(tab.index, tab, event)
+      renderApplicationList () { // 渲染申请人列表
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'USER'
+            // page: "不传则获取该对象所有实例",
+            // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          this.applicationList = res.data.data.list
+        })
       }
     }
   }
