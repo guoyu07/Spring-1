@@ -101,13 +101,13 @@ const routes = [{
   }, { // 获取数据，渲染成表单，删
     path: '/select-form',
     component: require('./components/part1/pages/selectForm.vue')
-  }, {
-    path: '/part2',
-    component: require('./components/part2/Index')
   }],
   meta: {
     requiresAuth: true
   }
+}, { // 流程设计 删
+  path: '/part2',
+  component: require('./components/part2/Index')
 }, {
   path: '*',
   component: NotFound
