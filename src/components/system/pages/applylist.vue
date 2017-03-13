@@ -87,10 +87,12 @@
           action: 'runtime/tasks/self',
           method: 'GET',
           data: {
-            processDefinitionKey: 'host_apply'
+            processDefinitionKey: 'host_apply',
+            page: this.currentPage
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
+          this.applyList = []
           res.data.data.data.forEach((list, k) => {
             list.variables.message.map(item => {
               if (item.task_key === 'start') {
@@ -106,7 +108,8 @@
         })
       },
 
-      onPageChange () {
+      onPageChange (val) {
+        this.currentPage = val
         this.getApplyList()
       },
       showDialogReject (row) {
