@@ -59,16 +59,17 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
-  if (rs.status === 401) {
-    auth.logout()
-  }
   NProgress.done()
   NProgress.remove()
   return rs
 }, err => {
+  if (err.response.status === 401) {
+    auth.logout()
+    Vue.prototype.$message.error('权限超时，请重新登录！')
+  } else {
+    Vue.prototype.$message.error(err.response.data.errorMessage)
+  }
   Promise.reject(err)
-  console.log(err.response)
-  new Vue({}).$message.error(err.response.data.errorMessage)
 })
 
 Vue.prototype.http = http
