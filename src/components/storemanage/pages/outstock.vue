@@ -6,7 +6,7 @@
           class="box-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3>{{ edit ? '信息变更' : '出库流程'}}</h3>
+          <h3><i :class="edit ? 'el-icon-fa-edit' : 'el-icon-fa-sign-out'"></i> {{ edit ? '信息变更' : '出库流程'}}</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
@@ -46,7 +46,8 @@
             <el-table-column
               v-if="!edit"
               width="55"
-              type="selection"></el-table-column>
+              type="selection"
+              fixed></el-table-column>
             <el-table-column
               v-for="item in searchKeyList"
               :prop="item.id"
@@ -55,7 +56,8 @@
               v-if="edit"
               inline-template
               :context="_self"
-              label="操作">
+              label="操作"
+              fixed="right">
               <span>
                 <!-- <el-button size="small" @click="onRetrieve(row)" v-if="(row.status !== '已出库') && (!edit)">出库</el-button> -->
                 <el-button size="small" type="warning" @click="onEdit(row)" v-if="edit">变更</el-button>

@@ -1,4 +1,5 @@
 <style lang="less">
+  @import url("../../assets/css/variables");
   @footerH: 36px;
   .footer {
     background-color: #fff;
@@ -11,6 +12,7 @@
     bottom: 0;
     font-size: 12px;
     border-top: 1px solid #e3e3e3;
+    z-index: @flying;
 
     .copy {
       line-height: 2.4;

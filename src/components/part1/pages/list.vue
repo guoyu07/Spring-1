@@ -1,37 +1,41 @@
 <style lang="less">
-  .option-btn {
-    margin: 20px 0 6px;
+  .process-select {
+    margin-bottom: 12px;
   }
 </style>
 
 <template>
   <div class="list-content">
-    <el-row class="option-btn">
-      <el-button icon="plus" @click="newTaskBtn">新建</el-button>
-      <el-select v-model="selectedProcess" placeholder="请选择流程" @change="getFormList">
-        <el-option
-          v-for="process in processList"
-          :label="process.pname"
-          :value="process.pkey">
-        </el-option>
-      </el-select>
+    <el-row>
+      <el-col :md="24" :lg="20">
+        <el-card class="box-card">
+          <h3><i class="el-icon-fa-cogs"></i> 自定义表单</h3>
+          <el-select v-model="selectedProcess" placeholder="请选择流程" @change="getFormList" class="process-select">
+            <el-option
+              v-for="process in processList"
+              :label="process.pname"
+              :value="process.pkey">
+            </el-option>
+          </el-select>
+          <el-table
+            :data="formList"
+            border
+            v-loading.body="formListLoading">
+            <el-table-column
+              label="任务名称"
+              prop="tname"></el-table-column>
+            <el-table-column
+              label="操作"
+              width="240">
+              <template scope="scope">
+                <el-button size="small" icon="edit" @click="onEdit(scope.row.id)">修改</el-button>
+                <el-button size="small" icon="delete" type="danger" @click="onDelete(scope.row.id)">删除</el-button>
+              </template>
+            </el-table-column>
+          </el-table>
+        </el-card>
+      </el-col>
     </el-row>
-    <el-table
-      :data="formList"
-      border
-      v-loading.body="formListLoading">
-      <el-table-column
-        label="任务名称"
-        prop="tname"></el-table-column>
-      <el-table-column
-        label="操作"
-        width="240">
-        <template scope="scope">
-          <el-button size="small" icon="edit" @click="onEdit(scope.row.id)">修改</el-button>
-          <el-button size="small" icon="delete" type="danger" @click="onDelete(scope.row.id)">删除</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
   </div>
 </template>
 
