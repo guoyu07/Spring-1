@@ -68,6 +68,7 @@ http.interceptors.response.use(rs => {
     Vue.prototype.$message.error('权限超时，请重新登录！')
   } else {
     Vue.prototype.$message.error(err.response.data.errorMessage)
+    NProgress.done()
   }
   Promise.reject(err)
 })

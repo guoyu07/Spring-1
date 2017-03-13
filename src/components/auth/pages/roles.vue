@@ -49,38 +49,6 @@
               </template>
             </el-table-column>
           </el-table>
-          <!-- <el-collapse accordion>
-            <el-collapse-item v-for="role in roleList" :title="role.name">
-              <el-row>
-                <el-col :span="20" :offset="2">
-                  <div class="btn-area clear">
-                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="role.users.length"><i class="el-icon-fa-users"></i> 属于{{role.role}}角色的用户 ({{role.users.length}})：</h5>
-                    <h5 class="sub-title fl" style="margin-top: 0;" v-if="!role.users.length"><i class="el-icon-warning"></i> 暂无属于{{role.name}}角色的用户！</h5>
-                    <el-button v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
-                    <el-tooltip content="移除用户" placement="right" class="fr" v-if="role.users.length">
-                      <el-button
-                        icon="minus"
-                        type="danger"
-                        size="small"
-                        :class="{ empty: !isCheckable }"
-                        @click="onDeleteUser(role.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
-                    </el-tooltip>
-                    <el-tooltip content="加入用户" placement="left" class="fr">
-                      <el-button
-                        icon="plus"
-                        type="success"
-                        size="small"
-                        @click="onAddUser(role.key, role.users)">
-                      </el-button>
-                    </el-tooltip>
-                  </div>
-                  <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                    <el-checkbox v-for="user in role.users" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
-                  </el-checkbox-group>
-                </el-col>
-              </el-row>
-            </el-collapse-item>
-          </el-collapse> -->
         </el-card>
       </el-col>
     </el-row>
@@ -90,7 +58,7 @@
         <el-checkbox v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
       </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
-        <el-button @click="onAddUser" size="small" icon="check" type="success">确认加入</el-button>
+        <el-button @click="onAddUser" size="small" icon="check" type="success" :loading="userViewData.loading">确认加入</el-button>
       </span>
     </el-dialog>
 
@@ -104,7 +72,7 @@
         </el-form-item>
       </el-form>
       <span class="dialog-footer" slot="footer">
-        <el-button @click="onEditRole(editRoleData.role)" icon="check" type="info">确认</el-button>
+        <el-button @click="onEditRole(editRoleData.role)" icon="check" type="info" :loading="editRoleData.loading">确认</el-button>
       </span>
     </el-dialog>
 
@@ -118,7 +86,7 @@
         </el-form-item>
       </el-form>
       <span class="dialog-footer" slot="footer">
-        <el-button @click="onAddRole(addedRoleData.role)" icon="check" type="info">确认新建</el-button>
+        <el-button @click="onAddRole(addedRoleData.role)" icon="check" type="info" :loading="addedRoleData.loading">确认新建</el-button>
       </span>
     </el-dialog>
   </div>
@@ -136,10 +104,12 @@
         isCheckable: false,
         userViewData: {
           visible: false,
+          loading: false,
           roleId: ''
         },
         addedRoleData: {
           visible: false,
+          loading: false,
           role: {
             name: '',
             key: ''
@@ -147,6 +117,7 @@
         },
         editRoleData: {
           visible: false,
+          loading: false,
           role: {}
         }
       }
@@ -166,9 +137,10 @@
         }
         this.roleLoading = true
         this.http.post('', this.parseData(postData)).then((res) => {
-          console.log(res)
-          this.roleList = res.data.data
-          this.roleLoading = false
+          if (res.status === 200) {
+            this.roleList = res.data.data
+            this.roleLoading = false
+          }
         })
       },
 
@@ -179,36 +151,49 @@
           data: {}
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          this.userList = res.data.data
-          console.log(this.userList)
+          if (res.status === 200) {
+            this.userList = res.data.data
+            console.log(this.userList)
+          }
         })
       },
 
       onAddRole ({ name, key }) {
+        if (!/^\w+$/.test(key)) {
+          this.$message.error('角色 Key 只可包含英文、数字和下划线！')
+          return
+        }
         let postData = {
           action: 'permission/role',
           method: 'POST',
           data: { name, key }
         }
+        this.addedRoleData.loading = true
         this.http.post('', this.parseData(postData)).then((res) => {
-          this.addedRoleData.visible = false
-          this.$message.success(`成功新建角色 ${name}！`)
-          this.getRoleList()
+          if (res.status === 200) {
+            this.addedRoleData.loading = false
+            this.addedRoleData.visible = false
+            this.$message.success(`成功新建角色 ${name}！`)
+            this.getRoleList()
+          }
         })
       },
 
-      onEditRole () {
+      onEditRole ({ key, name }) {
+        if (!/^\w+$/.test(key)) {
+          this.$message.error('角色 Key 只可包含英文、数字和下划线！')
+          return
+        }
         let postData = {
           action: 'permission/role',
           method: 'PUT',
-          data: {
-            key: this.editRoleData.role.key,
-            name: this.editRoleData.role.name
-          }
+          data: { key, name }
         }
+        this.editRoleData.loading = true
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('修改成功！')
+            this.editRoleData.loading = false
             this.editRoleData.visible = false
             this.getRoleList()
           }
@@ -258,11 +243,14 @@
             key: this.userViewData.roleKey
           }
         }
+        this.userViewData.loading = true
         this.http.post('', this.parseData(postData)).then((res) => {
-          console.log(res)
-          this.userViewData.visible = false
-          this.$message.success('成功添加用户！')
-          this.getRoleList()
+          if (res.status === 200) {
+            this.userViewData.loading = false
+            this.userViewData.visible = false
+            this.$message.success('成功添加用户！')
+            this.getRoleList()
+          }
         })
       },
 
@@ -290,8 +278,11 @@
             }
           }
           this.http.post('', this.parseData(postData)).then((res) => {
-            this.$message.success('移除成功！')
-            this.getRoleList()
+            if (res.status === 200) {
+              this.$message.success('移除成功！')
+              this.isCheckable = false
+              this.getRoleList()
+            }
           })
         }).catch(() => {
           this.usersToDelete = []
