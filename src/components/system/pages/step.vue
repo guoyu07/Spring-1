@@ -374,52 +374,54 @@ export default {
         const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM']
         this.applyData = this.getTaskInfo(message, taskKeyArr)
         this.applyData.action = res.data.data.action
-        this.applyData.data.forEach((item, k) => {
-          if (item.hostType === '虚拟机') {
-            switch (this.routerInfo.step) {
-              case 'createVM':
-                this.assignForm.data.push({
-                  setVirtual: false,
-                  setIP: false,
-                  setAgent: false,
-                  url: ''
-                })
-                break
+        if (this.applyData.data) {
+          this.applyData.data.forEach((item, k) => {
+            if (item.hostType === '虚拟机') {
+              switch (this.routerInfo.step) {
+                case 'createVM':
+                  this.assignForm.data.push({
+                    setVirtual: false,
+                    setIP: false,
+                    setAgent: false,
+                    url: ''
+                  })
+                  break
 
-              case 'restart':
-                this.assignForm.data.push({
-                  idc: '',
-                  idcgroup: ''
-                })
-                break
+                case 'restart':
+                  this.assignForm.data.push({
+                    idc: '',
+                    idcgroup: ''
+                  })
+                  break
 
-              case 'assignIP':
-                this.assignForm.data.push({
-                  ip: ''
-                })
-                break
+                case 'assignIP':
+                  this.assignForm.data.push({
+                    ip: ''
+                  })
+                  break
 
-              default:
-                if (this.assignForm.data) {
-                  this.assignForm.data.push({})
-                }
+                default:
+                  if (this.assignForm.data) {
+                    this.assignForm.data.push({})
+                  }
+              }
+            } else {
+              switch (this.routerInfo.step) {
+                case 'restart':
+                  this.assignForm.data.push({
+                    machines: []
+                  })
+                  break
+
+                default:
+                  if (this.assignForm.data) {
+                    this.assignForm.data.push({})
+                  }
+              }
+              // this.assignForm.data.push(machineData) // 这样对应上是第几个环境才设置了IP
             }
-          } else {
-            switch (this.routerInfo.step) {
-              case 'restart':
-                this.assignForm.data.push({
-                  machines: []
-                })
-                break
-
-              default:
-                if (this.assignForm.data) {
-                  this.assignForm.data.push({})
-                }
-            }
-            // this.assignForm.data.push(machineData) // 这样对应上是第几个环境才设置了IP
-          }
-        })
+          })
+        }
       })
     },
     handleClick (tab, event) {
