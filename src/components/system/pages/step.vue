@@ -3,7 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
-          <h3 class="form-title">{{ routerInfo.name }}</h3>
+          <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
             <el-row :gutter="10">
               <el-form-item label="申请类型">
