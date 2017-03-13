@@ -108,11 +108,11 @@
                   <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
                 </el-form-item>
 
-                <el-form-item
+                <!-- <el-form-item
                   label="资产编号"
                   :prop="'data.' + index + '.assetNumber'">
                   <el-input type="number" v-model="item.assetNumber"></el-input>
-                </el-form-item>
+                </el-form-item> -->
 
                 <el-form-item label="资源分数">
                   {{ item.score = item.cpu * 1 + item.internalStorage * 1 + item.hardDisk / 20 }}
@@ -158,7 +158,7 @@
             cpu: '',
             internalStorage: '',
             hardDisk: '',
-            assetNumber: '',
+            // assetNumber: '',
             score: 0
           }]
         },
@@ -383,7 +383,7 @@
                 cpu: '',
                 internalStorage: '',
                 hardDisk: '',
-                assetNumber: '',
+                // assetNumber: '',
                 score: 0
               })
             } else {
