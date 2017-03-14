@@ -15,7 +15,8 @@
           <el-button :disabled="!isQualified" icon="plus" @click="addedRoleData.visible = true" style="margin-bottom: 12px">新建角色</el-button>
           <el-table
             :data="roleList"
-            border>
+            border
+            @expand="isCheckable = false">
             <el-table-column
               type="expand">
               <template scope="scope">

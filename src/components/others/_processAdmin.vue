@@ -20,6 +20,7 @@
         :value="process.pkey">
       </el-option>
     </el-select>
+    <small class="process-desc"><i class="el-icon-information"></i> 此处仅为你可管理的流程</small>
     <el-table
       :data="taskList"
       border>

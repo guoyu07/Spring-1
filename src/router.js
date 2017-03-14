@@ -86,6 +86,19 @@ const routes = [{
       component: require('./components/auth/pages/roles.vue')
     }]
   }, {
+    path: '/processAdmin',
+    component: require('./components/process/index'),
+    children: [{
+      path: '/processAdmin/processes',
+      component: require('./components/process/pages/processes.vue')
+    }, {
+      path: '/processAdmin/initiation',
+      component: require('./components/process/pages/initiation.vue')
+    }, {
+      path: '/processAdmin/steps',
+      component: require('./components/process/pages/steps.vue')
+    }]
+  }, {
     path: '/orders',
     component: require('./components/others/orders')
   }, { // 定义表单，提交给数据库存储，删
