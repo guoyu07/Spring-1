@@ -28,8 +28,8 @@
               label="操作"
               width="240">
               <template scope="scope">
-                <el-button size="small" icon="edit" @click="onEdit(scope.row.id)">修改</el-button>
-                <el-button size="small" icon="delete" type="danger" @click="onDelete(scope.row.id)">删除</el-button>
+                <el-button size="small" icon="edit" @click="onEdit(scope.row)">修改</el-button>
+                <el-button size="small" icon="delete" type="danger" @click="onDelete(scope.row)">删除</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -40,7 +40,7 @@
 </template>
 
 <script>
-import { DEL_CONF } from '../../../store/mutation-types'
+// import { DEL_CONF } from '../../../store/mutation-types'
 
 export default {
   data () {
@@ -54,6 +54,9 @@ export default {
   created () {
     this.getProcessList()
   },
+  activated () {
+    this.selectedProcess && this.getFormList(this.selectedProcess)
+  },
   methods: {
     // 获取所有流程，
     // 供选择框用
@@ -65,7 +68,6 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         this.processList = res.data.data.list
-        console.log(this.processList)
       })
     },
 
@@ -79,7 +81,6 @@ export default {
       this.formListLoading = true
       this.http.post('', this.parseData(postData)).then((res) => {
         this.formList = res.data.data.list
-        console.log(this.formList)
         this.formListLoading = false
       })
     },
@@ -88,12 +89,12 @@ export default {
       this.$router.push('/part1/editor')
     },
 
-    onEdit (id) {
-      this.$router.push({ path: '/part1/editor', query: { id } })
+    onEdit (row) {
+      this.$router.push({ path: '/part1/editor', query: { row } })
     },
 
     onDelete (id) {
-      this.$store.commit(DEL_CONF, id)
+      // this.$store.commit(DEL_CONF, id)
     }
   }
 }

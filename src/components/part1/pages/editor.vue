@@ -64,14 +64,18 @@ export default {
       formConf: []
     }
   },
-  created () {
-    this.id = this.$route.query.id
-    if (this.id) {
-      // 待修改的
-      const formConfigList = this.$store.state.formConfigList
-      const formConfig = formConfigList.find(item => item.id === this.id)
-      this.formName = formConfig.formName
-      this.formConf = formConfig.formConf
+  activated () {
+    const row = this.$route.query.row
+    // if (this.id) {
+    //   // 待修改的
+    //   const formConfigList = this.$store.state.formConfigList
+    //   const formConfig = formConfigList.find(item => item.id === this.id)
+    //   this.formName = formConfig.formName
+    //   this.formConf = formConfig.formConf
+    // }
+    if (row) {
+      this.formName = row.tname
+      this.formConf = row.form
     }
   },
   methods: {
