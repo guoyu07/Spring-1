@@ -7,6 +7,7 @@
           <el-table
             :data="processList"
             border
+            v-loading.body="processLoading"
             @expand="isCheckable = false">
             <el-table-column type="expand">
               <template scope="scope">
@@ -35,7 +36,7 @@
                             </el-button>
                           </el-tooltip>
                         </div>
-                        <el-checkbox-group v-model="adminUsers.toRemove">
+                        <el-checkbox-group v-model="adminUsers.toRemove" :class="{ uncheckable: !adminUsers.isCheckable }">
                           <el-checkbox v-for="user in scope.row.admin_users" :label="user.userId">{{user.code}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
@@ -65,7 +66,7 @@
                             </el-button>
                           </el-tooltip>
                         </div>
-                        <el-checkbox-group v-model="adminGroups.toRemove">
+                        <el-checkbox-group v-model="adminGroups.toRemove" :class="{ uncheckable: !adminGroups.isCheckable }">
                           <el-checkbox v-for="user in scope.row.admin_groups"></el-checkbox>
                         </el-checkbox-group>
                       </el-col>
@@ -105,10 +106,13 @@
 </template>
 
 <script>
-  // 我真的是 做到烦了
+  // This project
+  // has been really annoying
+  // as fuck
   export default {
     data () {
       return {
+        processLoading: false,
         processList: [],
         userList: [],
         adminGroups: {
@@ -137,6 +141,7 @@
 
     methods: {
       getProcessList () {
+        this.processLoading = true
         let postData = {
           action: 'permission/process',
           method: 'GET',
@@ -145,6 +150,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.processList = res.data.data
+            this.processLoading = false
           }
         })
       },
@@ -185,7 +191,12 @@
         })
       },
 
-      onRemoveAdminUsers () {},
+      onRemoveAdminUsers (key) {
+        if (!this.adminUsers.isCheckable) {
+          this.adminUsers.isCheckable = true
+          return
+        }
+      },
 
       onAddAdminGroups () {},
 

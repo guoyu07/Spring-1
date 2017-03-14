@@ -23,6 +23,7 @@
     <small class="process-desc"><i class="el-icon-information"></i> 此处仅为你可管理的流程</small>
     <el-table
       :data="taskList"
+      v-loading.body="processLoading"
       border>
       <el-table-column
         prop="name"
@@ -113,6 +114,7 @@
   export default {
     data () {
       return {
+        processLoading: false,
         processList: [],
         selectedProcess: '',
         taskList: [],
@@ -148,6 +150,7 @@
       },
 
       getProcessList () {
+        this.processLoading = true
         let postData = {
           action: 'permission/process',
           method: 'GET',
@@ -156,6 +159,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.processList = res.data.data
+            this.processLoading = false
           }
         })
       },
