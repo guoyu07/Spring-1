@@ -15,6 +15,7 @@ export default {
     context.http.post('', creds).then(response => {
       window.localStorage.setItem('userName', response.data.data.userId)
       window.localStorage.setItem('isAdmin', response.data.data.admin)
+      window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)
       window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)
       this.authenticated = true
       // 跳转至指定目的

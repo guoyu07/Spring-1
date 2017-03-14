@@ -25,6 +25,7 @@
       color: #99a9bf;
       padding-top: 7px;
       padding-bottom: 7px;
+      vertical-align: initial;
     }
 
     .el-form-item {
@@ -67,6 +68,7 @@
   <div class="orders">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
+        <process-admin-section v-if="isProcessAdmin"></process-admin-section>
         <el-card class="box-card">
           <div class="tag-container clear">
             <h3><i class="el-icon-document"></i> {{filter}}工单</h3>
@@ -131,7 +133,7 @@
               :context="_self"
               label="操作">
               <template>
-                <el-button size="small" @click="onView(row)">查看</el-button>
+                <el-button size="small" @click="onView(row)">详情</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -186,7 +188,7 @@
             <el-collapse v-if="deviceViewData.device.variables">
               <el-collapse-item v-for="(task, key) in deviceViewData.device.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
                 <el-form label-position="left" inline>
-                  <el-form-item v-if="task.author" label="发起者">
+                  <el-form-item v-if="task.author" label="发起者：">
                     <span>{{task.author}}</span>
                   </el-form-item>
                   <el-form-item v-if="task.operator.name" label="操作者：">
@@ -232,6 +234,8 @@
 </template>
 
 <script>
+  import processAdminSection from './_processAdmin'
+
   export default {
     data () {
       return {
@@ -254,6 +258,12 @@
       }
     },
 
+    computed: {
+      isProcessAdmin () {
+        return (window.localStorage.isProcessAdmin === 'true')
+      }
+    },
+
     created () {
       this.getFilteredList()
     },
@@ -272,7 +282,6 @@
         }
         this.loadingFiltered = true
         this.http.post('', this.parseData(postData)).then((res) => {
-          console.log(res)
           this.filteredList = res.data.data.data
           this.totalFiltered = res.data.data.total
           this.loadingFiltered = false
@@ -349,6 +358,10 @@
         this.deviceViewData.visible = true
         this.deviceViewData.device = task
       }
+    },
+
+    components: {
+      processAdminSection
     }
   }
 </script>
