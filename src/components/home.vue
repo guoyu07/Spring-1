@@ -13,7 +13,7 @@
   }
 </style>
 
-<template>
+<template v-loading.fullscreen.lock="$store.state.ajax_loading">
   <div class="home">
     <header-warp></header-warp>
     <side-warp></side-warp>
@@ -21,7 +21,7 @@
       <router-view></router-view>
     </div>
     <footer-warp></footer-warp>
-  </div>
+  </div>[;]
 </template>
 
 <script>

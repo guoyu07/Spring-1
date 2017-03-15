@@ -7,7 +7,8 @@ Vue.use(Vuex)
 
 const state = {
   isRequesting: false,
-  formConfigList: []
+  formConfigList: [],
+  ajax_loading: false
 }
 
 export default new Vuex.Store({

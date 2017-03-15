@@ -55,10 +55,15 @@ Vue.filter('convertTime', (val) => {
 // interceptors
 http.interceptors.request.use(rq => {
   NProgress.start()
+  // this.$store.dispatch('showLoading')
   return rq
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
+  if (rs.status === 401) {
+    auth.logout()
+  }
+  // new Vue({}).store.dispatch('hideLoading')
   NProgress.done()
   NProgress.remove()
   return rs
@@ -71,6 +76,7 @@ http.interceptors.response.use(rs => {
     NProgress.done()
   }
   Promise.reject(err)
+  new Vue({}).$message.error(err.response.data.errorMessage)
 })
 
 Vue.prototype.http = http
@@ -158,6 +164,18 @@ Vue.prototype.isEmptyObj = obj => { // 判断是不是没有属性的空对象 {
   return true
 }
 
+Vue.prototype.filterDateTime = value => {
+  const date = new Date(value)
+  const cv = s => (s > 9 ? '' : '0') + s
+  return `${date.getFullYear()}-${cv(date.getMonth() + 1)}-${cv(date.getDate())} ` +
+    `${cv(date.getHours())}:${cv(date.getMinutes())}:${cv(date.getSeconds())}`
+}
+
+Vue.prototype.filterDate = value => {
+  const date = new Date(value)
+  const cv = s => (s > 9 ? '' : '0') + s
+  return `${date.getFullYear()}-${cv(date.getMonth() + 1)}-${cv(date.getDate())}`
+}
 // api mocking
 // Vue.http.interceptors.unshift((req, next) => {
 //   const route = apis.find(a => a.url === req.url)

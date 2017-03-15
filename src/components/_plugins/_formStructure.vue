@@ -7,7 +7,7 @@
         :prop="'data.' + index + '.' + formItem.id"
         :label="formItem.name"
         :rules="{
-          type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : 'string')), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
+          type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : ((formItem.value.type === 'FK') ? 'object' : 'string'))), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
         }">
         <el-input
           v-if="formItem.value.type === 'str'"
@@ -33,7 +33,7 @@
           :multiple="formItem.value.type === 'FKs'">
           <el-option v-for="option in formItem.value.object_list"
             :label="option.name"
-            :value="option.instanceId"></el-option>
+            :value="option"></el-option>
         </el-select>
 
         <el-select

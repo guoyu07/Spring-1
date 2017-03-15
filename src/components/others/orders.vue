@@ -184,6 +184,10 @@
                 <span>{{deviceViewData.device.priority}}</span>
               </el-form-item>
             </el-form>
+            <progress-wrap :progress="{
+              task: deviceViewData.device.taskDefinitionKey,
+              pkey: deviceViewData.device.pkey
+              }"></progress-wrap>
             <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.variables">
               <el-collapse-item v-for="(task, key) in deviceViewData.device.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
@@ -212,20 +216,22 @@
           <el-button v-if="filter === '待认领'" type="info" @click="onClaim(deviceViewData.device)"><i class="el-icon-check"></i> 认领</el-button>
 
           <span v-if="(deviceViewData.device.pkey==='export_device' || deviceViewData.device.pkey==='import_device') && filter === '待审核'">
-            <span v-for="action in deviceViewData.device.action">
-              <router-link v-if="action.type==='submit'" :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
-              <router-link v-else-if="action.type==='back'" :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
-            </span>
+            <router-link :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">查看详情</router-link>
           </span>
 
           <span v-if="deviceViewData.device.pkey==='equipment_on' && filter === '待审核'">
-            <span v-for="action in deviceViewData.device.action">
-              <router-link v-if="action.type==='submit'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
-              <router-link v-else-if="action.type==='back'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
-            </span>
+            <router-link :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">查看详情</router-link>
           </span>
-          <!-- <el-button v-if="filter === '待审核'" type="success" @click="onApprove(deviceViewData.device)"><i class="el-icon-more"></i> 审批</el-button> -->
-          <!-- <el-button v-if="filter === '待审核'" type="danger" @click="onReject(deviceViewData.device)"><i class="el-icon-close"></i> 驳回</el-button> -->
+
+          <span v-if="deviceViewData.device.pkey==='host_apply' && filter === '待审核'">
+            <router-link :to="{ path: `/system/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">查看详情</router-link>
+          </span>
+
+          <span v-if="deviceViewData.device.pkey==='alter_device' && filter === '待审核'">
+            <router-link :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`, query: { instanceId: deviceViewData.instanceId }}" class="el-button el-button--success">查看详情</router-link>
+          </span>
+          <!-- v-for="action in deviceViewData.device.action" -->
+          <!-- :class="action.type==='submit'?'el-button--success':'el-button--plain'" -->
         </span>
       </el-dialog>
     </div>
@@ -234,6 +240,7 @@
 </template>
 
 <script>
+  import progressWrap from '../_plugins/_progress'
   import assignSection from './_assignSection'
 
   export default {
@@ -357,11 +364,13 @@
       onView (task) {
         this.deviceViewData.visible = true
         this.deviceViewData.device = task
+        this.deviceViewData.instanceId = this.findTaskMsgR(task.variables.message, ['start']).form.object_list[0].instanceId
       }
     },
 
     components: {
-      assignSection
+      assignSection,
+      progressWrap
     }
   }
 </script>

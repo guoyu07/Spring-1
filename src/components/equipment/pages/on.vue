@@ -98,12 +98,12 @@
           </el-table>
           <br>
           <div class="btn-area">
-            <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="bulkEditAndDeploy">填写上架信息</el-button>
+            <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="onConfirm">确定</el-button>
           </div>
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog
+    <!-- <el-dialog
       title="填写上架信息"
       v-model="deployViewData.visible"
       top="10%"
@@ -124,7 +124,7 @@
         <el-button @click="deployViewData.visible = false">取 消</el-button>
         <el-button type="primary" @click="onConfirm('onShelveForm')">确 定</el-button>
       </span>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 
@@ -299,66 +299,66 @@
         }
       },
 
-      bulkEditAndDeploy () {
-        this.deviceQueue.forEach((v, k) => {
-          let data = {
-            // data: {}
-          }
-          this.formStructure[0].value.map(item => {
-            if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              data[item.id] = []
-            } else if (item.value.type === 'int') {
-              data[item.id] = 0
-            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-              data[item.id] = undefined
-            } else {
-              data[item.id] = ''
-            }
-          })
-          data.name = v.name
-          data.instanceId = v.instanceId
-          data.data = v
-          if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
-            this.onShelveForm.data.push(data)
-          }
-        })
-        this.deployViewData.visible = true
-      },
+      // bulkEditAndDeploy () {
+      //   this.deviceQueue.forEach((v, k) => {
+      //     let data = {
+      //       // data: {}
+      //     }
+      //     this.formStructure[0].value.map(item => {
+      //       if (item.value.type === 'arr' || item.value.type === 'FKs') {
+      //         data[item.id] = []
+      //       } else if (item.value.type === 'int') {
+      //         data[item.id] = 0
+      //       } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+      //         data[item.id] = undefined
+      //       } else {
+      //         data[item.id] = ''
+      //       }
+      //     })
+      //     data.name = v.name
+      //     data.instanceId = v.instanceId
+      //     data.data = v
+      //     if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
+      //       this.onShelveForm.data.push(data)
+      //     }
+      //   })
+      //   this.deployViewData.visible = true
+      // },
 
-      onConfirm (formName) {
-        // this.deployViewData.visible = false
-        let objectList = this.onShelveForm.data
-        // for (const form in this.onShelveForm.data) {
-        //   objectList.push(form)
-        // }
-        // console.log(objectList)
-        this.$refs[formName].validate((valid) => {
-          if (valid) {
-            console.log('submit!')
-            const postData = {
-              action: 'runtime/process/instances',
-              method: 'POST',
-              data: {
-                pkey: this.deviceListStructure[this.deviceType],
-                form: {
-                  'object_list': objectList,
-                  'object_id': this.deviceType
-                }
-              }
+      onConfirm () {
+        // // this.deployViewData.visible = false
+        // let objectList = this.onShelveForm.data
+        // // for (const form in this.onShelveForm.data) {
+        // //   objectList.push(form)
+        // // }
+        // // console.log(objectList)
+        // this.$refs[formName].validate((valid) => {
+          // if (valid) {
+        console.log('submit!')
+        const postData = {
+          action: 'runtime/process/instances',
+          method: 'POST',
+          data: {
+            pkey: this.deviceListStructure[this.deviceType],
+            form: {
+              'object_list': this.deviceQueue,
+              'object_id': this.deviceType
             }
-            this.http.post('', this.parseData(postData)).then((res) => {
-              console.log(res)
-              if (res.statusCode === 406) {
-                this.$message.error(res.errorMessage)
-              } else {
-                this.$message.success('提交成功！')
-                this.$router.replace('/orders')
-              }
-            })
-          } else {
-            this.$message.warning('表单未填写完整！')
-            return false
           }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          console.log(res)
+          if (res.statusCode === 406) {
+            this.$message.error(res.errorMessage)
+          } else {
+            this.$message.success('提交成功！')
+            this.$router.replace('/orders')
+          }
+            // })
+          // } else {
+          //   this.$message.warning('表单未填写完整！')
+          //   return false
+          // }
         })
       },
 
