@@ -1,6 +1,6 @@
 <template>
   <div class="outstock">
-    <el-row>
+    <el-row type="flex" justify="center">
       <el-col :sm="24" :md="24" :lg="20">
         <el-card
           class="box-card"

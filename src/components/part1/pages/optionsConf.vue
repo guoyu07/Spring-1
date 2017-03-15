@@ -13,11 +13,9 @@
 <template>
   <div class="conf-contain">
     <el-row v-for="(op, index) of confArr">
-      <label>标签 :</label>
-      <el-input v-model="op.label" size="mini" placeholder="输入 label" />
-      <label>值 :</label>
-      <el-input v-model="op.value" size="mini" placeholder="输入 value" />
-      <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(index)" />
+      <label>选项 :</label>
+      <el-input v-model="confArr[index]" size="mini" placeholder="输入 label" />
+      <el-button size="mini" icon="delete" type="primary" @click="opDelBtn(op)" />
     </el-row>
     <el-row>
       <el-button size="mini" icon="plus" type="primary" @click="opAddBtn" />
@@ -31,11 +29,11 @@
       confArr: Array
     },
     methods: {
-      opDelBtn (index) {
-        this.confArr.splice(index, 1)
+      opDelBtn (op) {
+        this.confArr.splice(this.confArr.indexOf(op), 1)
       },
       opAddBtn () {
-        this.confArr.push({ label: '', value: '' })
+        this.confArr.push('')
       }
     }
   }

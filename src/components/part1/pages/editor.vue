@@ -24,13 +24,15 @@
     <el-row>
       <label>功能/操作按钮：</label>
       <el-card>
-        <el-button icon="plus" type="primary" size="small">添加</el-button>
+        <el-checkbox-group v-model="checkedActions" @change="actionChange">
+          <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
+        </el-checkbox-group>
       </el-card>
     </el-row>
     <el-row>
       <label>表单 header 字段：</label>
       <el-card>
-        <el-button icon="plus" type="primary" size="small">添加</el-button>
+        <form-conf :config-data="formConfig.form.form.header"></form-conf>
       </el-card>
     </el-row>
     <el-row>
@@ -54,6 +56,13 @@ export default {
   data () {
     return {
       id: '',
+      actions: [
+        { 'name': '确认', 'pass': 0, 'type': 'submit' },
+        { 'name': '撤单', 'pass': -100, 'type': 'revoke' },
+        { 'name': '驳回', 'pass': 1, 'type': 'back' },
+        { 'name': '下载', 'url': '', 'type': 'target' }
+      ],
+      checkedActions: [],
       formConfig: null,
       formName: '',
       formConf: []
@@ -61,6 +70,10 @@ export default {
   },
   activated () {
     this.formConfig = this.$route.query.row || null
+    if (this.formConfig) {
+      // actions
+      this.checkedActions = this.formConfig.form.action.map(item => item.name)
+    }
     // if (this.id) {
     //   // 待修改的
     //   const formConfigList = this.$store.state.formConfigList
@@ -70,25 +83,8 @@ export default {
     // }
   },
   methods: {
-    // 添加一个字段
-    addBtn () {
-      this.formConf.push({
-        type: '',
-        name: '',
-        options: null,
-        required: true,
-        regex: '',
-        unique: true,
-        category: '',
-        need_submit: true
-      })
-    },
-    showMultiConf (itemConf) {
-      if (!itemConf.options) itemConf.options = []
-    },
-    // 删除一个字段
-    delBtn (itemConf) {
-      this.formConf.splice(this.formConf.indexOf(itemConf), 1)
+    actionChange (arr) {
+      this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
     },
     // 确认完成
     submitBtn () {
