@@ -18,7 +18,7 @@
             <el-tabs type="card" @tab-click="handleClick">
               <el-tab-pane v-for="(data, index) in applyData.data" :label="data.name">
                 <h5 v-if="routerInfo.step!=='approve'">填写信息</h5>
-                <div v-if="routerInfo.step==='start'">
+                <div v-if="routerInfo.step==='deviceInfo'">
                   <form-structure :form-data="formStructureTofill" :item="assignForm.data[index]" :index="index"></form-structure>
                 </div>
                 <div v-if="routerInfo.step==='ipinfo'">
@@ -55,6 +55,22 @@
                       required: true, message: '机柜不能为空', trigger: 'blur'
                     }">
                     <el-input v-model="assignForm.data[index].cabinet" placeholder="请填写机柜"></el-input>
+                  </el-form-item>
+                  <!-- objectid === 'router' 网络设备 -->
+                  <el-form-item v-if="routerInfo.objectid==='router'" label="使用用途"
+                    :prop="'data.' + index + '.purpose'"
+                    :rules="{
+                      required: true, message: '使用用途不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].purpose" placeholder="请填写使用用途"></el-input>
+                  </el-form-item>
+                  <!-- objectid === 'storage' 存储设备 -->
+                  <el-form-item v-if="routerInfo.objectid==='storage'" label="使用业务"
+                    :prop="'data.' + index + '.groupservice'"
+                    :rules="{
+                      required: true, message: '使用业务不能为空', trigger: 'blur'
+                    }">
+                    <el-input v-model="assignForm.data[index].groupservice" placeholder="请填写使用业务"></el-input>
                   </el-form-item>
                 </div>
                 <div v-if="routerInfo.step==='netLine'">
@@ -194,7 +210,15 @@
                   </el-form-item>
                 </div>
                 <el-collapse v-model="data.activeNames" @change="handleChange">
-                  <el-collapse-item title="历史分配信息" name="1">
+                  <el-collapse-item title="设备信息" name="2">
+                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
+                      <el-form-item v-for="form in searchKeyList" :label="form.name">
+                        <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
+                        <span>{{data[form.id]}}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                  <el-collapse-item v-if="routerInfo.step!=='deviceInfo'" title="历史分配信息" name="1">
                     <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
                       <el-form-item v-for="formstru in formStructure" :label="formstru.name">
                         {{data[formstru.id]}}
@@ -215,7 +239,7 @@
                         {{data.approve}}
                       </el-form-item>
                       <el-form-item v-if="data.netline" label="网线连接">
-                        {{data.netline}}
+                        {{data.netline?'已完成':''}}
                       </el-form-item>
                       <el-form-item v-if="data.move" label="挂牌与搬迁">
                         {{data.move.finished?'已完成':''}}
@@ -233,27 +257,20 @@
                       </el-form-item>
                     </el-form>
                   </el-collapse-item>
-                  <el-collapse-item title="设备信息" name="2">
-                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
-                      <el-form-item v-for="form in searchKeyList" :label="form.name">
-                        <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
-                        <span>{{data.data[form.id]}}</span>
-                      </el-form-item>
-                    </el-form>
-                  </el-collapse-item>
                 </el-collapse>
               </el-tab-pane>
             </el-tabs>
-            <el-form-item>
+            <!-- <el-form-item> -->
               <div class="btn-area">
                 <span v-for="action in applyData.action">
                   <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
                 </span>
+                <el-button class="fr" :plain="true" type="primary" @click="cancel">取消</el-button>
               </div>
               <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
               <el-button @click="onReject(applyData)">驳回</el-button> -->
-            </el-form-item>
+            <!-- </el-form-item> -->
           </el-form>
         </el-card>
       </el-col>
@@ -336,7 +353,7 @@ export default {
       this.http.post('', this.parseData(postData)).then((res) => {
         this.formStructure = res.data.data.attr_list
         this.formStructureTofill[0].value = this.formStructure
-        if (this.routerInfo.step === 'start') {
+        if (this.routerInfo.step === 'deviceInfo') {
           this.applyData.data.forEach((v, k) => {
             let data = {}
             this.formStructureTofill[0].value.map(item => {
@@ -435,13 +452,13 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then((res) => {
         const message = res.data.data.variables.message
-        const taskKeyArr = ['ipinfo', 'approve', 'netLine', 'deviceMove']
+        const taskKeyArr = ['deviceInfo', 'ipinfo', 'approve', 'netLine', 'deviceMove']
         this.applyData = this.getTask(message, taskKeyArr)
         this.applyData.action = res.data.data.action
         this.applyData.data.forEach((item, k) => {
           item.activeNames = ['1', '2']
           switch (this.routerInfo.step) {
-            case 'start':
+            case 'deviceInfo':
               break
 
             case 'ipinfo':
@@ -452,6 +469,15 @@ export default {
                 engineRoom: '',
                 instanceId: item.instanceId
               })
+              if (this.routerInfo.objectid === 'router') {
+                this.assignForm.data.push({
+                  purpose: ''
+                })
+              } else if (this.routerInfo.objectid === 'storage') {
+                this.assignForm.data.push({
+                  groupservice: ''
+                })
+              }
               break
 
             case 'approve':
@@ -530,19 +556,19 @@ export default {
                 }
               }
             }
-            let postform = {}
-            if (this.routerInfo.step === 'start') {
-              postform.object_id = this.routerInfo.objectid
-              postform.object_list = this.assignForm.data
-            } else {
-              postform = this.assignForm
-            }
+            // let postform = {}
+            // if (this.routerInfo.step === 'deviceInfo') {
+            //   postform.object_id = this.routerInfo.objectid
+            //   postform.object_list = this.assignForm.data
+            // } else {
+            //   postform = this.assignForm
+            // }
             const postData = {
               action: 'runtime/task/complete',
               method: 'POST',
               data: {
                 tid: this.routerInfo.id,
-                form: postform // 通过审批 需要判断一下登录的账号的角色身份
+                form: this.assignForm // 通过审批 需要判断一下登录的账号的角色身份
                   // pass: "流程走向控制变量,整型(可选,默认为0)"
               }
             }
@@ -671,5 +697,8 @@ export default {
       word-wrap: break-word;
     }
   }
+}
+.el-collapse-item__header {
+  font-size: 14px!important;
 }
 </style>

@@ -2,10 +2,20 @@ import {
   BEGIN_REQUEST,
   CEASE_REQUEST,
   ADD_CONF,
-  DEL_CONF
+  DEL_CONF,
+  SHOW_LOADING,
+  HIDE_LOADING
 } from './mutation-types'
 
 export default {
+  [SHOW_LOADING] (state) {
+    state.ajax_loading = true
+  },
+
+  [HIDE_LOADING] (state) {
+    state.ajax_loading = false
+  },
+
   [BEGIN_REQUEST] (state) {
     state.isRequesting = true
   },

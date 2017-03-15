@@ -491,21 +491,24 @@
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          let notice = ''
-          if (this.edit) {
-            notice = `成功更改「${device.name}」`
-            this.deviceViewData.visible = false
-          } else {
-            notice = `已成功将设备「${device.name}」出库至${location}！`
-            this.retrieveViewData.visible = false
+          // console.log(res)
+          if (res) {
+            let notice = ''
+            if (this.edit) {
+              notice = `成功更改「${device.name}」`
+              this.deviceViewData.visible = false
+            } else {
+              notice = `已成功将设备「${device.name}」出库至${location}！`
+              this.retrieveViewData.visible = false
+            }
+            this.$notify({
+              title: '成功',
+              message: notice,
+              type: 'success'
+            })
+            this.deviceViewData.location = ''
+            this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
           }
-          this.$notify({
-            title: '成功',
-            message: notice,
-            type: 'success'
-          })
-          this.deviceViewData.location = ''
-          this.onSearchDevices(this.devicePage, this.isAdvanceSearch)
         })
       },
 

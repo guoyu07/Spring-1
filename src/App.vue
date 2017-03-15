@@ -1,4 +1,4 @@
-<style>
+<style scoped>
   #app * {
     text-shadow: none !important;
   }

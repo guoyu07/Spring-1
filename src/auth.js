@@ -13,7 +13,7 @@ export default {
   login (context, creds, redirect) {
     console.log(creds)
     context.http.post('', creds).then(response => {
-      window.localStorage.setItem('userName', response.data.data.name)
+      window.localStorage.setItem('userName', response.data.data.userId)
       this.authenticated = true
       // 跳转至指定目的
       if (redirect) {

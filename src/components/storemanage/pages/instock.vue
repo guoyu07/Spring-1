@@ -10,7 +10,7 @@
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio :disabled="$route.params.id" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
+                <el-radio :disabled="!!$route.params.id" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="申请人">
@@ -34,7 +34,8 @@
               </el-tabs>
             </el-form>
             <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')" :loading="isSubmitting">确认</el-button>
-            <el-button class="margin-top" @click="resetForm('instockForm')">清空</el-button>
+            <el-button v-if="!$route.params.id" class="margin-top" @click="resetForm('instockForm')">清空</el-button>
+            <el-button v-if="$route.params.id" class="margin-top" @click="cancel">取消</el-button>
           </div>
         </el-card>
       </el-col>
@@ -218,7 +219,11 @@
                 }
               })
             })
-            this.instockForm.data[0] = this.editData
+            for (const item in this.instockForm.data[0]) {
+              this.instockForm.data[0][item] = this.editData[item]
+            }
+            this.instockForm.data[0].instanceId = this.editData.instanceId
+            // this.instockForm.data[0] = this.editData
           }
           console.log(this.instockForm.data[0])
           this.loading = false
@@ -239,6 +244,8 @@
               newData[item.id] = []
             } else if (item.value.type === 'int') {
               newData[item.id] = 0
+            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+              newData[item.id] = undefined
             } else {
               newData[item.id] = ''
             }
@@ -264,14 +271,33 @@
         let objectList = {
           data: []
         }
-        this.instockForm.data.forEach((item, k) => {
+        this.instockForm.data.forEach((instock, k) => {
           objectList.data[k] = {}
-          for (const i in item) {
-            if (item[i]) {
-              objectList.data[k][i] = item[i]
+          for (const i in instock) {
+            if (instock[i]) {
+              if (Array.isArray(instock[i]) && instock[i].length !== 0) {
+                objectList.data[k][i] = instock[i]
+              } else if (!Array.isArray(instock[i])) {
+                objectList.data[k][i] = instock[i]
+                console.log(objectList.data[k][i])
+              }
             }
           }
+          this.formData.map(group => {
+            group.value.map(item => {
+              if (item.value.type === 'date') {
+                if (objectList.data[k][item.id]) {
+                  objectList.data[k][item.id] = this.filterDate(objectList.data[k][item.id])
+                }
+              } else if (item.value.type === 'datetime') {
+                if (objectList.data[k][item.id]) {
+                  objectList.data[k][item.id] = this.filterDateTime(objectList.data[k][item.id])
+                }
+              }
+            })
+          })
         })
+
         this.$refs[formName].validate((valid) => {
           if (valid) {
             console.log('submit!')
@@ -288,32 +314,49 @@
               }
             }
             const updateData = {}
-            for (const i in this.editData) {
-              if (this.editData[i]) {
-                updateData[i] = this.editData[i]
+            // console.log(this.instockForm.data[0])
+            for (const i in this.instockForm.data[0]) {
+              if (this.instockForm.data[0][i]) {
+                updateData[i] = this.instockForm.data[0][i]
               }
             }
-            console.log(updateData)
+            this.formData.map(group => {
+              group.value.map(item => {
+                if (item.value.type === 'date') {
+                  // newData[item.id] = undefined
+                  if (updateData[item.id]) {
+                    updateData[item.id] = this.filterDate(updateData[item.id])
+                  }
+                } else if (item.value.type === 'datetime') {
+                  if (updateData[item.id]) {
+                    updateData[item.id] = this.filterDateTime(updateData[item.id])
+                  }
+                }
+              })
+            })
+            // console.log(updateData)
             const updataInstanceData = {
-              action: 'cmdb/update/instance',
-              method: 'PUT',
+              action: 'runtime/process/instances',
+              method: 'POST',
               data: {
-                object_id: this.deviceType,
-                instanceId: this.instockForm.data[0].instanceId,
-                object_data: updateData
+                pkey: 'alter_device',
+                form: {
+                  'object_list': [updateData],
+                  'object_id': this.deviceType,
+                  'application': this.application
+                }
               }
             }
-            this.isSubmitting = true
             if (this.editInfo.instanceId) {
               this.http.post('', this.parseData(updataInstanceData)).then((res) => {
                 console.log(res)
                 if (res.status === 200) {
                   this.$notify({
                     title: '成功',
-                    message: `变更成功！`,
+                    message: `提交成功！`,
                     type: 'success'
                   })
-                  this.$router.replace('/storemanage/outstock')
+                  this.$router.replace('/storemanage/outstock/edit')
                 } else {
                   this.$notify.error({
                     title: '失败',
@@ -342,6 +385,9 @@
             return false
           }
         })
+      },
+      cancel () {
+        this.$router.go(-1)
       }
     },
 

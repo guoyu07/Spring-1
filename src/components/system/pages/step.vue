@@ -1,7 +1,7 @@
 <template>
   <div id="item1-side" class="wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="20">
+      <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
@@ -179,14 +179,9 @@
                         width="55">
                       </el-table-column>
                       <el-table-column
-                        prop="name"
-                        label="设备"></el-table-column>
-                      <el-table-column
-                        prop="number"
-                        label="编号"></el-table-column>
-                      <el-table-column
-                        prop="other"
-                        label="其他"></el-table-column>
+                        v-for="item in searchKeyList"
+                        :prop="item.id"
+                        :label="item.name"></el-table-column>
                     </el-table>
                     <div class="btn-area">
                       <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至服务器列表</el-button>
@@ -197,14 +192,15 @@
                       border
                       style="width: 100%; min-width: 460px">
                       <el-table-column
-                        prop="name"
-                        label="设备"></el-table-column>
-                      <el-table-column
+                        v-for="item in searchKeyList"
+                        :prop="item.id"
+                        :label="item.name"></el-table-column>
+                      <!-- <el-table-column
                         prop="number"
                         label="编号"></el-table-column>
                       <el-table-column
                         prop="other"
-                        label="其他"></el-table-column>
+                        label="其他"></el-table-column> -->
                       <el-table-column
                         inline-template
                         :context="_self"
@@ -226,16 +222,17 @@
                 </div>
               </el-tab-pane>
             </el-tabs>
-            <el-form-item>
+            <!-- <el-form-item> -->
               <div class="btn-area">
                 <span v-for="action in applyData.action">
                   <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
                 </span>
+                <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
               </div>
               <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
               <el-button @click="onReject(applyData)">驳回</el-button> -->
-            </el-form-item>
+            <!-- </el-form-item> -->
           </el-form>
         </el-card>
       </el-col>
