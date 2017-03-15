@@ -60,13 +60,10 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
-<<<<<<< HEAD
   if (rs.status === 401) {
     auth.logout()
   }
   // new Vue({}).store.dispatch('hideLoading')
-=======
->>>>>>> 7ac4a7133d459fcd7a431bc8d91625af2590d4a7
   NProgress.done()
   NProgress.remove()
   return rs
@@ -79,11 +76,7 @@ http.interceptors.response.use(rs => {
     NProgress.done()
   }
   Promise.reject(err)
-<<<<<<< HEAD
-  // console.log(err.response)
   new Vue({}).$message.error(err.response.data.errorMessage)
-=======
->>>>>>> 7ac4a7133d459fcd7a431bc8d91625af2590d4a7
 })
 
 Vue.prototype.http = http
