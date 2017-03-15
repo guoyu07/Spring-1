@@ -3,7 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
-          <h3>审核流程</h3>
+          <h3><i class="el-icon-fa-gavel icon-lg"></i> 审核流程</h3>
           <el-table
             :data="deviceTable"
             border

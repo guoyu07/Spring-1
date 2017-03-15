@@ -92,9 +92,6 @@ const routes = [{
       path: '/processAdmin/processes',
       component: require('./components/process/pages/processes.vue')
     }, {
-      path: '/processAdmin/initiation',
-      component: require('./components/process/pages/initiation.vue')
-    }, {
       path: '/processAdmin/steps',
       component: require('./components/process/pages/steps.vue')
     }]

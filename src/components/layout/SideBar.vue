@@ -12,7 +12,7 @@
 
 <template>
   <aside class="sibebar">
-    <el-menu default-active="/part1" router="router" class="el-menu-vertical-demo" @open="handleOpen" @close="handleClose" theme="light">
+    <el-menu default-active="/part1" router="router" class="el-menu-vertical-demo" theme="light">
 
       <el-submenu index="/storemanage">
         <template slot="title">仓库管理</template>
@@ -53,9 +53,8 @@
 
       <el-submenu index="/processAdmin">
         <template slot="title">流程管理</template>
-        <el-menu-item index="/processAdmin/processes"><i class="el-icon-fa-circle-o"></i>流程管理员</el-menu-item>
-        <el-menu-item index="/processAdmin/initiation"><i class="el-icon-fa-circle-o-notch"></i>流程启动候选人</el-menu-item>
-        <el-menu-item index="/processAdmin/steps"><i class="el-icon-fa-circle"></i>流程环节候选人</el-menu-item>
+        <el-menu-item index="/processAdmin/processes"><i class="el-icon-fa-circle-o"></i>基本管理</el-menu-item>
+        <el-menu-item index="/processAdmin/steps"><i class="el-icon-fa-circle-o-notch"></i>环节管理</el-menu-item>
       </el-submenu>
 
       <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
@@ -73,14 +72,6 @@
     data () {
       return {
         router: true
-      }
-    },
-    methods: {
-      handleOpen (key, keyPath) {
-        console.log(key, keyPath)
-      },
-      handleClose (key, keyPath) {
-        console.log(key, keyPath)
       }
     }
   }

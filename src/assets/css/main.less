@@ -13,6 +13,10 @@
   -moz-osx-font-smoothing: grayscale;
 }
 
+.icon-lg::before {
+  font-size: 1.2em;
+}
+
 *,
 *::before,
 *::after {
@@ -305,4 +309,10 @@ h1, h2, h3, h4, h5, h6, p {
   padding-left: 6px;
   color: @textColor;
   font-size: 13px;
+}
+
+.uncheckable {
+  .el-checkbox__input {
+    display: none;
+  }
 }

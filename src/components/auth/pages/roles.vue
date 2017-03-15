@@ -326,12 +326,6 @@
     }
   }
 
-  .uncheckable {
-    .el-checkbox__input {
-      display: none;
-    }
-  }
-
   .el-table__expanded-cell {
     .el-button.empty {
       span {
