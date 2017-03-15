@@ -50,7 +50,6 @@
 
 <script>
 import formConf from './formConf'
-import { ADD_CONF, DEL_CONF } from '../../../store/mutation-types'
 
 export default {
   data () {
@@ -63,9 +62,7 @@ export default {
         { 'name': '下载', 'url': '', 'type': 'target' }
       ],
       checkedActions: [],
-      formConfig: null,
-      formName: '',
-      formConf: []
+      formConfig: null
     }
   },
   activated () {
@@ -74,13 +71,6 @@ export default {
       // actions
       this.checkedActions = this.formConfig.form.action.map(item => item.name)
     }
-    // if (this.id) {
-    //   // 待修改的
-    //   const formConfigList = this.$store.state.formConfigList
-    //   const formConfig = formConfigList.find(item => item.id === this.id)
-    //   this.formName = formConfig.formName
-    //   this.formConf = formConfig.formConf
-    // }
   },
   methods: {
     actionChange (arr) {
@@ -88,20 +78,17 @@ export default {
     },
     // 确认完成
     submitBtn () {
-      this.$router.go(-1)
-      // 如果是修改操作，先把旧数据删除
-      if (this.id) {
-        this.$store.commit(DEL_CONF, this.id)
+      const postData = {
+        action: 'activiti/task/form',
+        method: 'POST',
+        data: this.formConfig
       }
-      // 提交数据
-      this.$store.commit(ADD_CONF, {
-        id: +new Date(),
-        formName: this.formName,
-        formConf: this.formConf
+      this.http.post('', this.parseData(postData)).then(res => {
+        if (res.data.statusCode === 200) {
+          this.$router.go(-1)
+          this.$message.success('修改成功！')
+        }
       })
-      // 复位
-      this.formName = ''
-      this.formConf = []
     }
   },
   components: {
