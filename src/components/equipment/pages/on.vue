@@ -6,7 +6,7 @@
           class="box-card step-card"
           v-loading.fullscreen.lock="loading"
           element-loading-text="拼命加载中">
-          <h3><i class="el-icon-fa-upload"></i> 上架流程</h3>
+          <h3><i class="el-icon-fa-upload icon-lg"></i> 上架流程</h3>
           <el-form ref="onForm" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">

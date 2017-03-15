@@ -71,7 +71,7 @@
         <asignn-section v-if="isProcessAdmin"></asignn-section>
         <el-card class="box-card">
           <div class="tag-container clear">
-            <h3><i class="el-icon-document"></i> {{filter}}工单</h3>
+            <h3><i class="el-icon-date"></i> {{filter}}工单</h3>
             <el-radio-group v-model="filter" @change="onFilterChange" size="small" class="fr">
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
