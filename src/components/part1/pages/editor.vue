@@ -38,7 +38,7 @@
     <el-row>
       <label>表单 body 字段：</label>
       <el-card>
-        <el-button icon="plus" type="primary" size="small">添加</el-button>
+        <form-conf :config-data="formConfig.form.form.body.attr_list"></form-conf>
       </el-card>
     </el-row>
     <el-row>

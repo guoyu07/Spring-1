@@ -7,6 +7,9 @@
     .el-select {
       width: 120px;
     }
+    .el-collapse {
+      margin-bottom: 10px;
+    }
   }
 </style>
 
