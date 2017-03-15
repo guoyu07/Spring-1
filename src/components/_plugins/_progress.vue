@@ -3,9 +3,11 @@
     <div class="progressWarp">
       <ul class="progress-bar">
         <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < steping }, { ing: item.value === steping }]">
-          <div v-for="(step, stepindex) in item.list" class="detail">
-            {{ step.tname }}
-            <p v-if="step.time">{{ step.time }}</p>
+          <div class="detail">
+            <div v-for="(step, stepindex) in item.list">
+              {{ step.tname }}
+              <p v-if="step.time">{{ step.time }}</p>
+            </div>
           </div>
         </li>
       </ul>
@@ -63,6 +65,59 @@
                 tname: '设备搬迁/挂牌及配置'
               }]
             }
+          ],
+          import_device: [
+            {
+              value: 1,
+              list: [{
+                tkey: 'start',
+                tname: '填写入库单'
+              }]
+            },
+            {
+              value: 2,
+              list: [{
+                tkey: 'approve',
+                tname: '审批'
+              }]
+            }
+          ],
+          host_apply: [
+            {
+              value: 1,
+              list: [{
+                tkey: 'start',
+                tname: '填写入库单'
+              }]
+            },
+            {
+              value: 2,
+              list: [{
+                tkey: 'restart',
+                tname: '准备服务器资源'
+              }]
+            },
+            {
+              value: 3,
+              list: [{
+                tkey: 'approve',
+                tname: '资源审批'
+              }]
+            },
+            {
+              value: 4,
+              list: [{
+                tkey: 'assignIP',
+                tname: '分配虚拟机IP'
+              }]
+            },
+            {
+              value: 5,
+              list: [{
+                tkey: 'createVM',
+                tname: '创建虚拟机'
+              }]
+            }
           ]
         }
       }
@@ -74,7 +129,7 @@
           action: 'activiti/task/form',
           method: 'GET',
           data: {
-            pkey: 'equipment_off',
+            pkey: 'host_apply',
             // tkey: "流程任务key(POST/GET[GET可不填此参数])",
             form: {}
           }
@@ -121,8 +176,8 @@
     position: relative;
     height: 3px;
     width: 100%;
-    margin-top: 50px;
-    /*margin: 116px 0 28px;*/
+    /*margin-top: 50px;*/
+    margin: 100px 0 28px;
     width: 100%;
     /*min-width: 627px;*/
     box-shadow: none!important;
@@ -165,7 +220,7 @@
 
   .progress-bar li {
     list-style: none;
-    width: 100px;
+    width: 160px;
     margin: 10px;
     position: relative;
   }
@@ -173,22 +228,23 @@
   .progress-bar li .detail {
     width: 20px;
     height: auto;
-    /*height: 30px;*/
-    /*position: absolute;
+    height: 30px;
+    position: absolute;
     top: 0;
-    left: 0;*/
-    /*transform: rotate(-45deg);*/
+    left: 0;
+    z-index: 2;
+    transform: rotate(-35deg);
     transform-origin: -155% -155%;
     white-space: nowrap;
     color: #696969;
     text-align: center;
   }
 
-  .progressWarp ul.progress-bar li .detail:before{
+  .progressWarp ul.progress-bar li:before{
     content: '';
     position: absolute;
     top: -8px;
-    left: 50%;
+    left: 8px;
     display: block;
     margin-top: -6px;
     width: 12px;
@@ -215,7 +271,7 @@
     color: #00c0ef;
   }
 
-  .progressWarp ul.progress-bar li.active .detail:before {
+  .progressWarp ul.progress-bar li.active:before {
     background-color: #00c0ef;
     border-color: #fff;
   }
@@ -225,7 +281,7 @@
     color: #13ce66;
   }
 
-  .progressWarp ul.progress-bar li.ing .detail:before{
+  .progressWarp ul.progress-bar li.ing:before{
     background-color: #13ce66;
     animation: ing 2s infinite;
   }
