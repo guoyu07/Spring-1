@@ -60,17 +60,30 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
+<<<<<<< HEAD
   if (rs.status === 401) {
     auth.logout()
   }
   // new Vue({}).store.dispatch('hideLoading')
+=======
+>>>>>>> 7ac4a7133d459fcd7a431bc8d91625af2590d4a7
   NProgress.done()
   NProgress.remove()
   return rs
 }, err => {
+  if (err.response.status === 401) {
+    auth.logout()
+    Vue.prototype.$message.error('权限超时，请重新登录！')
+  } else {
+    Vue.prototype.$message.error(err.response.data.errorMessage)
+    NProgress.done()
+  }
   Promise.reject(err)
+<<<<<<< HEAD
   // console.log(err.response)
   new Vue({}).$message.error(err.response.data.errorMessage)
+=======
+>>>>>>> 7ac4a7133d459fcd7a431bc8d91625af2590d4a7
 })
 
 Vue.prototype.http = http

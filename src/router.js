@@ -86,6 +86,16 @@ const routes = [{
       component: require('./components/auth/pages/roles.vue')
     }]
   }, {
+    path: '/processAdmin',
+    component: require('./components/process/index'),
+    children: [{
+      path: '/processAdmin/processes',
+      component: require('./components/process/pages/processes.vue')
+    }, {
+      path: '/processAdmin/steps',
+      component: require('./components/process/pages/steps.vue')
+    }]
+  }, {
     path: '/orders',
     component: require('./components/others/orders')
   }, { // 定义表单，提交给数据库存储，删
@@ -101,13 +111,13 @@ const routes = [{
   }, { // 获取数据，渲染成表单，删
     path: '/select-form',
     component: require('./components/part1/pages/selectForm.vue')
-  }, {
-    path: '/part2',
-    component: require('./components/part2/Index')
   }],
   meta: {
     requiresAuth: true
   }
+}, { // 流程设计 删
+  path: '/part2',
+  component: require('./components/part2/Index')
 }, {
   path: '*',
   component: NotFound

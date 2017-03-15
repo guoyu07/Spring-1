@@ -14,37 +14,33 @@
 </style>
 
 <template>
-  <div class="editor-content">
+  <div class="editor-content" v-if="formConfig">
     <el-row>
       <label>表单名称：</label>
-      <el-input v-model="formName" placeholder="请输入表单名称"></el-input>
-      <el-button icon="plus" type="primary" @click="addBtn">添加表单字段</el-button>
+      <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
+      <label>表单key：</label>
+      <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
     </el-row>
-    <el-collapse v-if="formConf.length">
-      <el-collapse-item v-for="itemConf of formConf" :title="itemConf.name">
-        <el-checkbox v-model="itemConf.required">必选项</el-checkbox>
-        <label>字段名称：</label>
-        <el-input v-model="itemConf.name"></el-input>
-        <label>表单形式：</label>
-        <el-select v-model="itemConf.type">
-          <el-option label="字符串" value="str"></el-option>
-          <el-option label="长文本" value="strArea"></el-option>
-          <el-option label="数字" value="int"></el-option>
-          <el-option label="数组" value="arr"></el-option>
-          <el-option label="日期" value="date"></el-option>
-          <el-option label="时间" value="datetime"></el-option>
-          <el-option label="下拉单选" value="enum"></el-option>
-          <el-option label="下拉多选" value="enum/multi"></el-option>
-        </el-select>
-        <!--暂不细分 动态获取选项-->
-        <el-popover v-if="['enum', 'enum/multi'].indexOf(itemConf.type) !== -1"
-          placement="bottom" title="" trigger="click" @show="showMultiConf(itemConf)">
-          <el-button slot="reference">配置选项</el-button>
-          <multi-conf :conf-arr="itemConf.options"></multi-conf>
-        </el-popover>
-        <el-button type="danger" icon="delete" @click="delBtn(itemConf)"></el-button>
-      </el-collapse-item>
-    </el-collapse>
+    <el-row>
+      <label>功能/操作按钮：</label>
+      <el-card>
+        <el-checkbox-group v-model="checkedActions" @change="actionChange">
+          <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
+        </el-checkbox-group>
+      </el-card>
+    </el-row>
+    <el-row>
+      <label>表单 header 字段：</label>
+      <el-card>
+        <form-conf :config-data="formConfig.form.form.header"></form-conf>
+      </el-card>
+    </el-row>
+    <el-row>
+      <label>表单 body 字段：</label>
+      <el-card>
+        <form-conf :config-data="formConfig.form.form.body.attr_list"></form-conf>
+      </el-card>
+    </el-row>
     <el-row>
       <el-button icon="fa-check" @click="submitBtn">确认完成</el-button>
       <el-button icon="fa-undo" @click="$router.go(-1)">取消</el-button>
@@ -53,47 +49,42 @@
 </template>
 
 <script>
-import multiConf from './multiConf'
+import formConf from './formConf'
 import { ADD_CONF, DEL_CONF } from '../../../store/mutation-types'
 
 export default {
   data () {
     return {
       id: '',
+      actions: [
+        { 'name': '确认', 'pass': 0, 'type': 'submit' },
+        { 'name': '撤单', 'pass': -100, 'type': 'revoke' },
+        { 'name': '驳回', 'pass': 1, 'type': 'back' },
+        { 'name': '下载', 'url': '', 'type': 'target' }
+      ],
+      checkedActions: [],
+      formConfig: null,
       formName: '',
       formConf: []
     }
   },
-  created () {
-    this.id = this.$route.query.id
-    if (this.id) {
-      // 待修改的
-      const formConfigList = this.$store.state.formConfigList
-      const formConfig = formConfigList.find(item => item.id === this.id)
-      this.formName = formConfig.formName
-      this.formConf = formConfig.formConf
+  activated () {
+    this.formConfig = this.$route.query.row || null
+    if (this.formConfig) {
+      // actions
+      this.checkedActions = this.formConfig.form.action.map(item => item.name)
     }
+    // if (this.id) {
+    //   // 待修改的
+    //   const formConfigList = this.$store.state.formConfigList
+    //   const formConfig = formConfigList.find(item => item.id === this.id)
+    //   this.formName = formConfig.formName
+    //   this.formConf = formConfig.formConf
+    // }
   },
   methods: {
-    // 添加一个字段
-    addBtn () {
-      this.formConf.push({
-        type: '',
-        name: '',
-        options: null,
-        required: true,
-        regex: '',
-        unique: true,
-        category: '',
-        need_submit: true
-      })
-    },
-    showMultiConf (itemConf) {
-      if (!itemConf.options) itemConf.options = []
-    },
-    // 删除一个字段
-    delBtn (itemConf) {
-      this.formConf.splice(this.formConf.indexOf(itemConf), 1)
+    actionChange (arr) {
+      this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
     },
     // 确认完成
     submitBtn () {
@@ -114,7 +105,7 @@ export default {
     }
   },
   components: {
-    multiConf
+    formConf
   }
 }
 </script>

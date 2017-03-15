@@ -6,7 +6,7 @@
         class="box-card"
         v-loading.fullscreen.lock="loading"
         element-loading-text="拼命加载中">
-          <h3>下架流程</h3>
+          <h3><i class="el-icon-fa-download icon-lg"></i> 下架流程</h3>
           <el-form ref="offForm" label-width="100px">
             <el-form-item label="设备类型">
               <el-radio-group v-model="deviceType">
@@ -42,6 +42,7 @@
             style="width: 100%; min-width: 460px">
             <el-table-column
               type="selection"
+              fixed
               width="55">
             </el-table-column>
             <el-table-column
