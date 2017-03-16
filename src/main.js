@@ -55,7 +55,7 @@ Vue.filter('convertTime', (val) => {
 // interceptors
 http.interceptors.request.use(rq => {
   NProgress.start()
-  // this.$store.dispatch('showLoading')
+  store.dispatch('show_loading')
   return rq
 }, err => Promise.reject(err))
 
@@ -63,7 +63,7 @@ http.interceptors.response.use(rs => {
   if (rs.status === 401) {
     auth.logout()
   }
-  // new Vue({}).store.dispatch('hideLoading')
+  store.dispatch('hide_loading')
   NProgress.done()
   NProgress.remove()
   return rs

@@ -213,8 +213,14 @@
                   <el-collapse-item title="设备信息" name="2">
                     <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
                       <el-form-item v-for="form in searchKeyList" :label="form.name">
-                        <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
-                        <span>{{data[form.id]}}</span>
+                        <span v-if="form.value.type==='FK'">{{Object.assign(data[form.id], {}).name}}</span>
+                        <span v-else-if="form.value.type==='FKs'">
+                          <span v-for="span in data[form.id]">{{span.name}}</span>
+                        </span>
+                        <span v-else-if="form.value.type==='arr'">
+                          <span v-for="span in data[form.id]">{{span}}</span>
+                        </span>
+                        <span v-else>{{data[form.id]}}</span>
                       </el-form-item>
                     </el-form>
                   </el-collapse-item>
