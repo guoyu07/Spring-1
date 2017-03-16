@@ -42,6 +42,30 @@
       </el-card>
     </el-row>
     <el-row>
+      <label>表单 body 个数：</label>
+      <el-select v-model="bodyCountType" @change="countConfig">
+        <el-option label="static" value="static"></el-option>
+        <el-option label="header" value="header"></el-option>
+        <el-option label="message" value="message"></el-option>
+      </el-select>
+      <el-popover v-if="bodyCountType === 'static'"
+        placement="right" trigger="click">
+        <h5>最大数：</h5>
+        <el-input-number size="small" :min="1" v-model="formConfig.form.form.body.count.max" />
+        <el-button slot="reference">配置</el-button>
+      </el-popover>
+      <el-popover v-if="bodyCountType === 'header'"
+        placement="right" trigger="click">
+        配置一个 header 中的字段
+        <el-button slot="reference">配置</el-button>
+      </el-popover>
+      <el-popover v-if="bodyCountType === 'message'"
+        placement="right" trigger="click">
+        配置一个 message（前面步骤所填） 中的字段
+        <el-button slot="reference">配置</el-button>
+      </el-popover>
+    </el-row>
+    <el-row>
       <el-button icon="fa-check" @click="submitBtn">确认完成</el-button>
       <el-button icon="fa-undo" @click="$router.go(-1)">取消</el-button>
     </el-row>
@@ -62,6 +86,7 @@ export default {
         { 'name': '下载', 'url': '', 'type': 'target' }
       ],
       checkedActions: [],
+      bodyCountType: '',
       formConfig: null
     }
   },
@@ -73,8 +98,26 @@ export default {
     }
   },
   methods: {
+    // 选择功能 action
     actionChange (arr) {
       this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
+    },
+    countConfig (type) {
+      let count = null
+      switch (type) {
+        case 'static':
+          count = { type: 'static', min: 1, max: 1 }
+          break
+        case 'header':
+          count = { type: 'header', keyPath: '' }
+          break
+        case 'message':
+          count = { type: 'message', keyPath: '' }
+          break
+        default:
+          count = {}
+      }
+      this.formConfig.form.form.body.count = count
     },
     // 确认完成
     submitBtn () {

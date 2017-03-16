@@ -17,7 +17,7 @@
   <div class="form-config">
     <el-collapse v-if="configData.length">
       <el-collapse-item v-for="itemConf of configData" :title="itemConf.name">
-        <el-checkbox v-model="itemConf.required">必选</el-checkbox>
+        <el-checkbox v-model="itemConf.required">必填</el-checkbox>
         <label>名称：</label>
         <el-input v-model="itemConf.name"></el-input>
         <label>属性名：</label>
@@ -35,7 +35,7 @@
         </el-select>
         <!--暂不细分 动态获取选项-->
         <el-popover v-if="['enum', 'enum/multi'].indexOf(itemConf.value.type) !== -1"
-          placement="bottom" title="" trigger="click" @show="showMultiConf(itemConf)">
+          title="" trigger="click" @show="showMultiConf(itemConf)">
           <el-button slot="reference">配置选项</el-button>
           <options-conf :conf-arr="itemConf.value.regex"></options-conf>
         </el-popover>
