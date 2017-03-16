@@ -226,11 +226,6 @@
           }
           console.log(this.instockForm.data[0])
           this.loading = false
-          if (document.body.style.overflow === 'hidden') {
-            document.body.style.overflow = 'auto'
-            // let loadingInstance = Loading.service({ fullscreen: true })
-            // loadingInstance.close()
-          }
         })
       },
       handleRemove (tab) {
