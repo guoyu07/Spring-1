@@ -166,6 +166,7 @@
     position: relative;
     min-height: 150px;
     padding-top: 20px;
+    /*font-family: serif;*/
   }
 
   .progress-bar {
@@ -255,19 +256,19 @@
   }
 
   .progressWarp ul.progress-bar li .detail{
-    font-size: 14px;
+    font-size: 13px;
     margin: 0;
   }
 
   .progressWarp ul.progress-bar li .detail p{
     color: #a5a5a5;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 10px;
     margin: 0;
   }
 
   .progressWarp ul.progress-bar li.active .detail{
-    font-size: 14px;
+    font-size: 13px;
     color: #00c0ef;
   }
 
@@ -277,7 +278,7 @@
   }
 
   .progressWarp ul.progress-bar li.ing .detail{
-    font-size: 14px;
+    font-size: 13px;
     color: #13ce66;
   }
 

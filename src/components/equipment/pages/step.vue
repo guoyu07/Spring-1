@@ -266,7 +266,7 @@
                   <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
                   <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
                 </span>
-                <el-button class="fr" :plain="true" type="primary" @click="cancel">取消</el-button>
+                <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
               </div>
               <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
               <el-button @click="onReject(applyData)">驳回</el-button> -->
