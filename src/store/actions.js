@@ -25,5 +25,27 @@ module.exports = {
       commit(types.HIDE_LOADING)
       resolve()
     })
+  },
+
+  update_userinfo: ({
+    commit
+  }, {
+    userinfo
+  }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.UPDATE_USERINFO, {
+        userinfo
+      })
+      resolve()
+    })
+  },
+
+  remove_userinfo: ({
+    commit
+  }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.REMOVE_USERINFO)
+      resolve()
+    })
   }
 }
