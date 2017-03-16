@@ -90,6 +90,7 @@ export default {
     },
 
     onEdit (row) {
+      row.pkey = this.selectedProcess
       this.$router.push({ path: '/part1/editor', query: { row } })
     },
 
