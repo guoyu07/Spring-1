@@ -187,11 +187,11 @@
             this.closable = false
             this.formData.map(formBlock => {
               formBlock.value.map(item => {
-                if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，不需要对象，只需要对象里的 instanceId
+                if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                   if (this.editData[item.id]) {
-                    this.editData[item.id] = this.editData[item.id].instanceId
+                    this.editData[item.id] = this.editData[item.id]
                   } else {
-                    this.editData[item.id] = []
+                    this.editData[item.id] = ''
                   }
                 } else if (item.value.type === 'FKs') { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
                   if (this.editData[item.id]) {
@@ -199,10 +199,10 @@
                     this.editData[item.id] = []
                     // console.log('arr', arrdata)
                     arrdata.map(value => {
-                      this.editData[item.id].push(value.instanceId)
+                      this.editData[item.id].push(value)
                     })
                   } else {
-                    this.editData[item.id] = []
+                    this.editData[item.id] = ''
                   }
                 } else if (item.value.type === 'int') {
                   if (!this.editData[item.id]) this.editData[item.id] = 0
@@ -212,8 +212,6 @@
                   } else {
                     this.editData[item.id] = new Date(this.editData[item.id])
                   }
-                } else if (item.value.type === 'arr') {
-                  if (!this.editData[item.id]) this.editData[item.id] = []
                 } else {
                   if (!this.editData[item.id]) this.editData[item.id] = ''
                 }
