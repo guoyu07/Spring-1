@@ -82,6 +82,22 @@
               }]
             }
           ],
+          alter_device: [
+            {
+              value: 1,
+              list: [{
+                tkey: 'start',
+                tname: '填写变更申请单'
+              }]
+            },
+            {
+              value: 2,
+              list: [{
+                tkey: 'approve',
+                tname: '审批'
+              }]
+            }
+          ],
           host_apply: [
             {
               value: 1,
@@ -129,7 +145,7 @@
           action: 'activiti/task/form',
           method: 'GET',
           data: {
-            pkey: 'host_apply',
+            pkey: 'alter_device',
             // tkey: "流程任务key(POST/GET[GET可不填此参数])",
             form: {}
           }
@@ -172,6 +188,7 @@
   .progress-bar {
     display: flex;
     flex-wrap: nowrap;
+    justify-content: space-around;
     padding: 0;
     padding-right: 3%;
     position: relative;
@@ -221,7 +238,7 @@
 
   .progress-bar li {
     list-style: none;
-    width: 160px;
+    /*width: 160px;*/
     margin: 10px;
     position: relative;
   }
