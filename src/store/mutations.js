@@ -10,9 +10,7 @@
 // } from './mutation-types'
 import * as types from './mutation-types'
 
-import {
-  store
-} from './index'
+import store from './index'
 
 export default {
   [types.SHOW_LOADING] (state) {
