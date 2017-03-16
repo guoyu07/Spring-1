@@ -134,8 +134,12 @@
     <el-dialog title="指定受指派人" size="tiny" v-model="assigneeData.visible">
       <h5 class="sub-title"><i class="el-icon-information"></i> 选中欲指定为受指派人的用户：</h5>
       <el-radio-group v-model="assigneeData.assignee">
-        <el-radio v-for="user in userList" :label="user.userId">{{user.code}}</el-radio>
+        <el-radio v-for="user in userList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
       </el-radio-group>
+      <b class="sub-title" style="display: block; margin: 12px 0 6px;">或：</b>
+      <el-checkbox-group v-model="assigneeData.initiator">
+        <el-checkbox label="申请人">指派给申请人</el-checkbox>
+      </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
         <el-button @click="onChangeAssignee(assigneeData)" size="small" icon="check" type="success" :loading="assigneeData.loading">确定</el-button>
       </span>
@@ -168,6 +172,7 @@
           pkey: '',
           tkey: '',
           assignee: '',
+          initiator: false,
           action: ''
         }
       }
@@ -281,7 +286,8 @@
         })
       },
 
-      onChangeAssignee ({ pkey, tkey, assignee }) {
+      onChangeAssignee ({ pkey, tkey, assignee, initiator }) {
+        if (initiator) assignee = '申请人'
         let postData = {
           action: 'permission/process/task/role/users',
           method: 'POST',
