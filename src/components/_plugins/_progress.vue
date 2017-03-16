@@ -82,6 +82,22 @@
               }]
             }
           ],
+          alter_device: [
+            {
+              value: 1,
+              list: [{
+                tkey: 'start',
+                tname: '填写变更申请单'
+              }]
+            },
+            {
+              value: 2,
+              list: [{
+                tkey: 'approve',
+                tname: '审批'
+              }]
+            }
+          ],
           host_apply: [
             {
               value: 1,
@@ -129,7 +145,7 @@
           action: 'activiti/task/form',
           method: 'GET',
           data: {
-            pkey: 'host_apply',
+            pkey: 'alter_device',
             // tkey: "流程任务key(POST/GET[GET可不填此参数])",
             form: {}
           }
@@ -166,11 +182,13 @@
     position: relative;
     min-height: 150px;
     padding-top: 20px;
+    /*font-family: serif;*/
   }
 
   .progress-bar {
     display: flex;
     flex-wrap: nowrap;
+    justify-content: space-around;
     padding: 0;
     padding-right: 3%;
     position: relative;
@@ -220,7 +238,7 @@
 
   .progress-bar li {
     list-style: none;
-    width: 160px;
+    /*width: 160px;*/
     margin: 10px;
     position: relative;
   }
@@ -255,19 +273,19 @@
   }
 
   .progressWarp ul.progress-bar li .detail{
-    font-size: 14px;
+    font-size: 13px;
     margin: 0;
   }
 
   .progressWarp ul.progress-bar li .detail p{
     color: #a5a5a5;
     font-weight: normal;
-    font-size: 12px;
+    font-size: 10px;
     margin: 0;
   }
 
   .progressWarp ul.progress-bar li.active .detail{
-    font-size: 14px;
+    font-size: 13px;
     color: #00c0ef;
   }
 
@@ -277,7 +295,7 @@
   }
 
   .progressWarp ul.progress-bar li.ing .detail{
-    font-size: 14px;
+    font-size: 13px;
     color: #13ce66;
   }
 

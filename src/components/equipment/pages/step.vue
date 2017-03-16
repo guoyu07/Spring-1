@@ -213,8 +213,14 @@
                   <el-collapse-item title="设备信息" name="2">
                     <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
                       <el-form-item v-for="form in searchKeyList" :label="form.name">
-                        <!-- <span v-if="routerInfo.step==='start'">{{data.data.data[form.id]}}</span> -->
-                        <span>{{data[form.id]}}</span>
+                        <span v-if="form.value.type==='FK'">{{Object.assign(data[form.id], {}).name}}</span>
+                        <span v-else-if="form.value.type==='FKs'">
+                          <span v-for="span in data[form.id]">{{span.name}}</span>
+                        </span>
+                        <span v-else-if="form.value.type==='arr'">
+                          <span v-for="span in data[form.id]">{{span}}</span>
+                        </span>
+                        <span v-else>{{data[form.id]}}</span>
                       </el-form-item>
                     </el-form>
                   </el-collapse-item>
@@ -266,7 +272,7 @@
                   <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
                   <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
                 </span>
-                <el-button class="fr" :plain="true" type="primary" @click="cancel">取消</el-button>
+                <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
               </div>
               <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
               <el-button @click="onReject(applyData)">驳回</el-button> -->

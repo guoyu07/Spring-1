@@ -1,4 +1,5 @@
 import router from './router'
+import store from './store'
 import eventHub from './utils/eventHub'
 
 // URL 及端点常量
@@ -17,6 +18,9 @@ export default {
       window.localStorage.setItem('isAdmin', response.data.data.admin)
       window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)
       window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)
+      store.dispatch('update_userinfo', {
+        userinfo: response.data.data
+      })
       this.authenticated = true
       // 跳转至指定目的
       if (redirect) {
@@ -31,6 +35,9 @@ export default {
 
   logout () {
     window.localStorage.removeItem('userName')
+    store.dispatch('remove_userinfo').then(() => {
+      router.push('/login')
+    })
     router.replace('/login')
     this.authenticated = false
   },

@@ -1,33 +1,50 @@
+// import {
+//   BEGIN_REQUEST,
+//   CEASE_REQUEST,
+//   ADD_CONF,
+//   DEL_CONF,
+//   SHOW_LOADING,
+//   HIDE_LOADING,
+//   UPDATE_USERINFO,
+//   REMOVE_USERINFO
+// } from './mutation-types'
+import * as types from './mutation-types'
+
 import {
-  BEGIN_REQUEST,
-  CEASE_REQUEST,
-  ADD_CONF,
-  DEL_CONF,
-  SHOW_LOADING,
-  HIDE_LOADING
-} from './mutation-types'
+  store
+} from './index'
 
 export default {
-  [SHOW_LOADING] (state) {
+  [types.SHOW_LOADING] (state) {
     state.ajax_loading = true
   },
 
-  [HIDE_LOADING] (state) {
+  [types.HIDE_LOADING] (state) {
     state.ajax_loading = false
   },
 
-  [BEGIN_REQUEST] (state) {
+  [types.UPDATE_USERINFO] (state, userDb) {
+    state.userinfo = userDb.userinfo || {}
+    store.set('userinfo', state.userinfo)
+  },
+
+  [types.REMOVE_USERINFO] (state) {
+    store.remove('userinfo')
+    state.userinfo = {}
+  },
+
+  [types.BEGIN_REQUEST] (state) {
     state.isRequesting = true
   },
-  [CEASE_REQUEST] (state) {
+  [types.CEASE_REQUEST] (state) {
     state.isRequesting = false
   },
   // 增
-  [ADD_CONF] (state, formConfig) {
+  [types.ADD_CONF] (state, formConfig) {
     state.formConfigList.push(formConfig)
   },
   // 删
-  [DEL_CONF] (state, id) {
+  [types.DEL_CONF] (state, id) {
     const index = state.formConfigList.findIndex(item => item.id === id)
     state.formConfigList.splice(index, 1)
   }

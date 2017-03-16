@@ -8,7 +8,8 @@ Vue.use(Vuex)
 const state = {
   isRequesting: false,
   formConfigList: [],
-  ajax_loading: false
+  ajax_loading: false,
+  userinfo: {}
 }
 
 export default new Vuex.Store({

@@ -46,8 +46,20 @@
               type="selection"></el-table-column>
             <el-table-column
               v-for="item in searchKeyList"
-              :prop="item.id"
-              :label="item.name"></el-table-column>
+              :label="item.name">
+              <template scope="scope">
+                <span v-if="item.value.type === 'FK'">
+                  {{ Object.assign({}, scope.row[item.id]).name }}
+                </span>
+                <span v-else-if="item.value.type === 'FKs'">
+                  <span v-for="span in scope.row[item.id]">{{span.name}}</span>
+                </span>
+                <span v-else-if="item.value.type === 'arr'">
+                  <span v-for="span in scope.row[item.id]">{{span}}</span>
+                </span>
+                <span v-else>{{scope.row[item.id]}}</span>
+              </template>
+            </el-table-column>
             <!-- <el-table-column
               prop="name"
               label="设备"></el-table-column>
@@ -84,8 +96,20 @@
             border>
             <el-table-column
               v-for="item in searchKeyList"
-              :prop="item.id"
-              :label="item.name"></el-table-column>
+              :label="item.name">
+              <template scope="scope">
+                <span v-if="item.value.type === 'FK'">
+                  {{ Object.assign({}, scope.row[item.id]).name }}
+                </span>
+                <span v-else-if="item.value.type === 'FKs'">
+                  <span v-for="span in scope.row[item.id]">{{span.name}}</span>
+                </span>
+                <span v-else-if="item.value.type === 'arr'">
+                  <span v-for="span in scope.row[item.id]">{{span}}</span>
+                </span>
+                <span v-else>{{scope.row[item.id]}}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               inline-template
               :context="_self"

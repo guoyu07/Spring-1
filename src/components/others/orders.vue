@@ -364,7 +364,9 @@
       onView (task) {
         this.deviceViewData.visible = true
         this.deviceViewData.device = task
-        this.deviceViewData.instanceId = this.findTaskMsgR(task.variables.message, ['start']).form.object_list[0].instanceId
+        if (this.findTaskMsgR(task.variables.message, ['start']).form.object_list[0].instanceId) {
+          this.deviceViewData.instanceId = this.findTaskMsgR(task.variables.message, ['start']).form.object_list[0].instanceId
+        }
       }
     },
 

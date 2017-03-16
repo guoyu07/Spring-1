@@ -15,6 +15,7 @@
     <el-menu theme="dark" default-active="1" class="el-menu-demo" mode="horizontal">
       <el-menu-item index="1" class="logo"><b>民生银行</b>运维管理系统</el-menu-item>
       <el-menu-item index="2" class="fr">
+        {{this.$store.state.userinfo.userId}}
         <a @click="logout">退出</a>
       </el-menu-item>
     </el-menu>
