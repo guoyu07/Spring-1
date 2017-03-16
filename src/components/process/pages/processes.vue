@@ -1,3 +1,13 @@
+<style lang="less" scoped>
+  .sub-title {
+    margin-top: 0;
+
+    i {
+      width: 14px;
+    }
+  }
+</style>
+
 <template>
   <div class="processes">
     <el-row>
@@ -16,13 +26,13 @@
             @expand="adminData.isCheckable = false">
             <el-table-column type="expand">
               <template scope="scope">
+                <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 特权类型：</h5>
                 <el-collapse accordion @change="onAccordionChange">
                   <el-collapse-item title="特权用户">
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl" style="margin-top: 0" v-if="scope.row.admin_users.length"><i class="el-icon-fa-users"></i> 管理员用户（{{scope.row.admin_users.length}}）：</h5>
-                          <h5 class="sub-title fl" style="margin-top: 0;" v-if="!scope.row.admin_users.length"><i class="el-icon-warning"></i> 此流程暂无管理员用户！</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户（{{scope.row.admin_users.length || '0'}}）</h5>
                           <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
                           <el-tooltip content="移除管理员用户" placement="top" class="fr" v-if="scope.row.admin_users.length">
                             <el-button
@@ -50,8 +60,7 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl" style="margin-top: 0" v-if="scope.row.start_users.length"><i class="el-icon-fa-users"></i> 启动候选人用户（{{scope.row.start_users.length}}）：</h5>
-                          <h5 class="sub-title fl" style="margin-top: 0;" v-if="!scope.row.start_users.length"><i class="el-icon-warning"></i> 此流程暂无启动候选人用户！</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 启动候选人用户（{{scope.row.start_users.length || '0'}}）</h5>
                           <el-button v-if="initiatorData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="initiatorData.isCheckable = false">取消</el-button>
                           <el-tooltip content="移除启动候选人用户" placement="top" class="fr" v-if="scope.row.start_users.length">
                             <el-button
@@ -81,8 +90,7 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl" style="margin-top: 0" v-if="scope.row.admin_groups.length"><i class="el-icon-fa-users"></i> 管理员用户组（角色）（{{scope.row.admin_groups.length}}）：</h5>
-                          <h5 class="sub-title fl" style="margin-top: 0;" v-if="!scope.row.admin_groups.length"><i class="el-icon-warning"></i> 此流程暂无管理员用户组（角色）！</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户组（角色）（{{scope.row.admin_groups.length || '0'}}）</h5>
                           <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
                           <el-tooltip content="移除管理员用户组（角色）" placement="top" class="fr" v-if="scope.row.admin_groups.length">
                             <el-button
@@ -110,8 +118,7 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl" style="margin-top: 0" v-if="scope.row.start_groups.length"><i class="el-icon-fa-users"></i> 启动候选组（角色）（{{scope.row.start_groups.length}}）：</h5>
-                          <h5 class="sub-title fl" style="margin-top: 0;" v-if="!scope.row.start_groups.length"><i class="el-icon-warning"></i> 此流程暂无启动候选组（角色）！</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 启动候选组（角色）（{{scope.row.start_groups.length || '0'}}）</h5>
                           <el-button v-if="initiatorData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="initiatorData.isCheckable = false">取消</el-button>
                           <el-tooltip content="移除启动候选组（角色）" placement="top" class="fr" v-if="scope.row.start_groups.length">
                             <el-button
@@ -148,7 +155,7 @@
     </el-row>
 
     <el-dialog :title="adminData.type === 'user' ? '加入管理员用户' : '加入管理员用户组（角色）'" size="tiny" v-model="adminData.visible">
-      <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入为管理员的{{adminData.type === 'user' ? '用户' : '用户组（角色）'}}：</h5>
+      <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为管理员的{{adminData.type === 'user' ? '用户' : '用户组（角色）'}}：</h5>
       <el-checkbox-group v-model="adminData.toAdd">
         <el-checkbox v-if="adminData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
         <el-checkbox v-if="adminData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
@@ -159,7 +166,7 @@
     </el-dialog>
 
     <el-dialog :title="initiatorData.type === 'user' ? '加入启动候选人用户' : '加入启动候选组（角色）'" size="tiny" v-model="initiatorData.visible">
-      <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入为{{initiatorData.type === 'user' ? '启动候选人的用户' : '启动候选组的角色'}}：</h5>
+      <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{initiatorData.type === 'user' ? '启动候选人的用户' : '启动候选组的角色'}}：</h5>
       <el-checkbox-group v-model="initiatorData.toAdd">
         <el-checkbox v-if="initiatorData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
         <el-checkbox v-if="initiatorData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
