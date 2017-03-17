@@ -28,6 +28,9 @@ const routes = [{
       path: '/storemanage/instock/:id',
       component: require('./components/storemanage/pages/instock.vue')
     }, {
+      path: '/storemanage/instock/edit/:taskid',
+      component: require('./components/storemanage/pages/instock.vue')
+    }, {
       path: '/storemanage/outstock',
       component: require('./components/storemanage/pages/outstock.vue')
     }, {
