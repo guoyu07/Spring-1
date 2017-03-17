@@ -5,7 +5,8 @@
 </style>
 
 <template>
-  <el-card class="box-card mgb12">
+  <el-card
+    class="box-card mgb12">
     <h3><i class="el-icon-setting"></i> 待指派任务</h3>
     <el-alert
       title="你的帐号贵为「流程管理员」，可在此指派任务 :)"

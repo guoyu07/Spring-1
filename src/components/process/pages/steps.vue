@@ -15,7 +15,7 @@
         <el-card class="box-card">
           <h3><i class="el-icon-fa-circle-o-notch icon-lg"></i> 流程环节管理</h3>
           <el-alert
-            title="在此处为流程指派各环节的候选人、候选组及指派人。"
+            title="在此处为流程指派各环节的候选人、候选组及受指派人。"
             type="info"
             show-icon
             style="margin-bottom: 12px"></el-alert>
@@ -99,7 +99,7 @@
                           </el-tooltip>
                           <el-tooltip content="指定受指派人" placement="top" class="fr">
                             <el-button
-                              icon="plus"
+                              :icon="task.assignee ? 'edit' : 'plus'"
                               type="success"
                               size="small"
                               @click="assigneeData = Object.assign({}, assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey })">

@@ -97,7 +97,7 @@ const routes = [{
     }]
   }, {
     path: '/orders',
-    component: require('./components/others/orders')
+    component: require('./components/orders/orders')
   }, { // 定义表单，提交给数据库存储，删
     path: '/part1',
     component: require('./components/part1/Index'),

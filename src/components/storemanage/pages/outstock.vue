@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card
           class="box-card"
-          v-loading.fullscreen.lock="loading"
+          v-loading.fullscreen="loading"
           element-loading-text="拼命加载中">
           <h3><i :class="edit ? 'el-icon-fa-edit' : 'el-icon-fa-sign-out'"></i> {{ edit ? '信息变更' : '出库流程'}}</h3>
           <el-form ref="onForm" label-width="100px">
@@ -361,6 +361,7 @@
             }
           })
           this.loading = false
+          // document.body.style.overflow = 'auto'
         })
       },
 
