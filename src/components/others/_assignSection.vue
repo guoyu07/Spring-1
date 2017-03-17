@@ -26,6 +26,16 @@
       v-loading.body="processLoading"
       border>
       <el-table-column
+        prop="pname"
+        label="流程"
+        width="100"
+        :filters="processTagList"
+        :filter-method="filterProcess">
+        <template scope="scope">
+          {{scope.row.pname}}
+        </template>
+      </el-table-column>
+      <el-table-column
         prop="name"
         label="任务名称">
       </el-table-column>
@@ -116,7 +126,8 @@
       return {
         processLoading: false,
         processList: [],
-        selectedProcess: '',
+        processTagList: [],
+        selectedProcess: [],
         taskList: [],
         taskViewData: {
           visible: false,
@@ -159,6 +170,9 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.processList = res.data.data
+            this.processList.map(item => {
+              this.processTagList.push({text: item.pname, value: item.pkey})
+            })
             this.processLoading = false
           }
         })
@@ -202,6 +216,13 @@
             this.getTaskList()
           }
         })
+      },
+
+      filterProcess (value, row) {
+        console.log(value)
+        this.selectedProcess.push(value)
+        console.log(this.selectedProcess)
+        this.getTaskList()
       }
     }
   }
