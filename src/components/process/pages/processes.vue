@@ -1,13 +1,3 @@
-<style lang="less" scoped>
-  .sub-title {
-    margin-top: 0;
-
-    i {
-      width: 14px;
-    }
-  }
-</style>
-
 <template>
   <div class="processes">
     <el-row>

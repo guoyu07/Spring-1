@@ -1,13 +1,3 @@
-<style lang="less" scoped>
-  .sub-title {
-    margin-top: 0;
-
-    i {
-      width: 14px;
-    }
-  }
-</style>
-
 <template>
   <div class="steps">
     <el-row>
@@ -32,14 +22,14 @@
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
                           <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 候选人（{{task.candidate_users.length || '0'}}）</h5>
-                          <el-button v-if="candidateData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isCheckable = false">取消</el-button>
+                          <el-button v-if="candidateData.isUserCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isUserCheckable = false">取消</el-button>
                           <el-tooltip content="移除候选人" placement="top" class="fr" v-if="task.candidate_users.length">
                             <el-button
                               icon="minus"
                               type="danger"
                               size="small"
-                              :class="{ empty: !candidateData.isCheckable }"
-                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'user')">{{candidateData.isCheckable ? '移除所选' : ''}}</el-button>
+                              :class="{ empty: !candidateData.isUserCheckable }"
+                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'user')">{{candidateData.isUserCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
                           <el-tooltip content="加入候选人" placement="top" class="fr">
                             <el-button
@@ -50,7 +40,7 @@
                             </el-button>
                           </el-tooltip>
                         </div>
-                        <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isCheckable }">
+                        <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isUserCheckable }">
                           <el-checkbox v-for="user in task.candidate_users" :label="user.userId">{{user.code}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
@@ -60,14 +50,14 @@
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
                           <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 候选组（{{task.candidate_groups.length || '0'}}）</h5>
-                          <el-button v-if="candidateData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isCheckable = false">取消</el-button>
+                          <el-button v-if="candidateData.isGroupCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isGroupCheckable = false">取消</el-button>
                           <el-tooltip content="移除候选组" placement="top" class="fr" v-if="task.candidate_groups.length">
                             <el-button
                               icon="minus"
                               type="danger"
                               size="small"
-                              :class="{ empty: !candidateData.isCheckable }"
-                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'group')">{{candidateData.isCheckable ? '移除所选' : ''}}</el-button>
+                              :class="{ empty: !candidateData.isGroupCheckable }"
+                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'group')">{{candidateData.isGroupCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
                           <el-tooltip content="加入候选组" placement="top" class="fr">
                             <el-button
@@ -78,7 +68,7 @@
                             </el-button>
                           </el-tooltip>
                         </div>
-                        <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isCheckable }">
+                        <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isGroupCheckable }">
                           <el-checkbox v-for="group in task.candidate_groups" :label="group.key">{{group.name}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
@@ -158,7 +148,8 @@
         candidateData: {
           visible: false,
           loading: false,
-          isCheckable: false,
+          isUserCheckable: false,
+          isGroupCheckable: false,
           type: '', // user || group
           pkey: '',
           tkey: '',
@@ -186,7 +177,7 @@
 
     methods: {
       onAccordionChange () {
-        this.candidateData = Object.assign({}, this.candidateData, { isCheckable: false, toAdd: [], toRemove: [] })
+        this.candidateData = Object.assign({}, this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
       },
 
       getProcessList () {
@@ -250,8 +241,9 @@
       },
 
       onRemoveCandidate (pkey, tkey, type) {
-        if (!this.candidateData.isCheckable) {
-          this.candidateData.isCheckable = true
+        let isCheckableKey = `is${type.charAt(0).toUpperCase() + type.slice(1)}Checkable`
+        if (!this.candidateData[isCheckableKey]) {
+          this.candidateData[isCheckableKey] = true
           return
         }
 
@@ -278,7 +270,7 @@
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.candidateData = Object.assign({}, this.candidateData, { toRemove: [], isCheckable: false })
+              this.candidateData = Object.assign({}, this.candidateData, { toRemove: [], isUserCheckable: false, isGroupCheckable: false })
               this.$message.success('移除成功！')
               this.getProcessList()
             }
