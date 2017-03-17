@@ -173,18 +173,6 @@
         this.http.post('easyops/', this.parseData(renderEditData)).then((res) => {
           console.log('editData', res.data.data.data)
           this.editData = res.data.data.data
-          // for (const i in this.editData) {
-          //   if (this.editData[i] === null) { // 整理返回来的数据，若有 null 转成为空 '' ，为了避免日期时间自动填充为1970的日期
-          //     this.editData[i] = ''
-          //   }
-          // }
-          // for (const i in this.instockForm.data[0]) {
-          //   console.log(i, !this.editData[i])
-          //   if (!this.editData[i]) {
-          //     this.editData[i] = ''
-          //   }
-          // }
-          // console.log(this.instockForm.data)
         })
       },
       renderTaskInfo () { // 渲染单个实例信息
@@ -333,14 +321,19 @@
         newData.tabname = newTabName
         this.formData.map(group => {
           group.value.map(item => {
-            if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              newData[item.id] = []
-            } else if (item.value.type === 'int') {
-              newData[item.id] = 0
-            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-              newData[item.id] = undefined
+            if (item.unique === 'true') {
+              if (item.value.type === 'arr' || item.value.type === 'FKs') {
+                newData[item.id] = []
+              } else if (item.value.type === 'int') {
+                newData[item.id] = 0
+              } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                newData[item.id] = undefined
+              } else {
+                newData[item.id] = ''
+              }
             } else {
-              newData[item.id] = ''
+              const i = this.instockForm.data.length - 1
+              newData[item.id] = this.instockForm.data[i][item.id]
             }
           })
         })
