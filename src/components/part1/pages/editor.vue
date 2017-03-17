@@ -27,6 +27,10 @@
         <el-checkbox-group v-model="checkedActions" @change="actionChange">
           <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
         </el-checkbox-group>
+        <template v-if="checkedActions.some(_ => _ === '下载')">
+          <label>下载 url：</label>
+          <el-input size="small"></el-input>
+        </template>
       </el-card>
     </el-row>
     <el-row>
@@ -45,8 +49,8 @@
       <label>表单 body 个数：</label>
       <el-select v-model="bodyCountType" @change="countConfig">
         <el-option label="static" value="static"></el-option>
-        <el-option label="header" value="header"></el-option>
-        <el-option label="message" value="message"></el-option>
+        <el-option label="form_header" value="form_header"></el-option>
+        <el-option label="message_header" value="message_header"></el-option>
       </el-select>
       <el-popover v-if="bodyCountType === 'static'"
         placement="right" trigger="click">
@@ -54,16 +58,18 @@
         <el-input-number size="small" :min="1" v-model="formConfig.form.form.body.count.max" />
         <el-button slot="reference">配置</el-button>
       </el-popover>
-      <el-popover v-if="bodyCountType === 'header'"
+      <el-popover v-if="bodyCountType === 'form_header'"
         placement="right" trigger="click">
-        <h5>配置一个 header 中的字段：</h5>
-        <el-input v-model="formConfig.form.form.body.count.path"></el-input>
+        <h5>配置一个 form_header 中的字段：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
-      <el-popover v-if="bodyCountType === 'message'"
+      <el-popover v-if="bodyCountType === 'message_header'"
         placement="right" trigger="click">
-        <h5>配置一个 message（历史步骤）中的字段：</h5>
-        <el-input v-model="formConfig.form.form.body.count.path"></el-input>
+        <h5>配置一个 message 中的环节：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
+        <h5>配置一个 message_header 中的字段：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
     </el-row>
@@ -100,21 +106,22 @@ export default {
     }
   },
   methods: {
-    // 选择功能 action
+    // 选择功能按钮 action
     actionChange (arr) {
       this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
     },
+    // 选择配置 body 个数
     countConfig (type) {
       let count = null
       switch (type) {
         case 'static':
           count = { type: 'static', min: 1, max: 1 }
           break
-        case 'header':
-          count = { type: 'header', keyPath: '' }
+        case 'form_header':
+          count = { type: 'form_header', key_path: '' }
           break
-        case 'message':
-          count = { type: 'message', keyPath: '' }
+        case 'message_header':
+          count = { type: 'message_header', id: '', key_path: '' }
           break
         default:
           count = {}
