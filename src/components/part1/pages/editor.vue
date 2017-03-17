@@ -56,12 +56,14 @@
       </el-popover>
       <el-popover v-if="bodyCountType === 'header'"
         placement="right" trigger="click">
-        配置一个 header 中的字段
+        <h5>配置一个 header 中的字段：</h5>
+        <el-input v-model="formConfig.form.form.body.count.path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
       <el-popover v-if="bodyCountType === 'message'"
         placement="right" trigger="click">
-        配置一个 message（前面步骤所填） 中的字段
+        <h5>配置一个 message（历史步骤）中的字段：</h5>
+        <el-input v-model="formConfig.form.form.body.count.path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
     </el-row>

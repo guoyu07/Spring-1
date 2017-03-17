@@ -17,6 +17,12 @@
       </el-select>
     </el-row>
     <el-row>
+      <label>选择流程：</label>
+      <!--<el-select v-model=""></el-select>-->
+      <label>选择表单：</label>
+      <!--<el-select v-model=""></el-select>-->
+    </el-row>
+    <el-row>
       <el-form :inline="true" :model="formData" ref="formRef" label-width="100px">
         <el-form-item v-for="formItem of formConfig"
           v-if="['str','int','arr','enum','date','datetime','strArea'].indexOf(formItem.type) !== -1"

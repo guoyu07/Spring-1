@@ -17,6 +17,11 @@ import 'nprogress/nprogress.css'
 
 import 'assets/css/main.less'
 
+// bpmn 相关 css
+import 'diagram-js/assets/diagram-js.css'
+import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css'
+import 'bpmn-js-properties-panel/styles/properties.less'
+
 Vue.use(ElementUI)
 Vue.use(VueResource)
 
