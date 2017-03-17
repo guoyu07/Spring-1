@@ -89,13 +89,13 @@ const routes = [{
       component: require('./components/auth/pages/roles.vue')
     }]
   }, {
-    path: '/processAdmin',
+    path: '/process-admin',
     component: require('./components/process/index'),
     children: [{
-      path: '/processAdmin/processes',
-      component: require('./components/process/pages/processes.vue')
+      path: '/process-admin/basics',
+      component: require('./components/process/pages/basics.vue')
     }, {
-      path: '/processAdmin/steps',
+      path: '/process-admin/steps',
       component: require('./components/process/pages/steps.vue')
     }]
   }, {
