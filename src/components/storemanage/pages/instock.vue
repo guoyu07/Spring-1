@@ -27,10 +27,10 @@
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
 
               <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
-                add tab
+                新增
               </el-button>
-              <el-tabs v-model="tabsValue" type="border-card" closable @tab-remove="removeTab">
-                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="item.tabname">
+              <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
+                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="item.tabname" :closable="index !== 0">
                   <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
                 </el-tab-pane>
               </el-tabs>
