@@ -8,19 +8,23 @@
 
 <template>
   <div class="select-form">
-    <el-row>
+    <!--<el-row>
       <label>选择表单模板：</label>
       <el-select v-model="formConfig" @change="selectChange">
         <el-option v-for="op of formConfigList"
           :value="op.formConf" :label="op.formName">
         </el-option>
       </el-select>
-    </el-row>
+    </el-row>-->
     <el-row>
       <label>选择流程：</label>
-      <!--<el-select v-model=""></el-select>-->
+      <el-select v-model="selectedProcess" @change="processChange">
+        <el-option v-for="process of processList" :label="process.pname" :value="process.pkey" />
+      </el-select>
       <label>选择表单：</label>
-      <!--<el-select v-model=""></el-select>-->
+      <el-select v-model="selectedForm">
+        <el-option v-for="form of formList" :label="form.tname" :value="form.tkey" />
+      </el-select>
     </el-row>
     <el-row>
       <el-form :inline="true" :model="formData" ref="formRef" label-width="100px">
@@ -68,6 +72,10 @@
   export default {
     data () {
       return {
+        processList: [],
+        selectedProcess: '',
+        formList: [],
+        selectedForm: '',
         formConfig: {},
         formData: {}
       }
@@ -87,6 +95,14 @@
       //     })
       //     this.formConfig = res.data.header
       //   })
+      const postData = {
+        action: 'activiti/process/definition',
+        method: 'GET',
+        data: {}
+      }
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.processList = res.data.data.list
+      })
     },
     computed: {
       formConfigList () {
@@ -94,6 +110,17 @@
       }
     },
     methods: {
+      processChange (pkey) {
+        const postData = {
+          action: 'activiti/task/form',
+          method: 'GET',
+          data: { pkey }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.formList = res.data.data.list
+          this.selectedForm = this.formList[0].tkey // 默认选中第一个
+        })
+      },
       selectChange (value) {
         // 清空
         this.formData = {}
