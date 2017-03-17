@@ -27,9 +27,9 @@
         <el-checkbox-group v-model="checkedActions" @change="actionChange">
           <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
         </el-checkbox-group>
-        <template v-if="checkedActions.some(_ => _ === '下载')">
+        <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
           <label>下载 url：</label>
-          <el-input size="small"></el-input>
+          <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
         </template>
       </el-card>
     </el-row>
