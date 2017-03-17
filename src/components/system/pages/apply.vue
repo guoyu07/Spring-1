@@ -13,7 +13,7 @@
               </el-select>
             </el-form-item>
             <el-form-item prop="business" label="项目组">
-              <el-select filterable v-model="applyForm.business">
+              <el-select filterable allow-create v-model="applyForm.business">
                 <el-option v-for="business in businessList"
                   :label="business.name"
                   :value="business.name"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
@@ -126,7 +126,7 @@
             <br>
           </el-form>
           <div class="btn-area">
-            <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
+            <el-button type="primary" @click="onRecheckBusiness">立即创建</el-button>
             <el-button v-if="!editInfo.id" @click="resetForm('applyForm')">重置</el-button>
           </div>
         </el-card>
@@ -321,6 +321,19 @@
           }
         }, 1000)
       },
+      onRecheckBusiness () {
+        if (!this.businessList.some(business => business.name === this.applyForm.business)) { // 若项目组为新增，则先进行新增请求
+          let postData = {
+            action: `/object/instance/BUSINESS`,
+            method: 'POST',
+            data: { name: this.applyForm.business }
+          }
+          this.http.post('easyops/', this.parseData(postData)).then((res) => {
+            // 新增毕，方出库
+            this.onSubmit('applyForm')
+          })
+        }
+      },
       onSubmit (applyForm) {
         console.log(this.applyForm)
         this.$refs[applyForm].validate((valid) => {
@@ -423,6 +436,6 @@
   }
   .el-form--inline .el-form-item {
     min-width: 280px;
-    margin-bottom: 20px;
+    margin-bottom: 18px;
   }
 </style>
