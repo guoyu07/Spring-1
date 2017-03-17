@@ -51,10 +51,10 @@
         <el-menu-item index="/auth/roles"><i class="el-icon-menu"></i>角色管理</el-menu-item>
       </el-submenu>
 
-      <el-submenu index="/processAdmin">
+      <el-submenu index="/process-admin">
         <template slot="title">流程管理</template>
-        <el-menu-item index="/processAdmin/processes"><i class="el-icon-fa-circle-o"></i>基本管理</el-menu-item>
-        <el-menu-item index="/processAdmin/steps"><i class="el-icon-fa-circle-o-notch"></i>环节管理</el-menu-item>
+        <el-menu-item index="/process-admin/basics"><i class="el-icon-fa-circle-o"></i>基本管理</el-menu-item>
+        <el-menu-item index="/process-admin/steps"><i class="el-icon-fa-circle-o-notch"></i>环节管理</el-menu-item>
       </el-submenu>
 
       <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
