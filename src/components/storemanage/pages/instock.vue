@@ -25,10 +25,12 @@
           </el-form>
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-            <!-- <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm"> -->
-              <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="onAdd('instockForm')" class="margin-bottom" icon="plus">增加</el-button>
-              <el-tabs type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
-                <el-tab-pane v-for="(item, index) in instockForm.data" :key="item.id" :label="'设备' + (index + 1)">
+
+              <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
+                新增
+              </el-button>
+              <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
+                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="item.tabname" :closable="index !== 0">
                   <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
                 </el-tab-pane>
               </el-tabs>
@@ -50,6 +52,8 @@
   export default {
     data () {
       return {
+        tabsValue: '1',
+        tabIndex: 1,
         closable: true,
         loading: false,
         editInfo: {
@@ -109,6 +113,23 @@
       }
     },
     methods: {
+      removeTab (targetName) {
+        let tabs = this.instockForm.data
+        let activeName = this.tabsValue
+        if (activeName === targetName) {
+          tabs.forEach((tab, index) => {
+            if (tab.name === targetName) {
+              let nextTab = tabs[index + 1] || tabs[index - 1]
+              if (nextTab) {
+                activeName = nextTab.name
+              }
+            }
+          })
+        }
+
+        this.tabsValue = activeName
+        this.instockForm.data = tabs.filter(tab => tab.name !== targetName)
+      },
       renderApplicationList () { // 渲染申请人列表
         const postData = {
           action: 'object/instance/list',
@@ -152,18 +173,6 @@
         this.http.post('easyops/', this.parseData(renderEditData)).then((res) => {
           console.log('editData', res.data.data.data)
           this.editData = res.data.data.data
-          // for (const i in this.editData) {
-          //   if (this.editData[i] === null) { // 整理返回来的数据，若有 null 转成为空 '' ，为了避免日期时间自动填充为1970的日期
-          //     this.editData[i] = ''
-          //   }
-          // }
-          // for (const i in this.instockForm.data[0]) {
-          //   console.log(i, !this.editData[i])
-          //   if (!this.editData[i]) {
-          //     this.editData[i] = ''
-          //   }
-          // }
-          // console.log(this.instockForm.data)
         })
       },
       renderTaskInfo () { // 渲染单个实例信息
@@ -201,6 +210,7 @@
               }
             })
           })
+          this.$set(this.instockForm.data[0], 'tabname', '1')
           console.log(this.formData)
           // 如果是修改页面
           if (this.editInfo.instanceId) {
@@ -305,32 +315,33 @@
           this.loading = false
         })
       },
-      handleRemove (tab) {
-        this.instockForm.data.splice(tab.index, 1)
-        // console.log(tab.index, this.instockForm.data)
-      },
-      handleClick (tab, event) {
-        // console.log(tab.index, tab, event)
-      },
-      onAdd (formName) {
+      addTab (targetName) {
+        let newTabName = ++this.tabIndex + ''
         let newData = {}
+        newData.tabname = newTabName
         this.formData.map(group => {
           group.value.map(item => {
-            if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              newData[item.id] = []
-            } else if (item.value.type === 'int') {
-              newData[item.id] = 0
-            } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-              newData[item.id] = undefined
+            if (item.unique === 'true') {
+              if (item.value.type === 'arr' || item.value.type === 'FKs') {
+                newData[item.id] = []
+              } else if (item.value.type === 'int') {
+                newData[item.id] = 0
+              } else if (item.value.type === 'date' || item.value.type === 'datetime') {
+                newData[item.id] = undefined
+              } else {
+                newData[item.id] = ''
+              }
             } else {
-              newData[item.id] = ''
+              const i = this.instockForm.data.length - 1
+              newData[item.id] = this.instockForm.data[i][item.id]
             }
           })
         })
-        this.$refs[formName].validate((valid) => {
+        this.$refs['instockForm'].validate((valid) => {
           if (valid) {
             if (this.instockForm.data.length < 10) {
               this.instockForm.data.push(newData)
+              this.tabsValue = newTabName
             } else {
               this.$message.warning('最多只能增加 10 个设备！')
             }
