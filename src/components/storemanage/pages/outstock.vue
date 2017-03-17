@@ -1,7 +1,7 @@
 <template>
   <div class="outstock">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card
           class="box-card"
           v-loading.fullscreen="loading"
