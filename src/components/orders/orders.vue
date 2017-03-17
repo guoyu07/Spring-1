@@ -184,6 +184,10 @@
                 <span>{{deviceViewData.device.priority}}</span>
               </el-form-item>
             </el-form>
+            <progress-wrap :progress="{
+             task: deviceViewData.device.taskDefinitionKey,
+             pkey: deviceViewData.device.pkey
+             }"></progress-wrap>
             <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.variables">
               <el-collapse-item v-for="(task, key) in deviceViewData.device.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
@@ -248,6 +252,7 @@
 
 <script>
   import assignSection from './_assignSection'
+  import progressWrap from '../_plugins/_progress'
 
   export default {
     data () {
@@ -374,7 +379,8 @@
     },
 
     components: {
-      assignSection
+      assignSection,
+      progressWrap
     }
   }
 </script>
