@@ -34,12 +34,11 @@
               <el-input v-model="applyForm.applicationName"></el-input>
             </el-form-item>
             <br>
-            <el-form-item>
-              <el-button size="small" @click="onAdd('applyForm')" icon="plus">增加服务器</el-button>
-            </el-form-item>
-
-            <el-tabs class="margin-top" type="border-card" closable @tab-click="handleClick" @tab-remove="handleRemove">
-              <el-tab-pane  v-for="(item, index) in applyForm.data" :key="item.id" :label="'服务资源' + (index + 1)">
+            <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+              增加服务器
+            </el-button>
+            <el-tabs v-model="tabsValue" type="border-card" closable @tab-remove="removeTab">
+              <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="item.tabname">
                 <el-form-item
                   label="使用环境"
                   :prop="'data.' + index + '.environment'"
@@ -138,6 +137,8 @@
   export default {
     data () {
       return {
+        tabsValue: '1',
+        tabIndex: 1,
         editInfo: {
           id: ''
         },
@@ -151,6 +152,7 @@
           applicationName: '',
           remark: '',
           data: [{
+            tabname: '1',
             environment: null,
             quantity: '',
             operateSystem: null,
@@ -383,12 +385,31 @@
       resetForm (applyForm) {
         this.$refs[applyForm].resetFields()
       },
-      onAdd (applyForm) {
+      removeTab (targetName) {
+        let tabs = this.applyForm.data
+        let activeName = this.tabsValue
+        if (activeName === targetName) {
+          tabs.forEach((tab, index) => {
+            if (tab.name === targetName) {
+              let nextTab = tabs[index + 1] || tabs[index - 1]
+              if (nextTab) {
+                activeName = nextTab.name
+              }
+            }
+          })
+        }
+
+        this.tabsValue = activeName
+        this.applyForm.data = tabs.filter(tab => tab.name !== targetName)
+      },
+      addTab (targetName) {
+        let newTabName = ++this.tabIndex + ''
         var that = this
-        this.$refs[applyForm].validate((valid) => {
+        this.$refs['applyForm'].validate((valid) => {
           if (valid) {
             if (that.applyForm.data.length < 5) {
               that.applyForm.data.push({
+                tabname: newTabName,
                 environment: null,
                 quantity: '',
                 operateSystem: null,
@@ -399,6 +420,7 @@
                 // assetNumber: '',
                 score: 0
               })
+              this.tabsValue = newTabName
             } else {
               that.$message.warning('最多只能增加 5 个设备！')
             }
@@ -406,12 +428,6 @@
             that.$message.warning('请填写完整当前表单')
           }
         })
-      },
-      removeItem (item) {
-        var index = this.applyForm.data.indexOf(item)
-        if (index !== -1) {
-          this.applyForm.data.splice(index, 1)
-        }
       }
     }
   }
@@ -437,5 +453,8 @@
   .el-form--inline .el-form-item {
     min-width: 280px;
     margin-bottom: 18px;
+  }
+  .margin-bottom {
+    margin-bottom: 20px;
   }
 </style>
