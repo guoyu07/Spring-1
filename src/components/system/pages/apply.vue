@@ -5,7 +5,7 @@
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
           <el-form ref="applyForm" :model="applyForm" :rules="applyRules" class="advance-search-form" label-width="85px" :inline="true">
-            <el-form-item prop="applyType" label="申请类型">
+            <el-form-item filterable prop="applyType" label="申请类型">
               <el-select v-model="applyForm.applyType" @change="onChangeType">
                 <el-option v-for="apyType in applyTypes"
                   :label="apyType.label"
@@ -13,7 +13,7 @@
               </el-select>
             </el-form-item>
             <el-form-item prop="business" label="项目组">
-              <el-select v-model="applyForm.business">
+              <el-select filterable v-model="applyForm.business">
                 <el-option v-for="business in businessList"
                   :label="business.name"
                   :value="business.name"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
@@ -24,7 +24,7 @@
             </el-form-item> -->
 
             <el-form-item v-if="applyForm.applyType === '新建集群节点'" prop="applicationName" label="应用名">
-              <el-select v-model="applyForm.applicationName">
+              <el-select filterable v-model="applyForm.applicationName">
                 <el-option v-for="app in appList"
                   :label="app.name"
                   :value="app.name"></el-option>
@@ -46,7 +46,7 @@
                   :rules="{
                     required: true, message: '使用环境不能为空', trigger: 'change'
                   }">
-                  <el-select v-model="item.environment" placeholder="请选择使用环境">
+                  <el-select filterable v-model="item.environment" placeholder="请选择使用环境">
                     <el-option v-for="envir in environmentList"
                       :label="envir.label"
                       :value="envir.label"></el-option>
@@ -59,7 +59,7 @@
                   :rules="{
                     required: true, message: 'OS不能为空', trigger: 'change'
                   }">
-                  <el-select v-model="item.operateSystem" placeholder="请选择OS">
+                  <el-select filterable v-model="item.operateSystem" placeholder="请选择OS">
                     <el-option v-for="system in systemsList"
                       :label="system.label"
                       :value="system.label"></el-option>
@@ -72,7 +72,7 @@
                   :rules="{
                     required: true, message: '主机类型不能为空', trigger: 'change'
                   }">
-                  <el-select v-model="item.hostType" placeholder="请选择主机类型">
+                  <el-select filterable v-model="item.hostType" placeholder="请选择主机类型">
                     <el-option v-for="host in hostTypeList"
                       :label="host.label"
                       :value="host.label"></el-option>
@@ -423,5 +423,6 @@
   }
   .el-form--inline .el-form-item {
     min-width: 280px;
+    margin-bottom: 20px;
   }
 </style>

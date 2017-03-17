@@ -5,9 +5,17 @@
         <el-card class="box-card">
           <h3 class="form-title">{{ title }}{{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" :inline="true" class="advance-search-form" label-width="90px">
+            <el-form-item label="申请人" v-if="routerInfo.pkey==='export_device' && routerInfo.step==='start'">
+              <el-select
+                v-model="applyData.application">
+                <el-option v-for="option in applicationList"
+                  :label="option.name"
+                  :value="option.name"></el-option>
+              </el-select>
+            </el-form-item>
             <el-row :gutter="20">
               <el-col
-                v-if="routerInfo.pkey==='export_device'"
+                v-if="routerInfo.pkey==='export_device' && routerInfo.step==='approve'"
                 :span="12">
                 <el-table
                   :data="applyData.object_list"
@@ -31,7 +39,7 @@
                 </el-table>
               </el-col>
               <el-col :span="24" v-else>
-                <el-tabs type="border-card" closable @tab-click="handleClick">
+                <el-tabs type="border-card" @tab-click="handleClick">
                   <el-tab-pane v-for="(item, index) in applyData.object_list" :key="item.id" :label="'设备' + (index + 1)">
                     <div v-for="formblock in formData">
                       <h5>{{formblock.name}}</h5>
@@ -49,18 +57,24 @@
                       </el-form-item>
                     </div>
                     <h5>其他信息</h5>
-                    <el-form-item v-if="applyData.object_list[index].status" label="出库状态">
-                      {{ applyData.object_list[index].status }}
-                    </el-form-item>
-                    <el-form-item v-if="applyData.object_list[index].location" label="出库地点">
-                      {{ applyData.object_list[index].location }}
-                    </el-form-item>
-                    <el-form-item v-if="applyData.object_list[index].ip" label="IP">
-                      {{ applyData.object_list[index].ip }}
-                    </el-form-item>
-                    <el-form-item v-if="applyData.object_list[index].application" label="申请人">
-                      {{ applyData.object_list[index].application }}
-                    </el-form-item>
+                    <template v-if="routerInfo.pkey==='export_device' && routerInfo.step==='start'">
+                      <!-- {{item}} -->
+                      <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
+                    </template>
+                    <template v-else>
+                      <el-form-item v-if="applyData.object_list[index].status" label="出库状态">
+                        {{ applyData.object_list[index].status }}
+                      </el-form-item>
+                      <el-form-item v-if="applyData.object_list[index].location" label="出库地点">
+                        {{ applyData.object_list[index].location }}
+                      </el-form-item>
+                      <el-form-item v-if="applyData.object_list[index].ip" label="IP">
+                        {{ applyData.object_list[index].ip }}
+                      </el-form-item>
+                      <el-form-item v-if="applyData.object_list[index].application" label="申请人">
+                        {{ applyData.object_list[index].application }}
+                      </el-form-item>
+                    </template>
                   </el-tab-pane>
                 </el-tabs>
               </el-col>
@@ -90,6 +104,7 @@
   </div>
 </template>
 <script>
+import formStructure from '../../_plugins/_formStructure'
 export default {
   data () {
     return {
@@ -97,14 +112,24 @@ export default {
       loading: false,
       routerInfo: {},
       applyData: [],
-      assignForm: {'approve': '通过'},
+      assignForm: {
+        application: '',
+        data: []
+      },
       deviceType: '',
-      formData: []
+      formData: [],
+      formStructure: [{
+        name: '',
+        value: []
+      }],
+      applicationList: []
     }
   },
   created () {
     this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
     this.deviceType = this.routerInfo.objectid
+    this.renderExportAttr() // 渲染出库表单
+    this.renderApplicationList() // 渲染申请人列表
     this.renderInstanceDetail() // 通过 id 渲染本实例
     if (this.$route.query.instanceId) {
       this.routerInfo.instanceId = this.$route.query.instanceId
@@ -123,6 +148,33 @@ export default {
     }
   },
   methods: {
+    renderApplicationList () { // 渲染申请人列表
+      const postData = {
+        action: 'object/instance/list',
+        method: 'GET',
+        data: {
+          object_id: 'USER'
+          // page: "不传则获取该对象所有实例",
+          // pageSize: "默认30"
+        }
+      }
+      this.http.post('', this.parseData(postData))
+      .then((res) => {
+        this.applicationList = res.data.data.list
+      })
+    },
+    renderExportAttr () { // 渲染出库属性
+      const postData = {
+        action: 'cmdb/object/export/attr',
+        method: 'GET',
+        data: {
+          object_id: this.deviceType
+        }
+      }
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.formStructure[0].value = res.data.data.attr_list
+      })
+    },
     handleClick (tab, event) {
       console.log(this.index)
     },
@@ -151,6 +203,14 @@ export default {
         const message = res.data.data.variables.message
         this.applyData = this.findTaskMsgR(message, ['start']).form
         this.applyData.action = res.data.data.action
+        this.applyData.object_list.forEach((item, k) => {
+          if (this.routerInfo.step === 'start') {
+            this.assignForm.data.push({
+              ip: item.ip,
+              location: item.location
+            })
+          }
+        })
       })
     },
     renderInstanceIdDetail () {
@@ -171,7 +231,7 @@ export default {
     },
     onSubmit (assignForm) {
       console.log(this.assignForm)
-      this.$confirm('确定通过审批?', '提示', {
+      this.$confirm('确定提交?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
@@ -186,12 +246,21 @@ export default {
                 }
               }
             }
+            // 'object_list': objectList,
+            // 'object_id': this.deviceType,
+            // 'application': this.outstockList.application
+            let assignForm
+            if (this.routerInfo.step === 'start') {
+              assignForm = this.applyData
+            } else {
+              assignForm = this.assignForm
+            }
             const postData = {
               action: 'runtime/task/complete',
               method: 'POST',
               data: {
                 tid: this.routerInfo.id,
-                form: this.assignForm // 通过审批 需要判断一下登录的账号的角色身份
+                form: assignForm // 通过审批 需要判断一下登录的账号的角色身份
                   // pass: "流程走向控制变量,整型(可选,默认为0)"
               }
             }
@@ -200,7 +269,7 @@ export default {
                 if (res && res.status === 200) {
                   this.$message({
                     type: 'success',
-                    message: '审批成功!'
+                    message: '提交成功!'
                   })
                   this.$router.replace('/orders') // 分配成功跳转历史的上一页
                 }
@@ -214,7 +283,7 @@ export default {
       }).catch(() => {
         this.$message({
           type: 'info',
-          message: '已取消审批'
+          message: '已取消提交'
         })
       })
     },
@@ -248,6 +317,9 @@ export default {
         })
       })
     }
+  },
+  components: {
+    formStructure
   }
 }
 </script>

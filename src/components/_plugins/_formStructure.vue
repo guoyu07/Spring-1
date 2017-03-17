@@ -20,6 +20,7 @@
         </el-input-number>
 
         <el-select
+          filterable
           v-else-if="formItem.value.type === 'enum'"
           v-model="item[formItem.id]">
           <el-option v-for="option in formItem.value.regex"
@@ -28,6 +29,7 @@
         </el-select>
 
         <el-select
+          filterable
           v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
           v-model="item[formItem.id]"
           :multiple="formItem.value.type === 'FKs'">
@@ -40,7 +42,7 @@
           v-else-if="formItem.value.type === 'arr'"
           v-model="item[formItem.id]"
           multiple
-          filterable=""
+          filterable
           allow-create
           placeholder="请创建">
         </el-select>
