@@ -26,7 +26,7 @@
       :data="taskList"
       v-loading.body="processLoading"
       border>
-      <el-table-column
+      <!-- <el-table-column
         prop="pname"
         label="流程"
         width="100"
@@ -35,7 +35,7 @@
         <template scope="scope">
           {{scope.row.pname}}
         </template>
-      </el-table-column>
+      </el-table-column> -->
       <el-table-column
         prop="name"
         label="任务名称">
@@ -220,8 +220,6 @@
       },
 
       filterProcess (value, row) {
-        console.log(value)
-        this.selectedProcess.push(value)
         console.log(this.selectedProcess)
         this.getTaskList()
       }
