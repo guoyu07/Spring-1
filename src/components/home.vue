@@ -21,7 +21,7 @@
       <router-view></router-view>
     </div>
     <footer-warp></footer-warp>
-  </div>[;]
+  </div>
 </template>
 
 <script>

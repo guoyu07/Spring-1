@@ -1,3 +1,24 @@
+<style lang="less" scoped>
+  @import url("./../../../assets/css/variables.less");
+  .sub-title {
+    margin-top: 0;
+
+    i {
+      width: 14px;
+    }
+  }
+
+  .el-collapse-item__wrap {
+    div {
+      .el-row:not(:last-of-type) {
+        .el-checkbox-group {
+          border-bottom: 1px dashed @borderColor;
+        }
+      }
+    }
+  }
+</style>
+
 <template>
   <div class="steps">
     <el-row>
@@ -91,6 +112,7 @@
                             <el-button
                               :icon="task.assignee ? 'edit' : 'plus'"
                               type="success"
+                              :plain="task.assignee ? true : false"
                               size="small"
                               @click="assigneeData = Object.assign({}, assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey })">
                             </el-button>
