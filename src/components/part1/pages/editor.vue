@@ -60,16 +60,16 @@
       </el-popover>
       <el-popover v-if="bodyCountType === 'form_header'"
         placement="right" trigger="click">
-        <h5>配置一个 form_header 中的字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.path"></el-input>
+        <h5>输入表单中 form_header 的一个字段：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
       <el-popover v-if="bodyCountType === 'message_header'"
         placement="right" trigger="click">
-        <h5>配置一个 message 中的环节：</h5>
+        <h5>输入流程中的一个历史环节的 messageId：</h5>
         <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
-        <h5>配置一个 message_header 中的字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.path"></el-input>
+        <h5>输入该环节中的表单的一个字段：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
     </el-row>

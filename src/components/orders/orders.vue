@@ -68,7 +68,6 @@
   <div class="orders">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
-        <assign-section v-if="isProcessAdmin"></assign-section>
         <el-card class="box-card">
           <div class="tag-container clear">
             <h3><i class="el-icon-date"></i> {{filter}}工单</h3>
@@ -76,19 +75,32 @@
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
           </div>
+          <assign-section v-if="isProcessAdmin && (filter==='待指派')"></assign-section>
           <el-table
+            v-if="filter!=='待指派'"
             :data="filteredList"
             v-loading.body="loadingFiltered"
             stripe
             border>
-            <el-table-column
+            <!-- <el-table-column
               v-if="filter !== '已参与'"
               label="流程—任务"
               width="200"
               inline-template
               :context="_self">
               <template>{{row.pname}}—{{row.name}}</template>
-            </el-table-column>
+            </el-table-column> -->
+            <el-table-column
+              label="工单号"
+              prop="pid"></el-table-column>
+            <el-table-column
+              v-if="filter !== '已参与'"
+              label="流程"
+              prop="pname"></el-table-column>
+            <el-table-column
+              v-if="filter !== '已参与'"
+              label="任务"
+              prop="name"></el-table-column>
             <el-table-column
               v-if="filter === '已参与'"
               label="流程"
@@ -137,7 +149,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <div class="pagination-block clear">
+          <div v-if="filter!=='待指派'" class="pagination-block clear">
             <el-pagination
               class="fr"
               layout="prev, pager, next"
@@ -284,12 +296,17 @@
 
     created () {
       this.getFilteredList()
+      if (this.isProcessAdmin) {
+        this.filters['待指派'] = ''
+      }
     },
 
     methods: {
       onFilterChange () {
         this.currentPage = 1
-        this.getFilteredList()
+        if (this.filter !== '待指派') {
+          this.getFilteredList()
+        }
       },
 
       getFilteredList () {
