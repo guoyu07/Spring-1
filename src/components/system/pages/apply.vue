@@ -38,7 +38,7 @@
               增加服务器
             </el-button>
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-              <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="item.tabname" :closable="index !== 0">
+              <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="index" :closable="index !== 0">
                 <el-form-item
                   label="使用环境"
                   :prop="'data.' + index + '.environment'"
@@ -137,7 +137,7 @@
   export default {
     data () {
       return {
-        tabsValue: '1',
+        tabsValue: 0,
         tabIndex: 1,
         editInfo: {
           id: ''
@@ -152,7 +152,7 @@
           applicationName: '',
           remark: '',
           data: [{
-            tabname: '1',
+            // tabname: 0,
             environment: null,
             quantity: '',
             operateSystem: null,
@@ -403,13 +403,13 @@
         this.applyForm.data = tabs.filter(tab => tab.name !== targetName)
       },
       addTab (targetName) {
-        let newTabName = ++this.tabIndex + ''
+        // let newTabName = ++this.tabIndex + ''
         var that = this
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
             if (that.applyForm.data.length < 5) {
               that.applyForm.data.push({
-                tabname: newTabName,
+                // tabname: newTabName,
                 environment: null,
                 quantity: '',
                 operateSystem: null,
@@ -420,7 +420,7 @@
                 // assetNumber: '',
                 score: 0
               })
-              this.tabsValue = newTabName
+              this.tabsValue = that.applyForm.data.length - 1
             } else {
               that.$message.warning('最多只能增加 5 个设备！')
             }
