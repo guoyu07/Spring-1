@@ -14,7 +14,7 @@
 </style>
 
 <template>
-  <div class="editor-content" v-if="formConfig">
+  <div class="editor-content" v-if="formConfig && formConfig.form">
     <el-row>
       <label>表单名称：</label>
       <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
@@ -100,9 +100,15 @@ export default {
   },
   activated () {
     this.formConfig = this.$route.query.row || null
-    if (this.formConfig) {
-      // actions
+    if (this.formConfig && this.formConfig.form) {
+      // 拿到 actions
       this.checkedActions = this.formConfig.form.action.map(item => item.name)
+    } else {
+      /**
+       * 正常的 Restfull API 是拿一个 id 再去获取详情。
+       * 这里是直接路由传对象过来，所以刷新时让他退回去。
+       */
+      this.$router.go(-1)
     }
   },
   methods: {

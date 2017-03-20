@@ -51,11 +51,10 @@
             <el-button slot="reference">配置选项</el-button>
           </el-popover>
           <!--动态选项（cmdb）-->
-          <el-popover v-if="['dist', 'dist/multi'].indexOf(itemConf.value.type) !== -1"
-            placement="right" trigger="click">
-            配置 cmdb 获取 url 以及参数来源（keyPath）
-            <el-button slot="reference">配置选项</el-button>
-          </el-popover>
+          <template v-if="['dist', 'dist/multi'].indexOf(itemConf.value.type) !== -1">
+            <el-button @click="showCMDBConfi(itemConf)">配置选项</el-button>
+            <options-conf-cmdb :dialog-props="itemConf.value"></options-conf-cmdb>
+          </template>
         </el-row>
         <el-row type="flex" justify="end">
           <el-button size="small" type="danger" icon="delete" @click="delBtn(itemConf)">删除字段</el-button>
@@ -68,14 +67,37 @@
 
 <script>
 import optionsConf from './optionsConf'
+import optionsConfCmdb from './optionsConfCMDB'
 
 export default {
   props: {
     configData: Array
   },
   methods: {
+    // 显示静态下拉的选项
     showMultiConf (itemConf) {
       if (!itemConf.value.regex) itemConf.value.regex = []
+    },
+    // CMDB 获取参数配置
+    showCMDBConfi (itemConf) {
+      if (itemConf.value.source || itemConf.value.count) {
+        //
+      } else {
+        itemConf.value.count = {}
+        itemConf.value.source = {
+          url: '',
+          data: {
+            action: '',
+            method: '',
+            params: {}
+          },
+          res: {
+            data_path: '',
+            show_key: ''
+          }
+        }
+      }
+      itemConf.value.confVisible = true
     },
     // 添加一个字段
     addBtn () {
@@ -88,6 +110,7 @@ export default {
         need_submit: true, // 需要提交
         readonly: false,
         value: {
+          confVisible: false,
           regex: [],
           type: ''
         }
@@ -99,7 +122,8 @@ export default {
     }
   },
   components: {
-    optionsConf
+    optionsConf,
+    optionsConfCmdb
   }
 }
 </script>
