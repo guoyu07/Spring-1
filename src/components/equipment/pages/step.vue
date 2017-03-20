@@ -17,7 +17,23 @@
             </el-form-item>
             <el-tabs type="card" @tab-click="handleClick">
               <el-tab-pane v-for="(data, index) in applyData.data" :label="data.name">
-                <h5 v-if="routerInfo.step!=='approve'">填写信息</h5>
+                <el-collapse v-model="activeNames" @change="handleChange">
+                  <el-collapse-item title="设备信息" name="1">
+                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
+                      <el-form-item v-for="form in searchKeyList" :label="form.name">
+                        <span v-if="form.value.type==='FK'">{{Object.assign(data[form.id], {}).name}}</span>
+                        <span v-else-if="form.value.type==='FKs'">
+                          <span v-for="span in data[form.id]">{{span.name}}</span>
+                        </span>
+                        <span v-else-if="form.value.type==='arr'">
+                          <span v-for="span in data[form.id]">{{span}}</span>
+                        </span>
+                        <span v-else>{{data[form.id]}}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                </el-collapse>
+                <h5 class="f-margin" v-if="routerInfo.step!=='approve'">填写信息</h5>
                 <div v-if="routerInfo.step==='deviceInfo'">
                   <form-structure :form-data="formStructureTofill" :item="assignForm.data[index]" :index="index"></form-structure>
                 </div>
@@ -209,22 +225,8 @@
                     <el-checkbox v-model="assignForm.data[index].installdb">安装数据库</el-checkbox>
                   </el-form-item>
                 </div>
-                <el-collapse v-model="data.activeNames" @change="handleChange">
-                  <el-collapse-item title="设备信息" name="2">
-                    <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
-                      <el-form-item v-for="form in searchKeyList" :label="form.name">
-                        <span v-if="form.value.type==='FK'">{{Object.assign(data[form.id], {}).name}}</span>
-                        <span v-else-if="form.value.type==='FKs'">
-                          <span v-for="span in data[form.id]">{{span.name}}</span>
-                        </span>
-                        <span v-else-if="form.value.type==='arr'">
-                          <span v-for="span in data[form.id]">{{span}}</span>
-                        </span>
-                        <span v-else>{{data[form.id]}}</span>
-                      </el-form-item>
-                    </el-form>
-                  </el-collapse-item>
-                  <el-collapse-item v-if="routerInfo.step!=='deviceInfo'" title="历史分配信息" name="1">
+                <el-collapse v-model="activeNames" @change="handleChange">
+                  <el-collapse-item v-if="routerInfo.step!=='deviceInfo'" title="历史分配信息" name="2">
                     <el-form :inline="true" label-position="left" label-width="100px" class="form-display-info">
                       <el-form-item v-for="formstru in formStructure" :label="formstru.name">
                         {{data[formstru.id]}}
@@ -290,6 +292,7 @@ import progressWrap from '../../_plugins/_progress'
 export default {
   data () {
     return {
+      activeNames: ['1'],
       loading: false,
       routerInfo: {},
       index: 0,
@@ -706,5 +709,8 @@ export default {
 }
 .el-collapse-item__header {
   font-size: 14px!important;
+}
+.f-margin {
+  margin-top: 15px;
 }
 </style>

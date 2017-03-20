@@ -30,7 +30,7 @@
                 新增
               </el-button>
               <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="index" :closable="index !== 0">
+                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="index + ''" :closable="index !== 0">
                   <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
                 </el-tab-pane>
               </el-tabs>
@@ -52,7 +52,7 @@
   export default {
     data () {
       return {
-        tabsValue: 0,
+        tabsValue: '0',
         tabIndex: 1,
         closable: true,
         loading: false,
@@ -223,13 +223,17 @@
                   } else {
                     this.editData[item.id] = ''
                   }
-                } else if (item.value.type === 'FKs') { // 重新整理 外键s 的数据结构，数组里的数据太多，只需要数组里的 instanceId
+                } else if (item.value.type === 'FKs') {
                   if (this.editData[item.id]) {
                     const arrdata = this.editData[item.id]
                     this.editData[item.id] = []
                     // console.log('arr', arrdata)
                     arrdata.map(value => {
-                      this.editData[item.id].push(value)
+                      item.value.object_list.map(object => {
+                        if (object.instanceId === value.instanceId) {
+                          this.editData[item.id].push(object)
+                        }
+                      })
                     })
                   } else {
                     this.editData[item.id] = ''

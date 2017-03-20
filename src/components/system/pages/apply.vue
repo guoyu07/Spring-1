@@ -38,7 +38,7 @@
               增加服务器
             </el-button>
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-              <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="index" :closable="index !== 0">
+              <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
                 <el-form-item
                   label="使用环境"
                   :prop="'data.' + index + '.environment'"
@@ -137,7 +137,7 @@
   export default {
     data () {
       return {
-        tabsValue: 0,
+        tabsValue: '0',
         tabIndex: 1,
         editInfo: {
           id: ''
