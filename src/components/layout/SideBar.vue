@@ -12,7 +12,7 @@
 
 <template>
   <aside class="sibebar">
-    <el-menu default-active="/part1" router="router" class="el-menu-vertical-demo" theme="light">
+    <el-menu router="router" class="el-menu-vertical-demo" theme="light">
 
       <el-submenu index="/storemanage">
         <template slot="title">仓库管理</template>
