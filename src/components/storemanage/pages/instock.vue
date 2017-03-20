@@ -30,7 +30,7 @@
                 新增
               </el-button>
               <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="item.tabname" :closable="index !== 0">
+                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="index" :closable="index !== 0">
                   <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
                 </el-tab-pane>
               </el-tabs>
@@ -52,7 +52,7 @@
   export default {
     data () {
       return {
-        tabsValue: '1',
+        tabsValue: 0,
         tabIndex: 1,
         closable: true,
         loading: false,
@@ -210,7 +210,7 @@
               }
             })
           })
-          this.$set(this.instockForm.data[0], 'tabname', '1')
+          // this.$set(this.instockForm.data[0], 'tabname', '1')
           console.log(this.formData)
           // 如果是修改页面
           if (this.editInfo.instanceId) {
@@ -316,9 +316,9 @@
         })
       },
       addTab (targetName) {
-        let newTabName = ++this.tabIndex + ''
+        // let newTabName = ++this.tabIndex + ''
         let newData = {}
-        newData.tabname = newTabName
+        // newData.tabname = newTabName
         this.formData.map(group => {
           group.value.map(item => {
             if (item.unique === 'true') {
@@ -341,7 +341,7 @@
           if (valid) {
             if (this.instockForm.data.length < 10) {
               this.instockForm.data.push(newData)
-              this.tabsValue = newTabName
+              this.tabsValue = this.instockForm.data.length - 1
             } else {
               this.$message.warning('最多只能增加 10 个设备！')
             }

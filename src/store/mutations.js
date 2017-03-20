@@ -1,18 +1,4 @@
-// import {
-//   BEGIN_REQUEST,
-//   CEASE_REQUEST,
-//   ADD_CONF,
-//   DEL_CONF,
-//   SHOW_LOADING,
-//   HIDE_LOADING,
-//   UPDATE_USERINFO,
-//   REMOVE_USERINFO
-// } from './mutation-types'
 import * as types from './mutation-types'
-
-// import {
-//   store
-// } from './index'
 
 export default {
   [types.SHOW_LOADING] (state) {
