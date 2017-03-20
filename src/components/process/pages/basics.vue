@@ -58,7 +58,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="adminData.visible = true, adminData.pkey = scope.row.pkey, adminData.type = 'user'">
+                              @click="adminData = Object.assign({}, adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_users, type: 'user' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -86,7 +86,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="initiatorData.visible = true, initiatorData.pkey = scope.row.pkey, initiatorData.type = 'user'">
+                              @click="initiatorData = Object.assign({}, initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_users, type: 'user' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -116,7 +116,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="adminData.visible = true, adminData.pkey = scope.row.pkey, adminData.type = 'group'">
+                              @click="adminData = Object.assign({}, adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_groups, type: 'group' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -144,7 +144,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="initiatorData.visible = true, initiatorData.pkey = scope.row.pkey, initiatorData.type = 'group'">
+                              @click="initiatorData = Object.assign({}, initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_groups, type: 'group' })">
                             </el-button>
                           </el-tooltip>
                         </div>

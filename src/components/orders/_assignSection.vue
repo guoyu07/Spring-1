@@ -60,6 +60,16 @@
         </template>
       </el-table-column>
     </el-table>
+    <div class="pagination-block clear">
+      <el-pagination
+        class="fr"
+        layout="prev, pager, next"
+        :current-page="pagination.page"
+        :page-size="pagination.pageSize"
+        @current-change="onPageChange"
+        :total="pagination.total">
+      </el-pagination>
+    </div>
 
     <el-dialog
       :title="taskViewData.task.name"
@@ -134,6 +144,11 @@
           loading: false,
           task: {}
         },
+        pagination: {
+          page: 1,
+          pageSize: 10,
+          total: 0
+        },
         newAssignee: '',
         isAssignable: false
       }
@@ -183,7 +198,9 @@
         if (this.selectedProcess) {
           data = {
             includeProcessVariables: 'true',
-            processDefinitionKey: this.selectedProcess
+            processDefinitionKey: this.selectedProcess,
+            page: this.pagination.page,
+            pageSize: this.pagination.pageSize
           }
         } else {
           data = { includeProcessVariables: 'true' }
@@ -196,8 +213,14 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.taskList = res.data.data.data
+            this.pagination.total = res.data.data.total
           }
         })
+      },
+
+      onPageChange (val) {
+        this.pagination.page = val
+        this.getTaskList()
       },
 
       onAssign (tid, assignee) {
