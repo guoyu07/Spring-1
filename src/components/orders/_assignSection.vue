@@ -5,9 +5,8 @@
 </style>
 
 <template>
-  <el-card
-    class="box-card mgb12">
-    <h3><i class="el-icon-setting"></i> 待指派任务</h3>
+  <div>
+    <!-- <h3><i class="el-icon-setting"></i> 待指派任务</h3> -->
     <el-alert
       title="你的帐号贵为「流程管理员」，可在此指派任务 :)"
       type="success"
@@ -118,7 +117,7 @@
         <el-button v-if="isAssignable" type="success" @click="onAssign(taskViewData.task.id, newAssignee)" icon="check" :disabled="!newAssignee" :loading="taskViewData.loading">确认指派</el-button>
       </span>
     </el-dialog>
-  </el-card>
+  </div>
 </template>
 
 <script>
@@ -128,7 +127,7 @@
         processLoading: false,
         processList: [],
         processTagList: [],
-        selectedProcess: [],
+        selectedProcess: '',
         taskList: [],
         taskViewData: {
           visible: false,
