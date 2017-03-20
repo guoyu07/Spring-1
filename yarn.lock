@@ -826,6 +826,40 @@ boom@2.x.x:
   dependencies:
     hoek "2.x.x"
 
+bpmn-js-properties-panel@^0.13.1:
+  version "0.13.1"
+  resolved "https://registry.yarnpkg.com/bpmn-js-properties-panel/-/bpmn-js-properties-panel-0.13.1.tgz#006a367d29bb05d966b53f08c5d1de22a7861951"
+  dependencies:
+    ids "^0.2.0"
+    inherits "^2.0.1"
+    lodash "^3.0.1"
+    min-dom "^0.2.0"
+    scroll-tabs "^0.2.1"
+    selection-update "^0.1.2"
+
+bpmn-js@^0.20.3:
+  version "0.20.3"
+  resolved "https://registry.yarnpkg.com/bpmn-js/-/bpmn-js-0.20.3.tgz#c376a384a754fce1454d8bb411bb5de0152a29a5"
+  dependencies:
+    bpmn-moddle "^0.14.0"
+    diagram-js "^0.19.1"
+    diagram-js-direct-editing "^0.17.1"
+    diagram-js-origin "^0.15.1"
+    ids "^0.2.0"
+    inherits "^2.0.1"
+    lodash "^3.0.1"
+    min-dom "^0.2.0"
+    object-refs "^0.1.1"
+    tiny-svg "^0.1.1"
+
+bpmn-moddle@^0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/bpmn-moddle/-/bpmn-moddle-0.14.0.tgz#1ec579581083f0e20769fa0db845ccdd963739e2"
+  dependencies:
+    lodash "^3.0.0"
+    moddle "^1.0.0"
+    moddle-xml "^1.0.0"
+
 brace-expansion@^1.0.0:
   version "1.1.6"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.6.tgz#7197d7eaa9b87e648390ea61fc66c84427420df9"
@@ -896,6 +930,10 @@ camel-case@3.0.x:
 camelcase@^1.0.2:
   version "1.2.1"
   resolved "https://registry.yarnpkg.com/camelcase/-/camelcase-1.2.1.tgz#9bb5304d2e0b56698b2c758b08a3eaa9daa58a39"
+
+camunda-bpmn-moddle@^0.10.1:
+  version "0.10.1"
+  resolved "https://registry.yarnpkg.com/camunda-bpmn-moddle/-/camunda-bpmn-moddle-0.10.1.tgz#4730900a2d3433c7e7dd9f73ed9c53409fad6761"
 
 caniuse-api@^1.5.2:
   version "1.5.3"
@@ -1080,6 +1118,43 @@ commoner@^0.10.1:
     private "^0.1.6"
     q "^1.1.2"
     recast "^0.11.17"
+
+component-classes@^1.2.3:
+  version "1.2.6"
+  resolved "https://registry.yarnpkg.com/component-classes/-/component-classes-1.2.6.tgz#c642394c3618a4d8b0b8919efccbbd930e5cd691"
+  dependencies:
+    component-indexof "0.0.3"
+
+component-closest@*, component-closest@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/component-closest/-/component-closest-0.1.4.tgz#5b72fc52d90607e75115cafdc3b07e27348de71b"
+  dependencies:
+    component-matches-selector "~0.1.5"
+
+component-delegate@^0.2.3:
+  version "0.2.4"
+  resolved "https://registry.yarnpkg.com/component-delegate/-/component-delegate-0.2.4.tgz#dc5028759ea681bea84a3d6bbd650207c3beb138"
+  dependencies:
+    component-closest "*"
+    component-event "*"
+
+component-event@*, component-event@^0.1.4:
+  version "0.1.4"
+  resolved "https://registry.yarnpkg.com/component-event/-/component-event-0.1.4.tgz#3de78fc28782381787e24bf2a7c536bf0142c9b4"
+
+component-indexof@0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/component-indexof/-/component-indexof-0.0.3.tgz#11d091312239eb8f32c8f25ae9cb002ffe8d3c24"
+
+component-matches-selector@^0.1.5, component-matches-selector@~0.1.5:
+  version "0.1.6"
+  resolved "https://registry.yarnpkg.com/component-matches-selector/-/component-matches-selector-0.1.6.tgz#7b630e04e7e0c3b0019f31749fd70af5ed8b972e"
+  dependencies:
+    component-query "*"
+
+component-query@*, component-query@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/component-query/-/component-query-0.0.3.tgz#07f49dab7071fa9606725df53e607f468acdaacf"
 
 concat-map@0.0.1:
   version "0.0.1"
@@ -1375,6 +1450,35 @@ detective@^4.3.1:
     acorn "^4.0.3"
     defined "^1.0.0"
 
+diagram-js-direct-editing@^0.17.1:
+  version "0.17.1"
+  resolved "https://registry.yarnpkg.com/diagram-js-direct-editing/-/diagram-js-direct-editing-0.17.1.tgz#afd4a77e149b37de6643bab9e919fe13df09b0d5"
+  dependencies:
+    lodash "^3.0.1"
+    min-dom "^0.2.0"
+
+diagram-js-origin@^0.15.1:
+  version "0.15.2"
+  resolved "https://registry.yarnpkg.com/diagram-js-origin/-/diagram-js-origin-0.15.2.tgz#9ce0a93977bb3c361d63cc17dd89dfa9c485df2e"
+  dependencies:
+    tiny-svg "^0.1.0"
+
+diagram-js@^0.19.1:
+  version "0.19.1"
+  resolved "https://registry.yarnpkg.com/diagram-js/-/diagram-js-0.19.1.tgz#f4b606c915a119f4e60e0d15b4d18c097bba017e"
+  dependencies:
+    didi "^0.1.0"
+    hammerjs "^2.0.1"
+    inherits "^2.0.1"
+    lodash "^3.0.1"
+    min-dom "^0.2.0"
+    object-refs "^0.1.1"
+    tiny-svg "^0.1.1"
+
+didi@^0.1.0:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/didi/-/didi-0.1.1.tgz#686e44691b9ca52bab1b89c3c66a8174b3249864"
+
 doctrine@^1.2.2:
   version "1.5.0"
   resolved "https://registry.yarnpkg.com/doctrine/-/doctrine-1.5.0.tgz#379dce730f6166f76cefa4e6707a159b02c5a6fa"
@@ -1418,6 +1522,10 @@ domhandler@^2.3.0:
   resolved "https://registry.yarnpkg.com/domhandler/-/domhandler-2.3.0.tgz#2de59a0822d5027fabff6f032c2b25a2a8abe738"
   dependencies:
     domelementtype "1"
+
+domify@^1.3.1:
+  version "1.4.0"
+  resolved "https://registry.yarnpkg.com/domify/-/domify-1.4.0.tgz#11483617f764f8695975b4bdc79b14f0803b629b"
 
 domutils@1.1:
   version "1.1.6"
@@ -1702,7 +1810,7 @@ eventemitter3@1.x.x:
   version "1.2.0"
   resolved "https://registry.yarnpkg.com/eventemitter3/-/eventemitter3-1.2.0.tgz#1c86991d816ad1e504750e73874224ecf3bec508"
 
-events@^1.0.0:
+events@^1.0.0, events@^1.1.0:
   version "1.1.1"
   resolved "https://registry.yarnpkg.com/events/-/events-1.1.1.tgz#9ebdb7635ad099c70dcc4c2a1f5004288e8bd924"
 
@@ -2064,6 +2172,10 @@ graceful-fs@^4.1.2, graceful-fs@^4.1.6, graceful-fs@^4.1.9:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/graceful-readlink/-/graceful-readlink-1.0.1.tgz#4cafad76bc62f02fa039b2f94e9a3dd3a391a725"
 
+hammerjs@^2.0.1:
+  version "2.0.8"
+  resolved "https://registry.yarnpkg.com/hammerjs/-/hammerjs-2.0.8.tgz#04ef77862cff2bb79d30f7692095930222bf60f1"
+
 har-validator@~2.0.6:
   version "2.0.6"
   resolved "https://registry.yarnpkg.com/har-validator/-/har-validator-2.0.6.tgz#cdcbc08188265ad119b6a5a7c8ab70eecfb5d27d"
@@ -2103,6 +2215,10 @@ hasha@~2.2.0:
   dependencies:
     is-stream "^1.0.1"
     pinkie-promise "^2.0.0"
+
+hat@^0.0.3:
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/hat/-/hat-0.0.3.tgz#bb014a9e64b3788aed8005917413d4ff3d502d8a"
 
 hawk@~3.1.3:
   version "3.1.3"
@@ -2224,6 +2340,12 @@ iconv-lite@^0.4.5:
 icss-replace-symbols@^1.0.2:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/icss-replace-symbols/-/icss-replace-symbols-1.0.2.tgz#cb0b6054eb3af6edc9ab1d62d01933e2d4c8bfa5"
+
+ids@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/ids/-/ids-0.2.0.tgz#5835ab9272c154b5c42e9b61ffb2a31ad6232853"
+  dependencies:
+    hat "^0.0.3"
 
 ieee754@^1.1.4:
   version "1.1.8"
@@ -2822,6 +2944,10 @@ lodash.words@^3.0.0:
   dependencies:
     lodash._root "^3.0.0"
 
+lodash@^3.0.0, lodash@^3.0.1, lodash@^3.10.1:
+  version "3.10.1"
+  resolved "https://registry.yarnpkg.com/lodash/-/lodash-3.10.1.tgz#5bf45e8e49ba4189e17d482789dfd15bd140b7b6"
+
 lodash@^4.0.0, lodash@^4.17.2, lodash@^4.17.3, lodash@^4.2.0, lodash@^4.3.0:
   version "4.17.4"
   resolved "https://registry.yarnpkg.com/lodash/-/lodash-4.17.4.tgz#78203a4d1c328ae1d86dca6460e369b57f4055ae"
@@ -2933,6 +3059,18 @@ mime@1.3.4, mime@1.3.x, mime@^1.2.11, mime@^1.3.4:
   version "1.3.4"
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.3.4.tgz#115f9e3b6b3daf2959983cb38f149a2d40eb5d53"
 
+min-dom@^0.2.0:
+  version "0.2.0"
+  resolved "https://registry.yarnpkg.com/min-dom/-/min-dom-0.2.0.tgz#7f1a3f8ac85c05adee7b3f40e00c52803075cd5d"
+  dependencies:
+    component-classes "^1.2.3"
+    component-closest "^0.1.4"
+    component-delegate "^0.2.3"
+    component-event "^0.1.4"
+    component-matches-selector "^0.1.5"
+    component-query "^0.0.3"
+    domify "^1.3.1"
+
 "minimatch@2 || 3", minimatch@^3.0.0, minimatch@^3.0.2:
   version "3.0.3"
   resolved "https://registry.yarnpkg.com/minimatch/-/minimatch-3.0.3.tgz#2a4e4090b96b2db06a9d7df01055a62a77c9b774"
@@ -2958,6 +3096,21 @@ mkdirp@0.5.0:
   resolved "https://registry.yarnpkg.com/mkdirp/-/mkdirp-0.5.1.tgz#30057438eac6cf7f8c4767f38648d6697d75c903"
   dependencies:
     minimist "0.0.8"
+
+moddle-xml@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/moddle-xml/-/moddle-xml-1.0.0.tgz#7801e4401ebdc285952eb69b665aa2eeb6fc5e37"
+  dependencies:
+    lodash "^3.0.0"
+    moddle "^1.0.0"
+    sax "~0.6.0"
+    tiny-stack "^0.1.0"
+
+moddle@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/moddle/-/moddle-1.0.0.tgz#9034d9786087b67116932abd56c0f7c66ad12497"
+  dependencies:
+    lodash "^3.0.0"
 
 ms@0.7.1:
   version "0.7.1"
@@ -3102,6 +3255,10 @@ object-assign@^4.0.0, object-assign@^4.0.1, object-assign@^4.1.0:
 object-hash@^1.1.4:
   version "1.1.7"
   resolved "https://registry.yarnpkg.com/object-hash/-/object-hash-1.1.7.tgz#a8d83fdf5d4583a4e2e7ffc18e8915e08482ef52"
+
+object-refs@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/object-refs/-/object-refs-0.1.1.tgz#353f75da633ea846a61ef0df04ec6ba941f86fc4"
 
 object.omit@^2.0.0:
   version "2.0.1"
@@ -3888,9 +4045,26 @@ safe-buffer@^5.0.1:
   version "5.0.1"
   resolved "https://registry.yarnpkg.com/safe-buffer/-/safe-buffer-5.0.1.tgz#d263ca54696cd8a306b5ca6551e92de57918fbe7"
 
+sax@~0.6.0:
+  version "0.6.1"
+  resolved "https://registry.yarnpkg.com/sax/-/sax-0.6.1.tgz#563b19c7c1de892e09bfc4f2fc30e3c27f0952b9"
+
 sax@~1.2.1:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/sax/-/sax-1.2.2.tgz#fd8631a23bc7826bef5d871bdb87378c95647828"
+
+scroll-tabs@^0.2.1:
+  version "0.2.1"
+  resolved "https://registry.yarnpkg.com/scroll-tabs/-/scroll-tabs-0.2.1.tgz#770d462b40f633b9cae6eee3521f785c49da8f6f"
+  dependencies:
+    events "^1.1.0"
+    inherits "^2.0.1"
+    lodash "^3.10.1"
+    min-dom "^0.2.0"
+
+selection-update@^0.1.2:
+  version "0.1.2"
+  resolved "https://registry.yarnpkg.com/selection-update/-/selection-update-0.1.2.tgz#803a044dcc6edab5a3ae648f5f0357e89ad66b96"
 
 selenium-server@2.53.1:
   version "2.53.1"
@@ -4167,6 +4341,14 @@ timers-browserify@^2.0.2:
   resolved "https://registry.yarnpkg.com/timers-browserify/-/timers-browserify-2.0.2.tgz#ab4883cf597dcd50af211349a00fbca56ac86b86"
   dependencies:
     setimmediate "^1.0.4"
+
+tiny-stack@^0.1.0:
+  version "0.1.0"
+  resolved "https://registry.yarnpkg.com/tiny-stack/-/tiny-stack-0.1.0.tgz#1a848173fc0bfc54e77bb2e9504d2d3c8ad79621"
+
+tiny-svg@^0.1.0, tiny-svg@^0.1.1:
+  version "0.1.1"
+  resolved "https://registry.yarnpkg.com/tiny-svg/-/tiny-svg-0.1.1.tgz#185c8eaf70875432fdff98dc1790a9bfaf65feab"
 
 to-arraybuffer@^1.0.0:
   version "1.0.1"

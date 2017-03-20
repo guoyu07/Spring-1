@@ -128,7 +128,7 @@
         processLoading: false,
         processList: [],
         processTagList: [],
-        selectedProcess: [],
+        selectedProcess: '',
         taskList: [],
         taskViewData: {
           visible: false,
