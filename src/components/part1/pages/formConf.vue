@@ -4,9 +4,6 @@
       max-width: 180px;
       display: inline-block;
     }
-    .el-select {
-      width: 120px;
-    }
     .el-collapse {
       margin-bottom: 10px;
       .el-row {
@@ -44,11 +41,19 @@
             <el-option label="时间" value="datetime"></el-option>
             <el-option label="下拉单选" value="enum"></el-option>
             <el-option label="下拉多选" value="enum/multi"></el-option>
+            <el-option label="下拉单选（cmdb）" value="dist"></el-option>
+            <el-option label="下拉多选（cmdb）" value="dist/multi"></el-option>
           </el-select>
-          <!--暂不细分 动态获取选项-->
+          <!--静态选项-->
           <el-popover v-if="['enum', 'enum/multi'].indexOf(itemConf.value.type) !== -1"
             placement="right" trigger="click" @show="showMultiConf(itemConf)">
             <options-conf :conf-arr="itemConf.value.regex"></options-conf>
+            <el-button slot="reference">配置选项</el-button>
+          </el-popover>
+          <!--动态选项（cmdb）-->
+          <el-popover v-if="['dist', 'dist/multi'].indexOf(itemConf.value.type) !== -1"
+            placement="right" trigger="click">
+            配置 cmdb 获取 url 以及参数来源（keyPath）
             <el-button slot="reference">配置选项</el-button>
           </el-popover>
         </el-row>

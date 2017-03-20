@@ -27,9 +27,9 @@
         <el-checkbox-group v-model="checkedActions" @change="actionChange">
           <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
         </el-checkbox-group>
-        <template v-if="checkedActions.some(_ => _ === '下载')">
+        <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
           <label>下载 url：</label>
-          <el-input size="small"></el-input>
+          <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
         </template>
       </el-card>
     </el-row>
@@ -60,16 +60,16 @@
       </el-popover>
       <el-popover v-if="bodyCountType === 'form_header'"
         placement="right" trigger="click">
-        <h5>配置一个 form_header 中的字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.path"></el-input>
+        <h5>输入表单中 form_header 的一个字段：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
       <el-popover v-if="bodyCountType === 'message_header'"
         placement="right" trigger="click">
-        <h5>配置一个 message 中的环节：</h5>
+        <h5>输入流程中的一个历史环节的 messageId：</h5>
         <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
-        <h5>配置一个 message_header 中的字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.path"></el-input>
+        <h5>输入该环节中的表单的一个字段：</h5>
+        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
         <el-button slot="reference">配置</el-button>
       </el-popover>
     </el-row>
