@@ -83,19 +83,19 @@ export default {
       if (itemConf.value.source || itemConf.value.count) {
         //
       } else {
-        itemConf.value.count = {}
-        itemConf.value.source = {
+        this.$set(itemConf.value, 'count', { type: '' })
+        this.$set(itemConf.value, 'source', {
           url: '',
           data: {
             action: '',
             method: '',
-            params: {}
+            params: []
           },
           res: {
             data_path: '',
             show_key: ''
           }
-        }
+        })
       }
       itemConf.value.confVisible = true
     },

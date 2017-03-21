@@ -21,7 +21,7 @@
             class="mgb12">
           </el-alert>
           <div class="btn-area clear">
-            <el-button type="success" @click="onNewBpmn" icon="plus" class="fr">新建流程 BPMN</el-button>
+            <el-button type="info" :plain="true" @click="onNewBpmn" icon="plus">新建流程 BPMN</el-button>
           </div>
           <el-table
             :data="processList"

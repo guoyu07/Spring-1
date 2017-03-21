@@ -1,36 +1,76 @@
-<style lang="less" scoped>
-  .conf-contain {
-    el-row {
+<style lang="less">
+  .el-dialog {
+    width: 60%;
+  }
+  .conf-cmdb-contain {
+    .el-row, .el-col {
       margin-bottom: 4px;
     }
-  }  
+    .el-form-item {
+      margin-bottom: 10px;
+    }
+    .el-input {
+      width: initial;
+    }
+  }
 </style>
 
 <template>
   <el-dialog title="获取选项的 API 配置：" v-model="dialogProps.confVisible">
-    <div class="conf-contain" v-if="dialogProps.source">
-      <el-form :model="dialogProps.source">
-        <el-form-item label="URL：" label-width="80px">
+    <div class="conf-cmdb-contain" v-if="dialogProps.source">
+      <el-form :model="dialogProps.source" label-width="100px" :inline="true">
+        <el-form-item label="URL：">
           <el-input v-model="dialogProps.source.url"></el-input>
         </el-form-item>
-        <el-form-item label="action：" label-width="80px">
+        <el-form-item label="action：">
           <el-input v-model="dialogProps.source.data.action"></el-input>
         </el-form-item>
-        <el-form-item label="method：" label-width="80px">
+        <el-form-item label="method：">
           <el-input v-model="dialogProps.source.data.method"></el-input>
         </el-form-item>
-        <!--<el-form-item label="活动区域" :label-width="formLabelWidth">
-          <el-select v-model="form.region" placeholder="请选择活动区域">
-            <el-option label="区域一" value="shanghai"></el-option>
-            <el-option label="区域二" value="beijing"></el-option>
-          </el-select>
-        </el-form-item>-->
+        <el-form-item label="params：">
+          <el-dropdown trigger="click" @command="selectParams">
+            <el-button size="small" type="primary" icon="plus">添加参数</el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="static">静态输入</el-dropdown-item>
+              <el-dropdown-item command="formHeader">取 form header 字段</el-dropdown-item>
+              <el-dropdown-item command="formBody">取 form body 字段</el-dropdown-item>
+              <el-dropdown-item command="msgHeader">取 message header 字段</el-dropdown-item>
+              <el-dropdown-item command="msgBody">取 message body 字段</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+        </el-form-item>
       </el-form>
+      <el-collapse>
+        <el-collapse-item v-for="param in dialogProps.source.data.params" :title="param.id">
+          <el-row>
+            <el-col :span="12">
+              <label>属性名：</label>
+              <el-input v-model="param.id"></el-input>
+            </el-col>
+            <el-col :span="12" v-if="param.value.type === 'static'">
+              <label>属性值：</label>
+              <el-input v-model="param.value.value"></el-input>
+            </el-col>
+            <el-col :span="12" v-if="['message_header', 'message_body'].includes(param.value.type)">
+              <label>取值于流程环节：</label>
+              <el-input v-model="param.value.id"></el-input>
+            </el-col>
+            <el-col :span="12" v-if="param.value.type !== 'static'">
+              <label>取值于 key_path：</label>
+              <el-input v-model="param.value.key_path"></el-input>
+            </el-col>
+          </el-row>
+          <el-row type="flex" justify="end">
+            <el-button icon="delete" @click="paramsDelBtn(dialogProps.source.data.params, param)"></el-button>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
       <el-card>
-        参数来源 5 种 params + 返回数据
-      </el-card>
-      <el-card>
-        多选/count 5 种 radio
+        <label>count：</label>
+        <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
+          <el-option v-for="item in countConfig" :value="item.type"></el-option>
+        </el-select>
       </el-card>
       <div slot="footer" class="dialog-footer">
         <el-button>取 消</el-button>
@@ -45,6 +85,102 @@
     props: {
       dialogProps: Object
     },
-    methods: {}
+    data () {
+      return {
+        countTypeOptions: [
+          { value: 'static', label: '静态输入' },
+          { value: 'form_header', label: '取 form header 中字段' },
+          { value: 'form_body', label: '取 form body 中字段' },
+          { value: 'message_header', label: '取 message header 中字段' },
+          { value: 'message_body', label: '取 message body 中字段' }
+        ],
+        countConfig: [
+          {
+            type: 'static',
+            min: 1,
+            max: 1
+          },
+          {
+            type: 'form_header',
+            key_path: ''
+          },
+          {
+            type: 'form_body',
+            key_path: ''
+          },
+          {
+            type: 'message_header',
+            id: '',
+            key_path: ''
+          },
+          {
+            type: 'message_body',
+            id: '',
+            key_path: ''
+          }
+        ]
+      }
+    },
+    methods: {
+      selectParams (cmd) {
+        let param = null
+        switch (cmd) {
+          case 'static':
+            param = {
+              id: '',
+              value: {
+                type: 'static',
+                value: ''
+              }
+            }
+            break
+          case 'formHeader':
+            param = {
+              id: '',
+              value: {
+                type: 'form_header',
+                key_path: ''
+              }
+            }
+            break
+          case 'formBody':
+            param = {
+              id: '',
+              value: {
+                type: 'form_body',
+                key_path: ''
+              }
+            }
+            break
+          case 'msgHeader':
+            param = {
+              id: '',
+              value: {
+                type: 'message_header',
+                key_path: ''
+              }
+            }
+            break
+          case 'msgBody':
+            param = {
+              id: '',
+              value: {
+                type: 'message_body',
+                value: ''
+              }
+            }
+            break
+          default:
+            break
+        }
+        this.dialogProps.source.data.params.push(param)
+      },
+      countTypeChange (type) {
+        // this.dialogProps.count = countConfig[key]
+      },
+      paramsDelBtn (arr, item) {
+        arr.splice(arr.indexOf(item), 1)
+      }
+    }
   }
 </script>
