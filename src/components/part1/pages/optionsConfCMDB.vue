@@ -2,6 +2,10 @@
   .el-dialog {
     width: 60%;
   }
+  .dialog-footer {
+    margin-top: 10px;
+    text-align: center;
+  }
   .conf-cmdb-contain {
     .el-row, .el-col {
       margin-bottom: 4px;
@@ -41,8 +45,8 @@
           </el-dropdown>
         </el-form-item>
       </el-form>
-      <el-collapse>
-        <el-collapse-item v-for="param in dialogProps.source.data.params" :title="param.id">
+      <el-collapse v-if="dialogProps.source.data.params.length">
+        <el-collapse-item v-for="param in dialogProps.source.data.params" :title="param.value.type">
           <el-row>
             <el-col :span="12">
               <label>属性名：</label>
@@ -66,15 +70,15 @@
           </el-row>
         </el-collapse-item>
       </el-collapse>
-      <el-card>
+      <!--多选-->
+      <el-card v-if="dialogProps.type === 'dist/multi'">
         <label>count：</label>
         <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
           <el-option v-for="item in countConfig" :value="item.type"></el-option>
         </el-select>
       </el-card>
       <div slot="footer" class="dialog-footer">
-        <el-button>取 消</el-button>
-        <el-button type="primary">确 定</el-button>
+        <el-button type="primary">完成</el-button>
       </div>
     </div>
   </el-dialog>
@@ -87,13 +91,6 @@
     },
     data () {
       return {
-        countTypeOptions: [
-          { value: 'static', label: '静态输入' },
-          { value: 'form_header', label: '取 form header 中字段' },
-          { value: 'form_body', label: '取 form body 中字段' },
-          { value: 'message_header', label: '取 message header 中字段' },
-          { value: 'message_body', label: '取 message body 中字段' }
-        ],
         countConfig: [
           {
             type: 'static',
