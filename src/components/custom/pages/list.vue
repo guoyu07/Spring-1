@@ -35,7 +35,7 @@
             <el-table-column
               label="操作">
               <template scope="scope">
-                <el-button type="info" size="small" :plain="true" @click="$router.replace(`/custom/bpmn/${scope.row.pkey}`)" icon="fa-sitemap">BPMN</el-button>
+                <el-button type="info" size="small" :plain="true" @click="$router.replace(`/custom/bpmn/${scope.row.pkey}`)" icon="fa-cogs">自定义</el-button>
               </template>  
             </el-table-column>
           </el-table>
