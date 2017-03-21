@@ -3,9 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card
-          class="box-card"
-          v-loading.fullscreen="loading"
-          element-loading-text="拼命加载中">
+          class="box-card">
           <h3><i :class="editInfo.instanceId ? 'el-icon-edit' : 'el-icon-fa-sign-in' "></i> {{ editInfo.instanceId || editInfo.taskid ? '更改信息' : '入库流程'}}</h3>
           <el-form label-position="left" label-width="100px">
             <el-form-item label="设备类型">
@@ -87,6 +85,7 @@
       }
     },
     created () {
+      // console.log(this.$loading)
       this.userInfo = window.localStorage
       this.application = this.userInfo.userName // 默认申请人为填写人
       if (this.$route.params.id) {

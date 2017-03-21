@@ -334,6 +334,8 @@
             // 新增毕，方出库
             this.onSubmit('applyForm')
           })
+        } else {
+          this.onSubmit('applyForm')
         }
       },
       onSubmit (applyForm) {
