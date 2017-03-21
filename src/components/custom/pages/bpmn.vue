@@ -53,15 +53,24 @@ export default {
           camunda: camundaModdleDescriptor
         }
       })
-      this.bpmnModeler.importXML(diagramXML, err => {
-        if (err) console.log(err)
-        document.getElementsByClassName('bjs-powered-by')[0].outerHTML = ''
-        this.bpmnModeler.get('canvas').zoom('fit-viewport')
-      })
+      // 导入响应而来的 BPMN
+      if (window.localStorage.getItem('bpmn')) {
+        this.loadXML(window.localStorage.getItem('bpmn'))
+      } else {
+        this.loadXML(diagramXML)
+      }
     })
   },
 
   methods: {
+    loadXML (xml) {
+      this.bpmnModeler.importXML(xml, err => {
+        if (err) console.log(err)
+        document.getElementsByClassName('bjs-powered-by')[0].outerHTML = ''
+        this.bpmnModeler.get('canvas').zoom('fit-viewport')
+      })
+    },
+
     saveToXML () {
       this.bpmnModeler.saveXML({ format: true }, (err, xml) => {
         if (err) {

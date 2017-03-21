@@ -120,9 +120,12 @@ const routes = [{
   }
 }, { // 流程设计 删
   path: '/custom',
-  component: require('./components/custom/Index'),
+  component: require('./components/custom/index'),
   children: [{
-    path: '',
+    path: '/custom',
+    component: require('./components/custom/pages/list.vue')
+  }, {
+    path: '/custom/bpmn',
     component: require('./components/custom/pages/bpmn.vue')
   }]
 }, {

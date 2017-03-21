@@ -1,11 +1,13 @@
 <style>
-  .bpmn {
+  .item {
     height: 100%;
   }
 </style>
 
 <template>
-  <div class="bpmn">
-    <router-view></router-view>
+  <div class="item">
+    <keep-alive>
+      <router-view></router-view>
+    </keep-alive>
   </div>
 </template>
