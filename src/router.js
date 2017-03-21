@@ -69,7 +69,7 @@ const routes = [{
       path: '/system/applylist',
       component: require('./components/system/pages/applylist.vue')
     }, {
-      path: '/system/:step/:id/:name', // 具体步骤操作
+      path: '/system/:step/:id/:name', // 服务器资源申请具体步骤操作
       component: require('./components/system/pages/step.vue')
     }, {
       path: '/system/offlinelist',
@@ -77,6 +77,9 @@ const routes = [{
     }, {
       path: '/system/onlinelist',
       component: require('./components/system/pages/onlinelist.vue')
+    }, {
+      path: '/system/online/:step/:id/:name', // 上线流程具体步骤操作
+      component: require('./components/system/pages/onlinestep.vue')
     }]
   }, {
     path: '/auth',
