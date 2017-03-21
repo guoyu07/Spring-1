@@ -101,6 +101,19 @@ const routes = [{
       path: '/process-admin/steps',
       component: require('./components/process/pages/steps.vue')
     }]
+  }, { // 流程设计 删
+    path: '/custom',
+    component: require('./components/custom/index'),
+    children: [{
+      path: '/custom',
+      component: require('./components/custom/pages/list.vue')
+    }, {
+      path: '/custom/new',
+      component: require('./components/custom/pages/bpmn.vue')
+    }, {
+      path: '/custom/bpmn/:pkey',
+      component: require('./components/custom/pages/bpmn.vue')
+    }]
   }, {
     path: '/orders',
     component: require('./components/orders/orders')
@@ -121,16 +134,6 @@ const routes = [{
   meta: {
     requiresAuth: true
   }
-}, { // 流程设计 删
-  path: '/custom',
-  component: require('./components/custom/index'),
-  children: [{
-    path: '/custom',
-    component: require('./components/custom/pages/list.vue')
-  }, {
-    path: '/custom/bpmn',
-    component: require('./components/custom/pages/bpmn.vue')
-  }]
 }, {
   path: '*',
   component: NotFound

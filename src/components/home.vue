@@ -1,13 +1,18 @@
 <style>
   #content {
     /*width: 100%;*/
-    /*height: 100%;*/
+    height: 100%;
     padding-top: 80px;
     padding-left: 220px;
     padding-right: 20px;
     padding-bottom: 50px;
     /*overflow: auto;*/
   }
+
+  .home {
+    height: 100%;
+  }
+
   .el-menu-item-group__title {
     font-size: 12px;
   }
