@@ -25,7 +25,7 @@
             <el-table-column
               label="操作">
               <template scope="scope">
-                <el-button type="info" size="small" :plain="true" @click="onBpmn(scope.row.pkey)">查看／更新 BPMN</el-button>
+                <el-button type="info" size="small" :plain="true" @click="onLoadBpmn(scope.row.pkey)">查看／更新 BPMN</el-button>
               </template>  
             </el-table-column>
           </el-table>
@@ -50,7 +50,7 @@
     methods: {
       onNewBpmn () {
         window.localStorage.removeItem('bpmn')
-        this.$router.replace('/custom/bpmn')
+        this.$router.replace('/custom/new')
       },
 
       getProcessList () {
@@ -66,7 +66,7 @@
         })
       },
 
-      onBpmn (pkey) {
+      onLoadBpmn (pkey) {
         let postData = {
           action: 'process/bpmn/data',
           method: 'GET',
@@ -75,7 +75,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             window.localStorage.setItem('bpmn', res.data.data)
-            this.$router.replace('/custom/bpmn')
+            this.$router.replace(`/custom/bpmn/${pkey}`)
           }
         })
       }

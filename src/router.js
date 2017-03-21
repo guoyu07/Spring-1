@@ -125,7 +125,10 @@ const routes = [{
     path: '/custom',
     component: require('./components/custom/pages/list.vue')
   }, {
-    path: '/custom/bpmn',
+    path: '/custom/new',
+    component: require('./components/custom/pages/bpmn.vue')
+  }, {
+    path: '/custom/bpmn/:pkey',
     component: require('./components/custom/pages/bpmn.vue')
   }]
 }, {

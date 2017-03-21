@@ -4,6 +4,7 @@
     overflow: hidden;
     position: relative;
   }
+
   #properties-panel {
     position: absolute;
     top: 0;
@@ -14,13 +15,19 @@
     border-left: 1px solid #ccc;
     overflow: auto;
   }
+
+  .save-btn {
+    position: fixed;
+    bottom: 20px;
+    right: 280px;
+  }
 </style>
 
 <template>
   <div id="bpmn-editor">
-    <button @click="saveToXML">发送 XML 给后台</button>
     <div id="bpmn-canvas"></div>
     <div id="properties-panel"></div>
+    <el-button type="success" icon="check" @click="saveToXML" class="save-btn">保存</el-button>
   </div>
 </template>
 
@@ -35,6 +42,12 @@ export default {
   data () {
     return {
       bpmnModeler: null
+    }
+  },
+
+  computed: {
+    isNew () {
+      return !window.localStorage.getItem('bpmn') || !this.$route.params.pkey  // 是否新建
     }
   },
 
@@ -54,10 +67,10 @@ export default {
         }
       })
       // 导入响应而来的 BPMN
-      if (window.localStorage.getItem('bpmn')) {
-        this.loadXML(window.localStorage.getItem('bpmn'))
-      } else {
+      if (this.isNew) {
         this.loadXML(diagramXML)
+      } else {
+        this.loadXML(window.localStorage.getItem('bpmn'))
       }
     })
   },
@@ -74,10 +87,32 @@ export default {
     saveToXML () {
       this.bpmnModeler.saveXML({ format: true }, (err, xml) => {
         if (err) {
-          console.error('diagram save failed', err)
+          this.$message.error(`发生错误：${err}`)
         } else {
-          console.info('diagram saved')
           console.info(xml)
+          let postData
+          if (this.isNew) {
+            postData = {
+              action: 'process/bpmn/data',
+              method: 'POST',
+              data: { bpmn_data: xml }
+            }
+          } else {
+            postData = {
+              action: 'process/bpmn/data',
+              method: 'PUT',
+              data: {
+                pkey: this.$route.params.pkey,
+                bpmn_data: xml
+              }
+            }
+          }
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('保存成功！')
+              this.$router.replace('/custom')
+            }
+          })
         }
       })
     }
