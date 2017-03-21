@@ -57,11 +57,12 @@ Vue.filter('convertTime', (val) => {
 //     NProgress.done()
 //   })
 // })
+
 // interceptors
-let loading = Vue.prototype.$loading({text: '正在加载中...'})
+// let loading = Vue.prototype.$loading({text: '正在加载中...'})
 http.interceptors.request.use(rq => {
   NProgress.start()
-  loading
+  // loading
   return rq
 }, err => Promise.reject(err))
 
@@ -69,7 +70,7 @@ http.interceptors.response.use(rs => {
   if (rs.status === 401) {
     auth.logout()
   }
-  loading.close()
+  // loading.close()
   NProgress.done()
   NProgress.remove()
   return rs

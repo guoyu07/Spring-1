@@ -427,52 +427,61 @@ export default {
     },
     onSubmit (assignForm) {
       console.log(this.assignForm)
-      this.$confirm('确定通过审批?', '提示', {
+      this.$confirm('确定提交?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'info'
       }).then(() => {
-        this.$refs[assignForm].validate((valid) => {
-          if (valid) {
-            if (this.assignForm.data) {
-              for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
-                if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
-                  this.$message.warning('未分配完！')
-                  return false
+        // this.$refs[assignForm].validate(valid => { return valid }) !== undefined
+        const ref = this.$refs[assignForm].validate(valid => { return valid }) === undefined
+        if (ref) {
+          this.$refs[assignForm].validate((valid) => {
+            if (valid) {
+              if (this.assignForm.data) {
+                for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
+                  if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
+                    this.$message.warning('未分配完！')
+                    return false
+                  }
                 }
               }
+              this.postMethod(this.routerInfo.id, this.assignForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('未分配完！')
+              return false
             }
-            const postData = {
-              action: 'runtime/task/complete',
-              method: 'POST',
-              data: {
-                tid: this.routerInfo.id,
-                form: this.assignForm // 通过审批 需要判断一下登录的账号的角色身份
-                  // pass: "流程走向控制变量,整型(可选,默认为0)"
-              }
-            }
-            this.http.post('', this.parseData(postData))
-              .then((res) => {
-                if (res && res.status === 200) {
-                  this.$message({
-                    type: 'success',
-                    message: '审批成功!'
-                  })
-                  this.$router.go(-1) // 分配成功跳转历史的上一页
-                }
-              })
-          } else {
-            console.log('error submit!!')
-            this.$message.warning('未分配完！')
-            return false
-          }
-        })
+          })
+        } else if (this.assignForm.data.machines.length) {
+          this.postMethod(this.routerInfo.id, this.assignForm)
+        }
       }).catch(() => {
         this.$message({
           type: 'info',
           message: '已取消审批'
         })
       })
+    },
+    postMethod (id, data) {
+      const postData = {
+        action: 'runtime/task/complete',
+        method: 'POST',
+        data: {
+          tid: id,
+          form: data // 通过审批 需要判断一下登录的账号的角色身份
+            // pass: "流程走向控制变量,整型(可选,默认为0)"
+        }
+      }
+      this.http.post('', this.parseData(postData))
+        .then((res) => {
+          if (res && res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '审批成功!'
+            })
+            this.$router.go(-1) // 分配成功跳转历史的上一页
+          }
+        })
     },
     cancel () {
       this.$router.go(-1) // 跳转历史的上一页

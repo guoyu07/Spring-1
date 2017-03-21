@@ -53,8 +53,8 @@
                       <td>{{ data.hardDisk }}</td>
                       <th>资源分数</th>
                       <td>{{ data.score }}</td>
-                      <th>资产编号</th>
-                      <td>{{ data.assetNumber }}</td>
+                      <th><!-- 资产编号 --></th>
+                      <td><!-- {{ data.assetNumber }} --></td>
                     </tr>
                     <template v-if="data.hostType === '虚拟机'">
                       <tr>
