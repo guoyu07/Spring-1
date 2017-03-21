@@ -25,7 +25,7 @@
 </template>
 
 <script>
-import diagramXML from './bpmn.XML'
+import diagramXML from './../bpmn.XML'
 import BpmnModeler from 'bpmn-js/lib/Modeler'
 import propertiesPanelModule from 'bpmn-js-properties-panel'
 import propertiesProviderModule from 'bpmn-js-properties-panel/lib/provider/camunda'

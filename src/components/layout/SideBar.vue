@@ -59,7 +59,7 @@
 
       <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
       <el-menu-item index="/hours"><i class="el-icon-time"></i>标准工时统计</el-menu-item>
-      <el-menu-item index="/part2">流程设计（测试）</el-menu-item>
+      <el-menu-item index="/custom">流程设计（测试）</el-menu-item>
       <el-menu-item index="/part1">创建流程表单（测试）</el-menu-item>
       <el-menu-item index="/select-form">选择流程表单（测试）</el-menu-item>
 

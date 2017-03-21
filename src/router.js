@@ -119,8 +119,12 @@ const routes = [{
     requiresAuth: true
   }
 }, { // 流程设计 删
-  path: '/part2',
-  component: require('./components/part2/Index')
+  path: '/custom',
+  component: require('./components/custom/Index'),
+  children: [{
+    path: '',
+    component: require('./components/custom/pages/bpmn.vue')
+  }]
 }, {
   path: '*',
   component: NotFound
