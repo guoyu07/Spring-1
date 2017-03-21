@@ -10,7 +10,8 @@ The source code responsible for displaying the bpmn.io logo (two green cogwheels
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE. -->
 
-<style scoped>
+<style lang="less" scoped>
+  @import url("./../../../assets/css/variables.less");
   #bpmn-editor, #bpmn-canvas {
     height: 100%;
     overflow: hidden;
@@ -42,6 +43,35 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     bottom: 20px;
     right: 280px;
   }
+
+  .credit {
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    opacity: .5;
+
+    img {
+      width: 20px;
+      float: left;
+      margin-right: 6px;
+    }
+
+    p {
+      white-space: nowrap;
+      font-size: 12px;
+      color: lighten(@textColor, 20%);
+      opacity: 0;
+      transition: opacity .3s ease;
+    }
+
+    &:hover {
+      opacity: 1;
+
+      p {
+        opacity: 1;
+      }
+    }
+  }
 </style>
 
 <template>
@@ -49,6 +79,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     <div id="bpmn-canvas"></div>
     <div id="properties-panel"></div>
     <el-button type="success" icon="check" @click="saveToXML" :loading="committing" class="save-btn">保存</el-button>
+    <footer class="credit">
+      <img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADQAAAA0CAMAAADypuvZAAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAADBQTFRFiMte9PrwldFwfcZPqtqN0+zEyOe1XLgjvuKncsJAZ70y6fXh3vDT////UrQV////G2zN+AAAABB0Uk5T////////////////////AOAjXRkAAAHDSURBVHjavJZJkoUgDEBJmAX8979tM8u3E6x20VlYJfFFMoL4vBDxATxZcakIOJTWSmxvKWVIkJ8jHvlRv1F2LFrVISCZI+tCtQx+XfewgVTfyY3plPiQEAzI3zWy+kR6NBhFBYeBuscJLOUuA2WVLpCjVIaFzrNQZArxAZKUQm6gsj37L9Cb7dnIBUKxENaaMJQqMpDXvSL+ktxdGRm2IsKgJGGPg7atwUG5CcFUEuSv+CwQqizTrvDTNXdMU2bMiDWZd8d7QIySWVRsb2vBBioxOFt4OinPBapL+neAb5KL5IJ8szOza2/DYoipUCx+CjO0Bpsv0V6mktNZ+k8rlABlWG0FrOpKYVo8DT3dBeLEjUBAj7moDogVii7nSS9QzZnFcOVBp1g2PyBQ3Vr5aIapN91VJy33HTJLC1iX2FY6F8gRdaAeIEfVONgtFCzZTmoLEdOjBDfsIOA6128gw3eu1shAajdZNAORxuQDJN5A5PbEG6gNIu24QJD5iNyRMZIr6bsHbCtCU/OaOaSvgkUyDMdDa1BXGf5HJ1To+/Ym6mCKT02Y+/Sa126ZKyd3jxhzpc1r8zVL6YM1Qy/kR4ABAFJ6iQUnivhAAAAAAElFTkSuQmCC">
+      <p>© Web-based tooling for BPMN, DMN and CMMN diagrams powered by <a href="http://bpmn.io">bpmn.io</a>.</p>
+    </footer>
   </div>
 </template>
 
@@ -94,9 +128,17 @@ export default {
   },
 
   methods: {
+    _importXML (xml) {
+      this.bpmnModeler.importXML(xml, err => {
+        if (err) console.log(err)
+        this.bpmnModeler.get('canvas').zoom('fit-viewport')
+        document.getElementsByClassName('bjs-powered-by')[0].outerHTML = ''
+      })
+    },
+
     loadXML () {
       if (this.isNew) {
-        _importXML(diagramXML)
+        this._importXML(diagramXML)
       } else {
         let postData = {
           action: 'process/bpmn/data',
@@ -105,15 +147,8 @@ export default {
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            _importXML(res.data.data)
+            this._importXML(res.data.data)
           }
-        })
-      }
-      const _importXML = (xml) => {
-        this.bpmnModeler.importXML(xml, err => {
-          if (err) console.log(err)
-          document.getElementsByClassName('bjs-powered-by')[0].outerHTML = ''
-          this.bpmnModeler.get('canvas').zoom('fit-viewport')
         })
       }
     },
