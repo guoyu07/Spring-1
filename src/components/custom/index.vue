@@ -1,13 +1,11 @@
 <style>
-  .item {
+  .process {
     height: 100%;
   }
 </style>
 
 <template>
-  <div class="item">
-    <keep-alive>
-      <router-view></router-view>
-    </keep-alive>
+  <div class="process">
+    <router-view></router-view>
   </div>
 </template>
