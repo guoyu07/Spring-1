@@ -2,10 +2,6 @@
   .el-dialog {
     width: 60%;
   }
-  .dialog-footer {
-    margin-top: 10px;
-    text-align: center;
-  }
   .conf-cmdb-contain {
     .el-row, .el-col {
       margin-bottom: 4px;
@@ -15,6 +11,19 @@
     }
     .el-input {
       width: initial;
+    }
+    .el-card {
+      .el-row {
+        margin-bottom: 10px;
+      }
+      .el-input-number {
+        position: relative;
+        top: 10px;
+      }
+    }
+    .dialog-footer {
+      margin-top: 10px;
+      text-align: center;
     }
   }
 </style>
@@ -70,16 +79,37 @@
           </el-row>
         </el-collapse-item>
       </el-collapse>
-      <!--多选-->
+      <!--多选 配置数量-->
       <el-card v-if="dialogProps.type === 'dist/multi'">
-        <label>count：</label>
-        <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
-          <el-option v-for="item in countConfig" :value="item.type"></el-option>
-        </el-select>
+        <el-row>
+          <label>count：</label>
+          <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
+            <el-option v-for="item in countConfig" :value="item.type"></el-option>
+          </el-select>
+        </el-row>
+        <el-row>
+          <template v-if="dialogProps.count.type === 'static'">
+            <label>min：</label>
+            <el-input-number size="small"
+              v-model="dialogProps.count.min"
+              :min="1" :max="dialogProps.count.max"/>
+            <label>max：</label>
+            <el-input-number v-model="dialogProps.count.max"
+              size="small" :min="1"/>
+          </template>
+          <template v-if="['message_header', 'message_body'].includes(dialogProps.count.type)">
+            <label>流程环节 id：</label>
+            <el-input v-model="dialogProps.count.id" size="small"></el-input>
+          </template>
+          <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
+            <label>属性 key_path：</label>
+            <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+          </template>
+        </el-row>
       </el-card>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary">完成</el-button>
-      </div>
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button type="primary">完成</el-button>
     </div>
   </el-dialog>
 </template>
@@ -173,7 +203,17 @@
         this.dialogProps.source.data.params.push(param)
       },
       countTypeChange (type) {
-        // this.dialogProps.count = countConfig[key]
+        this.dialogProps.count = {} // 清除
+        this.$set(this.dialogProps.count, 'type', type)
+        if (type === 'static') {
+          this.$set(this.dialogProps.count, 'min', 1)
+          this.$set(this.dialogProps.count, 'max', 1)
+        } else if (type) {
+          this.$set(this.dialogProps.count, 'key_path', '')
+        }
+        if (['message_header', 'message_body'].includes(type)) {
+          this.$set(this.dialogProps.count, 'id', '')
+        }
       },
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
