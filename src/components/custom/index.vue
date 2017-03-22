@@ -1,6 +1,9 @@
-<style>
+<style lang="less">
+  @paddingTop: 80px;
+  @paddingBottom: 50px;
+
   .process {
-    height: 100%;
+    height: calc(~"100vh - " (@paddingTop + @paddingBottom));
   }
 </style>
 
