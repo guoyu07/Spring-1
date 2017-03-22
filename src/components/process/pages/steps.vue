@@ -57,7 +57,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="candidateData = Object.assign({}, candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'user' })">
+                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'user' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -85,7 +85,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="candidateData = Object.assign({}, candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'group' })">
+                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'group' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -114,7 +114,7 @@
                               type="success"
                               :plain="task.assignee ? true : false"
                               size="small"
-                              @click="assigneeData = Object.assign({}, assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey })">
+                              @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -199,7 +199,7 @@
 
     methods: {
       onAccordionChange () {
-        this.candidateData = Object.assign({}, this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
+        Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
       },
 
       getProcessList () {
@@ -255,7 +255,7 @@
         this.candidateData.loading = true
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.candidateData = Object.assign({}, this.candidateData, { loading: false, visible: false, toAdd: [] })
+            Object.assign(this.candidateData, { loading: false, visible: false, toAdd: [] })
             this.$message.success('加入成功！')
             this.getProcessList()
           }
@@ -292,7 +292,7 @@
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.candidateData = Object.assign({}, this.candidateData, { toRemove: [], isUserCheckable: false, isGroupCheckable: false })
+              Object.assign(this.candidateData, { toRemove: [], isUserCheckable: false, isGroupCheckable: false })
               this.$message.success('移除成功！')
               this.getProcessList()
             }
@@ -310,7 +310,7 @@
         this.assigneeData.loading = true
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.assigneeData = Object.assign({}, this.assigneeData, { visible: false, loading: false, assignee: '' })
+            Object.assign(this.assigneeData, { visible: false, loading: false, assignee: '' })
             this.$message.success('操作成功！')
             this.getProcessList()
           }
@@ -323,7 +323,7 @@
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
-          this.assigneeData = Object.assign({}, this.assigneeData, { assignee: -1, pkey, tkey })
+          Object.assign(this.assigneeData, { assignee: -1, pkey, tkey })
           this.onChangeAssignee(this.assigneeData)
         })
       }

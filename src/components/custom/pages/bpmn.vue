@@ -19,12 +19,15 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   }
 
   #bpmn-editor {
+    @paddingTop: 80px;
+    @paddingBottom: 50px;
     border: 1px solid #d1dbe5;
     border-radius: 4px;
     background-color: #fff;
     overflow: hidden;
     box-shadow: 0 2px 4px 0 rgba(0,0,0,.12), 0 0 6px 0 rgba(0,0,0,.04);
     position: relative;
+    height: calc(~"100vh - " (@paddingTop + @paddingBottom));
   }
 
   #properties-panel {
