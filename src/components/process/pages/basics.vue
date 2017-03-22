@@ -58,7 +58,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="adminData = Object.assign({}, adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_users, type: 'user' })">
+                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_users, type: 'user' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -86,7 +86,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="initiatorData = Object.assign({}, initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_users, type: 'user' })">
+                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_users, type: 'user' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -101,7 +101,7 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户组（角色）（{{scope.row.admin_groups.length || '0'}}）</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 管理员用户组（角色）（{{scope.row.admin_groups.length || '0'}}）</h5>
                           <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
                           <el-tooltip content="移除管理员用户组（角色）" placement="top" class="fr" v-if="scope.row.admin_groups.length">
                             <el-button
@@ -116,7 +116,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="adminData = Object.assign({}, adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_groups, type: 'group' })">
+                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_groups, type: 'group' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -129,7 +129,7 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 启动候选组（角色）（{{scope.row.start_groups.length || '0'}}）</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 启动候选组（角色）（{{scope.row.start_groups.length || '0'}}）</h5>
                           <el-button v-if="initiatorData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="initiatorData.isCheckable = false">取消</el-button>
                           <el-tooltip content="移除启动候选组（角色）" placement="top" class="fr" v-if="scope.row.start_groups.length">
                             <el-button
@@ -144,7 +144,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="initiatorData = Object.assign({}, initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_groups, type: 'group' })">
+                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_groups, type: 'group' })">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -232,8 +232,8 @@
     methods: {
       onAccordionChange () {
         // 伸缩手风琴时，取消勾选状态，并清空待加入和待移除队列
-        this.adminData = Object.assign({}, this.adminData, { isCheckable: false, toAdd: [], toRemove: [] })
-        this.initiatorData = Object.assign({}, this.initiatorData, { isCheckable: false, toAdd: [], toRemove: [] })
+        Object.assign(this.adminData, { isCheckable: false, toAdd: [], toRemove: [] })
+        Object.assign(this.initiatorData, { isCheckable: false, toAdd: [], toRemove: [] })
       },
 
       getProcessList () {
@@ -340,7 +340,7 @@
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success('移除成功！')
-              _operationRelations[operationType] = Object.assign({}, _operationRelations[operationType], { visible: false, isCheckable: false })
+              Object.assign(_operationRelations[operationType], { visible: false, isCheckable: false })
               this.getProcessList()
             }
           })
