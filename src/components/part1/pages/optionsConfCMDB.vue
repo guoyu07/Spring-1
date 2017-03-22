@@ -1,7 +1,4 @@
 <style lang="less" scoped>
-  .el-dialog {
-    width: 60%;
-  }
   .conf-cmdb-contain {
     .el-row, .el-col {
       margin-bottom: 4px;
@@ -25,11 +22,15 @@
       margin-top: 10px;
       text-align: center;
     }
+    .del-btn {
+      float: right;
+      margin: 10px;
+    }
   }
 </style>
 
 <template>
-  <el-dialog title="获取选项的 API 配置：" v-model="dialogProps.confVisible">
+  <el-dialog class="cmdb-config-dialog" title="获取选项的 API 配置：" v-model="dialogProps.confVisible">
     <div class="conf-cmdb-contain" v-if="dialogProps.source">
       <el-form :model="dialogProps.source" label-width="100px" :inline="true">
         <el-form-item label="URL：">
@@ -55,27 +56,28 @@
         </el-form-item>
       </el-form>
       <el-collapse v-if="dialogProps.source.data.params.length">
-        <el-collapse-item v-for="param in dialogProps.source.data.params" :title="param.value.type">
+        <el-collapse-item v-for="param in dialogProps.source.data.params">
+          <template slot="title">
+            <span><{{ param.value.type }}>{{ param.id }}</span>
+            <el-button size="mini" icon="delete" type="danger" class="del-btn"
+              @click.stop="paramsDelBtn(dialogProps.source.data.params, param)">
+            </el-button>
+          </template>
           <el-row>
-            <el-col :span="12">
-              <label>属性名：</label>
-              <el-input v-model="param.id"></el-input>
-            </el-col>
-            <el-col :span="12" v-if="param.value.type === 'static'">
-              <label>属性值：</label>
-              <el-input v-model="param.value.value"></el-input>
-            </el-col>
-            <el-col :span="12" v-if="['message_header', 'message_body'].includes(param.value.type)">
-              <label>取值于流程环节：</label>
-              <el-input v-model="param.value.id"></el-input>
-            </el-col>
-            <el-col :span="12" v-if="param.value.type !== 'static'">
-              <label>取值于 key_path：</label>
-              <el-input v-model="param.value.key_path"></el-input>
-            </el-col>
-          </el-row>
-          <el-row type="flex" justify="end">
-            <el-button icon="delete" @click="paramsDelBtn(dialogProps.source.data.params, param)"></el-button>
+            <el-form label-width="120px" :inline="true">
+              <el-form-item label="属性名：">
+                <el-input v-model="param.id"></el-input>
+              </el-form-item>
+              <el-form-item label="属性值：" v-if="param.value.type === 'static'">
+                <el-input v-model="param.value.value"></el-input>
+              </el-form-item>
+              <el-form-item label="流程环节 id：" v-if="['message_header', 'message_body'].includes(param.value.type)">
+                <el-input v-model="param.value.id"></el-input>
+              </el-form-item>
+              <el-form-item label="属性 key_path：" v-if="param.value.type !== 'static'">
+                <el-input v-model="param.value.key_path"></el-input>
+              </el-form-item>
+            </el-form>
           </el-row>
         </el-collapse-item>
       </el-collapse>
@@ -84,7 +86,7 @@
         <el-row>
           <label>count：</label>
           <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
-            <el-option v-for="item in countConfig" :value="item.type"></el-option>
+            <el-option v-for="item in countConfig" :value="item"></el-option>
           </el-select>
         </el-row>
         <el-row>
@@ -121,31 +123,7 @@
     },
     data () {
       return {
-        countConfig: [
-          {
-            type: 'static',
-            min: 1,
-            max: 1
-          },
-          {
-            type: 'form_header',
-            key_path: ''
-          },
-          {
-            type: 'form_body',
-            key_path: ''
-          },
-          {
-            type: 'message_header',
-            id: '',
-            key_path: ''
-          },
-          {
-            type: 'message_body',
-            id: '',
-            key_path: ''
-          }
-        ]
+        countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
     },
     methods: {
