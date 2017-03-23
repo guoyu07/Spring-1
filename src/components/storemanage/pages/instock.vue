@@ -344,7 +344,7 @@
           if (valid) {
             if (this.instockForm.data.length < 10) {
               this.instockForm.data.push(newData)
-              this.tabsValue = this.instockForm.data.length - 1
+              this.tabsValue = this.instockForm.data.length - 1 + ''
             } else {
               this.$message.warning('最多只能增加 10 个设备！')
             }
