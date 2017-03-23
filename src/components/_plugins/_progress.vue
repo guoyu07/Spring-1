@@ -2,7 +2,7 @@
   <div>
     <div class="progressWarp">
       <ul class="progress-bar">
-        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < currentStep }, { ing: item.value === currentStep }]">
+        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < ing }, { ing: item.value === ing }]">
           <div class="detail">
             <div v-for="(step, stepindex) in item.list">
               {{ step.tname }}
@@ -158,7 +158,7 @@
     },
 
     computed: {
-      currentStep: function () {
+      ing () {
         for (const item of this.proConfig[this.progress.pkey]) {
           for (const list of item.list) {
             if (this.progress.task === list.tkey) {
