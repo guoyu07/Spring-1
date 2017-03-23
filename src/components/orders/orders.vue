@@ -198,7 +198,8 @@
             </el-form>
             <progress-wrap :progress="{
              task: deviceViewData.device.taskDefinitionKey,
-             pkey: deviceViewData.device.pkey
+             pkey: deviceViewData.device.pkey,
+             taskList: deviceViewData.device.task_list
              }"></progress-wrap>
             <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.variables">

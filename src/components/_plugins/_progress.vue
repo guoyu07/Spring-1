@@ -141,11 +141,12 @@
 
     methods: {
       getFilteredList () {
+        console.log(this.progress.taskList)
         let postData = {
           action: 'activiti/task/form',
           method: 'GET',
           data: {
-            pkey: 'alter_device',
+            pkey: this.progress.pkey,
             // tkey: "流程任务key(POST/GET[GET可不填此参数])",
             form: {}
           }

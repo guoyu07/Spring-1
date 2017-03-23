@@ -15,6 +15,9 @@
               <el-form-item label="应用名">
                 {{ applyData.applicationName }}
               </el-form-item>
+              <el-form-item label="运维负责人">
+                <el-tag type="primary" v-for="ops in applyData.opsManagers">{{ops}}</el-tag>
+              </el-form-item>
               <el-form-item label="备注">
                 {{ applyData.mark }}
               </el-form-item>
@@ -28,8 +31,8 @@
                 </el-input>
               </el-form-item>
             </el-row>
-            <el-tabs type="card" @tab-click="handleClick">
-              <el-tab-pane class="m-pane" v-for="(data, index) in applyData.data" :label="data.environment">
+            <el-tabs type="border-card" @tab-click="handleClick">
+              <el-tab-pane v-for="(data, index) in applyData.data" :label="data.environment">
                 <div class="el-table el-table--fit el-table--border el-table--enable-row-hover el-table--enable-row-transition">
                   <table>
                     <tr>
@@ -53,8 +56,8 @@
                       <td>{{ data.hardDisk }}</td>
                       <th>资源分数</th>
                       <td>{{ data.score }}</td>
-                      <th>资产编号</th>
-                      <td>{{ data.assetNumber }}</td>
+                      <th><!-- 资产编号 --></th>
+                      <td><!-- {{ data.assetNumber }} --></td>
                     </tr>
                     <template v-if="data.hostType === '虚拟机'">
                       <tr>
@@ -63,10 +66,6 @@
                           <td>{{ data.idc }}</td>
                           <th>IDC集群</th>
                           <td>{{ data.idcgroup }}</td>
-                        </template>
-                        <template v-if="data.ip">
-                          <th>IP</th>
-                          <td>{{ data.ip }}</td>
                         </template>
                       </tr>
                       <template v-if="data.setAgent">
@@ -78,15 +77,19 @@
                           <th>安装Agent</th>
                           <td>{{ data.setAgent ? '是' : '否' }}</td>
                         </tr>
-                        <tr>
+                        <!-- <tr>
                           <th>描述文件URL</th>
                           <td colspan="5"><a :href="data.url" target="new_blank">{{ data.url }}</a></td>
-                        </tr>
+                        </tr> -->
                       </template>
                     </template>
                   </table>
                 </div>
                 <div class="form-block" v-if="data.hostType === '虚拟机'">
+                  <template v-if="data.ip">
+                    <h5>已分配的IP</h5>
+                    <el-tag type="gray" v-for="ip in data.ip">{{ip}}</el-tag>
+                  </template>
                   <div v-if="routerInfo.step==='restart'">
                     <h5>选择虚拟机的IDC信息</h5>
                     <el-form-item label="IDC"
@@ -110,21 +113,53 @@
                     </el-form-item>
                   </div>
                   <div v-if="routerInfo.step==='assignIP'">
-                    <h5>请选择IP</h5>
+                    <h5>请填写IP</h5>
                     <el-form-item
+                      v-for="(ipinput, inputindex) in assignForm.data[index].ip"
                       label="IP"
-                      :prop="'data.' + index + '.ip'"
+                      :prop="'data.' + index + '.ip.' + inputindex"
                       :rules="{
-                        required: true, message: 'IP不能为空', trigger: 'change'
+                        required: true, validator: validateIP, trigger: 'blur'
                       }">
-                      <el-select v-model="assignForm.data[index].ip" placeholder="请选择IP">
-                        <el-option v-for="ip in ipList" :label="ip.name" :value="ip.name"></el-option>
-                      </el-select>
+                      <el-input v-model="assignForm.data[index].ip[inputindex]"></el-input>
                     </el-form-item>
                   </div>
                   <div v-if="routerInfo.step==='createVM'">
                     <h5>安装信息</h5>
+                    <el-form-item label="是否完成"
+                      :prop="'data.' + index + '.installInfo'"
+                      :rules="{
+                        type: 'array', required: true, validator: validateInstallInfo, trigger: 'change'
+                      }">
+                      <el-checkbox-group v-model="assignForm.data[index].installInfo">
+                        <el-checkbox label="创建虚拟机" :name="'data.' + index + '.installInfo'"></el-checkbox>
+                        <el-checkbox label="配置IP" :name="'data.' + index + '.installInfo'"></el-checkbox>
+                        <el-checkbox label="安装Agent" :name="'data.' + index + '.installInfo'"></el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item>
+                   <!--  <el-form-item
+                      label=""
+                      label-width="0px"
+                      :prop="'data.' + index + '.setIP'"
+                      :rules="{
+                        type: 'boolean', required: true, message: '必须完成配置IP', trigger: 'change'
+                      }">
+                      <el-checkbox-group v-model="assignForm.data[index].setIP">
+                        <el-checkbox label="配置IP" :name="'data.' + index + '.setIP'"></el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item>
                     <el-form-item
+                      label=""
+                      label-width="0px"
+                      :prop="'data.' + index + '.setAgent'"
+                      :rules="{
+                        type: 'boolean', required: true, message: '必须完成安装Agent', trigger: 'change'
+                      }">
+                      <el-checkbox-group v-model="assignForm.data[index].setAgent">
+                        <el-checkbox label="安装Agent" :name="'data.' + index + '.setAgent'"></el-checkbox>
+                      </el-checkbox-group>
+                    </el-form-item> -->
+                    <!-- <el-form-item
                       label="创建虚拟机"
                       :prop="'data.' + index + '.setVirtual'">
                       <el-switch on-text="" off-text="" v-model="assignForm.data[index].setVirtual">
@@ -141,10 +176,7 @@
                       :prop="'data.' + index + '.setAgent'">
                       <el-switch on-text="" off-text="" v-model="assignForm.data[index].setAgent">
                       </el-switch>
-                    </el-form-item>
-                    <el-form-item label="描述文件URL" style="width:80%;" label-width="100px">
-                      <el-input v-model="assignForm.data[index].url" placeholder="http://"></el-input>
-                    </el-form-item>
+                    </el-form-item> -->
                   </div>
                 </div>
                 <div class="form-block" v-if="data.hostType === '物理机'">
@@ -158,8 +190,8 @@
                       </search-form-structure>
                       <el-form-item label="出库状态">
                         <el-select v-model="searchKeys.status" size="small">
-                          <el-option label="已出库" value="已出库"></el-option>
-                          <el-option label="未出库" value="未出库"></el-option>
+                          <el-option label="运营中" value="运营中"></el-option>
+                          <!-- <el-option label="未出库" value="未出库"></el-option> -->
                         </el-select>
                       </el-form-item>
                       <br>
@@ -214,9 +246,13 @@
                   <div v-if="routerInfo.step !=='start' && routerInfo.step !=='restart'">
                     <h5>分配的服务器列表</h5>
                     <el-table :data="data.machines" border style="width: 100%; min-width: 460px">
-                      <el-table-column prop="name" label="设备"></el-table-column>
+                      <!-- <el-table-column prop="name" label="设备"></el-table-column>
                       <el-table-column prop="it_num" label="资产编号"></el-table-column>
-                      <el-table-column prop="status" label="状态"></el-table-column>
+                      <el-table-column prop="status" label="状态"></el-table-column> -->
+                      <el-table-column
+                        v-for="item in searchKeyList"
+                        :prop="item.id"
+                        :label="item.name"></el-table-column>
                     </el-table>
                   </div>
                 </div>
@@ -259,28 +295,44 @@ export default {
       devicePage: 1,
       deviceTotal: 0,
       searchKeys: {
-        status: '已出库'
+        status: '运营中'
       },
       searchKeyList: [],
-      deviceType: 'chHOST',
+      deviceType: 'HOST',
       isAdvanceSearch: true,
       idcList: [],
-      idcGroupList: []
+      idcGroupList: [],
+      validateIP: (rule, value, cb) => {
+        const reg = /^(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])\.(\d|[1-9]\d|1\d{2}|2[0-5][0-5])$/
+        if (value && !value.match(reg)) {
+          cb(new Error('请输入正确的IP地址'))
+        } else {
+          cb()
+        }
+      },
+      validateInstallInfo: (rule, value, cb) => {
+        if (value.length < 3) {
+          cb(new Error('3个任务必须完成'))
+        } else {
+          cb()
+        }
+      }
     }
   },
   created () {
     this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
     this.renderInstanceDetail() // 通过 id 渲染本实例
+    this.renderSearchKeyList()
     switch (this.routerInfo.step) {
       case 'restart':
         this.renderIDCList()
         this.renderIDCGroupList()
-        this.renderSearchKeyList()
         break
       case 'assignIP':
         this.renderIPList()
         break
       case 'approve':
+        // this.renderSearchKeyList()
         this.assignForm = {'approve': '通过'}
         break
       // case 'judge':
@@ -377,10 +429,10 @@ export default {
               switch (this.routerInfo.step) {
                 case 'createVM':
                   this.assignForm.data.push({
-                    setVirtual: false,
-                    setIP: false,
-                    setAgent: false,
-                    url: ''
+                    installInfo: []
+                    // setIP: false,
+                    // setAgent: false
+                    // url: ''
                   })
                   break
 
@@ -392,9 +444,12 @@ export default {
                   break
 
                 case 'assignIP':
-                  this.assignForm.data.push({
-                    ip: ''
-                  })
+                  if (item.hostType === '虚拟机') {
+                    this.assignForm.data.push({
+                      ip: []
+                    })
+                    this.assignForm.data[k].ip.length = +item.quantity
+                  }
                   break
 
                 default:
@@ -432,28 +487,34 @@ export default {
         cancelButtonText: '取消',
         type: 'info'
       }).then(() => {
-        // this.$refs[assignForm].validate(valid => { return valid }) !== undefined
-        const ref = this.$refs[assignForm].validate(valid => { return valid }) === undefined
+        const ref = this.$refs[assignForm].fields.length !== 0
         if (ref) {
           this.$refs[assignForm].validate((valid) => {
             if (valid) {
               if (this.assignForm.data) {
                 for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
                   if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
-                    this.$message.warning('未分配完！')
+                    this.$message.warning('未完成！')
                     return false
                   }
                 }
               }
               this.postMethod(this.routerInfo.id, this.assignForm)
+              // console.dir(this.assignForm)
             } else {
               console.log('error submit!!')
-              this.$message.warning('未分配完！')
+              this.$message.warning('未完成！')
               return false
             }
           })
-        } else if (this.assignForm.data.machines.length) {
-          this.postMethod(this.routerInfo.id, this.assignForm)
+        } else {
+          if (!this.assignForm.data.some(data => data.machines.length === 0)) {
+            this.postMethod(this.routerInfo.id, this.assignForm)
+            // console.dir(this.assignForm)
+          } else {
+            this.$message.warning('未分配完！')
+            return false
+          }
         }
       }).catch(() => {
         this.$message({
@@ -518,7 +579,7 @@ export default {
         this.$message.info('搜索条件不能为空！')
         return false
       }
-      searchData.isapply = 'no' // 未被占用
+      // searchData.isapply = 'no' // 未被占用
       let postData = {
         action: `/object/${this.deviceType}/instance/_search`,
         method: 'POST',
@@ -602,6 +663,15 @@ export default {
 }
 </script>
 <style lang="less" scoped>
+.el-tag {
+  font-size: 14px;
+  & +.el-tag {
+    margin-left: 10px;
+  }
+}
+.advance-search-form .el-form-item {
+  margin-bottom: 18px;
+}
 .btn-area {
   margin: 15px 0;
   .el-button {

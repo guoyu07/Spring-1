@@ -33,6 +33,14 @@
             <el-form-item v-if="applyForm.applyType !== '新建集群节点'" prop="applicationName" label="应用名">
               <el-input v-model="applyForm.applicationName"></el-input>
             </el-form-item>
+
+            <el-form-item prop="opsManagers" label="运维负责人">
+              <el-select filterable multiple v-model="applyForm.opsManagers">
+                <el-option v-for="ops in opsManagersList"
+                  :label="ops.name"
+                  :value="ops.name"></el-option>
+              </el-select>
+            </el-form-item>
             <br>
             <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
               增加服务器
@@ -144,12 +152,14 @@
         },
         editData: {
           applicationName: '',
-          business: ''
+          business: '',
+          opsManagers: []
         },
         applyForm: {
           applyType: '',
           business: '',
           applicationName: '',
+          opsManagers: [],
           remark: '',
           data: [{
             // tabname: 0,
@@ -173,6 +183,7 @@
         }],
         businessList: [],
         appList: [],
+        opsManagersList: [],
         environmentList: [{
           label: '质量测试环境',
           value: 'qutityTesting'
@@ -231,16 +242,21 @@
           ],
           applicationName: [
             { required: true, message: '请输入应用名', trigger: 'change, blur' }
+          ],
+          opsManagers: [
+            { type: 'array', required: true, message: '请输入运维负责人', trigger: 'change, blur' }
           ]
         }
       }
     },
     created () {
+      this.editInfo.userName = window.localStorage.userName
       if (this.$route.params.id) {
         this.editInfo.id = this.$route.params.id
         this.renderInstanceDetail()
       }
       this.renderAppList()
+      this.renderOpsManagerList()
       this.renderBusinessList()
     },
     watch: {
@@ -264,7 +280,29 @@
           this.applyForm = this.findTaskMsgR(message, ['start']).form
           this.editData.applicationName = this.applyForm.applicationName
           this.editData.business = this.applyForm.business
+          this.editData.opsManagers = this.applyForm.opsManagers
           console.log(this.editData)
+        })
+      },
+      renderOpsManagerList () {
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'USER'
+            // page: "不传则获取该对象所有实例",
+            // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          console.log(res, res.data.data.list)
+          this.opsManagersList = res.data.data.list
+          if (this.editData.opsManagers.length !== 0) {
+            this.applyForm.opsManagers = this.editData.opsManagers
+          } else {
+            this.applyForm.opsManagers = [this.editInfo.userName]
+          }
         })
       },
       renderAppList () {
@@ -422,7 +460,7 @@
                 // assetNumber: '',
                 score: 0
               })
-              this.tabsValue = that.applyForm.data.length - 1
+              this.tabsValue = that.applyForm.data.length - 1 + ''
             } else {
               that.$message.warning('最多只能增加 5 个设备！')
             }
