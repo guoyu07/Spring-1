@@ -41,7 +41,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     overflow: auto;
   }
 
-  .save-btn {
+  .btn-area {
     position: absolute;
     bottom: 20px;
     right: 280px;
@@ -51,28 +51,29 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     position: absolute;
     bottom: 20px;
     left: 20px;
-    opacity: .5;
 
     img {
       width: 20px;
       float: left;
       margin-right: 6px;
+      opacity: .5;
+      position: relative;
+      z-index: @floating;
+
+      &:hover {
+        opacity: 1;
+
+        & + p {
+          opacity: 1;
+        }
+      }
     }
 
     p {
-      white-space: nowrap;
       font-size: 12px;
       color: lighten(@textColor, 20%);
       opacity: 0;
       transition: opacity .3s ease;
-    }
-
-    &:hover {
-      opacity: 1;
-
-      p {
-        opacity: 1;
-      }
     }
   }
 </style>
@@ -81,7 +82,10 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
   <div id="bpmn-editor">
     <div id="bpmn-canvas"></div>
     <div id="properties-panel"></div>
-    <el-button type="success" icon="check" @click="saveToXML" :loading="committing" class="save-btn">保存</el-button>
+    <div class="btn-area clear">
+      <el-button type="info" :plain="true" icon="fa-undo" @click="$router.replace('/custom')">返回</el-button>
+      <el-button type="success" icon="check" @click="saveToXML" :loading="committing" class="save-btn">保存</el-button>
+    </div>
     <footer class="credit">
       <img :src="logoSrc">
       <p>© Web-based tooling for BPMN, DMN and CMMN diagrams powered by <a href="http://bpmn.io">bpmn.io</a>.</p>

@@ -36,7 +36,7 @@
               label="操作">
               <template scope="scope">
                 <el-button type="info" size="small" :plain="true" @click="$router.replace(`/custom/bpmn/${scope.row.pkey}`)" icon="fa-cogs">自定义</el-button>
-              </template>  
+              </template>
             </el-table-column>
           </el-table>
         </el-card>

@@ -2,7 +2,7 @@
   <div>
     <div class="progressWarp">
       <ul class="progress-bar">
-        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < currentStep }, { ing: item.value === currentStep }]">
+        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < ing }, { ing: item.value === ing }]">
           <div class="detail">
             <div v-for="(step, stepindex) in item.list">
               {{ step.tname }}
@@ -141,11 +141,12 @@
 
     methods: {
       getFilteredList () {
+        console.log(this.progress.taskList)
         let postData = {
           action: 'activiti/task/form',
           method: 'GET',
           data: {
-            pkey: 'alter_device',
+            pkey: this.progress.pkey,
             // tkey: "流程任务key(POST/GET[GET可不填此参数])",
             form: {}
           }
@@ -157,7 +158,7 @@
     },
 
     computed: {
-      currentStep: function () {
+      ing () {
         for (const item of this.proConfig[this.progress.pkey]) {
           for (const list of item.list) {
             if (this.progress.task === list.tkey) {
