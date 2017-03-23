@@ -111,7 +111,7 @@
       </el-card>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button type="primary">完成</el-button>
+      <el-button @click="onSubmit" type="primary">完成</el-button>
     </div>
   </el-dialog>
 </template>
@@ -195,6 +195,9 @@
       },
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
+      },
+      onSubmit () {
+        this.dialogProps.confVisible = false
       }
     }
   }

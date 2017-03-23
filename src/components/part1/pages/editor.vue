@@ -73,9 +73,9 @@
         <el-button slot="reference">配置</el-button>
       </el-popover>
     </el-row>
-    <el-row>
-      <el-button icon="fa-check" @click="submitBtn">确认完成</el-button>
-      <el-button icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+    <el-row type="flex" justify="end">
+      <el-button type="primary" icon="fa-check" @click="submitBtn">确认完成</el-button>
+      <el-button type="primary" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
     </el-row>
   </div>
 </template>
