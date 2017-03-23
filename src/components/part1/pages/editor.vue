@@ -36,52 +36,35 @@
     <el-row>
       <label>表单 header 字段：</label>
       <el-card>
+        <!-- 配置属性字段 -->
         <form-conf :config-data="formConfig.form.form.header"></form-conf>
       </el-card>
     </el-row>
-    <el-row>
+    <el-row v-for="body in formConfig.form.form.body">
       <label>表单 body 字段：</label>
       <el-card>
-        <form-conf :config-data="formConfig.form.form.body.attr_list"></form-conf>
+        <!-- 配置属性字段 -->
+        <form-conf :config-data="body.attr_list"></form-conf>
+        <!-- body 的 count -->
+        <counts-conf :count="body.count"></counts-conf>
+        <el-button size="mini" type="text" icon="delete" class="fr"
+          @click="delBodyBtn(formConfig.form.form.body, body)">删除 body
+        </el-button>
       </el-card>
     </el-row>
     <el-row>
-      <label>表单 body 个数：</label>
-      <el-select v-model="bodyCountType" @change="countConfig">
-        <el-option label="static" value="static"></el-option>
-        <el-option label="form_header" value="form_header"></el-option>
-        <el-option label="message_header" value="message_header"></el-option>
-      </el-select>
-      <el-popover v-if="bodyCountType === 'static'"
-        placement="right" trigger="click">
-        <h5>最大数：</h5>
-        <el-input-number size="small" :min="1" v-model="formConfig.form.form.body.count.max" />
-        <el-button slot="reference">配置</el-button>
-      </el-popover>
-      <el-popover v-if="bodyCountType === 'form_header'"
-        placement="right" trigger="click">
-        <h5>输入表单中 form_header 的一个字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
-        <el-button slot="reference">配置</el-button>
-      </el-popover>
-      <el-popover v-if="bodyCountType === 'message_header'"
-        placement="right" trigger="click">
-        <h5>输入流程中的一个历史环节的 messageId：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
-        <h5>输入该环节中的表单的一个字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
-        <el-button slot="reference">配置</el-button>
-      </el-popover>
+      <el-button type="primary" size="small" icon="plus" @click="addBodyConfig">添加 body</el-button>
     </el-row>
     <el-row type="flex" justify="end">
-      <el-button type="primary" icon="fa-check" @click="submitBtn">确认完成</el-button>
-      <el-button type="primary" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+      <el-button type="success" icon="fa-check" @click="submitBtn">确认完成</el-button>
+      <el-button type="info" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
     </el-row>
   </div>
 </template>
 
 <script>
-import formConf from './formConf'
+import formConf from './config/formConf' // 配置字段的表单
+import countsConf from './config/countsConf' // 配置数量
 
 export default {
   data () {
@@ -101,7 +84,13 @@ export default {
   activated () {
     this.formConfig = this.$route.query.row || null
     if (this.formConfig && this.formConfig.form) {
-      // 拿到 actions
+      // body 类型从 obj 修改为 arr
+      const bodyIsArr = Array.isArray(this.formConfig.form.form.body)
+      if (!bodyIsArr) {
+        this.$set(this.formConfig.form.form.body.count, 'type', 'static')
+        this.formConfig.form.form.body = [this.formConfig.form.form.body]
+      }
+      // 拿到 actions 的 name
       this.checkedActions = this.formConfig.form.action.map(item => item.name)
     } else {
       /**
@@ -117,22 +106,26 @@ export default {
       this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
     },
     // 选择配置 body 个数
-    countConfig (type) {
-      let count = null
+    countConfig (count) {
+      const type = count.type
+      count = {} // 准备给它加属性
+      this.$set(count, 'type', type)
       switch (type) {
         case 'static':
-          count = { type: 'static', min: 1, max: 1 }
+          this.$set(count, 'min', 1)
+          this.$set(count, 'max', 1)
           break
         case 'form_header':
-          count = { type: 'form_header', key_path: '' }
+          this.$set(count, 'key_path', '')
           break
         case 'message_header':
-          count = { type: 'message_header', id: '', key_path: '' }
+          this.$set(count, 'id', '')
+          this.$set(count, 'key_path', '')
           break
         default:
-          count = {}
+          count = { type: 'static' }
       }
-      this.formConfig.form.form.body.count = count
+      console.log(count)
     },
     // 确认完成
     submitBtn () {
@@ -147,10 +140,20 @@ export default {
           this.$message.success('修改成功！')
         }
       })
+    },
+    addBodyConfig () {
+      this.formConfig.form.form.body.push({
+        attr_list: [],
+        count: { type: 'static' }
+      })
+    },
+    delBodyBtn (arr, item) {
+      arr.splice(arr.indexOf(item), 1)
     }
   },
   components: {
-    formConf
+    formConf,
+    countsConf
   }
 }
 </script>

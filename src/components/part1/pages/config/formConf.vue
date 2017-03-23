@@ -61,13 +61,13 @@
         </el-row>
       </el-collapse-item>
     </el-collapse>
-    <el-button icon="plus" type="primary" size="small" @click="addBtn">添加</el-button>
+    <el-button icon="plus" type="text" size="small" @click="addBtn">添加字段</el-button>
   </div>
 </template>
 
 <script>
-import optionsConf from './optionsConf'
-import optionsConfCmdb from './optionsConfCMDB'
+import optionsConf from './optionsConf' // 配置下拉选项（静态）的表单
+import optionsConfCmdb from './optionsConfCMDB' // 配置下拉选项（动态）的表单
 
 export default {
   props: {
