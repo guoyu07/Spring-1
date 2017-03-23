@@ -2,7 +2,7 @@
   <div>
     <div class="progressWarp">
       <ul class="progress-bar">
-        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < steping }, { ing: item.value === steping }]">
+        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < currentStep }, { ing: item.value === currentStep }]">
           <div class="detail">
             <div v-for="(step, stepindex) in item.list">
               {{ step.tname }}
@@ -158,7 +158,7 @@
     },
 
     computed: {
-      steping: function () {
+      currentStep: function () {
         for (const item of this.proConfig[this.progress.pkey]) {
           for (const list of item.list) {
             if (this.progress.task === list.tkey) {
@@ -171,148 +171,139 @@
   }
 </script>
 
-<style scoped>
+<style scoped lang="less">
+  @import url("./../../assets/css/variables.less");
+  @activeColor: #00c0ef;
+
   .active {
-    color: #03A9F4;
+    color: @activeColor;
   }
 
   .progressWarp {
-    width: 86%;
+    // width: 86%;
     margin: 0 auto;
     display: flex;
     position: relative;
     min-height: 150px;
     padding-top: 20px;
-    /*font-family: serif;*/
   }
 
   .progress-bar {
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-around;
+    height: 3px;
+    width: 100%;
+    margin-top: 80px;
     padding: 0;
     padding-right: 3%;
-    position: relative;
-    height: 3px;
-    width: 100%;
-    /*margin-top: 50px;*/
-    margin: 100px 0 28px;
-    width: 100%;
-    /*min-width: 627px;*/
-    box-shadow: none!important;
-  }
-
-  .progress-bar{
-    content: '';
-    width: 100%;
-    height: 3px;
-    background-color: #00c0ef;
+    background-color: @activeColor;
     position: absolute;
-    top: 0;
-    left: -2%;
+
+    &::before,
+    &::after {
+      position: absolute;
+      top: 50%;
+      content: '';
+    }
+
+    &::before {
+      left: -18px;
+      display: block;
+      margin-top: -9px;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background-color: @activeColor;
+    }
+
+    &::after {
+      height: 10px;
+      border-left: 20px solid @activeColor;
+      border-top: 10px solid transparent;
+      border-bottom: 10px solid transparent;
+      right: -20px;
+      margin-top: -10px;
+    }
+
+    li {
+      list-style: none;
+      /*width: 160px;*/
+      // margin: 10px;
+      position: relative;
+
+      .detail {
+        width: 20px;
+        // height: auto;
+        // height: 30px;
+        position: absolute;
+        top: 0;
+        left: 0;
+        z-index: 2;
+        transform: rotate(-35deg);
+        transform-origin: -155% -155%;
+        white-space: nowrap;
+        color: #696969;
+        text-align: center;
+        font-size: 13px;
+
+        p {
+          color: @activeColor;
+          font-weight: normal;
+          font-size: 10px;
+          margin: 0;
+        }
+      }
+
+      &.active {
+        .detail {
+          font-size: 13px;
+          color: @activeColor;
+        }
+
+        &::before {
+          background-color: @activeColor;
+          border: none;
+        }
+      }
+
+      &.ing {
+        .detail {
+          color: @success;
+        }
+
+        &::before {
+          background-color: @success;
+          animation: ing 2s infinite;
+          border: none;
+        }
+      }
+
+      &::before {
+        content: '';
+        position: absolute;
+        top: -4px;
+        // left: 8px;
+        display: block;
+        // margin-top: -6px;
+        width: 12px;
+        height: 12px;
+        border-radius: 50%;
+        border: 1px solid @activeColor;
+        background-color: #fff;
+      }
+    }
   }
 
-  .progress-bar::before {
-    position: absolute;
-    top: 50%;
-    left: -21px;
-    display: block;
-    content: '';
-    margin-top: -9px;
-    width: 18px;
-    height: 18px;
-    border-radius: 50%;
-    background-color: #00c0ef;
-  }
-
-  .progress-bar::after {
-    content: '';
-    height: 10px;
-    border-left: 20px solid #00c0ef;
-    border-top: 10px solid transparent;
-    border-bottom: 10px solid transparent;
-    position: absolute;
-    top: 50%;
-    right: -20px;
-    margin-top: -10px;
-  }
-
-  .progress-bar li {
-    list-style: none;
-    /*width: 160px;*/
-    margin: 10px;
-    position: relative;
-  }
-
-  .progress-bar li .detail {
-    width: 20px;
-    height: auto;
-    height: 30px;
-    position: absolute;
-    top: 0;
-    left: 0;
-    z-index: 2;
-    transform: rotate(-35deg);
-    transform-origin: -155% -155%;
-    white-space: nowrap;
-    color: #696969;
-    text-align: center;
-  }
-
-  .progressWarp ul.progress-bar li:before{
-    content: '';
-    position: absolute;
-    top: -8px;
-    left: 8px;
-    display: block;
-    margin-top: -6px;
-    width: 12px;
-    height: 12px;
-    border-radius: 50%;
-    border: 1px solid #00c0ef;
-    background-color: #fff;
-  }
-
-  .progressWarp ul.progress-bar li .detail{
-    font-size: 13px;
-    margin: 0;
-  }
-
-  .progressWarp ul.progress-bar li .detail p{
-    color: #a5a5a5;
-    font-weight: normal;
-    font-size: 10px;
-    margin: 0;
-  }
-
-  .progressWarp ul.progress-bar li.active .detail{
-    font-size: 13px;
-    color: #00c0ef;
-  }
-
-  .progressWarp ul.progress-bar li.active:before {
-    background-color: #00c0ef;
-    border-color: #fff;
-  }
-
-  .progressWarp ul.progress-bar li.ing .detail{
-    font-size: 13px;
-    color: #13ce66;
-  }
-
-  .progressWarp ul.progress-bar li.ing:before{
-    background-color: #13ce66;
-    animation: ing 2s infinite;
-  }
   @keyframes ing {
     0% {
-        transform:scale(1.3);
+        transform: scale(1.2);
     }
     50% {
-        transform:scale(0.8);
+        transform: scale(1.1);
     }
     100% {
-        transform:scale(1.3);
+        transform: scale(1.2);
     }
   }
 </style>

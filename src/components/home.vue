@@ -9,10 +9,6 @@
     /*overflow: auto;*/
   }
 
-  .home {
-    height: 100%;
-  }
-
   .el-menu-item-group__title {
     font-size: 12px;
   }

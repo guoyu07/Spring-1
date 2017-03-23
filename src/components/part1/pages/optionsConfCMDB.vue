@@ -1,7 +1,4 @@
-<style lang="less">
-  .el-dialog {
-    width: 60%;
-  }
+<style lang="less" scoped>
   .conf-cmdb-contain {
     .el-row, .el-col {
       margin-bottom: 4px;
@@ -12,11 +9,28 @@
     .el-input {
       width: initial;
     }
+    .el-card {
+      .el-row {
+        margin-bottom: 10px;
+      }
+      .el-input-number {
+        position: relative;
+        top: 10px;
+      }
+    }
+    .dialog-footer {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .del-btn {
+      float: right;
+      margin: 10px;
+    }
   }
 </style>
 
 <template>
-  <el-dialog title="获取选项的 API 配置：" v-model="dialogProps.confVisible">
+  <el-dialog class="cmdb-config-dialog" title="获取选项的 API 配置：" v-model="dialogProps.confVisible">
     <div class="conf-cmdb-contain" v-if="dialogProps.source">
       <el-form :model="dialogProps.source" label-width="100px" :inline="true">
         <el-form-item label="URL：">
@@ -41,41 +55,63 @@
           </el-dropdown>
         </el-form-item>
       </el-form>
-      <el-collapse>
-        <el-collapse-item v-for="param in dialogProps.source.data.params" :title="param.id">
+      <el-collapse v-if="dialogProps.source.data.params.length">
+        <el-collapse-item v-for="param in dialogProps.source.data.params">
+          <template slot="title">
+            <span><{{ param.value.type }}>{{ param.id }}</span>
+            <el-button size="mini" icon="delete" type="danger" class="del-btn"
+              @click.stop="paramsDelBtn(dialogProps.source.data.params, param)">
+            </el-button>
+          </template>
           <el-row>
-            <el-col :span="12">
-              <label>属性名：</label>
-              <el-input v-model="param.id"></el-input>
-            </el-col>
-            <el-col :span="12" v-if="param.value.type === 'static'">
-              <label>属性值：</label>
-              <el-input v-model="param.value.value"></el-input>
-            </el-col>
-            <el-col :span="12" v-if="['message_header', 'message_body'].includes(param.value.type)">
-              <label>取值于流程环节：</label>
-              <el-input v-model="param.value.id"></el-input>
-            </el-col>
-            <el-col :span="12" v-if="param.value.type !== 'static'">
-              <label>取值于 key_path：</label>
-              <el-input v-model="param.value.key_path"></el-input>
-            </el-col>
-          </el-row>
-          <el-row type="flex" justify="end">
-            <el-button icon="delete" @click="paramsDelBtn(dialogProps.source.data.params, param)"></el-button>
+            <el-form label-width="120px" :inline="true">
+              <el-form-item label="属性名：">
+                <el-input v-model="param.id"></el-input>
+              </el-form-item>
+              <el-form-item label="属性值：" v-if="param.value.type === 'static'">
+                <el-input v-model="param.value.value"></el-input>
+              </el-form-item>
+              <el-form-item label="流程环节 id：" v-if="['message_header', 'message_body'].includes(param.value.type)">
+                <el-input v-model="param.value.id"></el-input>
+              </el-form-item>
+              <el-form-item label="属性 key_path：" v-if="param.value.type !== 'static'">
+                <el-input v-model="param.value.key_path"></el-input>
+              </el-form-item>
+            </el-form>
           </el-row>
         </el-collapse-item>
       </el-collapse>
-      <el-card>
-        <label>count：</label>
-        <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
-          <el-option v-for="item in countConfig" :value="item.type"></el-option>
-        </el-select>
+      <!--多选 配置数量-->
+      <el-card v-if="dialogProps.type === 'dist/multi'">
+        <el-row>
+          <label>count：</label>
+          <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
+            <el-option v-for="item in countConfig" :value="item"></el-option>
+          </el-select>
+        </el-row>
+        <el-row>
+          <template v-if="dialogProps.count.type === 'static'">
+            <label>min：</label>
+            <el-input-number size="small"
+              v-model="dialogProps.count.min"
+              :min="1" :max="dialogProps.count.max"/>
+            <label>max：</label>
+            <el-input-number v-model="dialogProps.count.max"
+              size="small" :min="1"/>
+          </template>
+          <template v-if="['message_header', 'message_body'].includes(dialogProps.count.type)">
+            <label>流程环节 id：</label>
+            <el-input v-model="dialogProps.count.id" size="small"></el-input>
+          </template>
+          <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
+            <label>属性 key_path：</label>
+            <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+          </template>
+        </el-row>
       </el-card>
-      <div slot="footer" class="dialog-footer">
-        <el-button>取 消</el-button>
-        <el-button type="primary">确 定</el-button>
-      </div>
+    </div>
+    <div slot="footer" class="dialog-footer">
+      <el-button @click="onSubmit" type="primary">完成</el-button>
     </div>
   </el-dialog>
 </template>
@@ -87,38 +123,7 @@
     },
     data () {
       return {
-        countTypeOptions: [
-          { value: 'static', label: '静态输入' },
-          { value: 'form_header', label: '取 form header 中字段' },
-          { value: 'form_body', label: '取 form body 中字段' },
-          { value: 'message_header', label: '取 message header 中字段' },
-          { value: 'message_body', label: '取 message body 中字段' }
-        ],
-        countConfig: [
-          {
-            type: 'static',
-            min: 1,
-            max: 1
-          },
-          {
-            type: 'form_header',
-            key_path: ''
-          },
-          {
-            type: 'form_body',
-            key_path: ''
-          },
-          {
-            type: 'message_header',
-            id: '',
-            key_path: ''
-          },
-          {
-            type: 'message_body',
-            id: '',
-            key_path: ''
-          }
-        ]
+        countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
     },
     methods: {
@@ -176,10 +181,23 @@
         this.dialogProps.source.data.params.push(param)
       },
       countTypeChange (type) {
-        // this.dialogProps.count = countConfig[key]
+        this.dialogProps.count = {} // 清除
+        this.$set(this.dialogProps.count, 'type', type)
+        if (type === 'static') {
+          this.$set(this.dialogProps.count, 'min', 1)
+          this.$set(this.dialogProps.count, 'max', 1)
+        } else if (type) {
+          this.$set(this.dialogProps.count, 'key_path', '')
+        }
+        if (['message_header', 'message_body'].includes(type)) {
+          this.$set(this.dialogProps.count, 'id', '')
+        }
       },
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
+      },
+      onSubmit () {
+        this.dialogProps.confVisible = false
       }
     }
   }

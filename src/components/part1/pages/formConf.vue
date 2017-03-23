@@ -45,13 +45,13 @@
             <el-option label="下拉多选（cmdb）" value="dist/multi"></el-option>
           </el-select>
           <!--静态选项-->
-          <el-popover v-if="['enum', 'enum/multi'].indexOf(itemConf.value.type) !== -1"
+          <el-popover v-if="['enum', 'enum/multi'].includes(itemConf.value.type)"
             placement="right" trigger="click" @show="showMultiConf(itemConf)">
             <options-conf :conf-arr="itemConf.value.regex"></options-conf>
             <el-button slot="reference">配置选项</el-button>
           </el-popover>
           <!--动态选项（cmdb）-->
-          <template v-if="['dist', 'dist/multi'].indexOf(itemConf.value.type) !== -1">
+          <template v-if="['dist', 'dist/multi'].includes(itemConf.value.type)">
             <el-button @click="showCMDBConfi(itemConf)">配置选项</el-button>
             <options-conf-cmdb :dialog-props="itemConf.value"></options-conf-cmdb>
           </template>
@@ -81,8 +81,9 @@ export default {
     // CMDB 获取参数配置
     showCMDBConfi (itemConf) {
       if (itemConf.value.source || itemConf.value.count) {
-        //
+        // 回显
       } else {
+        // 初始化
         this.$set(itemConf.value, 'count', { type: '' })
         this.$set(itemConf.value, 'source', {
           url: '',
