@@ -66,8 +66,7 @@
 </template>
 
 <script>
-  import elInputTag from '../../_plugins/inputTag'
-  const pinyinUtil = window.pinyinUtil
+  import elInputTag from '../../_plugins/inputTag' // 输入框 回车形成一个标签
 
   export default {
     data () {
@@ -89,7 +88,7 @@
       //   .then(res => {
       //     // 构造 待提交(formData)、先只考虑 header、只考虑静态选项
       //     res.data.header.forEach(item => {
-      //       const key = pinyinUtil.getPinyin(item.name).replace(/\s/ig, '_')
+      //       const key = item.name
       //       this.$set(this.formData, key, item.type === 'arr' ? [] : '')
       //       item.key = key
       //     })
@@ -126,7 +125,7 @@
         this.formData = {}
         // 加上待提交字段
         value.forEach(item => {
-          const key = pinyinUtil.getPinyin(item.name).replace(/\s/ig, '_')
+          const key = item.name
           this.$set(this.formData, key, item.type === 'arr' ? [] : '')
           item.key = key
         })
