@@ -57,7 +57,7 @@
           </template>
         </el-row>
         <el-row type="flex" justify="end">
-          <el-button size="small" type="danger" icon="delete" @click="delBtn(itemConf)">删除字段</el-button>
+          <el-button size="small" type="danger" icon="delete" @click="delBtn(configData, itemConf)">删除字段</el-button>
         </el-row>
       </el-collapse-item>
     </el-collapse>
@@ -81,9 +81,9 @@ export default {
     // CMDB 获取参数配置
     showCMDBConfi (itemConf) {
       if (itemConf.value.source || itemConf.value.count) {
-        // 回显
+        // 已经加过的属性的
       } else {
-        // 初始化
+        // 初始化属性
         this.$set(itemConf.value, 'count', { type: '' })
         this.$set(itemConf.value, 'source', {
           url: '',
@@ -92,6 +92,7 @@ export default {
             method: '',
             params: []
           },
+          // 选项数据路径配置
           res: {
             data_path: '',
             show_key: ''
@@ -117,9 +118,9 @@ export default {
         }
       })
     },
-    // 删除一个字段
-    delBtn (itemConf) {
-      this.configData.splice(this.configData.indexOf(itemConf), 1)
+    // 删除一个字段 （删除操作 可以封装为全局方法）
+    delBtn (arr, item) {
+      arr.splice(arr.indexOf(item), 1)
     }
   },
   components: {

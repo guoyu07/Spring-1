@@ -28,6 +28,7 @@
     </el-row>
     <el-row>
       <el-form :inline="true" :model="formData" ref="formRef" label-width="100px">
+        <!--解析表单（旧数据格式）-->
         <el-form-item v-for="formItem of formConfig"
           v-if="['str','int','arr','enum','date','datetime','strArea'].indexOf(formItem.type) !== -1"
           :label="formItem.name" :required="formItem.required">
@@ -41,6 +42,7 @@
             <el-input-number v-model="formData[formItem.key]"></el-input-number>
           </template>
           <template v-if="formItem.type === 'arr'">
+            <!--输入框 回车标签-->
             <el-input-tag :tags="formData[formItem.key]"></el-input-tag>
           </template>
           <template v-if="formItem.type === 'enum'">
@@ -80,6 +82,7 @@
       }
     },
     created () {
+      // 旧数据格式 删
       // 提交字段名 是 name 转的拼音
       // 单选、多选
       // 单选 + 动态获取（其中动态获取 参数的来源 分为几种），还有 多选 + 动态获取
@@ -105,7 +108,7 @@
     },
     computed: {
       formConfigList () {
-        return this.$store.state.formConfigList || []
+        return this.$store.state.formConfigList || [] // 旧数据格式 删
       }
     },
     methods: {
@@ -121,8 +124,9 @@
         })
       },
       formChange (form) {
-        console.log(form) // 表单配置数据
+        console.log(form) // 表单配置 数据
       },
+      // 旧数据格式 删
       // selectChange (value) {
       //   // 清空
       //   this.formData = {}

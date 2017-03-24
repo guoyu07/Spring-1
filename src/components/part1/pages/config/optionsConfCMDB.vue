@@ -193,19 +193,24 @@
         }
         this.dialogProps.source.data.params.push(param)
       },
+      // 切换类型 加不同的属性
       countTypeChange (type) {
         this.dialogProps.count = {} // 清除
         this.$set(this.dialogProps.count, 'type', type)
         if (type === 'static') {
+          // 静态
           this.$set(this.dialogProps.count, 'min', 1)
           this.$set(this.dialogProps.count, 'max', 1)
         } else if (type) {
+          // 本表单
           this.$set(this.dialogProps.count, 'key_path', '')
         }
+        // 历史表单
         if (['message_header', 'message_body'].includes(type)) {
           this.$set(this.dialogProps.count, 'id', '')
         }
       },
+      // 删除操作
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
       },

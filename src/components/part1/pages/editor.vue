@@ -135,6 +135,7 @@ export default {
   data () {
     return {
       id: '',
+      // 操作按钮
       actions: [
         { 'name': '确认', 'pass': 0, 'type': 'submit' },
         { 'name': '撤单', 'pass': -100, 'type': 'revoke' },
@@ -148,9 +149,13 @@ export default {
     }
   },
   activated () {
+    /**
+     * 正常的 Restfull API 是拿一个 id 再去获取详情。
+     * 这里是直接路由传对象过来，所以刷新时让他回退。
+     */
     this.formConfig = this.$route.query.row || null
     if (this.formConfig && this.formConfig.form) {
-      // body 类型从 obj 修改为 arr
+      // body 类型：从 obj 修改为 arr
       const bodyIsArr = Array.isArray(this.formConfig.form.form.body)
       if (!bodyIsArr) {
         this.$set(this.formConfig.form.form.body.count, 'type', 'static')
@@ -159,10 +164,6 @@ export default {
       // 拿到 actions 的 name
       this.checkedActions = this.formConfig.form.action.map(item => item.name)
     } else {
-      /**
-       * 正常的 Restfull API 是拿一个 id 再去获取详情。
-       * 这里是直接路由传对象过来，所以刷新时让他退回去。
-       */
       this.$router.go(-1)
     }
   },
@@ -173,24 +174,7 @@ export default {
     },
     // 选择配置 body 个数
     countConfig (count) {
-      // const type = count.type
-      // count = {} // 准备给它加属性
-      // this.$set(count, 'type', type)
-      // switch (type) {
-      //   case 'static':
-      //     this.$set(count, 'min', 1)
-      //     this.$set(count, 'max', 1)
-      //     break
-      //   case 'form_header':
-      //     this.$set(count, 'key_path', '')
-      //     break
-      //   case 'message_header':
-      //     this.$set(count, 'id', '')
-      //     this.$set(count, 'key_path', '')
-      //     break
-      //   default:
-      //     count = { type: 'static' }
-      // }
+      // 类型切换时 之前加的属性没去除，解析时先判断 type 再取属性
       console.log(count)
     },
     // 确认完成
@@ -202,20 +186,23 @@ export default {
       }
       this.http.post('', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
-          this.$router.go(-1)
+          this.$router.go(-1) // 回退
           this.$message.success('修改成功！')
         }
       })
     },
+    // 增加 body
     addBodyConfig () {
       this.formConfig.form.form.body.push({
         attr_list: [],
         count: { type: 'static' }
       })
     },
+    // 删除 body
     delBodyBtn (arr, item) {
       arr.splice(arr.indexOf(item), 1)
     },
+    // 配置显示条件弹窗
     showCondition (body) {
       if (body.name && body.show) {
         // 添加过属性
