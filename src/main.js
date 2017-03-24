@@ -88,12 +88,14 @@ http.interceptors.response.use(rs => {
 
 Vue.prototype.http = http
 
-Vue.prototype.parseData = obj => {
+const parseData = obj => {
   // qs.stringify(obj)
   const action = encodeURIComponent(obj.action)
   const result = `action=${action}&method=${obj.method}&data=`
   return result + encodeURI(JSON.stringify(obj.data))
 }
+
+Vue.prototype.parseData = parseData
 
 // 逆向寻找匹配的 task_key
 var findTaskMsgR = (arrMsg, arrTaskKey) => {
@@ -162,6 +164,19 @@ Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
     data = likedata
   }
   return data
+}
+
+Vue.prototype.requireInterface = (action, method, params, url) => { // 请求接口
+  const postHeadvData = {
+    action: action,
+    method: method,
+    data: params
+  }
+  http.post(url.substring(4), parseData(postHeadvData))
+  .then((response) => {
+    console.dir(response)
+    return response
+  })
 }
 
 Vue.prototype.isEmptyObj = obj => { // 判断是不是没有属性的空对象 {} => true {xx: 'xxx'} => false

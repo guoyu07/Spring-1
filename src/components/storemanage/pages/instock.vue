@@ -6,24 +6,15 @@
           class="box-card">
           <h3><i :class="editInfo.instanceId ? 'el-icon-edit' : 'el-icon-fa-sign-in' "></i> {{ editInfo.instanceId || editInfo.taskid ? '更改信息' : '入库流程'}}</h3>
           <el-form label-position="left" label-width="100px">
-            <el-form-item label="设备类型">
-              <el-radio-group v-model="deviceType" @change="renderFormData">
-                <el-radio :disabled="(!!$route.params.id) || (!!$route.params.taskid)" v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <el-form-item label="申请人">
-              <el-select
-                v-model="application"
-                filterable>
-                <el-option v-for="option in applicationList"
-                  :label="option.name"
-                  :value="option.name"></el-option>
-              </el-select>
-            </el-form-item>
+            <template v-for="headerBlock in form.header">
+              <h5>{{headerBlock.name}}</h5>
+              <el-form-item v-for="header in headerBlock.value" :label="header.name">
+                <need-cmdb-data :vmodel="headerForm" :strucData="header"></need-cmdb-data>
+              </el-form-item>
+            </template>
           </el-form>
           <div class="step step-2">
             <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-
               <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
                 新增
               </el-button>
@@ -45,11 +36,17 @@
 
 <script>
   import formStructure from '../../_plugins/_formStructure'
+  import needCmdbData from '../../_plugins/_needCMDBData'
   // import { Loading } from 'element-ui'
 
   export default {
     data () {
       return {
+        form: {},
+        headerForm: {
+          name: '',
+          deviceType: ''
+        },
         tabsValue: '0',
         tabIndex: 1,
         closable: true,
@@ -65,6 +62,7 @@
         },
         applicationList: [],
         deviceList: [],
+        deviceTypes: {},
         deviceListStructure: {},
         formData: [],
         editData: [],
@@ -85,7 +83,7 @@
       }
     },
     created () {
-      // console.log(this.$loading)
+      this.renderTaskForm()
       this.userInfo = window.localStorage
       this.application = this.userInfo.userName // 默认申请人为填写人
       if (this.$route.params.id) {
@@ -112,6 +110,35 @@
       }
     },
     methods: {
+      renderTaskForm () {
+        const postData = {
+          action: 'activiti/task/form/group',
+          method: 'GET',
+          data: {
+            pkey: 'import_device',
+            tkey: 'start'
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          this.form = res.data.data.form
+          console.log(this.form)
+          // form.header.forEach((headerv, headerk) => {
+          //   headerv.value.forEach((headv, headk) => {
+          //     let params = {}
+          //     console.log(headv)
+          //     if (headv.value.source.data.params.length !== 0) {
+          //       for (const para of headv.value.source.data.params) {
+          //         if (para.value.type === 'static') {
+          //           params[para.id] = para.value.value
+          //         }
+          //       }
+          //     }
+          //     this.deviceTypes = this.requireInterface(headv.value.source.data.action, headv.value.source.data.method, params, headv.value.source.url)
+          //   })
+          // })
+        })
+      },
       removeTab (targetName) {
         let tabs = this.instockForm.data
         let activeName = this.tabsValue
@@ -482,7 +509,8 @@
     },
 
     components: {
-      formStructure
+      formStructure,
+      needCmdbData
     }
   }
 </script>
