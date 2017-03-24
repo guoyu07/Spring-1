@@ -82,36 +82,6 @@
           <el-button size="mini" type="text" icon="setting" @click="showCondition(body)">
             body 显示条件
           </el-button>
-          <el-dialog title="body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
-            <el-form label-width="120px">
-              <el-form-item label="body 名称">
-                <el-input v-model="body.name"></el-input>
-              </el-form-item>
-              <el-form-item label="选择比较变量：">
-                <el-select v-model="body.show.type">
-                  <el-option label="form_header" value="form_header"></el-option>
-                  <el-option label="message_header" value="message_header"></el-option>
-                  <el-option label="message_body" value="message_body"></el-option>
-                </el-select>
-              </el-form-item>
-              <el-form-item label="流程关节 id：">
-                <el-input v-model="body.show.id"></el-input>
-              </el-form-item>
-              <el-form-item label="属性 key_path：">
-                <el-input v-model="body.show.key_path"></el-input>
-              </el-form-item>
-              <el-form-item label="判断条件：">
-                <el-select v-model="body.show.op">
-                  <el-option label="等于" value="eq"></el-option>
-                  <el-option label="不等于" value="neq"></el-option>
-                </el-select>
-                <el-input v-model="body.show.value"></el-input>
-              </el-form-item>
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-              <el-button type="primary" size="small" @click="showConditionVisible = false"> 确定 </el-button>
-            </div>
-          </el-dialog>
           <el-button size="mini" type="text" icon="delete"
             @click="delBodyBtn(formConfig.form.form.body, body)">删除 body
           </el-button>
@@ -121,6 +91,36 @@
     <el-row>
       <el-button type="primary" size="small" icon="plus" @click="addBodyConfig">添加 body</el-button>
     </el-row>
+    <el-dialog title="body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
+      <el-form label-width="120px">
+        <el-form-item label="body 名称">
+          <el-input v-model="editBody.name"></el-input>
+        </el-form-item>
+        <el-form-item label="选择比较变量：">
+          <el-select v-model="editBody.show.type">
+            <el-option label="form_header" value="form_header"></el-option>
+            <el-option label="message_header" value="message_header"></el-option>
+            <el-option label="message_body" value="message_body"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="流程关节 id：">
+          <el-input v-model="editBody.show.id"></el-input>
+        </el-form-item>
+        <el-form-item label="属性 key_path：">
+          <el-input v-model="editBody.show.key_path"></el-input>
+        </el-form-item>
+        <el-form-item label="判断条件：">
+          <el-select v-model="editBody.show.op">
+            <el-option label="等于" value="eq"></el-option>
+            <el-option label="不等于" value="neq"></el-option>
+          </el-select>
+          <el-input v-model="editBody.show.value"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button type="primary" size="small" @click="showConditionVisible = false"> 确定 </el-button>
+      </div>
+    </el-dialog>
     <el-row type="flex" justify="end">
       <el-button type="success" icon="fa-check" @click="submitBtn">确认完成</el-button>
       <el-button type="info" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
@@ -143,6 +143,7 @@ export default {
       ],
       checkedActions: [],
       formConfig: null,
+      editBody: null,
       showConditionVisible: false
     }
   },
@@ -228,6 +229,7 @@ export default {
           value: ''
         })
       }
+      this.editBody = body // body 传给当前正编辑的临时变量
       this.showConditionVisible = true
     }
   },
