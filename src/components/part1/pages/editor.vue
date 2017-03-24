@@ -37,17 +37,17 @@
         </template>
       </el-card>
     </el-row>
+    <!-- 配置 header 属性字段 -->
     <el-row>
       <label>表单 header 字段：</label>
       <el-card>
-        <!-- 配置属性字段 -->
         <form-conf :config-data="formConfig.form.form.header"></form-conf>
       </el-card>
     </el-row>
+    <!-- 配置 body 属性字段 -->
     <el-row v-for="body in formConfig.form.form.body">
       <label>表单 body 字段：</label>
       <el-card>
-        <!-- 配置属性字段 -->
         <form-conf :config-data="body.attr_list"></form-conf>
         <!-- body 的 count 切换类型的时候不能把之前添加的属性移除 -->
         <div class="count-conf">
@@ -79,11 +79,41 @@
           </el-popover>
         </div>
         <div class="options-btn">
+          <el-button size="mini" type="text" icon="setting" @click="showCondition(body)">
+            body 显示条件
+          </el-button>
+          <el-dialog title="body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
+            <el-form label-width="120px">
+              <el-form-item label="body 名称">
+                <el-input v-model="body.name"></el-input>
+              </el-form-item>
+              <el-form-item label="选择比较变量：">
+                <el-select v-model="body.show.type">
+                  <el-option label="form_header" value="form_header"></el-option>
+                  <el-option label="message_header" value="message_header"></el-option>
+                  <el-option label="message_body" value="message_body"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="流程关节 id：">
+                <el-input v-model="body.show.id"></el-input>
+              </el-form-item>
+              <el-form-item label="属性 key_path：">
+                <el-input v-model="body.show.key_path"></el-input>
+              </el-form-item>
+              <el-form-item label="判断条件：">
+                <el-select v-model="body.show.op">
+                  <el-option label="等于" value="eq"></el-option>
+                  <el-option label="不等于" value="neq"></el-option>
+                </el-select>
+                <el-input v-model="body.show.value"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" size="small" @click="showConditionVisible = false"> 确定 </el-button>
+            </div>
+          </el-dialog>
           <el-button size="mini" type="text" icon="delete"
             @click="delBodyBtn(formConfig.form.form.body, body)">删除 body
-          </el-button>
-          <el-button size="mini" type="primary" icon="setting">
-            body 显示条件
           </el-button>
         </div>
       </el-card>
@@ -112,8 +142,8 @@ export default {
         { 'name': '下载', 'url': '', 'type': 'target' }
       ],
       checkedActions: [],
-      bodyCountType: '',
-      formConfig: null
+      formConfig: null,
+      showConditionVisible: false
     }
   },
   activated () {
@@ -184,6 +214,21 @@ export default {
     },
     delBodyBtn (arr, item) {
       arr.splice(arr.indexOf(item), 1)
+    },
+    showCondition (body) {
+      if (body.name && body.show) {
+        // 添加过属性
+      } else {
+        this.$set(body, 'name', '')
+        this.$set(body, 'show', {
+          type: 'form_header',
+          id: '',
+          key_path: '',
+          op: 'eq',
+          value: ''
+        })
+      }
+      this.showConditionVisible = true
     }
   },
   components: {
