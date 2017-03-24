@@ -7,6 +7,10 @@
     .el-row {
       margin: 10px 0;
     }
+    .options-btn {
+      margin-bottom: 10px;
+      float: right;
+    }
     label {
       line-height: 36px;
     }
@@ -45,11 +49,43 @@
       <el-card>
         <!-- 配置属性字段 -->
         <form-conf :config-data="body.attr_list"></form-conf>
-        <!-- body 的 count -->
-        <counts-conf :count="body.count"></counts-conf>
-        <el-button size="mini" type="text" icon="delete" class="fr"
-          @click="delBodyBtn(formConfig.form.form.body, body)">删除 body
-        </el-button>
+        <!-- body 的 count 切换类型的时候不能把之前添加的属性移除 -->
+        <div class="count-conf">
+          <label>配置此 body 个数：</label>
+          <el-select v-model="body.count.type" @change="countConfig">
+            <el-option label="static" value="static"></el-option>
+            <el-option label="form_header" value="form_header"></el-option>
+            <el-option label="message_header" value="message_header"></el-option>
+          </el-select>
+          <el-popover v-if="body.count.type === 'static'"
+            placement="right" trigger="click">
+            <h5>最大数：</h5>
+            <el-input-number size="small" v-model="body.count.max" />
+            <el-button slot="reference">配置</el-button>
+          </el-popover>
+          <el-popover v-if="body.count.type === 'form_header'"
+            placement="right" trigger="click">
+            <h5>输入表单中 form_header 的一个字段：</h5>
+            <el-input size="small" v-model="body.count.key_path"></el-input>
+            <el-button slot="reference">配置</el-button>
+          </el-popover>
+          <el-popover v-if="body.count.type === 'message_header'"
+            placement="right" trigger="click">
+            <h5>输入流程中的一个历史环节的 messageId：</h5>
+            <el-input size="small" v-model="body.count.id"></el-input>
+            <h5>输入该环节中的表单的一个字段：</h5>
+            <el-input size="small" v-model="body.count.key_path"></el-input>
+            <el-button slot="reference">配置</el-button>
+          </el-popover>
+        </div>
+        <div class="options-btn">
+          <el-button size="mini" type="text" icon="delete"
+            @click="delBodyBtn(formConfig.form.form.body, body)">删除 body
+          </el-button>
+          <el-button size="mini" type="primary" icon="setting">
+            body 显示条件
+          </el-button>
+        </div>
       </el-card>
     </el-row>
     <el-row>
@@ -64,7 +100,6 @@
 
 <script>
 import formConf from './config/formConf' // 配置字段的表单
-import countsConf from './config/countsConf' // 配置数量
 
 export default {
   data () {
@@ -107,24 +142,24 @@ export default {
     },
     // 选择配置 body 个数
     countConfig (count) {
-      const type = count.type
-      count = {} // 准备给它加属性
-      this.$set(count, 'type', type)
-      switch (type) {
-        case 'static':
-          this.$set(count, 'min', 1)
-          this.$set(count, 'max', 1)
-          break
-        case 'form_header':
-          this.$set(count, 'key_path', '')
-          break
-        case 'message_header':
-          this.$set(count, 'id', '')
-          this.$set(count, 'key_path', '')
-          break
-        default:
-          count = { type: 'static' }
-      }
+      // const type = count.type
+      // count = {} // 准备给它加属性
+      // this.$set(count, 'type', type)
+      // switch (type) {
+      //   case 'static':
+      //     this.$set(count, 'min', 1)
+      //     this.$set(count, 'max', 1)
+      //     break
+      //   case 'form_header':
+      //     this.$set(count, 'key_path', '')
+      //     break
+      //   case 'message_header':
+      //     this.$set(count, 'id', '')
+      //     this.$set(count, 'key_path', '')
+      //     break
+      //   default:
+      //     count = { type: 'static' }
+      // }
       console.log(count)
     },
     // 确认完成
@@ -152,8 +187,7 @@ export default {
     }
   },
   components: {
-    formConf,
-    countsConf
+    formConf
   }
 }
 </script>
