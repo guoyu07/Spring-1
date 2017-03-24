@@ -22,11 +22,11 @@
     <el-row>
       <label>表单名称：</label>
       <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
-      <label>表单key：</label>
+      <label>表单 key：</label>
       <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
     </el-row>
     <el-row>
-      <label>功能/操作按钮：</label>
+      <label>功能 / 操作按钮：</label>
       <el-card>
         <el-checkbox-group v-model="checkedActions" @change="actionChange">
           <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
@@ -65,15 +65,15 @@
           </el-popover>
           <el-popover v-if="body.count.type === 'form_header'"
             placement="right" trigger="click">
-            <h5>输入表单中 form_header 的一个字段：</h5>
+            <h5>所取表单 form_header 中的字段：</h5>
             <el-input size="small" v-model="body.count.key_path"></el-input>
             <el-button slot="reference">配置</el-button>
           </el-popover>
           <el-popover v-if="body.count.type === 'message_header'"
             placement="right" trigger="click">
-            <h5>输入流程中的一个历史环节的 messageId：</h5>
+            <h5>所取流程的一个环节 messageId：</h5>
             <el-input size="small" v-model="body.count.id"></el-input>
-            <h5>输入该环节中的表单的一个字段：</h5>
+            <h5>所取该环节表单的字段：</h5>
             <el-input size="small" v-model="body.count.key_path"></el-input>
             <el-button slot="reference">配置</el-button>
           </el-popover>

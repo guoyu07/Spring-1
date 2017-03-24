@@ -30,7 +30,7 @@
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="获取选项的 API 配置：" v-model="dialogProps.confVisible">
+  <el-dialog class="cmdb-config-dialog" title="获取选项的 API 接口配置：" v-model="dialogProps.confVisible">
     <div class="conf-cmdb-contain" v-if="dialogProps.source">
       <el-form :model="dialogProps.source" label-width="100px" :inline="true">
         <el-form-item label="URL：">
@@ -86,17 +86,17 @@
 
       <label> 选项数据路径配置： </label>
       <el-card>
-        <label> 数据路径： </label>
+        <label> 数据 data_path： </label>
         <el-input v-model="dialogProps.source.res.data_path"></el-input>
-        <label> 属性名： </label>
+        <label> 属性 show_key： </label>
         <el-input v-model="dialogProps.source.res.show_key"></el-input>
       </el-card>
 
       <template v-if="dialogProps.type === 'dist/multi'">
-        <label> 多选数量配置： </label>
+        <label> 多选选择个数配置： </label>
         <el-card>
           <el-row>
-            <label>count：</label>
+            <label>count 配置类型：</label>
             <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
               <el-option v-for="item in countConfig" :value="item"></el-option>
             </el-select>
