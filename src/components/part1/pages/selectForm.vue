@@ -22,8 +22,8 @@
         <el-option v-for="process of processList" :label="process.pname" :value="process.pkey" />
       </el-select>
       <label>选择表单：</label>
-      <el-select v-model="selectedForm">
-        <el-option v-for="form of formList" :label="form.tname" :value="form.tkey" />
+      <el-select v-model="selectedForm" @change="formChange">
+        <el-option v-for="form of formList" :label="form.tname" :value="form" />
       </el-select>
     </el-row>
     <el-row>
@@ -117,19 +117,22 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           this.formList = res.data.data.list
-          this.selectedForm = this.formList[0].tkey // 默认选中第一个
+          this.selectedForm = this.formList[0] // 默认选中第一个
         })
       },
-      selectChange (value) {
-        // 清空
-        this.formData = {}
-        // 加上待提交字段
-        value.forEach(item => {
-          const key = item.name
-          this.$set(this.formData, key, item.type === 'arr' ? [] : '')
-          item.key = key
-        })
+      formChange (form) {
+        console.log(form) // 表单配置数据
       },
+      // selectChange (value) {
+      //   // 清空
+      //   this.formData = {}
+      //   // 加上待提交字段
+      //   value.forEach(item => {
+      //     const key = item.name
+      //     this.$set(this.formData, key, item.type === 'arr' ? [] : '')
+      //     item.key = key
+      //   })
+      // },
       submitForm () {
         this.$refs.formRef.validate(valid => {
           if (valid) {
