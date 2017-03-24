@@ -55,6 +55,8 @@
           </el-dropdown>
         </el-form-item>
       </el-form>
+
+      <label> 接口请求参数： </label>
       <el-collapse v-if="dialogProps.source.data.params.length">
         <el-collapse-item v-for="param in dialogProps.source.data.params">
           <template slot="title">
@@ -81,34 +83,45 @@
           </el-row>
         </el-collapse-item>
       </el-collapse>
-      <!--多选 配置数量-->
-      <el-card v-if="dialogProps.type === 'dist/multi'">
-        <el-row>
-          <label>count：</label>
-          <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
-            <el-option v-for="item in countConfig" :value="item"></el-option>
-          </el-select>
-        </el-row>
-        <el-row>
-          <template v-if="dialogProps.count.type === 'static'">
-            <label>min：</label>
-            <el-input-number size="small"
-              v-model="dialogProps.count.min"
-              :min="1" :max="dialogProps.count.max"/>
-            <label>max：</label>
-            <el-input-number v-model="dialogProps.count.max"
-              size="small" :min="1"/>
-          </template>
-          <template v-if="['message_header', 'message_body'].includes(dialogProps.count.type)">
-            <label>流程环节 id：</label>
-            <el-input v-model="dialogProps.count.id" size="small"></el-input>
-          </template>
-          <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
-            <label>属性 key_path：</label>
-            <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
-          </template>
-        </el-row>
+
+      <label> 选项数据路径配置： </label>
+      <el-card>
+        <label> 数据路径： </label>
+        <el-input v-model="dialogProps.source.res.data_path"></el-input>
+        <label> 属性名： </label>
+        <el-input v-model="dialogProps.source.res.show_key"></el-input>
       </el-card>
+
+      <template v-if="dialogProps.type === 'dist/multi'">
+        <label> 多选数量配置： </label>
+        <el-card>
+          <el-row>
+            <label>count：</label>
+            <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
+              <el-option v-for="item in countConfig" :value="item"></el-option>
+            </el-select>
+          </el-row>
+          <el-row>
+            <template v-if="dialogProps.count.type === 'static'">
+              <label>min：</label>
+              <el-input-number size="small"
+                v-model="dialogProps.count.min"
+                :min="1" :max="dialogProps.count.max"/>
+              <label>max：</label>
+              <el-input-number v-model="dialogProps.count.max"
+                size="small" :min="1"/>
+            </template>
+            <template v-if="['message_header', 'message_body'].includes(dialogProps.count.type)">
+              <label>流程环节 id：</label>
+              <el-input v-model="dialogProps.count.id" size="small"></el-input>
+            </template>
+            <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
+              <label>属性 key_path：</label>
+              <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+            </template>
+          </el-row>
+        </el-card>
+      </template>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="onSubmit" type="primary">完成</el-button>
