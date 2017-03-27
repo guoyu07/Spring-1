@@ -29,7 +29,7 @@
               label="操作"
               width="240">
               <template scope="scope">
-                <el-button size="small" @click="onEdit(scope.row)">查看 / 修改</el-button>
+                <el-button size="small" @click="onEdit(scope.row)" icon="fa-cogs">自定义</el-button>
                 <el-button size="small" icon="delete" type="danger" @click="onDelete(scope.row)">删除</el-button>
               </template>
             </el-table-column>
@@ -93,7 +93,7 @@ export default {
 
     onEdit (row) {
       row.pkey = this.selectedProcess
-      this.$router.push({ path: '/part1/editor', query: { row } })
+      this.$router.push({ path: '/forms/editor', query: { row } })
     },
 
     onDelete (id) {
