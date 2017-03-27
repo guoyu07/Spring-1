@@ -45,7 +45,7 @@
       </el-card>
     </el-row>
     <el-row>
-      <label>配置此 body 个数：</label>
+      <label>配置 body 个数：</label>
       <el-card>
         <el-select v-model="formConfig.form.form.body.count.type" @change="countConfig">
           <el-option label="static" value="static"></el-option>
@@ -86,7 +86,7 @@
             body 显示条件
           </el-button>
           <el-button size="mini" type="text" icon="delete"
-            @click="delBodyBtn(formConfig.form.form.body, body)">删除 body
+            @click="delBodyBtn(formConfig.form.form.body.body_list, body)">删除 body
           </el-button>
         </div>
       </el-card>
@@ -106,7 +106,7 @@
             <el-option label="message_body" value="message_body"></el-option>
           </el-select>
         </el-form-item>
-        <el-form-item label="流程关节 id：">
+        <el-form-item label="流程关节 id：" v-if="editBody.show.type !== 'form_header'">
           <el-input v-model="editBody.show.id"></el-input>
         </el-form-item>
         <el-form-item label="属性 key_path：">
