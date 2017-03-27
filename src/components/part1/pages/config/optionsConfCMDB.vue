@@ -92,7 +92,7 @@
         <el-input v-model="dialogProps.source.res.show_key"></el-input>
       </el-card>
 
-      <template v-if="dialogProps.type === 'dist/multi'">
+      <template v-if="dialogProps.type === 'dict/multi'">
         <label> 多选选择个数配置： </label>
         <el-card>
           <el-row>

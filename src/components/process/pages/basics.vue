@@ -295,7 +295,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('加入成功！')
-            // _operationRelations[operationType] = Object.assign({}, _operationRelations[operationType], { visible: false, loading: false })
+            // Object.assign(_operationRelations[operationType], { visible: false, loading: false })
             _operationRelations[operationType].loading = false
             _operationRelations[operationType].visible = false
             this.getProcessList()

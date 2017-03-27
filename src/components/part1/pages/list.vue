@@ -8,7 +8,7 @@
   <div class="list-content">
     <el-row>
       <el-col :md="24" :lg="20">
-        <el-card class="box-card">
+        <el-card class="box-card" v-loading.body="loading">
           <h3><i class="el-icon-fa-cogs"></i> 自定义表单</h3>
           <el-select v-model="selectedProcess" placeholder="请选择流程…" @change="getFormList" class="process-select">
             <el-option
@@ -17,6 +17,7 @@
               :value="process.pkey">
             </el-option>
           </el-select>
+          <small class="process-desc"><i class="el-icon-information"></i> 此处仅为你可管理的流程</small>
           <el-table
             :data="formList"
             border
@@ -48,7 +49,8 @@ export default {
       selectedProcess: '',
       processList: [],
       formList: [],
-      formListLoading: false
+      formListLoading: false,
+      loading: false
     }
   },
   created () {
@@ -61,13 +63,17 @@ export default {
     // 获取所有流程，
     // 供选择框用
     getProcessList () {
+      this.loading = true
       const postData = {
         action: 'activiti/process/definition',
         method: 'GET',
         data: {}
       }
       this.http.post('', this.parseData(postData)).then((res) => {
-        this.processList = res.data.data.list
+        if (res.status === 200) {
+          this.processList = res.data.data.list
+          this.loading = false
+        }
       })
     },
 
@@ -83,10 +89,6 @@ export default {
         this.formList = res.data.data.list
         this.formListLoading = false
       })
-    },
-
-    newTaskBtn () {
-      this.$router.push('/part1/editor')
     },
 
     onEdit (row) {
