@@ -7,8 +7,9 @@
         :prop="'data.' + index + '.' + formItem.id"
         :label="formItem.name"
         :rules="{
-          type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : ((formItem.value.type === 'FK') ? 'object' : 'string'))), required: formItem.required === 'true', message: formItem.name + '不能为空', trigger: 'blur, change'
+          type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : ((formItem.value.type === 'FK') ? 'object' : 'string'))), required: formItem.required, message: formItem.name + '不能为空', trigger: 'blur, change'
         }">
+
         <el-input
           v-if="formItem.value.type === 'str'"
           v-model="item[formItem.id]">
@@ -16,7 +17,7 @@
 
         <el-input-number
           v-else-if="formItem.value.type === 'int'"
-          v-model="item[formItem.id]" :min="0">
+          v-model="item[formItem.id]" :min="1">
         </el-input-number>
 
         <el-select
@@ -48,63 +49,41 @@
         </el-select>
 
         <el-date-picker
-          v-else="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
+          v-else-if="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
           v-model="item[formItem.id]"
           :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
           placeholder="选择时间">
         </el-date-picker>
-      </el-form-item>
-      <el-form-item label="申请人" v-if="application">
-        <el-select
-          v-model="item.application">
-          <el-option v-for="option in applicationList"
-            :label="option.name"
-            :value="option.name"></el-option>
-        </el-select>
+
+        <need-cmdb-data
+          v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
+          :vmodel="item" :strucData="formItem"></need-cmdb-data>
       </el-form-item>
     </div>
   </div>
 </template>
 
 <script>
+  import needCmdbData from './_needCMDBData'
   export default {
     props: {
       item: { type: Object },
       index: { type: Number },
-      formData: { type: Array },
-      application: { type: Boolean }
+      formData: { type: Array }
     },
 
     data () {
       return {
-        userInfo: {},
-        applicationList: []
       }
     },
     created () {
-      if (this.application) {
-        this.userInfo = window.localStorage
-        this.renderApplicationList() // 渲染申请人列表
-        this.item.application = this.userInfo.userName // 默认申请人为填写人
-      }
     },
 
     methods: {
-      renderApplicationList () { // 渲染申请人列表
-        const postData = {
-          action: 'object/instance/list',
-          method: 'GET',
-          data: {
-            object_id: 'USER'
-            // page: "不传则获取该对象所有实例",
-            // pageSize: "默认30"
-          }
-        }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          this.applicationList = res.data.data.list
-        })
-      }
+    },
+
+    components: {
+      needCmdbData
     }
   }
 </script>

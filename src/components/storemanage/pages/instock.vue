@@ -5,29 +5,22 @@
         <el-card
           class="box-card">
           <h3><i :class="editInfo.instanceId ? 'el-icon-edit' : 'el-icon-fa-sign-in' "></i> {{ editInfo.instanceId || editInfo.taskid ? '更改信息' : '入库流程'}}</h3>
-          <el-form label-position="left" label-width="100px">
-            <template v-for="headerBlock in form.header">
-              <h5>{{headerBlock.name}}</h5>
-              <el-form-item v-for="header in headerBlock.value" :label="header.name">
-                <need-cmdb-data :vmodel="headerForm" :strucData="header"></need-cmdb-data>
-              </el-form-item>
-            </template>
+          <el-form label-position="left" ref="instockFormHead" :model="instockFormHead" :inline="true">
+            <header-form-structure :form-data="form.header" :item="instockFormHead"></header-form-structure>
           </el-form>
-          <div class="step step-2">
-            <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
-              <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
-                新增
-              </el-button>
-              <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-                <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="index + ''" :closable="index !== 0">
-                  <form-structure :form-data="formData" :item="item" :index="index"></form-structure>
-                </el-tab-pane>
-              </el-tabs>
-            </el-form>
-            <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')" :loading="isSubmitting">确认</el-button>
-            <el-button v-if="!$route.params.id" class="margin-top" @click="resetForm('instockForm')">清空</el-button>
-            <el-button v-if="$route.params.id" class="margin-top" @click="cancel">取消</el-button>
-          </div>
+          <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
+            <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
+              新增
+            </el-button>
+            <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
+              <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="index + ''" :closable="index !== 0">
+                <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
+              </el-tab-pane>
+            </el-tabs>
+          </el-form>
+          <el-button type="primary" class="margin-top" @click="onConfirm('instockForm')" :loading="isSubmitting">确认</el-button>
+          <el-button v-if="!$route.params.id" class="margin-top" @click="resetForm('instockForm')">清空</el-button>
+          <el-button v-if="$route.params.id" class="margin-top" @click="cancel">取消</el-button>
         </el-card>
       </el-col>
     </el-row>
@@ -36,6 +29,7 @@
 
 <script>
   import formStructure from '../../_plugins/_formStructure'
+  import headerFormStructure from '../../_plugins/_headerFormStructure'
   import needCmdbData from '../../_plugins/_needCMDBData'
   // import { Loading } from 'element-ui'
 
@@ -43,10 +37,6 @@
     data () {
       return {
         form: {},
-        headerForm: {
-          name: '',
-          deviceType: ''
-        },
         tabsValue: '0',
         tabIndex: 1,
         closable: true,
@@ -57,14 +47,13 @@
         application: '',
         deviceType: '',
         instockForm: {
-          application: '',
           data: [{}]
         },
+        instockFormHead: {},
         applicationList: [],
         deviceList: [],
         deviceTypes: {},
         deviceListStructure: {},
-        formData: [],
         editData: [],
         deviceSearch: '',
         deviceTable: [],
@@ -110,35 +99,6 @@
       }
     },
     methods: {
-      renderTaskForm () {
-        const postData = {
-          action: 'activiti/task/form/group',
-          method: 'GET',
-          data: {
-            pkey: 'import_device',
-            tkey: 'start'
-          }
-        }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          this.form = res.data.data.form
-          console.log(this.form)
-          // form.header.forEach((headerv, headerk) => {
-          //   headerv.value.forEach((headv, headk) => {
-          //     let params = {}
-          //     console.log(headv)
-          //     if (headv.value.source.data.params.length !== 0) {
-          //       for (const para of headv.value.source.data.params) {
-          //         if (para.value.type === 'static') {
-          //           params[para.id] = para.value.value
-          //         }
-          //       }
-          //     }
-          //     this.deviceTypes = this.requireInterface(headv.value.source.data.action, headv.value.source.data.method, params, headv.value.source.url)
-          //   })
-          // })
-        })
-      },
       removeTab (targetName) {
         let tabs = this.instockForm.data
         let activeName = this.tabsValue
@@ -214,34 +174,64 @@
           this.editData = this.findTaskMsgR(res.data.data.variables.message, ['start']).form.object_list
         })
       },
-      renderFormData () { // 渲染表单数据
+      // renderTaskForm () {
+      //   const postData = {
+      //     action: 'activiti/task/form/group',
+      //     method: 'GET',
+      //     data: {
+      //       pkey: 'import_device',
+      //       tkey: 'start'
+      //     }
+      //   }
+      //   this.http.post('', this.parseData(postData))
+      //   .then((res) => {
+      //     this.form = res.data.data.form
+      //     console.log(this.form)
+      //   })
+      // },
+      renderTaskForm () { // 渲染表单数据
         const renderFromData = {
-          action: 'cmdb/object/attr',
+          action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            object_id: this.deviceType
+            pkey: 'import_device',
+            tkey: 'start'
           }
         }
         this.loading = true
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          this.formData = res.data.data.attr_group
-          this.formData.map(group => {
+          this.form = res.data.data.form
+          this.form.header.map(group => {
+            group.value.map(item => {
+              if (item.value.type === 'arr' || item.value.type === 'FKs') {
+                this.$set(this.instockFormHead, item.id, [])
+              } else if (item.value.type === 'str') {
+                this.$set(this.instockFormHead, item.id, '')
+              } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
+                this.$set(this.instockFormHead, item.id, null)
+              } else {
+                // 'date' || 'datetime' || 'int'
+                this.$set(this.instockForm, item.id, undefined)
+              }
+            })
+          })
+          this.form.body.body_list[0].attr_list.map(group => {
             group.value.map(item => {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
                 this.$set(this.instockForm.data[0], item.id, [])
               } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
                 this.$set(this.instockForm.data[0], item.id, undefined)
+              } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
+                this.$set(this.instockForm.data[0], item.id, null)
               } else {
                 this.$set(this.instockForm.data[0], item.id, '')
               }
             })
           })
-          // this.$set(this.instockForm.data[0], 'tabname', '1')
-          console.log(this.formData)
           // 如果是修改页面
           if (this.editInfo.instanceId) {
             this.closable = false
-            this.formData.map(formBlock => {
+            this.form.body.body_list[0].attr_list.map(formBlock => {
               formBlock.value.map(item => {
                 if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                   if (this.editData[item.id]) {
@@ -286,7 +276,7 @@
           if (this.editInfo.taskid) {
             this.closable = false
             this.editData.forEach((v, k) => {
-              this.formData.map(formBlock => {
+              this.form.body.body_list[0].attr_list.map(formBlock => {
                 formBlock.value.map(item => {
                   if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                     if (this.editData[k][item.id]) {
@@ -349,9 +339,9 @@
         // let newTabName = ++this.tabIndex + ''
         let newData = {}
         // newData.tabname = newTabName
-        this.formData.map(group => {
+        this.form.body.body_list[0].attr_list.map(group => {
           group.value.map(item => {
-            if (item.unique === 'true') {
+            if (item.unique) {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
                 newData[item.id] = []
               } else if (item.value.type === 'int') {
@@ -400,7 +390,7 @@
               }
             }
           }
-          this.formData.map(group => {
+          this.form.body.body_list[0].attr_list.map(group => {
             group.value.map(item => {
               if (item.value.type === 'date') {
                 if (objectList.data[k][item.id]) {
@@ -417,85 +407,90 @@
 
         this.$refs[formName].validate((valid) => {
           if (valid) {
-            console.log('submit!')
-            const postData = {
-              action: 'runtime/process/instances',
-              method: 'POST',
-              data: {
-                pkey: this.deviceListStructure[this.deviceType],
-                form: {
-                  'object_list': objectList.data,
-                  'object_id': this.deviceType,
-                  'application': this.application
-                }
-              }
-            }
-            const updateData = {}
-            // console.log(this.instockForm.data[0])
-            for (const i in this.instockForm.data[0]) {
-              if (this.instockForm.data[0][i]) {
-                updateData[i] = this.instockForm.data[0][i]
-              }
-            }
-            this.formData.map(group => {
-              group.value.map(item => {
-                if (item.value.type === 'date') {
-                  // newData[item.id] = undefined
-                  if (updateData[item.id]) {
-                    updateData[item.id] = this.filterDate(updateData[item.id])
-                  }
-                } else if (item.value.type === 'datetime') {
-                  if (updateData[item.id]) {
-                    updateData[item.id] = this.filterDateTime(updateData[item.id])
+            this.$refs['instockFormHead'].validate((validHead) => {
+              if (validHead) {
+                console.log('submit!')
+                const postData = {
+                  action: 'runtime/process/instances',
+                  method: 'POST',
+                  data: {
+                    pkey: this.deviceListStructure[this.deviceType],
+                    form: {
+                      'body': objectList.data,
+                      'header': this.instockFormHead
+                    }
                   }
                 }
-              })
+                const updateData = {}
+                // console.log(this.instockForm.data[0])
+                for (const i in this.instockForm.data[0]) {
+                  if (this.instockForm.data[0][i]) {
+                    updateData[i] = this.instockForm.data[0][i]
+                  }
+                }
+                this.form.body.body_list[0].attr_list.map(group => {
+                  group.value.map(item => {
+                    if (item.value.type === 'date') {
+                      // newData[item.id] = undefined
+                      if (updateData[item.id]) {
+                        updateData[item.id] = this.filterDate(updateData[item.id])
+                      }
+                    } else if (item.value.type === 'datetime') {
+                      if (updateData[item.id]) {
+                        updateData[item.id] = this.filterDateTime(updateData[item.id])
+                      }
+                    }
+                  })
+                })
+                // console.log(updateData)
+                const updataInstanceData = {
+                  action: 'runtime/process/instances',
+                  method: 'POST',
+                  data: {
+                    pkey: 'alter_device',
+                    form: {
+                      'object_list': [updateData],
+                      'object_id': this.deviceType,
+                      'application': this.application
+                    }
+                  }
+                }
+                if (this.editInfo.instanceId) {
+                  this.http.post('', this.parseData(updataInstanceData)).then((res) => {
+                    console.log(res)
+                    if (res.status === 200) {
+                      this.$notify({
+                        title: '成功',
+                        message: `提交成功！`,
+                        type: 'success'
+                      })
+                      this.$router.replace('/storemanage/outstock/edit')
+                    } else {
+                      this.$notify.error({
+                        title: '失败',
+                        message: `变更失败！`
+                      })
+                    }
+                    this.isSubmitting = false
+                  })
+                } else {
+                  this.isSubmitting = true
+                  this.http.post('', this.parseData(postData)).then((res) => {
+                    console.log(res)
+                    if (res && res.status === 406) {
+                      this.$message.error(res.errorMessage)
+                    } else {
+                      this.$message.success('提交成功！')
+                      // this.$message.warning('提交成功！')
+                      this.$router.replace('/orders')
+                    }
+                    this.isSubmitting = false
+                  })
+                }
+              } else {
+                this.$message.warning('表单未填写完整！')
+              }
             })
-            // console.log(updateData)
-            const updataInstanceData = {
-              action: 'runtime/process/instances',
-              method: 'POST',
-              data: {
-                pkey: 'alter_device',
-                form: {
-                  'object_list': [updateData],
-                  'object_id': this.deviceType,
-                  'application': this.application
-                }
-              }
-            }
-            if (this.editInfo.instanceId) {
-              this.http.post('', this.parseData(updataInstanceData)).then((res) => {
-                console.log(res)
-                if (res.status === 200) {
-                  this.$notify({
-                    title: '成功',
-                    message: `提交成功！`,
-                    type: 'success'
-                  })
-                  this.$router.replace('/storemanage/outstock/edit')
-                } else {
-                  this.$notify.error({
-                    title: '失败',
-                    message: `变更失败！`
-                  })
-                }
-                this.isSubmitting = false
-              })
-            } else {
-              this.isSubmitting = true
-              this.http.post('', this.parseData(postData)).then((res) => {
-                console.log(res)
-                if (res && res.status === 406) {
-                  this.$message.error(res.errorMessage)
-                } else {
-                  this.$message.success('提交成功！')
-                  // this.$message.warning('提交成功！')
-                  this.$router.replace('/orders')
-                }
-                this.isSubmitting = false
-              })
-            }
           } else {
             console.log('error submit!!')
             this.$message.warning('表单未填写完整！')
@@ -510,6 +505,7 @@
 
     components: {
       formStructure,
+      headerFormStructure,
       needCmdbData
     }
   }
