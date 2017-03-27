@@ -44,40 +44,43 @@
         <form-conf :config-data="formConfig.form.form.header"></form-conf>
       </el-card>
     </el-row>
+    <el-row>
+      <label>配置此 body 个数：</label>
+      <el-card>
+        <el-select v-model="formConfig.form.form.body.count.type" @change="countConfig">
+          <el-option label="static" value="static"></el-option>
+          <el-option label="form_header" value="form_header"></el-option>
+          <el-option label="message_header" value="message_header"></el-option>
+        </el-select>
+        <el-popover v-if="formConfig.form.form.body.count.type === 'static'"
+          placement="right" trigger="click">
+          <h5>最小数：</h5>
+          <el-input-number size="small" v-model="formConfig.form.form.body.count.min"></el-input-number>
+          <h5>最大数：</h5>
+          <el-input-number size="small" v-model="formConfig.form.form.body.count.max"></el-input-number>
+          <el-button slot="reference">配置</el-button>
+        </el-popover>
+        <el-popover v-if="formConfig.form.form.body.count.type === 'form_header'"
+          placement="right" trigger="click">
+          <h5>所取表单 form_header 中的字段：</h5>
+          <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+          <el-button slot="reference">配置</el-button>
+        </el-popover>
+        <el-popover v-if="formConfig.form.form.body.count.type === 'message_header'"
+          placement="right" trigger="click">
+          <h5>所取流程的一个环节 messageId：</h5>
+          <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
+          <h5>所取该环节表单的字段：</h5>
+          <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+          <el-button slot="reference">配置</el-button>
+        </el-popover>
+      </el-card>
+    </el-row>
     <!-- 配置 body 属性字段 -->
-    <el-row v-for="body in formConfig.form.form.body">
+    <el-row v-for="body in formConfig.form.form.body.body_list">
       <label>表单 body 字段：</label>
       <el-card>
         <form-conf :config-data="body.attr_list"></form-conf>
-        <!-- body 的 count 切换类型的时候不能把之前添加的属性移除 -->
-        <div class="count-conf">
-          <label>配置此 body 个数：</label>
-          <el-select v-model="body.count.type" @change="countConfig">
-            <el-option label="static" value="static"></el-option>
-            <el-option label="form_header" value="form_header"></el-option>
-            <el-option label="message_header" value="message_header"></el-option>
-          </el-select>
-          <el-popover v-if="body.count.type === 'static'"
-            placement="right" trigger="click">
-            <h5>最大数：</h5>
-            <el-input-number size="small" v-model="body.count.max" />
-            <el-button slot="reference">配置</el-button>
-          </el-popover>
-          <el-popover v-if="body.count.type === 'form_header'"
-            placement="right" trigger="click">
-            <h5>所取表单 form_header 中的字段：</h5>
-            <el-input size="small" v-model="body.count.key_path"></el-input>
-            <el-button slot="reference">配置</el-button>
-          </el-popover>
-          <el-popover v-if="body.count.type === 'message_header'"
-            placement="right" trigger="click">
-            <h5>所取流程的一个环节 messageId：</h5>
-            <el-input size="small" v-model="body.count.id"></el-input>
-            <h5>所取该环节表单的字段：</h5>
-            <el-input size="small" v-model="body.count.key_path"></el-input>
-            <el-button slot="reference">配置</el-button>
-          </el-popover>
-        </div>
         <div class="options-btn">
           <el-button size="mini" type="text" icon="setting" @click="showCondition(body)">
             body 显示条件
@@ -156,10 +159,10 @@ export default {
     this.formConfig = this.$route.query.row || null
     if (this.formConfig && this.formConfig.form) {
       // body 类型：从 obj 修改为 arr
-      const bodyIsArr = Array.isArray(this.formConfig.form.form.body)
+      const bodyIsArr = Array.isArray(this.formConfig.form.form.body.body_list)
       if (!bodyIsArr) {
         this.$set(this.formConfig.form.form.body.count, 'type', 'static')
-        this.formConfig.form.form.body = [this.formConfig.form.form.body]
+        this.formConfig.form.form.body.body_list = [this.formConfig.form.form.body.body_list]
       }
       // 拿到 actions 的 name
       this.checkedActions = this.formConfig.form.action.map(item => item.name)
@@ -193,9 +196,8 @@ export default {
     },
     // 增加 body
     addBodyConfig () {
-      this.formConfig.form.form.body.push({
-        attr_list: [],
-        count: { type: 'static' }
+      this.formConfig.form.form.body.body_list.push({
+        attr_list: []
       })
     },
     // 删除 body
