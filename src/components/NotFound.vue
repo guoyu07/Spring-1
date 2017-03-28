@@ -3,7 +3,7 @@
     <h2 class="nf-title">404</h2>
     <div class="nf-detail">
       <p>你要找的页面不存在 :(</p>
-        <p>你可以尝试 <router-link :to="{ path: '/' }">回到主页</router-link> 重新导航。</p>
+        <p><router-link :to="{ path: '/' }"><i class="el-icon-fa-home fa-square-o icon-lg"></i></router-link></p>
     </div>
   </div>
 </template>
@@ -25,6 +25,7 @@
         font-family: monospace;
         margin: 0;
         color: darken(@primary, 16%);
+        text-shadow: -1px 1px 0 #fff !important;
       }
 
       &-detail {
@@ -34,16 +35,25 @@
         font-family: sans-serif;
 
         p {
-          margin: 8px;
+          margin: 12px;
         }
 
         a {
           color: darken(@primary, 10%);
-          text-decoration: underline;
+          display: block;
+          width: 32px;
+          height: 32px;
+          margin: 0 auto;
+          border: 1px solid darken(@primary, 10%);
+          border-radius: 100%;
 
           &:hover,
           &:focus {
             color: @primary;
+          }
+
+          i {
+            vertical-align: middle;
           }
         }
       }
