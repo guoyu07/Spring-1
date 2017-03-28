@@ -240,7 +240,7 @@
               }
             })
           })
-          this.form.body.body_list[0].attr_list.map(group => {
+          this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
             group.value.map(item => {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
                 this.$set(this.instockForm.data[0], item.id, [])
@@ -256,7 +256,7 @@
           // 如果是修改页面
           if (this.editInfo.instanceId) {
             this.closable = false
-            this.form.body.body_list[0].attr_list.map(formBlock => {
+            this.form.body.body_list[this.bodylistIndex].attr_list.map(formBlock => {
               formBlock.value.map(item => {
                 if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                   if (this.editData[item.id]) {
@@ -301,7 +301,7 @@
           if (this.editInfo.taskid) {
             this.closable = false
             this.editData.forEach((v, k) => {
-              this.form.body.body_list[0].attr_list.map(formBlock => {
+              this.form.body.body_list[this.bodylistIndex].attr_list.map(formBlock => {
                 formBlock.value.map(item => {
                   if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                     if (this.editData[k][item.id]) {
@@ -364,7 +364,7 @@
         // let newTabName = ++this.tabIndex + ''
         let newData = {}
         // newData.tabname = newTabName
-        this.form.body.body_list[0].attr_list.map(group => {
+        this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
           group.value.map(item => {
             if (item.unique) {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
@@ -415,7 +415,7 @@
               }
             }
           }
-          this.form.body.body_list[0].attr_list.map(group => {
+          this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
             group.value.map(item => {
               if (item.value.type === 'date') {
                 if (objectList.data[k][item.id]) {
@@ -453,7 +453,7 @@
                     updateData[i] = this.instockForm.data[0][i]
                   }
                 }
-                this.form.body.body_list[0].attr_list.map(group => {
+                this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
                   group.value.map(item => {
                     if (item.value.type === 'date') {
                       // newData[item.id] = undefined
