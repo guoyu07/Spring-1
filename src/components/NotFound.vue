@@ -39,17 +39,17 @@
         }
 
         a {
-          color: darken(@primary, 10%);
+          color: #fff;
           display: block;
           width: 32px;
           height: 32px;
           margin: 0 auto;
-          border: 1px solid darken(@primary, 10%);
+          border: 1px solid #fff;
           border-radius: 100%;
 
           &:hover,
           &:focus {
-            color: @primary;
+            opacity: .8;
           }
 
           i {
