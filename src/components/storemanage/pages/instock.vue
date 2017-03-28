@@ -102,12 +102,28 @@
       'instockFormHead.deviceType' () {
         const _value = this.instockFormHead.deviceType && this.instockFormHead.deviceType.object_id
         this.form && this.form.body.body_list.forEach((v, k) => {
-          console.log(v.show.value === _value, k)
+          // console.log(v.show.value === _value, k)
           if (v.show.value === _value) {
-            this.bodylistIndex = k // 取道当前设备类型的索引值
+            this.bodylistIndex = k // 取当前设备类型的索引值
           }
         })
-        this.instockForm.data[0] = {} // 切换设备类型时，初始化表单数据
+        // this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
+        // this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
+        //   group.value.map(item => {
+        //     if (item.value.type === 'arr' || item.value.type === 'FKs') {
+        //       this.$set(this.instockForm.data[0], item.id, [])
+        //     } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
+        //       this.$set(this.instockForm.data[0], item.id, undefined)
+        //     } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
+        //       this.$set(this.instockForm.data[0], item.id, null)
+        //     } else {
+        //       this.$set(this.instockForm.data[0], item.id, '')
+        //     }
+        //   })
+        // })
+      },
+      'bodylistIndex' () {
+        this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
         this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
           group.value.map(item => {
             if (item.value.type === 'arr' || item.value.type === 'FKs') {
@@ -127,19 +143,19 @@
       removeTab (targetName) {
         let tabs = this.instockForm.data
         let activeName = this.tabsValue
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1]
-              if (nextTab) {
-                activeName = nextTab.name
-              }
-            }
-          })
-        }
-
-        this.tabsValue = activeName
-        this.instockForm.data = tabs.filter(tab => tab.name !== targetName)
+        // if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          // if (index === +targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = tabs.indexOf(nextTab)
+          }
+          // }
+        })
+        // }
+        this.tabsValue = activeName + ''
+        this.instockForm.data.splice(targetName, 1)
+        // this.instockForm.data = tabs.filter(tab => tab.name !== targetName)
       },
       renderApplicationList () { // 渲染申请人列表
         const postData = {
@@ -256,7 +272,7 @@
           // 如果是修改页面
           if (this.editInfo.instanceId) {
             this.closable = false
-            this.form.body.body_list[this.bodylistIndex].attr_list.map(formBlock => {
+            this.form.body.body_list[0].attr_list.map(formBlock => {
               formBlock.value.map(item => {
                 if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                   if (this.editData[item.id]) {
@@ -301,7 +317,7 @@
           if (this.editInfo.taskid) {
             this.closable = false
             this.editData.forEach((v, k) => {
-              this.form.body.body_list[this.bodylistIndex].attr_list.map(formBlock => {
+              this.form.body.body_list[0].attr_list.map(formBlock => {
                 formBlock.value.map(item => {
                   if (item.value.type === 'FK') { // 重新整理 外键 的数据结构，需要对象
                     if (this.editData[k][item.id]) {
