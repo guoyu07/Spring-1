@@ -30,33 +30,33 @@
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="获取选项的 API 接口配置：" v-model="dialogProps.confVisible">
+  <el-dialog class="cmdb-config-dialog" title="动态选项 API 配置" v-model="dialogProps.confVisible">
     <div class="conf-cmdb-contain" v-if="dialogProps.source">
       <el-form :model="dialogProps.source" label-width="100px" :inline="true">
-        <el-form-item label="URL：">
-          <el-input v-model="dialogProps.source.url"></el-input>
+        <el-form-item label="URL">
+          <el-input size="small" v-model="dialogProps.source.url"></el-input>
         </el-form-item>
-        <el-form-item label="action：">
-          <el-input v-model="dialogProps.source.data.action"></el-input>
+        <el-form-item label="Action">
+          <el-input size="small" v-model="dialogProps.source.data.action"></el-input>
         </el-form-item>
-        <el-form-item label="method：">
-          <el-input v-model="dialogProps.source.data.method"></el-input>
+        <el-form-item label="Method">
+          <el-input size="small" v-model="dialogProps.source.data.method"></el-input>
         </el-form-item>
-        <el-form-item label="params：">
+        <el-form-item label="Params">
           <el-dropdown trigger="click" @command="selectParams">
-            <el-button size="small" type="primary" icon="plus">添加参数</el-button>
+            <el-button size="small" type="primary" icon="plus">添加 param</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="static">静态输入</el-dropdown-item>
-              <el-dropdown-item command="formHeader">取 form header 字段</el-dropdown-item>
-              <el-dropdown-item command="formBody">取 form body 字段</el-dropdown-item>
-              <el-dropdown-item command="msgHeader">取 message header 字段</el-dropdown-item>
-              <el-dropdown-item command="msgBody">取 message body 字段</el-dropdown-item>
+              <el-dropdown-item command="formHeader">来自以往节点 header</el-dropdown-item>
+              <el-dropdown-item command="formBody">来自当前节点 body</el-dropdown-item>
+              <el-dropdown-item command="msgHeader">来自当前节点 header</el-dropdown-item>
+              <el-dropdown-item command="msgBody">来自当前节点 body</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
         </el-form-item>
       </el-form>
 
-      <label> 接口请求参数： </label>
+      <h5>接口请求参数</h5>
       <el-collapse v-if="dialogProps.source.data.params.length">
         <el-collapse-item v-for="param in dialogProps.source.data.params">
           <template slot="title">
@@ -67,64 +67,72 @@
           </template>
           <el-row>
             <el-form label-width="120px" :inline="true">
-              <el-form-item label="属性名：">
-                <el-input v-model="param.id"></el-input>
+              <el-form-item label="属性名称">
+                <el-input size="small" v-model="param.id"></el-input>
               </el-form-item>
-              <el-form-item label="属性值：" v-if="param.value.type === 'static'">
-                <el-input v-model="param.value.value"></el-input>
+              <el-form-item label="属性值" v-if="param.value.type === 'static'">
+                <el-input size="small" v-model="param.value.value"></el-input>
               </el-form-item>
-              <el-form-item label="流程环节 id：" v-if="['message_header', 'message_body'].includes(param.value.type)">
-                <el-input v-model="param.value.id"></el-input>
+              <el-form-item label="流程环节 ID" v-if="['message_header', 'message_body'].includes(param.value.type)">
+                <el-input size="small" v-model="param.value.id"></el-input>
               </el-form-item>
-              <el-form-item label="属性 key_path：" v-if="param.value.type !== 'static'">
-                <el-input v-model="param.value.key_path"></el-input>
+              <el-form-item label="属性路径" v-if="param.value.type !== 'static'">
+                <el-input size="small" v-model="param.value.key_path"></el-input>
               </el-form-item>
             </el-form>
           </el-row>
         </el-collapse-item>
       </el-collapse>
 
-      <label> 选项数据路径配置： </label>
+      <h5>选项数据路径配置</h5>
       <el-card>
-        <label> 数据 data_path： </label>
-        <el-input v-model="dialogProps.source.res.data_path"></el-input>
-        <label> 属性 show_key： </label>
-        <el-input v-model="dialogProps.source.res.show_key"></el-input>
+        <el-form label-width="120px" :inline="true">
+          <el-form-item label="data_path">
+            <el-input size="small" v-model="dialogProps.source.res.data_path"></el-input>
+          </el-form-item>
+          <el-form-item label="show_key">
+            <el-input size="small" v-model="dialogProps.source.res.show_key"></el-input>
+          </el-form-item>
+        </el-form>
       </el-card>
 
       <template v-if="dialogProps.type === 'dicts'">
-        <label> 多选选择个数配置： </label>
+        <h5>多选选择个数配置</h5>
         <el-card>
-          <el-row>
-            <label>count 配置类型：</label>
-            <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
-              <el-option v-for="item in countConfig" :value="item"></el-option>
-            </el-select>
-          </el-row>
-          <el-row>
+          <el-form label-width="90px" :inline="true">
+            <el-form-item label="个数类型">
+              <el-select size="small" v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
+                <el-option v-for="item in countConfig" :value="item"></el-option>
+              </el-select>
+            </el-form-item>
+            <br>
             <template v-if="dialogProps.count.type === 'static'">
-              <label>min：</label>
-              <el-input-number size="small"
-                v-model="dialogProps.count.min"
-                :min="1" :max="dialogProps.count.max"/>
-              <label>max：</label>
-              <el-input-number v-model="dialogProps.count.max"
-                size="small" :min="1"/>
+              <el-form-item label="Min">
+                <el-input-number size="small"
+                  v-model="dialogProps.count.min"
+                  :min="1" :max="dialogProps.count.max"></el-input-number>
+              </el-form-item>
+              <el-form-item label="Max">
+                <el-input-number v-model="dialogProps.count.max"
+                  size="small" :min="1"></el-input-number>
+              </el-form-item>
             </template>
             <template v-if="['message_header', 'message_body'].includes(dialogProps.count.type)">
-              <label>流程环节 id：</label>
-              <el-input v-model="dialogProps.count.id" size="small"></el-input>
+              <el-form-item label="流程节点 ID">
+                <el-input v-model="dialogProps.count.id" size="small"></el-input>
+              </el-form-item>
             </template>
             <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
-              <label>属性 key_path：</label>
-              <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+              <el-form-item label="属性路径">
+                <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+              </el-form-item>
             </template>
-          </el-row>
+          </el-form>
         </el-card>
       </template>
     </div>
     <div slot="footer" class="dialog-footer">
-      <el-button @click="onSubmit" type="primary">完成</el-button>
+      <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
     </div>
   </el-dialog>
 </template>

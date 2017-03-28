@@ -1,11 +1,9 @@
 <style lang="less" scoped>
+  @import url("./../../../assets/css/variables.less");
   .editor-content {
     .el-input, .conf-btn {
       max-width: 180px;
       display: inline-block;
-    }
-    .el-row {
-      margin: 10px 0;
     }
     .options-btn {
       margin-bottom: 10px;
@@ -15,118 +13,149 @@
       line-height: 36px;
     }
   }
+
+  .form-block {
+    border-bottom: 2px dotted @borderColor;
+    margin: 10px 0 20px;
+    // background-color: @bgLighter;
+    padding: 6px 12px;
+
+    h4 {
+      color: @primary;
+      position: relative;
+      padding-left: 8px;
+
+      &::before {
+        content: '';
+        width: 4px;
+        height: 4px;
+        border-radius: 50%;
+        background-color: @primary;
+        position: absolute;
+        left: 0px;
+        top: 10px;
+      }
+    }
+
+    h5 {
+      margin: 14px 0 10px;
+    }
+  }
 </style>
 
 <template>
   <div class="editor-content" v-if="formConfig && formConfig.form">
     <el-row>
-      <label>表单名称：</label>
-      <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
-      <label>表单 key：</label>
-      <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
-    </el-row>
-    <el-row>
-      <label>功能 / 操作按钮：</label>
-      <el-card>
-        <el-checkbox-group v-model="checkedActions" @change="actionChange">
-          <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
-        </el-checkbox-group>
-        <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
-          <label>下载 url：</label>
-          <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
-        </template>
-      </el-card>
-    </el-row>
-    <!-- 配置 header 属性字段 -->
-    <el-row>
-      <label>表单 header 字段：</label>
-      <el-card>
-        <form-conf :config-data="formConfig.form.form.header"></form-conf>
-      </el-card>
-    </el-row>
-    <el-row>
-      <label>配置 body 个数：</label>
-      <el-card>
-        <el-select v-model="formConfig.form.form.body.count.type" @change="countConfig">
-          <el-option label="static" value="static"></el-option>
-          <el-option label="form_header" value="form_header"></el-option>
-          <el-option label="message_header" value="message_header"></el-option>
-        </el-select>
-        <el-popover v-if="formConfig.form.form.body.count.type === 'static'"
-          placement="right" trigger="click">
-          <h5>最小数：</h5>
-          <el-input-number size="small" v-model="formConfig.form.form.body.count.min"></el-input-number>
-          <h5>最大数：</h5>
-          <el-input-number size="small" v-model="formConfig.form.form.body.count.max"></el-input-number>
-          <el-button slot="reference">配置</el-button>
-        </el-popover>
-        <el-popover v-if="formConfig.form.form.body.count.type === 'form_header'"
-          placement="right" trigger="click">
-          <h5>所取表单 form_header 中的字段：</h5>
-          <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
-          <el-button slot="reference">配置</el-button>
-        </el-popover>
-        <el-popover v-if="formConfig.form.form.body.count.type === 'message_header'"
-          placement="right" trigger="click">
-          <h5>所取流程的一个环节 messageId：</h5>
-          <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
-          <h5>所取该环节表单的字段：</h5>
-          <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
-          <el-button slot="reference">配置</el-button>
-        </el-popover>
-      </el-card>
-    </el-row>
-    <!-- 配置 body 属性字段 -->
-    <el-row v-for="body in formConfig.form.form.body.body_list">
-      <label>表单 body 字段：</label>
-      <el-card>
-        <form-conf :config-data="body.attr_list"></form-conf>
-        <div class="options-btn">
-          <el-button size="mini" type="text" icon="setting" @click="showCondition(body)">
-            body 显示条件
-          </el-button>
-          <el-button size="mini" type="text" icon="delete"
-            @click="delBodyBtn(formConfig.form.form.body.body_list, body)">删除 body
-          </el-button>
-        </div>
-      </el-card>
-    </el-row>
-    <el-row>
-      <el-button type="primary" size="small" icon="plus" @click="addBodyConfig">添加 body</el-button>
-    </el-row>
-    <el-dialog title="body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
-      <el-form label-width="120px">
-        <el-form-item label="body 名称">
-          <el-input v-model="editBody.name"></el-input>
-        </el-form-item>
-        <el-form-item label="选择比较变量：">
-          <el-select v-model="editBody.show.type">
-            <el-option label="form_header" value="form_header"></el-option>
-            <el-option label="message_header" value="message_header"></el-option>
-            <el-option label="message_body" value="message_body"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="流程关节 id：" v-if="editBody.show.type !== 'form_header'">
-          <el-input v-model="editBody.show.id"></el-input>
-        </el-form-item>
-        <el-form-item label="属性 key_path：">
-          <el-input v-model="editBody.show.key_path"></el-input>
-        </el-form-item>
-        <el-form-item label="判断条件：">
-          <el-select v-model="editBody.show.op">
-            <el-option label="等于" value="eq"></el-option>
-            <el-option label="不等于" value="neq"></el-option>
-          </el-select>
-          <el-input v-model="editBody.show.value"></el-input>
-        </el-form-item>
-      </el-form>
-      <div slot="footer" class="dialog-footer">
-        <el-button type="primary" size="small" @click="showConditionVisible = false"> 确定 </el-button>
-      </div>
-    </el-dialog>
-    <el-row type="flex" justify="end">
-      <el-button type="success" icon="fa-check" @click="submitBtn">确认完成</el-button>
-      <el-button type="info" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
+          <h3><i class="el-icon-fa-wpforms icon-lg"></i> 表单自定义</h3>
+          <el-row class="form-block">
+            <h4>基础配置</h4>
+            <el-form label-width="80px" label-position="left" :inline="true">
+              <el-form-item label="表单名称">
+                <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
+              </el-form-item>
+              <el-form-item label="表单 Key">
+                <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
+              </el-form-item>
+              <br>
+              <el-form-item label="操作按钮">
+                <el-checkbox-group v-model="checkedActions" @change="actionChange">
+                  <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
+                </el-checkbox-group>
+                <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
+                  <label>下载 url：</label>
+                  <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
+                </template>
+              </el-form-item>
+            </el-form>
+          </el-row>
+          <el-row class="form-block">
+            <h4>Header 配置</h4>
+            <form-conf :config-data="formConfig.form.form.header"></form-conf>
+          </el-row>
+          <el-row class="form-block">
+            <h4>Body 配置</h4>
+            <el-row>
+              <h5>Body 个数配置</h5>
+              <el-select v-model="formConfig.form.form.body.count.type" @change="countConfig">
+                <el-option label="静态" value="static"></el-option>
+                <el-option label="来自以往节点 header" value="form_header"></el-option>
+                <el-option label="来自当前节点 header" value="message_header"></el-option>
+              </el-select>
+              <el-popover v-if="formConfig.form.form.body.count.type === 'static'"
+                placement="right" trigger="click">
+                <h5>min: </h5>
+                <el-input-number size="small" v-model="formConfig.form.form.body.count.min"></el-input-number>
+                <h5>max: </h5>
+                <el-input-number size="small" v-model="formConfig.form.form.body.count.max"></el-input-number>
+                <el-button slot="reference">配置</el-button>
+              </el-popover>
+              <el-popover v-if="formConfig.form.form.body.count.type === 'form_header'"
+                placement="right" trigger="click">
+                <h5>所取表单 form_header 中的字段：</h5>
+                <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+                <el-button slot="reference">配置</el-button>
+              </el-popover>
+              <el-popover v-if="formConfig.form.form.body.count.type === 'message_header'"
+                placement="right" trigger="click">
+                <h5>所取流程的一个环节 messageId：</h5>
+                <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
+                <h5>所取该环节表单的字段：</h5>
+                <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+                <el-button slot="reference">配置</el-button>
+              </el-popover>
+            </el-row>
+            <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
+              <h5>表单 {{index + 1}}</h5>
+              <el-card>
+                <form-conf :config-data="body.attr_list"></form-conf>
+                <div class="options-btn">
+                  <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
+                  <el-button size="small" type="danger" :plain="true" icon="close"
+                    @click="delBodyBtn(formConfig.form.form.body.body_list, body)">删除 Body</el-button>
+                </div>
+              </el-card>
+            </el-row>
+            <br>
+            <el-button type="primary" size="small" icon="plus" @click="addBodyConfig">添加 Body</el-button>
+          </el-row>
+          <el-dialog title="Body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
+            <el-form label-width="80px">
+              <el-form-item label="Body 名称">
+                <el-input v-model="editBody.name"></el-input>
+              </el-form-item>
+              <el-form-item label="比较变量">
+                <el-select v-model="editBody.show.type">
+                  <el-option label="form_header" value="form_header"></el-option>
+                  <el-option label="message_header" value="message_header"></el-option>
+                  <el-option label="message_body" value="message_body"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="流程节点 ID" v-if="editBody.show.type !== 'form_header'">
+                <el-input v-model="editBody.show.id"></el-input>
+              </el-form-item>
+              <el-form-item label="属性路径">
+                <el-input v-model="editBody.show.key_path"></el-input>
+              </el-form-item>
+              <el-form-item label="判断条件">
+                <el-select v-model="editBody.show.op">
+                  <el-option label="等于" value="eq"></el-option>
+                  <el-option label="不等于" value="neq"></el-option>
+                </el-select>
+                <el-input v-model="editBody.show.value"></el-input>
+              </el-form-item>
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" icon="check" @click="showConditionVisible = false">OK</el-button>
+            </div>
+          </el-dialog>
+          <el-row type="flex" justify="end">
+            <el-button type="warning" :plain="true" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+            <el-button type="success" icon="fa-check" @click="submitBtn">确认完成</el-button>
+          </el-row>
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>

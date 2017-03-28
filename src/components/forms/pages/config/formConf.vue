@@ -17,51 +17,59 @@
   <div class="form-config">
     <el-collapse v-if="configData.length">
       <el-collapse-item v-for="itemConf of configData" :title="itemConf.name">
-        <el-row>
-          <el-checkbox v-model="itemConf.required">必填</el-checkbox>
-          <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
-          <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
-        </el-row>
-        <el-row>
-          <label>名称：</label>
-          <el-input v-model="itemConf.name"></el-input>
-          <label>属性名：</label>
-          <el-input v-model="itemConf.id"></el-input>
-          <label>分组组名：</label>
-          <el-input v-model="itemConf.category"></el-input>
-        </el-row>
-        <el-row>
-          <label>表单形式：</label>
-          <el-select v-model="itemConf.value.type">
-            <el-option label="字符串" value="str"></el-option>
-            <el-option label="长文本" value="strArea"></el-option>
-            <el-option label="数字" value="int"></el-option>
-            <el-option label="数组" value="arr"></el-option>
-            <el-option label="日期" value="date"></el-option>
-            <el-option label="时间" value="datetime"></el-option>
-            <el-option label="下拉单选" value="enum"></el-option>
-            <el-option label="下拉多选" value="enum/multi"></el-option>
-            <el-option label="下拉单选（cmdb）" value="dict"></el-option>
-            <el-option label="下拉多选（cmdb）" value="dicts"></el-option>
-          </el-select>
-          <!--静态选项-->
-          <el-popover v-if="['enum', 'enum/multi'].includes(itemConf.value.type)"
-            placement="right" trigger="click" @show="showMultiConf(itemConf)">
-            <options-conf :conf-arr="itemConf.value.regex"></options-conf>
-            <el-button slot="reference">配置选项</el-button>
-          </el-popover>
-          <!--动态选项（cmdb）-->
-          <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
-            <el-button @click="showCMDBConfi(itemConf)">配置选项</el-button>
-            <options-conf-cmdb :dialog-props="itemConf.value"></options-conf-cmdb>
-          </template>
-        </el-row>
+        <el-form label-width="120" label-position="right" :inline="true">
+          <el-row>
+            <el-form-item label="状态">
+              <el-checkbox v-model="itemConf.required">必填</el-checkbox>
+              <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
+              <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="Label 名称">
+              <el-input size="small" v-model="itemConf.name"></el-input>
+            </el-form-item>
+            <el-form-item label="属性名称">
+              <el-input size="small" v-model="itemConf.id"></el-input>
+            </el-form-item>
+          </el-row>
+          <el-row>
+            <el-form-item label="分组组名">
+              <el-input size="small" v-model="itemConf.category"></el-input>
+            </el-form-item>
+            <el-form-item label="字段类型">
+              <el-select size="small" v-model="itemConf.value.type">
+                <el-option label="字符串" value="str"></el-option>
+                <el-option label="长文本" value="strArea"></el-option>
+                <el-option label="数字" value="int"></el-option>
+                <el-option label="数组" value="arr"></el-option>
+                <el-option label="日期" value="date"></el-option>
+                <el-option label="时间" value="datetime"></el-option>
+                <el-option label="下拉单选" value="enum"></el-option>
+                <el-option label="下拉多选" value="enum/multi"></el-option>
+                <el-option label="下拉单选（CMDB）" value="dict"></el-option>
+                <el-option label="下拉多选（CMDB）" value="dicts"></el-option>
+              </el-select>
+              <!--静态选项-->
+              <el-popover v-if="['enum', 'enum/multi'].includes(itemConf.value.type)"
+                placement="right" trigger="click" @show="showMultiConf(itemConf)">
+                <options-conf :conf-arr="itemConf.value.regex"></options-conf>
+                <el-button size="small" slot="reference">配置选项</el-button>
+              </el-popover>
+              <!--动态选项（cmdb）-->
+              <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
+                <el-button size="small" @click="showCMDBConfi(itemConf)">配置选项</el-button>
+                <options-conf-cmdb :dialog-props="itemConf.value"></options-conf-cmdb>
+              </template>
+            </el-form-item>
+          </el-row>
+        </el-form>
         <el-row type="flex" justify="end">
           <el-button size="small" type="danger" icon="delete" @click="delBtn(configData, itemConf)">删除字段</el-button>
         </el-row>
       </el-collapse-item>
     </el-collapse>
-    <el-button icon="plus" type="text" size="small" @click="addBtn">添加字段</el-button>
+    <el-button icon="plus" type="info" :plain="true" size="small" @click="addBtn">添加字段</el-button>
   </div>
 </template>
 
