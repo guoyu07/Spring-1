@@ -39,7 +39,12 @@
 
     h5 {
       margin: 14px 0 10px;
+      color: @textColor;
     }
+  }
+
+  .information-popover {
+    color: @textColor;
   }
 </style>
 
@@ -53,20 +58,26 @@
             <h4>基础配置</h4>
             <el-form label-width="80px" label-position="left" :inline="true">
               <el-form-item label="表单名称">
-                <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
+                <el-input v-model="formConfig.tname"></el-input>
               </el-form-item>
               <el-form-item label="表单 Key">
-                <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
+                <el-input v-model="formConfig.tkey" class="code-input"></el-input>
               </el-form-item>
               <br>
               <el-form-item label="操作按钮">
                 <el-checkbox-group v-model="checkedActions" @change="actionChange">
                   <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
                 </el-checkbox-group>
-                <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
-                  <label>下载 url：</label>
-                  <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
-                </template>
+              </el-form-item>
+              <br>
+              <el-form-item v-if="formConfig.form.action.find(_ => _.name === '下载')" label="下载 URL">
+                <el-popover
+                  placement="right"
+                  width="200"
+                  trigger="focus">
+                  <code class="information-popover"><i class="el-icon-information"></i> /download/XX?tid=XX</code>
+                  <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
+                </el-popover>
               </el-form-item>
             </el-form>
           </el-row>
@@ -75,7 +86,7 @@
             <form-conf :config-data="formConfig.form.form.header"></form-conf>
           </el-row>
           <el-row class="form-block">
-            <h4>Body 配置</h4>
+            <h4>Body 配置 ({{formConfig.form.form.body.body_list.length}})</h4>
             <el-row>
               <h5>Body 个数配置</h5>
               <el-select v-model="formConfig.form.form.body.count.type" @change="countConfig">
@@ -85,9 +96,9 @@
               </el-select>
               <el-popover v-if="formConfig.form.form.body.count.type === 'static'"
                 placement="right" trigger="click">
-                <h5>min: </h5>
+                <h5>Min: </h5>
                 <el-input-number size="small" v-model="formConfig.form.form.body.count.min"></el-input-number>
-                <h5>max: </h5>
+                <h5>Max: </h5>
                 <el-input-number size="small" v-model="formConfig.form.form.body.count.max"></el-input-number>
                 <el-button slot="reference">配置</el-button>
               </el-popover>
@@ -107,7 +118,7 @@
               </el-popover>
             </el-row>
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
-              <h5>表单 {{index + 1}}</h5>
+              <h5>Body #{{index + 1}}</h5>
               <el-card>
                 <form-conf :config-data="body.attr_list"></form-conf>
                 <div class="options-btn">
@@ -152,7 +163,7 @@
           </el-dialog>
           <el-row type="flex" justify="end">
             <el-button type="warning" :plain="true" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
-            <el-button type="success" icon="fa-check" @click="submitBtn">确认完成</el-button>
+            <el-button type="success" icon="fa-check" @click="submitBtn">确认提交</el-button>
           </el-row>
         </el-card>
       </el-col>

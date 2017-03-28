@@ -34,13 +34,13 @@
     <div class="conf-cmdb-contain" v-if="dialogProps.source">
       <el-form :model="dialogProps.source" label-width="100px" :inline="true">
         <el-form-item label="URL">
-          <el-input size="small" v-model="dialogProps.source.url"></el-input>
+          <el-input size="small" class="code-input" v-model="dialogProps.source.url"></el-input>
         </el-form-item>
         <el-form-item label="Action">
-          <el-input size="small" v-model="dialogProps.source.data.action"></el-input>
+          <el-input size="small" class="code-input" v-model="dialogProps.source.data.action"></el-input>
         </el-form-item>
         <el-form-item label="Method">
-          <el-input size="small" v-model="dialogProps.source.data.method"></el-input>
+          <el-input size="small" class="code-input" v-model="dialogProps.source.data.method"></el-input>
         </el-form-item>
         <el-form-item label="Params">
           <el-dropdown trigger="click" @command="selectParams">
@@ -77,7 +77,7 @@
                 <el-input size="small" v-model="param.value.id"></el-input>
               </el-form-item>
               <el-form-item label="属性路径" v-if="param.value.type !== 'static'">
-                <el-input size="small" v-model="param.value.key_path"></el-input>
+                <el-input size="small" v-model="param.value.key_path" class="code-input"></el-input>
               </el-form-item>
             </el-form>
           </el-row>
@@ -88,10 +88,10 @@
       <el-card>
         <el-form label-width="120px" :inline="true">
           <el-form-item label="data_path">
-            <el-input size="small" v-model="dialogProps.source.res.data_path"></el-input>
+            <el-input size="small" class="code-input" v-model="dialogProps.source.res.data_path"></el-input>
           </el-form-item>
           <el-form-item label="show_key">
-            <el-input size="small" v-model="dialogProps.source.res.show_key"></el-input>
+            <el-input size="small" class="code-input" v-model="dialogProps.source.res.show_key"></el-input>
           </el-form-item>
         </el-form>
       </el-card>
@@ -124,7 +124,7 @@
             </template>
             <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
               <el-form-item label="属性路径">
-                <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+                <el-input class="code-input" v-model="dialogProps.count.key_path" size="small"></el-input>
               </el-form-item>
             </template>
           </el-form>
