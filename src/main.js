@@ -97,6 +97,15 @@ const parseData = obj => {
 
 Vue.prototype.parseData = parseData
 
+Vue.prototype.getPathResult = (result, path) => {
+  let _result = result
+  const _path = path.split('.')
+  for (const i in _path) {
+    _result = _result[_path[i]]
+  }
+  return _result
+}
+
 // 逆向寻找匹配的 task_key
 var findTaskMsgR = (arrMsg, arrTaskKey) => {
   for (let i = arrMsg.length - 1; i >= 0; i--) {

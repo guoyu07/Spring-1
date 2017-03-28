@@ -13,8 +13,8 @@
               新增
             </el-button>
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-              <el-tab-pane v-for="(item, index) in instockForm.data" :label="'设备' + (index + 1)" :name="index + ''" :closable="index !== 0">
-                <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
+              <el-tab-pane v-for="(item, index) in instockForm.data" :label="form.body && form.body.body_list[bodylistIndex].name + (index + 1)" :name="index + ''" :closable="index !== 0">
+                <form-structure :form-data="form.body && form.body.body_list[bodylistIndex].attr_list" :item="item" :index="index"></form-structure>
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -38,6 +38,8 @@
       return {
         form: {},
         tabsValue: '0',
+        bodylistIndex: 0,
+        // currentAttrList: [],
         tabIndex: 1,
         closable: true,
         loading: false,
@@ -96,25 +98,64 @@
           instanceId: '',
           object_id: ''
         }
+      },
+      'instockFormHead.deviceType' () {
+        const _value = this.instockFormHead.deviceType && this.instockFormHead.deviceType.object_id
+        this.form && this.form.body.body_list.forEach((v, k) => {
+          // console.log(v.show.value === _value, k)
+          if (v.show.value === _value) {
+            this.bodylistIndex = k // 取当前设备类型的索引值
+          }
+        })
+        // this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
+        // this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
+        //   group.value.map(item => {
+        //     if (item.value.type === 'arr' || item.value.type === 'FKs') {
+        //       this.$set(this.instockForm.data[0], item.id, [])
+        //     } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
+        //       this.$set(this.instockForm.data[0], item.id, undefined)
+        //     } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
+        //       this.$set(this.instockForm.data[0], item.id, null)
+        //     } else {
+        //       this.$set(this.instockForm.data[0], item.id, '')
+        //     }
+        //   })
+        // })
+      },
+      'bodylistIndex' () {
+        this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
+        this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
+          group.value.map(item => {
+            if (item.value.type === 'arr' || item.value.type === 'FKs') {
+              this.$set(this.instockForm.data[0], item.id, [])
+            } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
+              this.$set(this.instockForm.data[0], item.id, undefined)
+            } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
+              this.$set(this.instockForm.data[0], item.id, null)
+            } else {
+              this.$set(this.instockForm.data[0], item.id, '')
+            }
+          })
+        })
       }
     },
     methods: {
       removeTab (targetName) {
         let tabs = this.instockForm.data
         let activeName = this.tabsValue
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1]
-              if (nextTab) {
-                activeName = nextTab.name
-              }
-            }
-          })
-        }
-
-        this.tabsValue = activeName
-        this.instockForm.data = tabs.filter(tab => tab.name !== targetName)
+        // if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          // if (index === +targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = tabs.indexOf(nextTab)
+          }
+          // }
+        })
+        // }
+        this.tabsValue = activeName + ''
+        this.instockForm.data.splice(targetName, 1)
+        // this.instockForm.data = tabs.filter(tab => tab.name !== targetName)
       },
       renderApplicationList () { // 渲染申请人列表
         const postData = {
@@ -205,7 +246,7 @@
             group.value.map(item => {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
                 this.$set(this.instockFormHead, item.id, [])
-              } else if (item.value.type === 'str') {
+              } else if (item.value.type === 'str' || item.value.type === 'FK') {
                 this.$set(this.instockFormHead, item.id, '')
               } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
                 this.$set(this.instockFormHead, item.id, null)
@@ -215,7 +256,7 @@
               }
             })
           })
-          this.form.body.body_list[0].attr_list.map(group => {
+          this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
             group.value.map(item => {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
                 this.$set(this.instockForm.data[0], item.id, [])
@@ -339,7 +380,7 @@
         // let newTabName = ++this.tabIndex + ''
         let newData = {}
         // newData.tabname = newTabName
-        this.form.body.body_list[0].attr_list.map(group => {
+        this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
           group.value.map(item => {
             if (item.unique) {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
@@ -359,11 +400,11 @@
         })
         this.$refs['instockForm'].validate((valid) => {
           if (valid) {
-            if (this.instockForm.data.length < 10) {
+            if (this.instockForm.data.length < this.form.body.count.max) {
               this.instockForm.data.push(newData)
               this.tabsValue = this.instockForm.data.length - 1 + ''
             } else {
-              this.$message.warning('最多只能增加 10 个设备！')
+              this.$message.warning(`最多只能增加${this.form.body.count.max}个设备！`)
             }
           } else {
             this.$message.warning('请填写完整后再增加！')
@@ -390,7 +431,7 @@
               }
             }
           }
-          this.form.body.body_list[0].attr_list.map(group => {
+          this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
             group.value.map(item => {
               if (item.value.type === 'date') {
                 if (objectList.data[k][item.id]) {
@@ -428,7 +469,7 @@
                     updateData[i] = this.instockForm.data[0][i]
                   }
                 }
-                this.form.body.body_list[0].attr_list.map(group => {
+                this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
                   group.value.map(item => {
                     if (item.value.type === 'date') {
                       // newData[item.id] = undefined
