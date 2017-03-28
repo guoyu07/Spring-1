@@ -50,12 +50,10 @@
       }
       this.http.post(this.strucData.value.source.url.substring(4), this.parseData(postHeadvData))
       .then((response) => {
-        let _name = response
-        const _path = this.strucData.value.source.res.data_path.split('.')
-        for (const i in _path) {
-          _name = _name[_path[i]]
+        this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+        if (this.strucData.value.source.data.action === 'import/device/items') {
+          this.vmodel[this.strucData.id] = this.optionList[0]
         }
-        this.optionList = _name
       })
       // }
     },
