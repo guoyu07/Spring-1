@@ -69,7 +69,6 @@
                   <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
-              <br>
               <el-form-item v-if="formConfig.form.action.find(_ => _.name === '下载')" label="下载 URL">
                 <el-popover
                   placement="right"

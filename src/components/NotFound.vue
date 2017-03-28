@@ -1,11 +1,9 @@
 <template>
   <div class="notfound">
-    <div class="nf">
-      <h1 class="nf-title">404</h1>
-      <div class="nf-detail">
-        <p>你要找的页面不存在！</p>
+    <h2 class="nf-title">404</h2>
+    <div class="nf-detail">
+      <p>你要找的页面不存在 :(</p>
         <p>你可以尝试 <router-link :to="{ path: '/' }">回到主页</router-link> 重新导航。</p>
-      </div>
     </div>
   </div>
 </template>
@@ -15,42 +13,37 @@
   .notfound {
     height: 100%;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
-    font-family: Tahoma;
+    background-image: linear-gradient(120deg, #e0c3fc 0%, #8ec5fc 100%);
 
     .nf {
-      width: 100%;
-      position: relative;
-      text-align: center;
-      color: @themeColor;
-
       &-title {
-        margin: 0;
-        font-size: 18rem;
+        font-size: 18em;
         font-weight: bold;
+        font-family: monospace;
+        margin: 0;
+        color: darken(@primary, 16%);
       }
 
       &-detail {
-        font-size: 1.3rem;
-        position: absolute;
-        top: 45%;
-        left: 0;
-        margin-top: -52px;
-        background-color: #fff;
-        box-shadow: 0 0 6px #fff;
-        width: 100%;
+        font-size: 1.3em;
+        color: @primary;
+        text-align: center;
+        font-family: sans-serif;
 
         p {
           margin: 8px;
         }
 
         a {
-          color: darken(@themeColor, 10%);
+          color: darken(@primary, 10%);
+          text-decoration: underline;
 
           &:hover,
           &:focus {
-            color: @themeColor;
+            color: @primary;
           }
         }
       }
