@@ -428,19 +428,21 @@
       removeTab (targetName) {
         let tabs = this.applyForm.data
         let activeName = this.tabsValue
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1]
-              if (nextTab) {
-                activeName = nextTab.name
-              }
-            }
-          })
-        }
-
-        this.tabsValue = activeName
-        this.applyForm.data = tabs.filter(tab => tab.name !== targetName)
+        // if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          console.log(index, +targetName, index === +targetName)
+          // if (index === +targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = tabs.indexOf(nextTab)
+            console.log(activeName)
+          }
+          // }
+        })
+        // }
+        this.tabsValue = activeName + ''
+        this.applyForm.data.splice(targetName, 1)
+        // this.applyForm.data = tabs.filter(tab => tab.name !== targetName)
       },
       addTab (targetName) {
         // let newTabName = ++this.tabIndex + ''
