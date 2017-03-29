@@ -53,6 +53,17 @@
         this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
         if (this.strucData.value.source.data.action === 'import/device/items') {
           this.vmodel[this.strucData.id] = this.optionList[0]
+        } else if (this.strucData.value.source.data.action === 'users/all') {
+          const user = window.localStorage.userName
+          this.optionList.map(option => {
+            if (option.userId === user) {
+              if (Array.isArray(this.vmodel[this.strucData.id])) {
+                this.vmodel[this.strucData.id].push(option)
+              } else {
+                this.vmodel[this.strucData.id] = option
+              }
+            }
+          })
         }
       })
       // }
