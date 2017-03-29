@@ -16,66 +16,74 @@
 <template>
   <div class="editor-content" v-if="formConfig && formConfig.form">
     <el-row>
-      <label>表单名称：</label>
-      <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
-      <label>表单key：</label>
-      <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
-    </el-row>
-    <el-row>
-      <label>功能/操作按钮：</label>
-      <el-card>
-        <el-checkbox-group v-model="checkedActions" @change="actionChange">
-          <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
-        </el-checkbox-group>
-        <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
-          <label>下载 url：</label>
-          <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
-        </template>
-      </el-card>
-    </el-row>
-    <el-row>
-      <label>表单 header 字段：</label>
-      <el-card>
-        <form-conf :config-data="formConfig.form.form.header"></form-conf>
-      </el-card>
-    </el-row>
-    <el-row>
-      <label>表单 body 字段：</label>
-      <el-card>
-        <form-conf :config-data="formConfig.form.form.body.attr_list"></form-conf>
-      </el-card>
-    </el-row>
-    <el-row>
-      <label>表单 body 个数：</label>
-      <el-select v-model="bodyCountType" @change="countConfig">
-        <el-option label="static" value="static"></el-option>
-        <el-option label="form_header" value="form_header"></el-option>
-        <el-option label="message_header" value="message_header"></el-option>
-      </el-select>
-      <el-popover v-if="bodyCountType === 'static'"
-        placement="right" trigger="click">
-        <h5>最大数：</h5>
-        <el-input-number size="small" :min="1" v-model="formConfig.form.form.body.count.max" />
-        <el-button slot="reference">配置</el-button>
-      </el-popover>
-      <el-popover v-if="bodyCountType === 'form_header'"
-        placement="right" trigger="click">
-        <h5>输入表单中 form_header 的一个字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
-        <el-button slot="reference">配置</el-button>
-      </el-popover>
-      <el-popover v-if="bodyCountType === 'message_header'"
-        placement="right" trigger="click">
-        <h5>输入流程中的一个历史环节的 messageId：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
-        <h5>输入该环节中的表单的一个字段：</h5>
-        <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
-        <el-button slot="reference">配置</el-button>
-      </el-popover>
-    </el-row>
-    <el-row type="flex" justify="end">
-      <el-button type="primary" icon="fa-check" @click="submitBtn">确认完成</el-button>
-      <el-button type="primary" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
+          <h3><i class="el-icon-fa-wpforms icon-lg"></i> 表单自定义</h3>
+          <el-row>
+            <el-card>
+              <h4>基础配置</h4>
+              <el-form label-width="80px">
+                <el-form-item label="表单名称">
+                  <el-input v-model="formConfig.tname" placeholder="请输入表单名称"></el-input>
+                </el-form-item>
+                <el-form-item label="表单 key">
+                  <el-input v-model="formConfig.tkey" placeholder="请输入表单属性名"></el-input>
+                </el-form-item>
+                <el-form-item label="操作按钮">
+                  <el-checkbox-group v-model="checkedActions" @change="actionChange">
+                    <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
+                  </el-checkbox-group>
+                  <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
+                    <label>请填写下载 URL：</label>
+                    <el-input size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
+                  </template>
+                </el-form-item>
+              </el-form>
+            </el-card>
+          </el-row>
+          <el-row>
+            <el-card>
+              <h4>Header 配置</h4>
+              <form-conf :config-data="formConfig.form.form.header"></form-conf>
+            </el-card>
+          </el-row>
+          <el-row>
+            <el-card>
+              <h4>Body 配置</h4>
+              <form-conf :config-data="formConfig.form.form.body.attr_list"></form-conf>
+              <el-select v-model="bodyCountType" @change="countConfig">
+                <el-option label="static" value="static"></el-option>
+                <el-option label="form_header" value="form_header"></el-option>
+                <el-option label="message_header" value="message_header"></el-option>
+              </el-select>
+              <el-popover v-if="bodyCountType === 'static'"
+                placement="right" trigger="click">
+                <h5>最大数：</h5>
+                <el-input-number size="small" :min="1" v-model="formConfig.form.form.body.count.max" />
+                <el-button slot="reference">配置</el-button>
+              </el-popover>
+              <el-popover v-if="bodyCountType === 'form_header'"
+                placement="right" trigger="click">
+                <h5>输入表单中 form_header 的一个字段：</h5>
+                <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+                <el-button slot="reference">配置</el-button>
+              </el-popover>
+              <el-popover v-if="bodyCountType === 'message_header'"
+                placement="right" trigger="click">
+                <h5>输入流程中的一个历史环节的 messageId：</h5>
+                <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
+                <h5>输入该环节中的表单的一个字段：</h5>
+                <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+                <el-button slot="reference">配置</el-button>
+              </el-popover>
+            </el-card>
+          </el-row>
+          <el-row type="flex" justify="end">
+            <el-button type="primary" icon="fa-check" @click="submitBtn">确认完成</el-button>
+            <el-button type="primary" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
+          </el-row>
+        </el-card>
+      </el-col>
     </el-row>
   </div>
 </template>

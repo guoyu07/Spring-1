@@ -42,7 +42,7 @@
             <el-option label="下拉单选" value="enum"></el-option>
             <el-option label="下拉多选" value="enum/multi"></el-option>
             <el-option label="下拉单选（cmdb）" value="dict"></el-option>
-            <el-option label="下拉多选（cmdb）" value="dict/multi"></el-option>
+            <el-option label="下拉多选（cmdb）" value="dicts"></el-option>
           </el-select>
           <!--静态选项-->
           <el-popover v-if="['enum', 'enum/multi'].includes(itemConf.value.type)"
@@ -51,7 +51,7 @@
             <el-button slot="reference">配置选项</el-button>
           </el-popover>
           <!--动态选项（cmdb）-->
-          <template v-if="['dict', 'dict/multi'].includes(itemConf.value.type)">
+          <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
             <el-button @click="showCMDBConfi(itemConf)">配置选项</el-button>
             <options-conf-cmdb :dialog-props="itemConf.value"></options-conf-cmdb>
           </template>

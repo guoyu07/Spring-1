@@ -82,7 +82,7 @@
         </el-collapse-item>
       </el-collapse>
       <!--多选 配置数量-->
-      <el-card v-if="dialogProps.type === 'dict/multi'">
+      <el-card v-if="dialogProps.type === 'dicts'">
         <el-row>
           <label>count：</label>
           <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
