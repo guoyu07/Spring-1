@@ -9,7 +9,7 @@
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
-          <h3><i class="el-icon-fa-cogs"></i> 自定义表单</h3>
+          <h3><i class="el-icon-fa-wpforms icon-lg"></i> 自定义表单</h3>
           <el-select v-model="selectedProcess" placeholder="请选择流程…" @change="getFormList" class="process-select">
             <el-option
               v-for="process in processList"

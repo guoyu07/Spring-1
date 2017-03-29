@@ -69,7 +69,6 @@
                   <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
-              <br>
               <el-form-item v-if="formConfig.form.action.find(_ => _.name === '下载')" label="下载 URL">
                 <el-popover
                   placement="right"
@@ -104,15 +103,15 @@
               </el-popover>
               <el-popover v-if="formConfig.form.form.body.count.type === 'form_header'"
                 placement="right" trigger="click">
-                <h5>所取表单 form_header 中的字段：</h5>
+                <h5>所取表单 header 中的字段：</h5>
                 <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
                 <el-button slot="reference">配置</el-button>
               </el-popover>
               <el-popover v-if="formConfig.form.form.body.count.type === 'message_header'"
                 placement="right" trigger="click">
-                <h5>所取流程的一个环节 messageId：</h5>
+                <h5>所取流程节点 ID：</h5>
                 <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
-                <h5>所取该环节表单的字段：</h5>
+                <h5>所取该节点下表单的字段：</h5>
                 <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
                 <el-button slot="reference">配置</el-button>
               </el-popover>

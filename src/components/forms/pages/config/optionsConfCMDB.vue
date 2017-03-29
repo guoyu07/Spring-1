@@ -56,7 +56,7 @@
         </el-form-item>
       </el-form>
 
-      <h5>接口请求参数</h5>
+      <h5>接口请求参数：</h5>
       <el-collapse v-if="dialogProps.source.data.params.length">
         <el-collapse-item v-for="param in dialogProps.source.data.params">
           <template slot="title">
@@ -84,7 +84,7 @@
         </el-collapse-item>
       </el-collapse>
 
-      <h5>选项数据路径配置</h5>
+      <h5>选项数据路径配置：</h5>
       <el-card>
         <el-form label-width="120px" :inline="true">
           <el-form-item label="data_path">
