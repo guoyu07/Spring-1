@@ -75,6 +75,7 @@
     },
     created () {
       this.renderTaskForm()
+      // console.log(this.form)
       this.userInfo = window.localStorage
       this.application = this.userInfo.userName // 默认申请人为填写人
       if (this.$route.params.id) {
@@ -99,32 +100,17 @@
           object_id: ''
         }
       },
-      'instockFormHead.deviceType' () {
-        const _value = this.instockFormHead.deviceType && this.instockFormHead.deviceType.object_id
-        this.form && this.form.body.body_list.forEach((v, k) => {
-          // console.log(v.show.value === _value, k)
-          if (v.show.value === _value) {
-            this.bodylistIndex = k // 取当前设备类型的索引值
-          }
-        })
-        // this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
-        // this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
-        //   group.value.map(item => {
-        //     if (item.value.type === 'arr' || item.value.type === 'FKs') {
-        //       this.$set(this.instockForm.data[0], item.id, [])
-        //     } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
-        //       this.$set(this.instockForm.data[0], item.id, undefined)
-        //     } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
-        //       this.$set(this.instockForm.data[0], item.id, null)
-        //     } else {
-        //       this.$set(this.instockForm.data[0], item.id, '')
-        //     }
-        //   })
-        // })
-      },
-      'bodylistIndex' () {
+      // 'instockFormHead.deviceType' (to, form) {
+      //   const _value = to && to.object_id // to == this.instockFormHead.deviceType
+      //   this.form && this.form.body.body_list.forEach((v, k) => {
+      //     if (v.show.value === _value) {
+      //       this.bodylistIndex = k // 取当前设备类型的索引值
+      //     }
+      //   })
+      // },
+      'bodylistIndex' (newVal) {
         this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
-        this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
+        this.form.body.body_list[newVal].attr_list.map(group => {
           group.value.map(item => {
             if (item.value.type === 'arr' || item.value.type === 'FKs') {
               this.$set(this.instockForm.data[0], item.id, [])
@@ -215,21 +201,6 @@
           this.editData = this.findTaskMsgR(res.data.data.variables.message, ['start']).form.object_list
         })
       },
-      // renderTaskForm () {
-      //   const postData = {
-      //     action: 'activiti/task/form/group',
-      //     method: 'GET',
-      //     data: {
-      //       pkey: 'import_device',
-      //       tkey: 'start'
-      //     }
-      //   }
-      //   this.http.post('', this.parseData(postData))
-      //   .then((res) => {
-      //     this.form = res.data.data.form
-      //     console.log(this.form)
-      //   })
-      // },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
@@ -242,6 +213,25 @@
         this.loading = true
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           this.form = res.data.data.form
+          const key = []
+          for (const body of this.form.body.body_list) { // 动态 watch
+            if (body.show) {
+              const keyPath = body.show.key_path.split('.')
+              if (body.show.type === 'form_header') { // TODO 暂时只是写了一种type,还有message_header message_body 两种未知数据如何
+                if (!key.includes(keyPath[0])) {
+                  key.push(keyPath[0])
+                  this.$watch('instockFormHead.' + keyPath[0], newVal => {
+                    const _value = newVal && newVal[keyPath[1]] || '' // newVal == this.instockFormHead.deviceType
+                    this.form && this.form.body.body_list.forEach((v, k) => {
+                      if (v.show.value === _value) {
+                        this.bodylistIndex = k // 取当前设备类型的索引值
+                      }
+                    })
+                  })
+                }
+              }
+            }
+          }
           this.form.header.map(group => {
             group.value.map(item => {
               if (item.value.type === 'arr' || item.value.type === 'FKs') {
