@@ -25,6 +25,7 @@
                   <el-checkbox v-model="itemConf.required">必填</el-checkbox>
                   <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
                   <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
+                  <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
                 </el-form-item>
               </el-row>
               <el-row>

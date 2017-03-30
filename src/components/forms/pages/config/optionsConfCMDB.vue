@@ -48,7 +48,7 @@
         </el-form-item>
         <el-form-item label="Params">
           <el-dropdown trigger="click" @command="selectParams">
-            <el-button size="small" type="primary" icon="plus">添加 param</el-button>
+            <el-button size="small" type="primary" :plain="true" icon="plus">添加 Param</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="static">静态输入</el-dropdown-item>
               <el-dropdown-item command="formHeader">来自以往节点 header</el-dropdown-item>
@@ -64,7 +64,7 @@
         </el-form-item>
       </el-form>
 
-      <h5>接口请求参数：</h5>
+      <h5 v-if="dialogProps.source.data.params.length">接口请求参数：</h5>
       <el-collapse v-if="dialogProps.source.data.params.length">
         <el-collapse-item v-for="param in dialogProps.source.data.params">
           <template slot="title">
