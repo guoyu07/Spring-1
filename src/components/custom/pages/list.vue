@@ -13,7 +13,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
-          <h3><i class="el-icon-fa-sitemap icon-lg"></i> 流程自定义</h3>
+          <h3><i class="el-icon-fa-sitemap icon-lg"></i> BPMN 配置</h3>
           <el-alert
             title="在此修改或新建流程的 BPMN（业务流程建模标记），以自定义流程的环节和走向 :)"
             type="info"

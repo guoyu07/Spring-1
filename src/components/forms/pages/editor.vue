@@ -18,7 +18,7 @@
     border-bottom: 2px dotted @borderColor;
     margin: 10px 0 20px;
     // background-color: @bgLighter;
-    padding: 6px 12px;
+    padding: 6px 12px 12px;
 
     h4 {
       color: @primary;
@@ -131,7 +131,7 @@
             <el-button type="primary" size="small" icon="plus" @click="addBodyConfig">添加 Body</el-button>
           </el-row>
           <el-dialog title="Body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
-            <el-form label-width="80px">
+            <el-form label-width="100px">
               <el-form-item label="Body 名称">
                 <el-input v-model="editBody.name"></el-input>
               </el-form-item>
@@ -146,14 +146,14 @@
                 <el-input v-model="editBody.show.id"></el-input>
               </el-form-item>
               <el-form-item label="属性路径">
-                <el-input v-model="editBody.show.key_path"></el-input>
+                <el-input class="code-input" v-model="editBody.show.key_path"></el-input>
               </el-form-item>
               <el-form-item label="判断条件">
                 <el-select v-model="editBody.show.op">
                   <el-option label="等于" value="eq"></el-option>
                   <el-option label="不等于" value="neq"></el-option>
                 </el-select>
-                <el-input v-model="editBody.show.value"></el-input>
+                <el-input class="code-input" v-model="editBody.show.value"></el-input>
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">

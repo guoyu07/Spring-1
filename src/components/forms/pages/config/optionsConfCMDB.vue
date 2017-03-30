@@ -26,11 +26,15 @@
       float: right;
       margin: 10px;
     }
+
+    h5 {
+      margin: 6px 0;
+    }
   }
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="动态选项 API 配置" v-model="dialogProps.confVisible">
+  <el-dialog class="cmdb-config-dialog" title="动态选项 API 配置" v-model="dialogProps.confVisible" @close="onClose">
     <div class="conf-cmdb-contain" v-if="dialogProps.source">
       <el-form :model="dialogProps.source" label-width="100px" :inline="true">
         <el-form-item label="URL">
@@ -53,6 +57,10 @@
               <el-dropdown-item command="msgBody">来自当前节点 body</el-dropdown-item>
             </el-dropdown-menu>
           </el-dropdown>
+        </el-form-item>
+        <el-form-item label="允许新增选项">
+          <el-radio v-model="allowCreate" :label="true">是</el-radio>
+          <el-radio v-model="allowCreate" :label="false">否</el-radio>
         </el-form-item>
       </el-form>
 
@@ -97,7 +105,7 @@
       </el-card>
 
       <template v-if="dialogProps.type === 'dicts'">
-        <h5>多选选择个数配置</h5>
+        <h5>多选选择个数配置：</h5>
         <el-card>
           <el-form label-width="90px" :inline="true">
             <el-form-item label="个数类型">
@@ -144,6 +152,7 @@
     },
     data () {
       return {
+        allowCreate: this.dialogProps.allowCreate ? this.dialogProps.allowCreate : true,
         countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
     },
@@ -224,6 +233,10 @@
       },
       onSubmit () {
         this.dialogProps.confVisible = false
+      },
+
+      onClose () {
+        this.dialogProps.allow_create = this.allowCreate
       }
     }
   }
