@@ -138,7 +138,10 @@
           business: '',
           opsManagers: []
         },
-        applyFormHead: {},
+        applyFormHead: {
+          applyType: '',
+          applicationName: ''
+        },
         applyForm: {
           data: [{
             cpu: '',
@@ -147,6 +150,7 @@
             score: 0
           }]
         },
+        appList: [],
         applyTypes: [{
           label: '新建应用',
           value: 'newApplication'
@@ -154,84 +158,25 @@
           label: '新建集群节点',
           value: 'newGroup'
         }],
-        businessList: [],
-        appList: [],
-        opsManagersList: [],
-        environmentList: [{
-          label: '质量测试环境',
-          value: 'qutityTesting'
-        }, {
-          label: '开发测试环境',
-          value: 'devTesting'
-        }, {
-          label: '开发联调环境',
-          value: 'jointDevTesting'
-        }, {
-          label: '预上线环境',
-          value: 'preOnline'
-        }, {
-          label: '生产环境',
-          value: 'production'
-        }, {
-          label: '展示环境',
-          value: 'display'
-        }, {
-          label: ' DMZ区环境',
-          value: 'demilitarizedZone'
-        }],
-        systemsList: [{
-          label: 'Red Hat5.5(应用)',
-          value: 'RedHat5.5'
-        }, {
-          label: 'Red Hat6.5(数据库)',
-          value: 'RedHat6.5'
-        }, {
-          label: 'Win2008R2 SP1',
-          value: 'Win2008R2SP1'
-        }, {
-          label: 'Win7',
-          value: 'Win7'
-        }, {
-          label: 'WinXP',
-          value: 'WinXP'
-        }, {
-          label: '其他',
-          value: 'other'
-        }],
-        hostTypeList: [{
-          label: '物理机',
-          value: 'physical'
-        }, {
-          label: '虚拟机',
-          value: 'virtual'
-        }],
         applyRules: {
           applyType: [
             { required: true, message: '请选择申请类型', trigger: 'change' }
             // { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
           ],
-          business: [
-            { required: true, message: '请输入所属业务', trigger: 'change, blur' }
-          ],
           applicationName: [
             { required: true, message: '请输入应用名', trigger: 'change, blur' }
-          ],
-          opsManagers: [
-            { type: 'array', required: true, message: '请输入运维负责人', trigger: 'change, blur' }
           ]
         }
       }
     },
     created () {
       this.renderTaskForm()
+      this.renderAppList()
       this.editInfo.userName = window.localStorage.userName
       if (this.$route.params.id) {
         this.editInfo.id = this.$route.params.id
         this.renderInstanceDetail()
       }
-      this.renderAppList()
-      this.renderOpsManagerList()
-      this.renderBusinessList()
     },
     watch: {
       '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
@@ -283,27 +228,6 @@
           console.log(this.editData)
         })
       },
-      renderOpsManagerList () {
-        const postData = {
-          action: 'object/instance/list',
-          method: 'GET',
-          data: {
-            object_id: 'USER'
-            // page: "不传则获取该对象所有实例",
-            // pageSize: "默认30"
-          }
-        }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          console.log(res, res.data.data.list)
-          this.opsManagersList = res.data.data.list
-          if (this.editData.opsManagers.length !== 0) {
-            this.applyForm.opsManagers = this.editData.opsManagers
-          } else {
-            this.applyForm.opsManagers = [this.editInfo.userName]
-          }
-        })
-      },
       renderAppList () {
         const postData = {
           action: 'object/instance/list',
@@ -319,22 +243,6 @@
           console.log(res, res.data.data.list)
           this.appList = res.data.data.list
           this.applyForm.applicationName = this.editData.applicationName
-        })
-      },
-      renderBusinessList () {
-        const postData = {
-          action: 'object/instance/list',
-          method: 'GET',
-          data: {
-            object_id: 'BUSINESS'
-            // page: "不传则获取该对象所有实例",
-            // pageSize: "默认30"
-          }
-        }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          this.businessList = res.data.data.list
-          this.applyForm.business = this.editData.business
         })
       },
       onChangeType () {
@@ -481,7 +389,6 @@
     width: 100%;
   }
   .wrapper {
-
     .form-title {
       font-size: 22px;
       font-weight: 400;
