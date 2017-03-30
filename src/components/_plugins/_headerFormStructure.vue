@@ -2,8 +2,9 @@
   <div>
     <div class="form-block" v-for="formBlock in formData">
       <h4>{{formBlock.name}}</h4>
-      <div v-for="formItem in formBlock.value" class="headerform">
+      <div class="headerform">
         <el-form-item
+          v-for="formItem in formBlock.value"
           :prop="formItem.id"
           :label="formItem.name"
           :rules="{

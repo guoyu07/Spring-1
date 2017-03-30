@@ -64,6 +64,17 @@
               }
             }
           })
+        } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER') {
+          const user = window.localStorage.userName
+          this.optionList.map(option => {
+            if (option.name === user) {
+              if (Array.isArray(this.vmodel[this.strucData.id])) {
+                this.vmodel[this.strucData.id].push(option)
+              } else {
+                this.vmodel[this.strucData.id] = option
+              }
+            }
+          })
         }
       })
       // }

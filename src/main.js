@@ -106,6 +106,18 @@ Vue.prototype.getPathResult = (result, path) => {
   return _result
 }
 
+Vue.prototype.setDataType = (original, goalData, _this) => {
+  if (original.value.type === 'arr' || original.value.type === 'FKs') {
+    _this.$set(goalData, original.id, [])
+  } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
+    _this.$set(goalData, original.id, undefined)
+  } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
+    _this.$set(goalData, original.id, null)
+  } else {
+    _this.$set(goalData, original.id, '')
+  }
+}
+
 // 逆向寻找匹配的 task_key
 var findTaskMsgR = (arrMsg, arrTaskKey) => {
   for (let i = arrMsg.length - 1; i >= 0; i--) {

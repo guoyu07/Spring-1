@@ -4,50 +4,37 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
-          <el-form ref="applyForm" :model="applyForm" :rules="applyRules" class="advance-search-form" label-width="85px" :inline="true">
+          <el-form ref="applyFormHead" :model="applyFormHead" :rules="applyRules" label-width="100px" :inline="true">
             <el-form-item filterable prop="applyType" label="申请类型">
-              <el-select v-model="applyForm.applyType" @change="onChangeType">
+              <el-select v-model="applyFormHead.applyType" @change="onChangeType">
                 <el-option v-for="apyType in applyTypes"
                   :label="apyType.label"
                   :value="apyType.label"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item prop="business" label="项目组">
-              <el-select filterable allow-create v-model="applyForm.business">
-                <el-option v-for="business in businessList"
-                  :label="business.name"
-                  :value="business.name"></el-option> <!-- 因为这个business可以选填可以输入，所以只取字符串 -->
-              </el-select>
-            </el-form-item>
-            <!-- <el-form-item v-if="applyForm.applyType === 'newBusiness'" prop="business" label="所属业务">
-              <el-input v-model="applyForm.business"></el-input>
-            </el-form-item> -->
 
-            <el-form-item v-if="applyForm.applyType === '新建集群节点'" prop="applicationName" label="应用名">
-              <el-select filterable v-model="applyForm.applicationName">
+            <el-form-item v-if="applyFormHead.applyType === '新建集群节点'" prop="applicationName" label="应用名">
+              <el-select filterable v-model="applyFormHead.applicationName">
                 <el-option v-for="app in appList"
                   :label="app.name"
                   :value="app.name"></el-option>
               </el-select>
             </el-form-item>
-            <el-form-item v-if="applyForm.applyType !== '新建集群节点'" prop="applicationName" label="应用名">
-              <el-input v-model="applyForm.applicationName"></el-input>
+            <el-form-item v-if="applyFormHead.applyType !== '新建集群节点'" prop="applicationName" label="应用名">
+              <el-input v-model="applyFormHead.applicationName"></el-input>
             </el-form-item>
 
-            <el-form-item prop="opsManagers" label="运维负责人">
-              <el-select filterable multiple v-model="applyForm.opsManagers">
-                <el-option v-for="ops in opsManagersList"
-                  :label="ops.name"
-                  :value="ops.name"></el-option>
-              </el-select>
-            </el-form-item>
-            <br>
-            <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
-              增加服务器
-            </el-button>
+            <header-form-structure :form-data="form.header" :item="applyFormHead"></header-form-structure>
+          </el-form>
+          <br>
+          <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+            增加服务器
+          </el-button>
+          <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-position="top" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
-                <el-form-item
+                <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
+                <!-- <el-form-item
                   label="使用环境"
                   :prop="'data.' + index + '.environment'"
                   :rules="{
@@ -91,9 +78,7 @@
                   :prop="'data.' + index + '.quantity'"
                   :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
                   <el-input v-model="item.quantity"></el-input>
-                  <!-- <el-input-number v-model="item.quantity" :min="1"></el-input-number> -->
-                </el-form-item>
-
+                </el-form-item> -->
                 <el-form-item
                   label="CPU核数"
                   :prop="'data.' + index + '.cpu'"
@@ -126,11 +111,6 @@
                 </el-form-item>
               </el-tab-pane>
             </el-tabs>
-            <br>
-            <el-form-item label="备注">
-              <el-input type="textarea" style="width: 320px;" v-model="applyForm.remark"></el-input>
-            </el-form-item>
-            <br>
           </el-form>
           <div class="btn-area">
             <el-button type="primary" @click="onRecheckBusiness">立即创建</el-button>
@@ -142,9 +122,12 @@
   </div>
 </template>
 <script>
+  import formStructure from '../../_plugins/_formStructure'
+  import headerFormStructure from '../../_plugins/_headerFormStructure'
   export default {
     data () {
       return {
+        form: {},
         tabsValue: '0',
         tabIndex: 1,
         editInfo: {
@@ -155,22 +138,12 @@
           business: '',
           opsManagers: []
         },
+        applyFormHead: {},
         applyForm: {
-          applyType: '',
-          business: '',
-          applicationName: '',
-          opsManagers: [],
-          remark: '',
           data: [{
-            // tabname: 0,
-            environment: null,
-            quantity: '',
-            operateSystem: null,
-            hostType: null,
             cpu: '',
             internalStorage: '',
             hardDisk: '',
-            // assetNumber: '',
             score: 0
           }]
         },
@@ -250,6 +223,7 @@
       }
     },
     created () {
+      this.renderTaskForm()
       this.editInfo.userName = window.localStorage.userName
       if (this.$route.params.id) {
         this.editInfo.id = this.$route.params.id
@@ -267,6 +241,31 @@
       }
     },
     methods: {
+      renderTaskForm () { // 渲染表单数据
+        const renderFromData = {
+          action: 'activiti/task/form/group',
+          method: 'GET',
+          data: {
+            pkey: 'host_apply',
+            tkey: 'start'
+          }
+        }
+        // this.loading = true
+        this.http.post('', this.parseData(renderFromData)).then((res) => {
+          this.form = res.data.data.form
+          this.form.header.map(group => {
+            group.value.map(item => {
+              this.setDataType(item, this.applyFormHead, this)
+            })
+          })
+          this.form.body.body_list[0].attr_list.map(group => {
+            group.value.map(item => {
+              this.setDataType(item, this.applyForm.data[0], this)
+            })
+          })
+          // this.loading = false
+        })
+      },
       renderInstanceDetail () {
         let postData = {
           action: 'runtime/task',
@@ -469,6 +468,11 @@
           }
         })
       }
+    },
+
+    components: {
+      formStructure,
+      headerFormStructure
     }
   }
 </script>
@@ -491,7 +495,7 @@
     margin-bottom: 30px;
   }
   .el-form--inline .el-form-item {
-    min-width: 280px;
+    min-width: 194px;
     margin-bottom: 18px;
   }
   .margin-bottom {
