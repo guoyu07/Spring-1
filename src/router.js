@@ -118,18 +118,18 @@ const routes = [{
     path: '/orders',
     component: require('./components/orders/orders')
   }, { // 定义表单，提交给数据库存储，删
-    path: '/part1',
-    component: require('./components/part1/Index'),
+    path: '/forms',
+    component: require('./components/forms/Index'),
     children: [{
       path: '',
-      component: require('./components/part1/pages/list.vue')
+      component: require('./components/forms/pages/list.vue')
     }, {
-      path: '/part1/editor',
-      component: require('./components/part1/pages/editor.vue')
+      path: '/forms/editor',
+      component: require('./components/forms/pages/editor.vue')
     }]
   }, { // 获取数据，渲染成表单，删
     path: '/select-form',
-    component: require('./components/part1/pages/selectForm.vue')
+    component: require('./components/forms/pages/selectForm.vue')
   }],
   meta: {
     requiresAuth: true

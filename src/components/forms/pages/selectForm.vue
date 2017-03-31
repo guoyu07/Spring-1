@@ -22,12 +22,13 @@
         <el-option v-for="process of processList" :label="process.pname" :value="process.pkey" />
       </el-select>
       <label>选择表单：</label>
-      <el-select v-model="selectedForm">
-        <el-option v-for="form of formList" :label="form.tname" :value="form.tkey" />
+      <el-select v-model="selectedForm" @change="formChange">
+        <el-option v-for="form of formList" :label="form.tname" :value="form" />
       </el-select>
     </el-row>
     <el-row>
       <el-form :inline="true" :model="formData" ref="formRef" label-width="100px">
+        <!--解析表单（旧数据格式）-->
         <el-form-item v-for="formItem of formConfig"
           v-if="['str','int','arr','enum','date','datetime','strArea'].indexOf(formItem.type) !== -1"
           :label="formItem.name" :required="formItem.required">
@@ -41,6 +42,7 @@
             <el-input-number v-model="formData[formItem.key]"></el-input-number>
           </template>
           <template v-if="formItem.type === 'arr'">
+            <!--输入框 回车标签-->
             <el-input-tag :tags="formData[formItem.key]"></el-input-tag>
           </template>
           <template v-if="formItem.type === 'enum'">
@@ -66,8 +68,7 @@
 </template>
 
 <script>
-  import elInputTag from '../../_plugins/inputTag'
-  const pinyinUtil = window.pinyinUtil
+  import elInputTag from '../../_plugins/inputTag' // 输入框 回车形成一个标签
 
   export default {
     data () {
@@ -81,6 +82,7 @@
       }
     },
     created () {
+      // 旧数据格式 删
       // 提交字段名 是 name 转的拼音
       // 单选、多选
       // 单选 + 动态获取（其中动态获取 参数的来源 分为几种），还有 多选 + 动态获取
@@ -89,7 +91,7 @@
       //   .then(res => {
       //     // 构造 待提交(formData)、先只考虑 header、只考虑静态选项
       //     res.data.header.forEach(item => {
-      //       const key = pinyinUtil.getPinyin(item.name).replace(/\s/ig, '_')
+      //       const key = item.name
       //       this.$set(this.formData, key, item.type === 'arr' ? [] : '')
       //       item.key = key
       //     })
@@ -106,7 +108,7 @@
     },
     computed: {
       formConfigList () {
-        return this.$store.state.formConfigList || []
+        return this.$store.state.formConfigList || [] // 旧数据格式 删
       }
     },
     methods: {
@@ -118,19 +120,23 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           this.formList = res.data.data.list
-          this.selectedForm = this.formList[0].tkey // 默认选中第一个
+          this.selectedForm = this.formList[0] // 默认选中第一个
         })
       },
-      selectChange (value) {
-        // 清空
-        this.formData = {}
-        // 加上待提交字段
-        value.forEach(item => {
-          const key = pinyinUtil.getPinyin(item.name).replace(/\s/ig, '_')
-          this.$set(this.formData, key, item.type === 'arr' ? [] : '')
-          item.key = key
-        })
+      formChange (form) {
+        console.log(form) // 表单配置 数据
       },
+      // 旧数据格式 删
+      // selectChange (value) {
+      //   // 清空
+      //   this.formData = {}
+      //   // 加上待提交字段
+      //   value.forEach(item => {
+      //     const key = item.name
+      //     this.$set(this.formData, key, item.type === 'arr' ? [] : '')
+      //     item.key = key
+      //   })
+      // },
       submitForm () {
         this.$refs.formRef.validate(valid => {
           if (valid) {

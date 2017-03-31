@@ -354,6 +354,7 @@
             // this.$router.replace(``)
             switch (task.pkey) {
               case 'host_apply':
+                // replace 浏览器后退键没效（没有历史），push 会有
                 this.$router.replace(`/system/${task.taskDefinitionKey}/${task.id}/${task.name}`)
                 break
               case 'equipment_on':
