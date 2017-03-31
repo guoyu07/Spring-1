@@ -159,7 +159,7 @@
       'applyForm.data': {
         handler: (val, oldVal) => {
           for (const data of val) {
-            data.score = (data.cpu * 1 + data.storage * 1 + data.hardDisk / 20) + ''
+            data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
           }
         },
         deep: true

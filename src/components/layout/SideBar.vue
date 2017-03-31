@@ -24,7 +24,7 @@
       <el-submenu index="/equipment">
         <template slot="title">设备上下架</template>
         <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
-        <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item>
+        <!-- <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item> -->
       </el-submenu>
 
       <el-submenu index="/system">
