@@ -52,6 +52,7 @@
                     <el-option label="下拉多选" value="enum/multi"></el-option>
                     <el-option label="下拉单选（CMDB）" value="dict"></el-option>
                     <el-option label="下拉多选（CMDB）" value="dicts"></el-option>
+                    <el-option label="搜索条件" value="search_bar"></el-option>
                   </el-select>
                   <!--静态选项-->
                   <el-popover v-if="['enum', 'enum/multi'].includes(itemConf.value.type)"
@@ -61,8 +62,13 @@
                   </el-popover>
                   <!--动态选项（cmdb）-->
                   <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
-                    <el-button size="small" @click="showCMDBConfi(itemConf)">配置选项</el-button>
-                    <options-conf-cmdb :dialog-props="itemConf.value"></options-conf-cmdb>
+                    <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
+                    <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+                  </template>
+                  <!-- 搜索元件 -->
+                  <template v-if="itemConf.value.type === 'search_bar'">
+                    <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
+                    <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
                   </template>
                 </el-form-item>
               </el-row>
@@ -92,7 +98,7 @@ export default {
       if (!itemConf.value.regex) itemConf.value.regex = []
     },
     // CMDB 获取参数配置
-    showCMDBConfi (itemConf) {
+    showCMDBConf (itemConf) {
       if (itemConf.value.source || itemConf.value.count) {
         // 已经加过的属性的
       } else {
@@ -110,6 +116,12 @@ export default {
             data_path: '',
             show_key: ''
           }
+        })
+        this.$set(itemConf.value, 'show', {
+          type: '',
+          key_path: '',
+          op: '',
+          value: ''
         })
       }
       itemConf.value.confVisible = true
