@@ -5,25 +5,6 @@
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
           <el-form ref="applyFormHead" :model="applyFormHead" :rules="applyRules" label-width="100px" :inline="true">
-            <el-form-item filterable prop="applyType" label="申请类型">
-              <el-select v-model="applyFormHead.applyType" @change="onChangeType">
-                <el-option v-for="apyType in applyTypes"
-                  :label="apyType.label"
-                  :value="apyType.label"></el-option>
-              </el-select>
-            </el-form-item>
-
-            <el-form-item v-if="applyFormHead.applyType === '新建集群节点'" prop="applicationName" label="应用名">
-              <el-select filterable v-model="applyFormHead.applicationName">
-                <el-option v-for="app in appList"
-                  :label="app.name"
-                  :value="app.name"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item v-if="applyFormHead.applyType !== '新建集群节点'" prop="applicationName" label="应用名">
-              <el-input v-model="applyFormHead.applicationName"></el-input>
-            </el-form-item>
-
             <header-form-structure :form-data="form.header" :item="applyFormHead"></header-form-structure>
           </el-form>
           <br>
@@ -79,7 +60,7 @@
                   :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
                   <el-input v-model="item.quantity"></el-input>
                 </el-form-item> -->
-                <el-form-item
+                <!-- <el-form-item
                   label="CPU核数"
                   :prop="'data.' + index + '.cpu'"
                   :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
@@ -98,22 +79,16 @@
                   :prop="'data.' + index + '.hardDisk'"
                   :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
                   <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
-                </el-form-item>
-
-                <!-- <el-form-item
-                  label="资产编号"
-                  :prop="'data.' + index + '.assetNumber'">
-                  <el-input type="number" v-model="item.assetNumber"></el-input>
                 </el-form-item> -->
 
-                <el-form-item label="资源分数">
+                <!-- <el-form-item label="资源分数">
                   {{ item.score = item.cpu * 1 + item.internalStorage * 1 + item.hardDisk / 20 }}
-                </el-form-item>
+                </el-form-item> -->
               </el-tab-pane>
             </el-tabs>
           </el-form>
           <div class="btn-area">
-            <el-button type="primary" @click="onRecheckBusiness">立即创建</el-button>
+            <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
             <el-button v-if="!editInfo.id" @click="resetForm('applyForm')">重置</el-button>
           </div>
         </el-card>
@@ -143,14 +118,10 @@
           applicationName: ''
         },
         applyForm: {
-          data: [{
-            cpu: '',
-            internalStorage: '',
-            hardDisk: '',
-            score: 0
-          }]
+          data: [{}]
         },
         appList: [],
+        businessList: [],
         applyTypes: [{
           label: '新建应用',
           value: 'newApplication'
@@ -172,6 +143,7 @@
     created () {
       this.renderTaskForm()
       this.renderAppList()
+      this.renderBusinessList()
       this.editInfo.userName = window.localStorage.userName
       if (this.$route.params.id) {
         this.editInfo.id = this.$route.params.id
@@ -183,6 +155,14 @@
         this.editInfo = {
           id: ''
         }
+      },
+      'applyForm.data': {
+        handler: (val, oldVal) => {
+          for (const data of val) {
+            data.score = (data.cpu * 1 + data.storage * 1 + data.hardDisk / 20) + ''
+          }
+        },
+        deep: true
       }
     },
     methods: {
@@ -206,6 +186,9 @@
           this.form.body.body_list[0].attr_list.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.applyForm.data[0], this)
+              // this.$watch('applyForm.data.0', newVal => {
+              //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
+              // }, {deep: true})
             })
           })
           // this.loading = false
@@ -245,6 +228,22 @@
           this.applyForm.applicationName = this.editData.applicationName
         })
       },
+      renderBusinessList () {
+        const postData = {
+          action: 'object/instance/list',
+          method: 'GET',
+          data: {
+            object_id: 'BUSINESS'
+             // page: "不传则获取该对象所有实例",
+             // pageSize: "默认30"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          this.businessList = res.data.data.list
+          this.applyForm.business = this.editData.business
+        })
+      },
       onChangeType () {
         this.applyForm.applicationName = ''
         this.applyForm.business = ''
@@ -269,11 +268,11 @@
         }, 1000)
       },
       onRecheckBusiness () {
-        if (!this.businessList.some(business => business.name === this.applyForm.business)) { // 若项目组为新增，则先进行新增请求
+        if (!this.businessList.some(business => business.name === this.applyFormHead.business.name)) { // 若项目组为新增，则先进行新增请求
           let postData = {
             action: `/object/instance/BUSINESS`,
             method: 'POST',
-            data: { name: this.applyForm.business }
+            data: { name: this.applyFormHead.business }
           }
           this.http.post('easyops/', this.parseData(postData)).then((res) => {
             // 新增毕，方出库
@@ -287,44 +286,59 @@
         console.log(this.applyForm)
         this.$refs[applyForm].validate((valid) => {
           if (valid) {
-            let postData = {}
-            if (this.editInfo.id) {
-              postData = {
-                action: 'runtime/task/complete',
-                method: 'POST',
-                data: {
-                  tid: this.editInfo.id,
-                  form: this.applyForm // 通过审批 需要判断一下登录的账号的角色身份
-                    // pass: "流程走向控制变量,整型(可选,默认为0)"
+            this.$refs['applyFormHead'].validate(valid => {
+              if (valid) {
+                let postData = {}
+                if (this.editInfo.id) {
+                  postData = {
+                    action: 'runtime/task/complete',
+                    method: 'POST',
+                    data: {
+                      tid: this.editInfo.id,
+                      form: this.applyForm // 通过审批 需要判断一下登录的账号的角色身份
+                        // pass: "流程走向控制变量,整型(可选,默认为0)"
+                    }
+                  }
+                } else {
+                  // postData = {
+                  //   action: 'runtime/process/instances',
+                  //   method: 'POST',
+                  //   data: {
+                  //     pkey: 'host_apply',
+                  //     form: this.applyForm,
+                  //     pass: 0
+                  //   }
+                  // }
+                  postData = {
+                    action: 'runtime/process/instances',
+                    method: 'POST',
+                    data: {
+                      pkey: 'host_apply',
+                      form: {
+                        'body': this.applyForm.data,
+                        'header': this.applyFormHead
+                      }
+                    }
+                  }
                 }
-              }
-            } else {
-              postData = {
-                action: 'runtime/process/instances',
-                method: 'POST',
-                data: {
-                  pkey: 'host_apply',
-                  form: this.applyForm,
-                  pass: 0
-                }
-              }
-            }
-            this.http.post('', this.parseData(postData))
-            .then((res) => {
-              // console.log(res, res.data.data)
-              if ((res && res.status === 200) || (res && res.status === 201)) {
-                this.$notify.success({
-                  title: '成功',
-                  message: '已成功创建申请单'
+                this.http.post('', this.parseData(postData))
+                .then((res) => {
+                  // console.log(res, res.data.data)
+                  if ((res && res.status === 200) || (res && res.status === 201)) {
+                    this.$notify.success({
+                      title: '成功',
+                      message: '已成功创建申请单'
+                    })
+                    this.$router.replace('/system/applylist')
+                  }
                 })
-                this.$router.replace('/system/applylist')
+              } else {
+                this.$message.error(`请填写完整表单`)
+                return false
               }
             })
           } else {
-            this.$notify.error({
-              title: '错误',
-              message: '请填写完整表单'
-            })
+            this.$message.error('请填写完整表单')
             return false
           }
         })
@@ -335,41 +349,38 @@
       removeTab (targetName) {
         let tabs = this.applyForm.data
         let activeName = this.tabsValue
-        if (activeName === targetName) {
-          tabs.forEach((tab, index) => {
-            if (tab.name === targetName) {
-              let nextTab = tabs[index + 1] || tabs[index - 1]
-              if (nextTab) {
-                activeName = nextTab.name
-              }
-            }
-          })
-        }
-
-        this.tabsValue = activeName
-        this.applyForm.data = tabs.filter(tab => tab.name !== targetName)
+        // if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          // if (index === +targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = tabs.indexOf(nextTab)
+          }
+          // }
+        })
+        // }
+        this.tabsValue = activeName + ''
+        this.applyForm.data.splice(targetName, 1)
       },
       addTab (targetName) {
         // let newTabName = ++this.tabIndex + ''
         var that = this
+        let newData = {}
+        this.form.body.body_list[0].attr_list.map(group => {
+          group.value.map(item => {
+            this.setNewDataType(item, newData)
+          })
+        })
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
-            if (that.applyForm.data.length < 5) {
-              that.applyForm.data.push({
-                // tabname: newTabName,
-                environment: null,
-                quantity: '',
-                operateSystem: null,
-                hostType: null,
-                cpu: '',
-                internalStorage: '',
-                hardDisk: '',
-                // assetNumber: '',
-                score: 0
-              })
+            if (that.applyForm.data.length < this.form.body.count.max) {
+              that.applyForm.data.push(newData)
               this.tabsValue = that.applyForm.data.length - 1 + ''
+              // this.$watch('applyForm.data.' + this.tabsValue, newVal => {
+              //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
+              // }, {deep: true})
             } else {
-              that.$message.warning('最多只能增加 5 个设备！')
+              that.$message.warning(`最多只能增加${this.form.body.count.max}个设备！`)
             }
           } else {
             that.$message.warning('请填写完整当前表单')

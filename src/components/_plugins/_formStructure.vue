@@ -12,7 +12,8 @@
 
         <el-input
           v-if="formItem.value.type === 'str'"
-          v-model="item[formItem.id]">
+          v-model="item[formItem.id]"
+          :disabled="formItem.readonly">
         </el-input>
 
         <el-input-number
@@ -57,7 +58,8 @@
 
         <need-cmdb-data
           v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
-          :vmodel="item" :strucData="formItem"></need-cmdb-data>
+          :vmodel="item" :strucData="formItem">
+        </need-cmdb-data>
       </el-form-item>
     </div>
   </div>

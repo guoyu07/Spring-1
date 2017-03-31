@@ -118,6 +118,18 @@ Vue.prototype.setDataType = (original, goalData, _this) => {
   }
 }
 
+Vue.prototype.setNewDataType = (original, goalData) => {
+  if (original.value.type === 'arr' || original.value.type === 'FKs') {
+    goalData[original.id] = []
+  } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
+    goalData[original.id] = undefined
+  } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
+    goalData[original.id] = null
+  } else {
+    goalData[original.id] = ''
+  }
+}
+
 // 逆向寻找匹配的 task_key
 var findTaskMsgR = (arrMsg, arrTaskKey) => {
   for (let i = arrMsg.length - 1; i >= 0; i--) {

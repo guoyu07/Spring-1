@@ -3,11 +3,13 @@
     <el-select
       v-model="vmodel[strucData.id]"
       :multiple="strucData.value.type === 'dicts'"
+      :allow-create="strucData.value.allow_create"
       filterable>
       <el-option v-for="option in optionList"
         :label="option[strucData.value.source.res.show_key]"
         :value="option"></el-option>
     </el-select>
+    {{typeof vmodel[strucData.id] === 'string' ? '新建名：' + vmodel[strucData.id] : ''}}
 
     <!-- <el-select
       v-else-if="strucData.value.type === 'dicts'"

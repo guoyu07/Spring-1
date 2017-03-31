@@ -7,9 +7,7 @@
           v-for="formItem in formBlock.value"
           :prop="formItem.id"
           :label="formItem.name"
-          :rules="{
-            type: (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') ? 'array' : (formItem.value.type === 'int' ? 'number' : ((formItem.value.type === 'datetime' || formItem.value.type === 'date') ? 'date' : ((formItem.value.type === 'FK' || formItem.value.type === 'dict') ? 'object' : 'string'))), required: formItem.required, message: formItem.name + '不能为空', trigger: 'blur, change'
-          }">
+          :rules="rules(formItem)">
 
           <el-input
             v-if="formItem.value.type === 'str'"
@@ -81,6 +79,47 @@
     },
 
     methods: {
+      rules (formItem) {
+        if (formItem.value.allow_create) {
+          var validateAllowCreate = (rule, value, cb) => {
+            if (!value) {
+              return cb(new Error('不能为空'))
+            } else {
+              cb()
+            }
+            // const format = typeof value === 'object' || 'string'
+            // if (value && !format) {
+            //   cb(new Error('不能为空'))
+            // } else {
+            //   cb()
+            // }
+          }
+          return {
+            validator: validateAllowCreate,
+            required: formItem.required,
+            trigger: 'change'
+          }
+        } else {
+          let type
+          if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') {
+            type = 'array'
+          } else if (formItem.value.type === 'int') {
+            type = 'int'
+          } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
+            type = 'date'
+          } else if (formItem.value.type === 'FK' || formItem.value.type === 'dict') {
+            type = 'object'
+          } else {
+            type = 'string'
+          }
+          return {
+            type: type,
+            required: formItem.required,
+            message: formItem.name + '不能为空',
+            trigger: 'blur, change'
+          }
+        }
+      }
     },
 
     components: {
