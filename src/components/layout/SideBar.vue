@@ -45,7 +45,26 @@
         <el-menu-item index="/publish/others"><i class="el-icon-more"></i>其他发布</el-menu-item>
       </el-submenu>
 
-      <el-submenu index="/auth">
+      <el-submenu index="/custom">
+        <template slot="title">自定义平台</template>
+        <el-menu-item-group>
+          <template slot="title">权限自定义</template>
+          <el-menu-item index="/auth/users"><i class="el-icon-setting"></i>用户管理</el-menu-item>
+          <el-menu-item index="/auth/roles"><i class="el-icon-menu"></i>角色管理</el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group>
+          <template slot="title">流程自定义</template>
+          <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>BPMN 配置</el-menu-item>
+          <el-menu-item index="/process-admin/basics"><i class="el-icon-fa-circle-o"></i>流程基本管理</el-menu-item>
+          <el-menu-item index="/process-admin/steps"><i class="el-icon-fa-circle-o-notch"></i>流程环节管理</el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group>
+          <template slot="title">表单自定义</template>
+          <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>表单配置</el-menu-item>
+        </el-menu-item-group>
+      </el-submenu>
+
+      <!-- <el-submenu index="/auth">
         <template slot="title">权限管理</template>
         <el-menu-item index="/auth/users"><i class="el-icon-setting"></i>用户管理</el-menu-item>
         <el-menu-item index="/auth/roles"><i class="el-icon-menu"></i>角色管理</el-menu-item>
@@ -61,7 +80,7 @@
       <el-menu-item index="/hours"><i class="el-icon-time"></i>标准工时统计（暂无）</el-menu-item>
       <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>流程自定义</el-menu-item>
       <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>表单自定义</el-menu-item>
-      <el-menu-item index="/select-form">选择流程表单（测试）</el-menu-item>
+      <el-menu-item index="/select-form">选择流程表单（测试）</el-menu-item> -->
 
     </el-menu>
   </aside>
