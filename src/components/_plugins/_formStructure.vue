@@ -2,6 +2,7 @@
   <div>
     <div class="form-block" v-for="formBlock in formData">
       <h4>{{formBlock.name}}</h4>
+      <!-- v-if="formItem.value.type !== 'search_bar'" -->
       <el-form-item
         v-for="formItem in formBlock.value"
         :prop="'data.' + index + '.' + formItem.id"
