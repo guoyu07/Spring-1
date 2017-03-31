@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3><i class="el-icon-fa-envelope-open-o icon-lg"></i> 资源申请列表</h3>
-          <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
+          <router-link to="/system/apply" class="el-button el-button margin-bottom"><i class="el-icon-plus"></i> 新建</router-link>
           <el-table
             :data="applyList"
             border

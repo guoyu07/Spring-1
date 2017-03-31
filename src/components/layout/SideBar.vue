@@ -45,6 +45,8 @@
         <el-menu-item index="/publish/others"><i class="el-icon-more"></i>其他发布</el-menu-item>
       </el-submenu>
 
+      <el-menu-item index="/orders">工单管理</el-menu-item>
+
       <el-submenu index="/custom">
         <template slot="title">自定义平台</template>
         <el-menu-item-group>
