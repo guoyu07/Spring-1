@@ -1,4 +1,4 @@
-// 获取流程列表
+// 获取权限流程列表
 export default {
   data () {
     return {

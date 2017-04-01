@@ -1,3 +1,5 @@
+// 获取待审核列表
+// 用于 applylist 及 onlinelist 二页
 export default {
   data () {
     return {
