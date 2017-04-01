@@ -15,7 +15,7 @@
 </style>
 
 <template>
-  <div class="home" v-loading.fullscreen.lock="$store.state.ajax_loading">
+  <div class="home">
     <header-warp></header-warp>
     <side-warp></side-warp>
     <div id="content">

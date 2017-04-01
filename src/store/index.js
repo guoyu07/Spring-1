@@ -48,9 +48,6 @@ Vue.use(Vuex)
 // const store = new Store()
 
 const state = {
-  isRequesting: false,
-  formConfigList: [],
-  ajax_loading: false,
   userinfo: window.localStorage || {}
 }
 
