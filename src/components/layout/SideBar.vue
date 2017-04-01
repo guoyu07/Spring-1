@@ -8,6 +8,14 @@
     overflow-y: scroll;
     background-color: #eff2f7;
   }
+
+  .el-submenu,
+  .el-menu-item {
+    i {
+      width: 14px;
+      text-align: center;
+    }
+  }
 </style>
 
 <template>
@@ -15,14 +23,14 @@
     <el-menu router="router" class="el-menu-vertical-demo" theme="light">
 
       <el-submenu index="/storemanage">
-        <template slot="title">仓库管理</template>
+        <template slot="title"><i class="el-icon-fa-th"></i> 仓库管理</template>
         <el-menu-item index="/storemanage/instock" @click="$router.go(0)"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
         <el-menu-item index="/storemanage/outstock"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
         <el-menu-item index="/storemanage/outstock/edit"><i class="el-icon-fa-edit"></i>信息变更</el-menu-item>
       </el-submenu>
 
       <el-submenu index="/equipment">
-        <template slot="title">设备上下架</template>
+        <template slot="title"><i class="el-icon-fa-cubes"></i> 设备上下架</template>
         <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
         <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item>
         <!-- <el-menu-item index="/equipment/check"><i class="el-icon-fa-stethoscope"></i>审核上下架流程</el-menu-item> -->
@@ -33,26 +41,26 @@
       </el-submenu>
 
       <el-submenu index="/system">
-        <template slot="title">系统上下线</template>
+        <template slot="title"><i class="el-icon-fa-server"></i> 系统上下线</template>
         <el-menu-item index="/system/applylist"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
         <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
         <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item>
       </el-submenu>
 
       <el-submenu index="/publish">
-        <template slot="title">应用发布更新</template>
+        <template slot="title"><i class="el-icon-fa-tags"></i> 应用发布更新</template>
         <el-menu-item index="/publish/application"><i class="el-icon-share"></i>应用发布</el-menu-item>
         <el-menu-item index="/publish/others"><i class="el-icon-more"></i>其他发布</el-menu-item>
       </el-submenu>
 
-      <el-menu-item index="/orders">工单管理</el-menu-item>
+      <el-menu-item index="/orders"><i class="el-icon-fa-calendar-o"></i> 工单管理</el-menu-item>
 
       <el-submenu index="/custom">
-        <template slot="title">自定义平台</template>
+        <template slot="title"><i class="el-icon-fa-cogs"></i> 自定义平台</template>
         <el-menu-item-group>
           <template slot="title">权限自定义</template>
-          <el-menu-item index="/auth/users"><i class="el-icon-setting"></i>用户管理</el-menu-item>
-          <el-menu-item index="/auth/roles"><i class="el-icon-menu"></i>角色管理</el-menu-item>
+          <el-menu-item index="/auth/users"><i class="el-icon-fa-user"></i>用户管理</el-menu-item>
+          <el-menu-item index="/auth/roles"><i class="el-icon-fa-users"></i>角色管理</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group>
           <template slot="title">流程自定义</template>
