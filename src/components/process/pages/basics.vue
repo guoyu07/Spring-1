@@ -31,9 +31,9 @@
             show-icon
             style="margin-bottom: 12px"></el-alert>
           <el-table
-            :data="processList"
+            :data="permittedProcessList"
             border
-            v-loading.body="processLoading"
+            v-loading.body="permittedProcessLoading"
             @expand="adminData.isCheckable = false">
             <el-table-column type="expand">
               <template scope="scope">
@@ -190,16 +190,15 @@
 </template>
 
 <script>
-  // This project
-  // has been really annoying
-  // as fuck
+  import getRoleList from './../../../mixins/getRoleList'
+  import getUserList from './../../../mixins/getUserList'
+  import getPermittedProcessList from './../../../mixins/getPermittedProcessList'
+
   export default {
+    mixins: [getRoleList, getUserList, getPermittedProcessList],
+
     data () {
       return {
-        processLoading: false,
-        processList: [],
-        userList: [],
-        roleList: [],
         adminData: {
           loading: false,
           visible: false,
@@ -224,7 +223,7 @@
     },
 
     created () {
-      this.getProcessList()
+      this.getPermittedProcessList()
       this.getUserList()
       this.getRoleList()
     },
@@ -234,47 +233,6 @@
         // 伸缩手风琴时，取消勾选状态，并清空待加入和待移除队列
         Object.assign(this.adminData, { isCheckable: false, toAdd: [], toRemove: [] })
         Object.assign(this.initiatorData, { isCheckable: false, toAdd: [], toRemove: [] })
-      },
-
-      getProcessList () {
-        this.processLoading = true
-        let postData = {
-          action: 'permission/process',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.processList = res.data.data
-            this.processLoading = false
-          }
-        })
-      },
-
-      getUserList () {
-        let postData = {
-          action: 'permission/users',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.userList = res.data.data
-          }
-        })
-      },
-
-      getRoleList () {
-        let postData = {
-          action: 'permission/role',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.roleList = res.data.data
-          }
-        })
       },
 
       onAdd (pkey, { adminType = '', initiatorType = '', operationType = '' }) {
@@ -298,7 +256,7 @@
             // Object.assign(_operationRelations[operationType], { visible: false, loading: false })
             _operationRelations[operationType].loading = false
             _operationRelations[operationType].visible = false
-            this.getProcessList()
+            this.getPermittedProcessList()
           }
         })
       },
@@ -341,7 +299,7 @@
             if (res.status === 200) {
               this.$message.success('移除成功！')
               Object.assign(_operationRelations[operationType], { visible: false, isCheckable: false })
-              this.getProcessList()
+              this.getPermittedProcessList()
             }
           })
         })

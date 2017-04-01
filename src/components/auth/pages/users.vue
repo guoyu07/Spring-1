@@ -87,10 +87,13 @@
 </template>
 
 <script>
+  import getUserList from './../../../mixins/getUserList'
+
   export default {
+    mixins: [getUserList],
+
     data () {
       return {
-        userList: [],
         addUserData: {
           visible: false,
           user: {}
@@ -113,20 +116,6 @@
     },
 
     methods: {
-      getUserList () {
-        let postData = {
-          action: 'permission/users',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            console.log(res)
-            this.userList = res.data.data
-          }
-        })
-      },
-
       onAddUser ({ code, userId, email, level }) {
         if (!/^[a-z][a-z0-9_]+[a-z]$/.test(userId)) {
           this.$message.error('用户 ID 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')

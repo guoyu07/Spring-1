@@ -131,7 +131,11 @@
 </template>
 
 <script>
+  import getUserList from './../../mixins/getUserList'
+
   export default {
+    mixins: [getUserList],
+
     data () {
       return {
         processLoading: false,
@@ -161,20 +165,6 @@
     },
 
     methods: {
-      getUserList () {
-        let postData = {
-          action: 'permission/users',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.userList = res.data.data
-            console.log(this.userList)
-          }
-        })
-      },
-
       getProcessList () {
         this.processLoading = true
         let postData = {

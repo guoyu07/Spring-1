@@ -31,9 +31,9 @@
             show-icon
             style="margin-bottom: 12px"></el-alert>
           <el-table
-            :data="processList"
+            :data="permittedProcessList"
             border
-            v-loading.body="processLoading">
+            v-loading.body="permittedProcessLoading">
             <el-table-column type="expand">
               <template scope="scope">
                 <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
@@ -160,13 +160,15 @@
 </template>
 
 <script>
+  import getRoleList from './../../../mixins/getRoleList'
+  import getUserList from './../../../mixins/getUserList'
+  import getPermittedProcessList from './../../../mixins/getPermittedProcessList'
+
   export default {
+    mixins: [getRoleList, getUserList, getPermittedProcessList],
+
     data () {
       return {
-        processLoading: false,
-        processList: [],
-        userList: [],
-        roleList: [],
         candidateData: {
           visible: false,
           loading: false,
@@ -192,7 +194,7 @@
     },
 
     created () {
-      this.getProcessList()
+      this.getPermittedProcessList()
       this.getUserList()
       this.getRoleList()
     },
@@ -200,47 +202,6 @@
     methods: {
       onAccordionChange () {
         Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
-      },
-
-      getProcessList () {
-        this.processLoading = true
-        let postData = {
-          action: 'permission/process',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.processList = res.data.data
-            this.processLoading = false
-          }
-        })
-      },
-
-      getUserList () {
-        let postData = {
-          action: 'permission/users',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.userList = res.data.data
-          }
-        })
-      },
-
-      getRoleList () {
-        let postData = {
-          action: 'permission/role',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.roleList = res.data.data
-          }
-        })
       },
 
       onAddCandidate ({ pkey, tkey, type = '' }) {
@@ -257,7 +218,7 @@
           if (res.status === 200) {
             Object.assign(this.candidateData, { loading: false, visible: false, toAdd: [] })
             this.$message.success('加入成功！')
-            this.getProcessList()
+            this.getPermittedProcessList()
           }
         })
       },
@@ -294,7 +255,7 @@
             if (res.status === 200) {
               Object.assign(this.candidateData, { toRemove: [], isUserCheckable: false, isGroupCheckable: false })
               this.$message.success('移除成功！')
-              this.getProcessList()
+              this.getPermittedProcessList()
             }
           })
         })
@@ -312,7 +273,7 @@
           if (res.status === 200) {
             Object.assign(this.assigneeData, { visible: false, loading: false, assignee: '' })
             this.$message.success('操作成功！')
-            this.getProcessList()
+            this.getPermittedProcessList()
           }
         })
       },

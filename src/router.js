@@ -127,9 +127,6 @@ const routes = [{
       path: '/forms/editor',
       component: require('./components/forms/pages/editor.vue')
     }]
-  }, { // 获取数据，渲染成表单，删
-    path: '/select-form',
-    component: require('./components/forms/pages/selectForm.vue')
   }],
   meta: {
     requiresAuth: true
