@@ -1,10 +1,5 @@
 <template>
   <div>
-    <el-steps>
-      <el-step v-for="(item, index) in proConfig[progress.pkey]" ::title="index">
-        <slot v-for="(step, stepIndex) in item.list">{{step.tname}}</slot>
-      </el-step>
-    </el-steps>
     <div class="progressWarp">
       <ul class="progress-bar">
         <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < ing }, { ing: item.value === ing }]">

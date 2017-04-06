@@ -62,7 +62,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 陆</el-button>
+            <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 录</el-button>
           </el-col>
         </el-row>
       </div>

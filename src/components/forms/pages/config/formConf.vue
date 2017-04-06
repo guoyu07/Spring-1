@@ -50,8 +50,8 @@
                     <el-option label="时间" value="datetime"></el-option>
                     <el-option label="下拉单选" value="enum"></el-option>
                     <el-option label="下拉多选" value="enum/multi"></el-option>
-                    <el-option label="下拉单选（CMDB）" value="dict"></el-option>
-                    <el-option label="下拉多选（CMDB）" value="dicts"></el-option>
+                    <el-option label="下拉单选（API）" value="dict"></el-option>
+                    <el-option label="下拉多选（API）" value="dicts"></el-option>
                     <el-option label="搜索条件" value="search_bar"></el-option>
                   </el-select>
                   <!--静态选项-->

@@ -69,6 +69,7 @@
                   <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
+              <br>
               <el-form-item v-if="formConfig.form.action.find(_ => _.name === '下载')" label="下载 URL">
                 <el-popover
                   placement="right"
@@ -78,6 +79,18 @@
                   <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
                 </el-popover>
               </el-form-item>
+              <template v-if="formConfig.form.action.find(_ => _.name === '触发')">
+                <br>
+                <el-form-item label="触发方式">
+                  <el-radio label="auto" v-model="formConfig.form.action.find(_ => _.name === '触发').type">自动</el-radio>
+                  <el-radio label="manual" v-model="formConfig.form.action.find(_ => _.name === '触发').type">手动</el-radio>
+                </el-form-item>
+                <el-form-item>
+                  <el-select v-model="formConfig.form.action.find(_ => _.name === '触发').id">
+                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.id"></el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
             </el-form>
           </el-row>
           <el-row class="form-block">
@@ -179,16 +192,18 @@ export default {
       id: '',
       // 操作按钮
       actions: [
-        { 'name': '确认', 'pass': 0, 'type': 'submit' },
-        { 'name': '撤单', 'pass': -100, 'type': 'revoke' },
-        { 'name': '驳回', 'pass': 1, 'type': 'back' },
-        { 'name': '下载', 'url': '', 'type': 'target' }
+        { 'name': '下载', 'url': '', 'type': 'target' },
+        { 'name': '触发', 'id': '', 'desc': '', type: '' }
       ],
       checkedActions: [],
+      actionDefList: [],
       formConfig: null,
       editBody: null,
       showConditionVisible: false
     }
+  },
+  created () {
+    this.getActionDef()
   },
   activated () {
     /**
@@ -210,6 +225,16 @@ export default {
     }
   },
   methods: {
+    getActionDef () {
+      let postData = {
+        action: 'activiti/action/define/list',
+        method: 'GET',
+        data: {}
+      }
+      this.http.post('', this.parseData(postData)).then(res => {
+        this.actionDefList = res.data.data.list
+      })
+    },
     // 选择功能按钮 action
     actionChange (arr) {
       this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
@@ -226,6 +251,7 @@ export default {
         method: 'POST',
         data: this.formConfig
       }
+      console.log(this.formConfig)
       this.http.post('', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
           this.$router.go(-1) // 回退
