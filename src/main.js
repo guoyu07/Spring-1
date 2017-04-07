@@ -123,7 +123,7 @@ Vue.prototype.setNewDataType = (original, goalData) => {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
-  } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
+  } else if (original.value.type === 'dict' || original.value.type === 'dicts' || original.value.type === 'search_bar') {
     goalData[original.id] = null
   } else {
     goalData[original.id] = ''
@@ -150,8 +150,8 @@ Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
     .map(t => findTaskMsgR(arrMsg, [t]).form.data)
     .map(tsk => {
       if (Array.isArray(tsk)) {
-        !rs.data.length && tsk.forEach(t => rs.data.push({}))
-        tsk.map((host, index) => Object.assign(rs.data[index], host))
+        !rs.body.length && tsk.forEach(t => rs.body.push({}))
+        tsk.map((host, index) => Object.assign(rs.body[index], host))
       }
     })
   return rs
@@ -178,7 +178,7 @@ Vue.prototype.getTask = (arrMsg, taskKeyArr) => {
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
   let data = {}
   for (const key in obj) {
-    if (obj[key]) { // 首先要有值
+    if (obj[key].value) { // 首先要有值
       if (Array.isArray(obj[key])) { // 这是数组的处理方法
         if (obj[key].length === 2) { // 两个空都填了才加进来
           data[key + '.' + obj[key][0]] = obj[key][1]

@@ -1,13 +1,5 @@
 <template>
   <div>
-    <!-- <div class="form-block" v-show="!isAdvanceSearch">
-      <el-form-item label="关键词">
-        <el-input
-          v-model="searchKeys.searchKey"
-          size="small"></el-input>
-      </el-form-item>
-    </div> -->
-    <!-- v-show="isAdvanceSearch" -->
     <div class="form-block">
       <el-form-item v-for="formItem in searchKeyList" :label="formItem.name" :prop="formItem.id">
         <el-input
@@ -31,15 +23,6 @@
             :label="option"
             :value="option"></el-option>
         </el-select>
-
-        <!-- <el-select
-          v-else-if="formItem.value.type === 'arr'"
-          v-model="searchKeys[formItem.id]"
-          multiple
-          filterable=""
-          allow-create
-          placeholder="请创建">
-        </el-select> -->
 
         <div class="form-unit"
           v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'">

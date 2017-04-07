@@ -15,75 +15,6 @@
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
                 <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
-                <!-- <el-form-item
-                  label="使用环境"
-                  :prop="'data.' + index + '.environment'"
-                  :rules="{
-                    required: true, message: '使用环境不能为空', trigger: 'change'
-                  }">
-                  <el-select filterable v-model="item.environment" placeholder="请选择使用环境">
-                    <el-option v-for="envir in environmentList"
-                      :label="envir.label"
-                      :value="envir.label"></el-option>
-                  </el-select>
-                </el-form-item>
-
-                <el-form-item
-                  label="OS"
-                  :prop="'data.' + index + '.operateSystem'"
-                  :rules="{
-                    required: true, message: 'OS不能为空', trigger: 'change'
-                  }">
-                  <el-select filterable v-model="item.operateSystem" placeholder="请选择OS">
-                    <el-option v-for="system in systemsList"
-                      :label="system.label"
-                      :value="system.label"></el-option>
-                  </el-select>
-                </el-form-item>
-
-                <el-form-item
-                  label="主机"
-                  :prop="'data.' + index + '.hostType'"
-                  :rules="{
-                    required: true, message: '主机类型不能为空', trigger: 'change'
-                  }">
-                  <el-select filterable v-model="item.hostType" placeholder="请选择主机类型">
-                    <el-option v-for="host in hostTypeList"
-                      :label="host.label"
-                      :value="host.label"></el-option>
-                  </el-select>
-                </el-form-item>
-
-                <el-form-item
-                  label="数量"
-                  :prop="'data.' + index + '.quantity'"
-                  :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-                  <el-input v-model="item.quantity"></el-input>
-                </el-form-item> -->
-                <!-- <el-form-item
-                  label="CPU核数"
-                  :prop="'data.' + index + '.cpu'"
-                  :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-                  <el-input type="number" v-model="item.cpu" placeholder="请输入您需要的cpu核数"></el-input>
-                </el-form-item>
-
-                <el-form-item
-                  label="内存(G)"
-                  :prop="'data.' + index + '.internalStorage'"
-                  :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-                  <el-input type="number" v-model="item.internalStorage" placeholder="请输入您需要的内存"></el-input>
-                </el-form-item>
-
-                <el-form-item
-                  label="硬盘(G)"
-                  :prop="'data.' + index + '.hardDisk'"
-                  :rules="{ required: true, validator: checkNumber, trigger: 'blur' }">
-                  <el-input type="number" v-model="item.hardDisk" placeholder="请输入您需要的硬盘"></el-input>
-                </el-form-item> -->
-
-                <!-- <el-form-item label="资源分数">
-                  {{ item.score = item.cpu * 1 + item.internalStorage * 1 + item.hardDisk / 20 }}
-                </el-form-item> -->
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -186,12 +117,8 @@
           this.form.body.body_list[0].attr_list.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.applyForm.data[0], this)
-              // this.$watch('applyForm.data.0', newVal => {
-              //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
-              // }, {deep: true})
             })
           })
-          // this.loading = false
         })
       },
       renderInstanceDetail () {
@@ -300,15 +227,6 @@
                     }
                   }
                 } else {
-                  // postData = {
-                  //   action: 'runtime/process/instances',
-                  //   method: 'POST',
-                  //   data: {
-                  //     pkey: 'host_apply',
-                  //     form: this.applyForm,
-                  //     pass: 0
-                  //   }
-                  // }
                   postData = {
                     action: 'runtime/process/instances',
                     method: 'POST',

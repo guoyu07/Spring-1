@@ -104,7 +104,7 @@
           if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
-            type = 'int'
+            type = 'number'
           } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
             type = 'date'
           } else if (formItem.value.type === 'FK' || formItem.value.type === 'dict') {

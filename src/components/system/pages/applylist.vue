@@ -9,32 +9,22 @@
             :data="applyList"
             border
             style="width: 100%; min-width: 460px">
-            <!-- <el-table-column type="expand">
-              <template scope="props">
-                <div class="item-block" v-for="item in props.row.data">
-                  <p>主机: {{ item.hostType }}</p>
-                  <p>环境: {{ item.environment }}</p>
-                  <p>数量: {{ item.quantity }}</p>
-                  <p>OS: {{ item.operateSystem }}</p>
-                  <p>CPU: {{ item.cpu }}</p>
-                  <p>内存(G): {{ item.internalStorage }}</p>
-                  <p>硬盘(G): {{ item.hardDisk }}</p>
-                  <p>资源分数: {{ item.score }}</p>
-                </div>
+            <el-table-column
+              v-for="formHeader in form.header"
+              :label="formHeader.name">
+              <template scope="scope">
+                <span v-if="formHeader.value.type === 'FK' || formHeader.value.type === 'dict'">
+                  <span v-if="typeof Object.assign({}, scope.row.header)[formHeader.id] === 'object'">
+                    {{ Object.assign({}, Object.assign({}, scope.row.header)[formHeader.id])['name'] }}
+                  </span>
+                  <span v-else>{{ Object.assign({}, scope.row.header)[formHeader.id] }}</span>
+                </span>
+                <span v-else-if="formHeader.value.type === 'FKs' || formHeader.value.type === 'dicts'">
+                  <span v-for="span in Object.assign({}, scope.row.header)[formHeader.id]">{{span.name}}</span>
+                </span>
+                <span v-else>{{ Object.assign({}, scope.row.header)[formHeader.id] }}</span>
               </template>
-            </el-table-column> -->
-            <el-table-column
-              prop="applicationName"
-              label="应用名"></el-table-column>
-            <el-table-column
-              prop="applyType"
-              label="申请类型"></el-table-column>
-            <el-table-column
-              prop="business"
-              label="项目组"></el-table-column>
-            <el-table-column
-              prop="name"
-              label="当前任务"></el-table-column>
+            </el-table-column>
             <el-table-column
               inline-template
               :context="_self"
@@ -73,15 +63,45 @@
         currentPage: 1,
         pageSize: 10,
         totalFiltered: 0,
-        dialogReject: false
+        dialogReject: false,
+        form: {}
       }
     },
 
     created () {
       this.getApplyList()
+      this.renderTaskForm()
     },
 
     methods: {
+      renderTaskForm () { // 渲染表单数据
+        const renderFromData = {
+          action: 'activiti/task/form',
+          method: 'GET',
+          data: {
+            pkey: 'host_apply',
+            tkey: 'start'
+          }
+        }
+        // this.loading = true
+        this.http.post('', this.parseData(renderFromData)).then((res) => {
+          this.form = res.data.data.form
+          this.form.header.map(group => {
+            group.value.map(item => {
+              this.setDataType(item, this.applyFormHead, this)
+            })
+          })
+          this.form.body.body_list[0].attr_list.map(group => {
+            group.value.map(item => {
+              this.setDataType(item, this.applyForm.data[0], this)
+              // this.$watch('applyForm.data.0', newVal => {
+              //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
+              // }, {deep: true})
+            })
+          })
+          // this.loading = false
+        })
+      },
       getApplyList () {
         let postData = {
           action: 'runtime/tasks/self',

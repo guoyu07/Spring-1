@@ -18,7 +18,7 @@
         <template slot="title">仓库管理</template>
         <el-menu-item index="/storemanage/instock" @click="$router.go(0)"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
         <el-menu-item index="/storemanage/outstock"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
-        <el-menu-item index="/storemanage/outstock/edit"><i class="el-icon-fa-edit"></i>信息变更</el-menu-item>
+        <!-- <el-menu-item index="/storemanage/outstock/edit"><i class="el-icon-fa-edit"></i>信息变更</el-menu-item> -->
       </el-submenu>
 
       <el-submenu index="/equipment">
@@ -30,9 +30,9 @@
       <el-submenu index="/system">
         <template slot="title">系统上下线</template>
         <el-menu-item index="/system/applylist"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
+      </el-submenu>
         <!-- <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item> -->
         <!-- <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item> -->
-      </el-submenu>
 
       <!-- <el-submenu index="/publish">
         <template slot="title">应用发布更新</template>
@@ -58,6 +58,7 @@
           <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>表单配置</el-menu-item>
         </el-menu-item-group>
       </el-submenu>
+      <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
 
       <!-- <el-submenu index="/auth">
         <template slot="title">权限管理</template>
@@ -71,7 +72,6 @@
         <el-menu-item index="/process-admin/steps"><i class="el-icon-fa-circle-o-notch"></i>环节管理</el-menu-item>
       </el-submenu>
 
-      <el-menu-item index="/orders"><i class="el-icon-date"></i>工单管理</el-menu-item>
       <el-menu-item index="/hours"><i class="el-icon-time"></i>标准工时统计（暂无）</el-menu-item>
       <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>流程自定义</el-menu-item>
       <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>表单自定义</el-menu-item>
