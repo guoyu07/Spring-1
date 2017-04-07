@@ -63,7 +63,7 @@
         </router-link>
       </el-menu-item>
       <el-menu-item index="3" class="fr">
-        <a @click="logout">{{this.userinfo.userName}} 退出</a>
+        <a @click="logout">退出</a>
       </el-menu-item>
       <el-menu-item index="2" class="fr disabled"><!--<i class="el-icon-fa-user-circle"></i>--><b>
         {{userName}}</b></el-menu-item>
