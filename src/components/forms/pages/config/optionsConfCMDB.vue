@@ -69,7 +69,7 @@
       <el-collapse v-if="dialogProps.value.source.data.params.length">
         <el-collapse-item v-for="param in dialogProps.value.source.data.params">
           <template slot="title">
-            <span><{{ param.value.type }}>{{ param.id }}</span>
+            <span>{{ param.value.type }}>{{ param.id }}</span>
             <el-button size="mini" icon="delete" type="danger" class="del-btn"
               @click.stop="paramsDelBtn(dialogProps.value.source.data.params, param)">
             </el-button>
@@ -227,12 +227,6 @@
       isSearchBar () {
         return this.dialogProps.value.type === 'search_bar'
       }
-    },
-    created () {
-      console.log(this.dialogProps)
-      // console.log(this.dialogProps.value.type)
-      // console.log(this.dialogProps.value.count)
-      // console.log(this.dialogProps.value.show)
     },
     methods: {
       selectParams (cmd) {

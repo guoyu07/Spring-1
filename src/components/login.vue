@@ -48,7 +48,8 @@
     <transition name="zoomInDown">
       <div class="login-warp">
         <el-row>
-          <h2><b>EASYOPS</b>登录</h2>
+          <h2><b>EasyOps</b><br>
+          IT 服务中心</h2>
         </el-row>
         <el-row>
           <el-col :span="24">
@@ -62,7 +63,7 @@
         </el-row>
         <el-row>
           <el-col :span="24">
-            <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 陆</el-button>
+            <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 录</el-button>
           </el-col>
         </el-row>
       </div>

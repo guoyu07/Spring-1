@@ -28,7 +28,7 @@
     <el-row>
       <el-col :span="24">
         <section class="copy">
-          <a target="_blank" href="https://www.easyops.cn/"><b>EasyOps</b></a> &copy; ICP xxxx  &#9990; <a href="tel:xxx">0755-xxxxxxxx</a>
+          <a target="_blank" href="https://www.easyops.cn/">&copy; 2017 EasyOps.</a>
         </section>
       </el-col>
     </el-row>

@@ -104,12 +104,14 @@
 </template>
 
 <script>
+  import getRoleList from './../../../mixins/getRoleList'
+  import getUserList from './../../../mixins/getUserList'
+
   export default {
+    mixins: [getRoleList, getUserList],
+  
     data () {
       return {
-        roleList: [],
-        userList: [],
-        roleLoading: false,
         usersToAdd: [],
         usersToDelete: [],
         isCheckable: false,
@@ -146,35 +148,6 @@
     },
 
     methods: {
-      getRoleList () {
-        let postData = {
-          action: 'permission/role',
-          method: 'GET',
-          data: {}
-        }
-        this.roleLoading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.roleList = res.data.data
-            this.roleLoading = false
-          }
-        })
-      },
-
-      getUserList () {
-        let postData = {
-          action: 'permission/users',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.userList = res.data.data
-            console.log(this.userList)
-          }
-        })
-      },
-
       onAddRole ({ name, key }) {
         if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
           this.$message.error('角色 Key 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')

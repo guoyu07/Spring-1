@@ -27,114 +27,97 @@
       return {
         step: 0,
         proConfig: {
-          equipment_on: [
-            {
-              value: 1,
-              list: [{
-                tkey: 'start',
-                tname: '选取设备'
-              }]
-            },
-            {
-              value: 2,
-              list: [{
-                tkey: 'deviceInfo',
-                tname: '填写上架信息'
-              }, {
-                tkey: 'ipinfo',
-                tname: '填写IP信息'
-              }]
-            },
-            {
-              value: 3,
-              list: [{
-                tkey: 'approve',
-                tname: '运维主管审批'
-              }]
-            },
-            {
-              value: 4,
-              list: [{
-                tkey: 'netLine',
-                tname: '准备网线连接'
-              }, {
-                tkey: 'installDB',
-                tname: '安装数据库'
-              }, {
-                tkey: 'deviceMove',
-                tname: '设备搬迁/挂牌及配置'
-              }]
-            }
-          ],
-          import_device: [
-            {
-              value: 1,
-              list: [{
-                tkey: 'start',
-                tname: '填写入库单'
-              }]
-            },
-            {
-              value: 2,
-              list: [{
-                tkey: 'approve',
-                tname: '审批'
-              }]
-            }
-          ],
-          alter_device: [
-            {
-              value: 1,
-              list: [{
-                tkey: 'start',
-                tname: '填写变更申请单'
-              }]
-            },
-            {
-              value: 2,
-              list: [{
-                tkey: 'approve',
-                tname: '审批'
-              }]
-            }
-          ],
-          host_apply: [
-            {
-              value: 1,
-              list: [{
-                tkey: 'start',
-                tname: '填写入库单'
-              }]
-            },
-            {
-              value: 2,
-              list: [{
-                tkey: 'restart',
-                tname: '准备服务器资源'
-              }]
-            },
-            {
-              value: 3,
-              list: [{
-                tkey: 'approve',
-                tname: '资源审批'
-              }]
-            },
-            {
-              value: 4,
-              list: [{
-                tkey: 'assignIP',
-                tname: '分配虚拟机IP'
-              }]
-            },
-            {
-              value: 5,
-              list: [{
-                tkey: 'createVM',
-                tname: '创建虚拟机'
-              }]
-            }
-          ]
+          equipment_on: [{
+            value: 1,
+            list: [{
+              tkey: 'start',
+              tname: '选取设备'
+            }]
+          }, {
+            value: 2,
+            list: [{
+              tkey: 'deviceInfo',
+              tname: '填写上架信息'
+            }, {
+              tkey: 'ipinfo',
+              tname: '填写IP信息'
+            }]
+          }, {
+            value: 3,
+            list: [{
+              tkey: 'approve',
+              tname: '运维主管审批'
+            }]
+          }, {
+            value: 4,
+            list: [{
+              tkey: 'netLine',
+              tname: '准备网线连接'
+            }, {
+              tkey: 'installDB',
+              tname: '安装数据库'
+            }, {
+              tkey: 'deviceMove',
+              tname: '设备搬迁/挂牌及配置'
+            }]
+          }],
+          import_device: [{
+            value: 1,
+            list: [{
+              tkey: 'start',
+              tname: '填写入库单'
+            }]
+          }, {
+            value: 2,
+            list: [{
+              tkey: 'approve',
+              tname: '审批'
+            }]
+          }],
+          alter_device: [{
+            value: 1,
+            list: [{
+              tkey: 'start',
+              tname: '填写变更申请单'
+            }]
+          }, {
+            value: 2,
+            list: [{
+              tkey: 'approve',
+              tname: '审批'
+            }]
+          }],
+          host_apply: [{
+            value: 1,
+            list: [{
+              tkey: 'start',
+              tname: '填写入库单'
+            }]
+          }, {
+            value: 2,
+            list: [{
+              tkey: 'restart',
+              tname: '准备服务器资源'
+            }]
+          }, {
+            value: 3,
+            list: [{
+              tkey: 'approve',
+              tname: '资源审批'
+            }]
+          }, {
+            value: 4,
+            list: [{
+              tkey: 'assignIP',
+              tname: '分配虚拟机IP'
+            }]
+          }, {
+            value: 5,
+            list: [{
+              tkey: 'createVM',
+              tname: '创建虚拟机'
+            }]
+          }]
         }
       }
     },

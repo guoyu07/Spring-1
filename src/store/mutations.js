@@ -1,13 +1,6 @@
 import * as types from './mutation-types'
 
 export default {
-  [types.SHOW_LOADING] (state) {
-    state.ajax_loading = true
-  },
-
-  [types.HIDE_LOADING] (state) {
-    state.ajax_loading = false
-  },
 
   [types.UPDATE_USERINFO] (state, userDb) {
     state.userinfo = userDb.userinfo || {}
@@ -17,22 +10,5 @@ export default {
   [types.REMOVE_USERINFO] (state) {
     // store.remove('userinfo')
     state.userinfo = {}
-  },
-
-  [types.BEGIN_REQUEST] (state) {
-    state.isRequesting = true
-  },
-  [types.CEASE_REQUEST] (state) {
-    state.isRequesting = false
-  },
-  // 增
-  [types.ADD_CONF] (state, formConfig) {
-    state.formConfigList.push(formConfig)
-  },
-  // 删
-  [types.DEL_CONF] (state, id) {
-    const index = state.formConfigList.findIndex(item => item.id === id)
-    state.formConfigList.splice(index, 1)
   }
-  // 改 -> 删掉旧的，增加新的
 }

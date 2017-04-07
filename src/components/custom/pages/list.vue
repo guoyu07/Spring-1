@@ -24,7 +24,7 @@
             <el-button type="info" :plain="true" @click="onNewBpmn" icon="plus">新建流程 BPMN</el-button>
           </div>
           <el-table
-            :data="processList"
+            :data="permittedProcessList"
             border>
             <el-table-column
               prop="pname"
@@ -46,34 +46,19 @@
 </template>
 
 <script>
+  import getPermittedProcessList from './../../../mixins/getPermittedProcessList'
+
   export default {
-    data () {
-      return {
-        processList: []
-      }
-    },
+    mixins: [getPermittedProcessList],
 
     created () {
-      this.getProcessList()
+      this.getPermittedProcessList()
     },
 
     methods: {
       onNewBpmn () {
         window.localStorage.removeItem('bpmn')
         this.$router.replace('/custom/new')
-      },
-
-      getProcessList () {
-        let postData = {
-          action: 'permission/process',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.processList = res.data.data
-          }
-        })
       }
     }
   }

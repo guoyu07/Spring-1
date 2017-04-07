@@ -41,41 +41,25 @@
 
 <script>
 // import { DEL_CONF } from '../../../store/mutation-types'
+import getProcessList from './../../../mixins/getProcessList'
 
 export default {
+  mixins: [getProcessList],
+
   data () {
     return {
       selectedProcess: '',
-      processList: [],
       formList: [],
-      formListLoading: false,
-      loading: false
+      formListLoading: false
     }
   },
+
   created () {
     this.getProcessList()
-  },
-  activated () {
     this.selectedProcess && this.getFormList(this.selectedProcess)
   },
-  methods: {
-    // 获取所有流程，
-    // 供选择框用
-    getProcessList () {
-      this.loading = true
-      const postData = {
-        action: 'activiti/process/definition',
-        method: 'GET',
-        data: {}
-      }
-      this.http.post('', this.parseData(postData)).then((res) => {
-        if (res.status === 200) {
-          this.processList = res.data.data.list
-          this.loading = false
-        }
-      })
-    },
 
+  methods: {
     // 根据所选流程 pkey 获取流程下表单
     getFormList (pkey) {
       const postData = {
