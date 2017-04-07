@@ -76,6 +76,12 @@
         <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item>
       </el-menu-item-group>
 
+      <el-menu-item-group title="防火墙">
+        <el-menu-item index="/firewall/apply"><i class="el-icon-fa-fire"></i>防火墙开通申请</el-menu-item>
+        <el-menu-item index="/firewall/approve"><i class="el-icon-fa-gavel"></i>开通审批</el-menu-item>
+        <el-menu-item index="/firewall/result"><i class="el-icon-fa-list-alt"></i>审批结果</el-menu-item>
+      </el-menu-item-group>
+
       <el-menu-item-group title="应用发布更新">
         <el-menu-item index="/publish/application"><i class="el-icon-share"></i>应用发布</el-menu-item>
         <el-menu-item index="/publish/others"><i class="el-icon-more"></i>其他发布</el-menu-item>

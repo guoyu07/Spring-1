@@ -18,7 +18,11 @@ const routes = [{
 }, {
   path: '/',
   component: require('./components/Home'),
+  redirect: { path: '/home' },
   children: [{
+    path: '/home',
+    component: require('./components/layout/Dashboard')
+  }, {
     path: '/storemanage',
     component: require('./components/storemanage/index'),
     children: [{
@@ -55,6 +59,19 @@ const routes = [{
     }, {
       path: '/equipment/:objectid/:step/:id/:name', // 具体步骤操作
       component: require('./components/equipment/pages/step.vue')
+    }]
+  }, {
+    path: '/firewall',
+    component: require('./components/firewall/index'),
+    children: [{
+      path: '/firewall/apply',
+      component: require('./components/firewall/pages/apply.vue')
+    }, {
+      path: '/firewall/approve',
+      component: require('./components/firewall/pages/approve.vue')
+    }, {
+      path: '/firewall/result',
+      component: require('./components/firewall/pages/result.vue')
     }]
   }, {
     path: '/system',
