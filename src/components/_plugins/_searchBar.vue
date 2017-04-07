@@ -70,13 +70,14 @@
   export default {
     props: {
       index: { type: Number },
-      hosts: { type: Array },
-      attrList: { type: Array }
+      hosts: { type: Object },
+      attrList: { type: Array },
+      limit: { type: Number }
     },
 
     data () {
       return {
-        hostList: this.hosts, // ①创建 props 属性 hosts 的副本--hostList
+        hostList: this.hosts[this.attrList[0].value[0].id], // ①创建 props 属性 hosts 的副本--hostList
         mainInfo: {},
         searchKeys: {},
         searchKeyList: [],
@@ -157,9 +158,10 @@
       },
       onAddtoOff () {
         for (const selection of this.selectedDevices) {
+          console.log(this.hostList)
           if (!this.hostList.includes(selection)) {
-            if (this.selectedDevices.length > 5) {
-              this.$message.warning('下架设备最多 5 个！')
+            if (this.selectedDevices.length > this.limit) {
+              this.$message.warning(`设备选择最多${this.limit}个！`)
             } else {
               this.hostList = [...this.hostList, selection]
             }

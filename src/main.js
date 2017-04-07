@@ -106,6 +106,16 @@ Vue.prototype.getPathResult = (result, path) => {
   return _result
 }
 
+Vue.prototype.getLimitQuantity = (data, index) => {
+  if (data[0].value[0].value.count) {
+    if (data[0].value[0].value.count.type === 'message_body') {
+      return this.getPathResult(this.applyData.body[index], data[0].value[0].value.count.key_path)
+    } else {
+      return 5 // 默认限制选5台设备
+    }
+  }
+}
+
 Vue.prototype.setDataType = (original, goalData, _this) => {
   if (original.value.type === 'arr' || original.value.type === 'FKs') {
     _this.$set(goalData, original.id, [])
@@ -119,11 +129,11 @@ Vue.prototype.setDataType = (original, goalData, _this) => {
 }
 
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'FKs') {
+  if (original.value.type === 'arr' || original.value.type === 'FKs' || original.value.type === 'search_bar') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
-  } else if (original.value.type === 'dict' || original.value.type === 'dicts' || original.value.type === 'search_bar') {
+  } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
     goalData[original.id] = null
   } else {
     goalData[original.id] = ''

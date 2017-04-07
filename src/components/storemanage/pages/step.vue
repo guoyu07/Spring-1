@@ -117,7 +117,7 @@ export default {
       this.index = tab.index
       console.log(this.index)
     },
-    renderFormData () { // 渲染表单数据
+    renderFormData () { // 渲染所有表单数据
       const renderFromData = {
         action: 'activiti/task/form/group',
         method: 'GET',

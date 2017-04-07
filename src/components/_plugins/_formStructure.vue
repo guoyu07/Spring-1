@@ -5,7 +5,7 @@
       <!-- v-if="formItem.value.type !== 'search_bar'" -->
       <el-form-item
         v-for="formItem in formBlock.value"
-        :prop="'data.' + index + '.' + formItem.id"
+        :prop="'body.' + index + '.' + formItem.id"
         :label="formItem.name"
         :rules="rules(formItem)">
 

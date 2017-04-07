@@ -13,14 +13,6 @@
                 <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
               </el-radio-group>
             </el-form-item>
-
-            <!-- <el-form-item label="模糊搜索">
-              <el-switch
-                v-model="isAdvanceSearch"
-                on-text="开启"
-                on-color="#42d885"
-                off-text="关闭"></el-switch>
-            </el-form-item> -->
           </el-form>
 
           <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">

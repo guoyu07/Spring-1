@@ -6,28 +6,50 @@
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
             <header-form-structure-display :item="applyData.header" :form-data="form.header"></header-form-structure-display>
+
             <el-tabs type="border-card" @tab-click="handleClick">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="data.environment">
                 <!-- 信息显示 -->
-                <form-structure-display :item="data" :form-data="form && form.body.body_list[0].attr_list" :index="index"></form-structure-display>
-                <!-- 表单填写 -->
-                <div v-if="data.hostType === '虚拟机'">
-                  <!-- 表单数据不为空时才显示表单，否则出错 -->
-                  <div v-if="taskForm.body && taskForm.body.body_list && taskForm.body.body_list[0] && taskForm.body.body_list[0].attr_list">
-                    <form-structure :form-data="taskForm.body && taskForm.body.body_list[0].attr_list" :item="assignForm.data[index]" :index="index"></form-structure>
+                <div v-for="task in form">
+                  {{task.tname}}
+                  <div v-if="task.form.form.body.body_list.length > 1">
+                    <div v-for="taskform in task.form.form.body.body_list">
+                      <template v-if="getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value">
+                        <form-structure-display :item="data" :form-data="taskform.attr_list" :index="index"></form-structure-display>
+                      </template>
+                    </div>
                   </div>
-                  <pre>
-                    {{ data }}
-                  </pre>
+                  <div v-else>
+                    <!-- 这里是判断 body_list 是不是空数组 -->
+                    <div v-if="task.form.form.body.body_list[0]">
+                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
+                    </div>
+                  </div>
                 </div>
-                <!-- 设备选择 -->
-                <div v-if="data.hostType === '物理机'">
-                  <search-bar v-if="taskForm.body && routerInfo.step === 'restart'" :index="index" :hosts="assignForm.data[index] && assignForm.data[index].machines" :attr-list="taskForm.body && taskForm.body.body_list[1].attr_list" @on-hosts-change="onHostsChange"></search-bar>
-                  <pre>
-                    {{ data }}
-                  </pre>
-                  <div v-if="routerInfo.step !== 'restart'">
-                    <!-- 显示的表头在 restart 里的搜索字段，层级好深 -->
+
+                <!-- TODO: 这里只是taskForm的body还差header -->
+                <div v-if="taskForm.body">
+                  <div v-for="taskFormData in taskForm.body.body_list">
+                    <div v-if="taskFormData.show && taskFormData.show.type === 'message_body'"> <!-- type来源 为 message_body 意味着就是(data, index) in applyData.body 的 data -->
+                      <div v-if="getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value">
+                        <!-- 表单填写 -->
+                        <form-structure
+                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
+                          :form-data="taskFormData.attr_list"
+                          :item="assignForm.body[index]"
+                          :index="index">
+                        </form-structure>
+                        <!-- 设备选择 -->
+                        <search-bar
+                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
+                          :index="index"
+                          :hosts="assignForm.body[index]"
+                          :attr-list="taskFormData.attr_list"
+                          :limit="getLimitQuantity(taskFormData.attr_list, index)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </el-tab-pane>
@@ -62,7 +84,8 @@
         bodylistIndex: [], // 可删
         showTaskForm: [],
         assignForm: {
-          data: []
+          header: {},
+          body: []
         },
         index: 0,
         selectedDevices: [],
@@ -79,7 +102,7 @@
     },
     methods: {
       renderTaskForm () { // 渲染表单数据
-        console.log(this.routerInfo.step)
+        // console.log(this.routerInfo.step)
         const renderFromData = {
           action: 'activiti/task/form/group',
           method: 'GET',
@@ -96,22 +119,13 @@
               if (body.show.type === 'message_body') {
                 this.applyData.body.forEach(item => {
                   if (item[keyPath[0]] === body.show.value) {
-                    // 以下区分物理机和虚拟机的显示，隐藏，及对应的数据
-                    if (body.show.value === '物理机') {
-                      // this.showTaskForm.push(false)
-                      this.assignForm.data.push({
-                        machines: []
+                    let newData = {}
+                    body.attr_list.map(group => {
+                      group.value.map(item => {
+                        this.setNewDataType(item, newData)
                       })
-                    } else {
-                      // this.showTaskForm.push(true)
-                      let newData = {}
-                      body.attr_list.map(group => {
-                        group.value.map(item => {
-                          this.setNewDataType(item, newData)
-                        })
-                      })
-                      this.assignForm.data.push(newData)
-                    }
+                    })
+                    this.assignForm.body.push(newData)
                   }
                 })
               }
@@ -141,13 +155,13 @@
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            pkey: 'host_apply',
-            tkey: 'start' // start
+            pkey: 'host_apply'
+            // tkey: 'start' // start
           }
         }
         // this.loading = true
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          this.form = res.data.data.form
+          this.form = res.data.data.list
         })
       },
       handleClick (tab, event) {
@@ -155,7 +169,9 @@
         console.log(this.index)
       },
       onHostsChange (val, index) {
-        this.assignForm.data[index].machines = val
+        for (const id in this.assignForm.body[index]) {
+          this.assignForm.body[index][id] = val
+        }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
       },
       onSubmit (assignForm) {
@@ -166,14 +182,18 @@
           type: 'info'
         }).then(() => {
           const ref = this.$refs[assignForm].fields.length !== 0
-          if (ref) {
+          console.log(ref)
+          if (ref) { // 有表单的情况下，表单的自验证
             this.$refs[assignForm].validate((valid) => {
               if (valid) {
-                if (this.assignForm.data) {
-                  for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
-                    if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
-                      this.$message.warning('未完成！')
-                      return false
+                console.log(this.assignForm.body)
+                if (this.assignForm.body) {
+                  for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+                    for (const item in data) {
+                      if (Array.isArray(data[item]) && data[item].length === 0) {
+                        this.$message.warning('未完成！')
+                        return false
+                      }
                     }
                   }
                 }
@@ -185,8 +205,12 @@
                 return false
               }
             })
-          } else {
-            if (!this.assignForm.data.some(data => data.machines.length === 0)) {
+          } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+            if (!this.assignForm.body.some(data => {
+              for (const item in data) {
+                return Array.isArray(data[item]) && data[item].length === 0
+              }
+            })) {
               this.postMethod(this.routerInfo.id, this.assignForm)
               // console.dir(this.assignForm)
             } else {
