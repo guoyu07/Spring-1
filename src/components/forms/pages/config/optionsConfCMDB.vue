@@ -201,12 +201,6 @@
         return this.dialogProps.value.type === 'search_bar'
       }
     },
-    created () {
-      console.log(this.dialogProps)
-      // console.log(this.dialogProps.value.type)
-      // console.log(this.dialogProps.value.count)
-      // console.log(this.dialogProps.value.show)
-    },
     methods: {
       selectParams (cmd) {
         let param = null

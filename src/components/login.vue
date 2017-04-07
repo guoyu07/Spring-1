@@ -48,7 +48,8 @@
     <transition name="zoomInDown">
       <div class="login-warp">
         <el-row>
-          <h2><b>春秋航空</b>登录</h2>
+          <h2><b>EasyOps</b><br>
+          IT 服务中心</h2>
         </el-row>
         <el-row>
           <el-col :span="24">

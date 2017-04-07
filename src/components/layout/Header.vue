@@ -59,7 +59,7 @@
     <el-menu default-active="1" mode="horizontal">
       <el-menu-item index="1" class="logo">
         <router-link to="/">
-          <b>春秋航空</b>运维管理系统
+          <b>EasyOps</b> 运维管理系统
         </router-link>
       </el-menu-item>
       <el-menu-item index="3" class="fr">

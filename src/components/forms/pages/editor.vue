@@ -14,6 +14,15 @@
     }
   }
 
+  .show-flag {
+    position: absolute;
+    top: 2px;
+    left: 10px;
+    background-color: #fff;
+    height: 32px;
+    line-height: 32px;
+  }
+
   .form-block {
     border-bottom: 2px dotted @borderColor;
     margin: 10px 0 20px;
@@ -69,26 +78,30 @@
                   <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
-              <br>
-              <el-form-item v-if="formConfig.form.action.find(_ => _.name === '下载')" label="下载 URL">
-                <el-popover
-                  placement="right"
-                  width="200"
-                  trigger="focus">
-                  <code class="information-popover"><i class="el-icon-information"></i> /download/XX?tid=XX</code>
-                  <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
-                </el-popover>
-              </el-form-item>
-              <template v-if="formConfig.form.action.find(_ => _.name === '触发')">
+              <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
+                <br>
+                <el-form-item label="下载 URL">
+                  <el-popover
+                    placement="right"
+                    width="200"
+                    trigger="focus">
+                    <code class="information-popover"><i class="el-icon-information"></i> /download/XX?tid=XX</code>
+                    <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
+                  </el-popover>
+                </el-form-item>
+              </template>
+              
+              <template v-if="formConfig.form.action.find(_ => _.type !== 'target')">
                 <br>
                 <el-form-item label="触发方式">
-                  <el-radio label="auto" v-model="formConfig.form.action.find(_ => _.name === '触发').type">自动</el-radio>
-                  <el-radio label="manual" v-model="formConfig.form.action.find(_ => _.name === '触发').type">手动</el-radio>
+                  <el-select v-model="selectedTrigger" @change="showFlag = false">
+                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac"></el-option>
+                  </el-select>
+                  <span v-if="showFlag" class="show-flag">{{selectedTrigger.name}}</span>
                 </el-form-item>
                 <el-form-item>
-                  <el-select v-model="formConfig.form.action.find(_ => _.name === '触发').id">
-                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.id"></el-option>
-                  </el-select>
+                  <el-radio label="auto" v-model="formConfig.form.action.find(_ => _.type !== 'target').type">自动</el-radio>
+                  <el-radio label="manual" v-model="formConfig.form.action.find(_ => _.type !== 'target').type">手动</el-radio>
                 </el-form-item>
               </template>
             </el-form>
@@ -199,7 +212,10 @@ export default {
       actionDefList: [],
       formConfig: null,
       editBody: null,
-      showConditionVisible: false
+      showConditionVisible: false,
+      selectedTrigger: {},
+      selectedTriggerType: '',
+      showFlag: true
     }
   },
   created () {
@@ -223,6 +239,9 @@ export default {
     } else {
       this.$router.go(-1)
     }
+    console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
+    if (this.formConfig.form.action.find(_ => _.type !== 'target') !== {}) this.selectedTrigger = this.formConfig.form.action.find(_ => _.type !== 'target')
+    console.log(this.selectedTrigger)
   },
   methods: {
     getActionDef () {
@@ -251,6 +270,12 @@ export default {
         method: 'POST',
         data: this.formConfig
       }
+
+      this.formConfig.form.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
+      this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
+      this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
+      console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
+
       console.log(this.formConfig)
       this.http.post('', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
