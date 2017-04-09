@@ -26,13 +26,11 @@
     </el-row>
   </div>
 </template>
-
 <script>
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   import needCmdbData from '../../_plugins/_needCMDBData'
   // import { Loading } from 'element-ui'
-
   export default {
     data () {
       return {
@@ -435,7 +433,6 @@
             })
           })
         })
-
         this.$refs[formName].validate((valid) => {
           if (valid) {
             this.$refs['instockFormHead'].validate((validHead) => {
@@ -533,7 +530,6 @@
         this.$router.go(-1)
       }
     },
-
     components: {
       formStructure,
       headerFormStructure,
@@ -541,7 +537,6 @@
     }
   }
 </script>
-
 <style lang="less" scoped>
   .el-select, .el-input-number, .el-input, .el-date-editor.el-input {
     width: 187px;
