@@ -11,11 +11,27 @@
               <el-tab-pane v-for="(data, index) in applyData.body" :label="data.environment">
                 <!-- 信息显示 -->
                 <div v-for="task in form">
-                  {{task.tname}}
+                  <p class="h5">{{task.tname}}</p>
                   <div v-if="task.form.form.body.body_list.length > 1">
                     <div v-for="taskform in task.form.form.body.body_list">
-                      <template v-if="getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value">
-                        <form-structure-display :item="data" :form-data="taskform.attr_list" :index="index"></form-structure-display>
+                      <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
+                        <form-structure-display
+                          v-if="taskform.attr_list[0].value[0].value.type !== 'searchBar'"
+                          :item="data"
+                          :form-data="taskform.attr_list"
+                          :index="index">
+                        </form-structure-display>
+
+                        <el-table
+                          v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
+                          :data="data[taskform.attr_list[0].value[0].id]">
+                          <el-table-column
+                            v-for="item in taskform.attr_list[0].value[0].value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                            :prop="item.id"
+                            :label="item.name">
+                          </el-table-column>
+                        </el-table>
+
                       </template>
                     </div>
                   </div>
@@ -27,25 +43,25 @@
                   </div>
                 </div>
 
-                <!-- TODO: 这里只是taskForm的body还差header -->
+                <!-- 这里只是taskForm的body -->
                 <div v-if="taskForm.body">
                   <div v-for="taskFormData in taskForm.body.body_list">
                     <div v-if="taskFormData.show && taskFormData.show.type === 'message_body'"> <!-- type来源 为 message_body 意味着就是(data, index) in applyData.body 的 data -->
-                      <div v-if="getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value">
                         <!-- 表单填写 -->
+                        <!-- 设备选择 -->
+                      <div v-if="taskFormData.show ? (getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value) : true">
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index">
                         </form-structure>
-                        <!-- 设备选择 -->
                         <search-bar
                           v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
                           :index="index"
                           :hosts="assignForm.body[index]"
                           :attr-list="taskFormData.attr_list"
-                          :limit="getLimitQuantity(taskFormData.attr_list, index)"
+                          :limit="getLimitQuantity(taskFormData.attr_list, data)"
                           @on-hosts-change="onHostsChange">
                         </search-bar>
                       </div>
@@ -54,6 +70,11 @@
                 </div>
               </el-tab-pane>
             </el-tabs>
+            <!-- header 表单填写 -->
+            <div v-if="taskForm.header">
+              <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure>
+            </div>
+            <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
                 <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
@@ -72,6 +93,7 @@
   import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
+  import headerFormStructure from '../../_plugins/_headerFormStructure'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -91,13 +113,14 @@
         selectedDevices: [],
         searchKeyList: [],
         searchKeys: {},
-        searchData: {}
+        searchData: {},
+        path_list: []
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
-      this.renderForm()
+      // this.renderForm()
       // this.renderTaskForm()
     },
     methods: {
@@ -113,6 +136,12 @@
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           this.taskForm = res.data.data.form
+          this.taskForm.header.forEach((header, k) => {
+            header.value.map(item => {
+              this.setDataType(item, this.assignForm.header, this)
+            })
+          })
+          this.renderForm()
           this.taskForm.body.body_list.forEach((body, k) => {
             if (body.show) {
               const keyPath = body.show.key_path.split('.')
@@ -143,9 +172,17 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           const message = res.data.data.variables.message
-          const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM']
+          res.data.data.path_list.map(list => {
+            list.map(path => {
+              if (!this.path_list.includes(path.tkey)) {
+                this.path_list.push(path.tkey)
+              }
+            })
+          })
+          const taskKeyArr = this.path_list.filter(item => item !== 'start')
+          // console.log(taskKeyArr)
           this.applyData = this.getTaskInfo(message, taskKeyArr)
-          console.log(this.applyData)
+          // console.log(this.applyData)
           this.applyData.action = res.data.data.action
           this.renderTaskForm()
         })
@@ -155,8 +192,8 @@
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            pkey: 'host_apply'
-            // tkey: 'start' // start
+            pkey: 'host_apply',
+            tkey: this.path_list
           }
         }
         // this.loading = true
@@ -282,6 +319,7 @@
       headerFormStructureDisplay,
       formStructureDisplay,
       formStructure,
+      headerFormStructure,
       searchBar
     }
   }
@@ -315,6 +353,12 @@
 
 .el-form--inline .el-form-item {
   min-width: 280px;
+}
+
+.h5 {
+  margin: 10px 0;
+  font-size: 12px;
+  color: #ccc;
 }
 
 .el-table {

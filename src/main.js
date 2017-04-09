@@ -97,7 +97,7 @@ const parseData = obj => {
 
 Vue.prototype.parseData = parseData
 
-Vue.prototype.getPathResult = (result, path) => {
+const getPathResult = (result, path) => {
   let _result = result
   const _path = path.split('.')
   for (const i in _path) {
@@ -106,10 +106,12 @@ Vue.prototype.getPathResult = (result, path) => {
   return _result
 }
 
-Vue.prototype.getLimitQuantity = (data, index) => {
+Vue.prototype.getPathResult = getPathResult
+
+Vue.prototype.getLimitQuantity = (data, applyData) => {
   if (data[0].value[0].value.count) {
     if (data[0].value[0].value.count.type === 'message_body') {
-      return this.getPathResult(this.applyData.body[index], data[0].value[0].value.count.key_path)
+      return getPathResult(applyData, data[0].value[0].value.count.key_path)
     } else {
       return 5 // 默认限制选5台设备
     }
@@ -157,13 +159,14 @@ Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
   const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
   taskKeyArr
     .filter(t => findTaskMsgR(arrMsg, [t]))
-    .map(t => findTaskMsgR(arrMsg, [t]).form.data)
+    .map(t => findTaskMsgR(arrMsg, [t]).form.body)
     .map(tsk => {
       if (Array.isArray(tsk)) {
         !rs.body.length && tsk.forEach(t => rs.body.push({}))
         tsk.map((host, index) => Object.assign(rs.body[index], host))
       }
     })
+  console.log(rs)
   return rs
 }
 

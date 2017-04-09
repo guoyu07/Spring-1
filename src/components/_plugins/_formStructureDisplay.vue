@@ -6,9 +6,9 @@
         v-for="formItem in formBlock.value"
         :label="formItem.name">
 
-        <!-- <span v-if="formItem.value.type === 'dict' || formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span> 这个name报错，回头看看dict和FK的格式-->
+         <span v-if="formItem.value.type === 'dict' || formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span> <!-- 这个name报错，回头看看dict和FK的格式 -->
 
-        <span v-if="formItem.value.type === 'dicts' || formItem.value.type === 'FKs'">
+        <span v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'FKs'">
           <span v-for="span in item[formItem.id]">{{ span.name }}</span>
         </span>
 
@@ -16,11 +16,13 @@
           <span v-for="span in item[formItem.id]">{{ span }}</span>
         </span>
 
-        <span v-else-if="formItem.value.type === 'search_bar'">
+        <!-- <span v-else-if="formItem.value.type === 'search_bar'">
           <pre>{{ item[formItem.id] }}</pre>
-        </span>
+        </span> -->
 
-        <span v-else>{{ item[formItem.id] }}</span>
+        <span v-else-if="formItem.value.type === 'str' || formItem.value.type==='enum' || formItem.value.type==='int'">
+          {{ item[formItem.id] }}
+        </span>
 
       </el-form-item>
     </div>

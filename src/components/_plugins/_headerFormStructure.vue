@@ -5,7 +5,7 @@
       <div class="headerform">
         <el-form-item
           v-for="formItem in formBlock.value"
-          :prop="formItem.id"
+          :prop="'header.' + formItem.id"
           :label="formItem.name"
           :rules="rules(formItem)">
 
@@ -110,6 +110,7 @@
           } else if (formItem.value.type === 'FK' || formItem.value.type === 'dict') {
             type = 'object'
           } else {
+            console.log(formItem.value.type)
             type = 'string'
           }
           return {
