@@ -51,6 +51,9 @@ const routes = [{
       path: '/equipment/on',
       component: require('./components/equipment/pages/on.vue')
     }, {
+      path: '/equipment/on/:device',
+      component: require('./components/equipment/pages/ondevice.vue')
+    }, {
       path: '/equipment/off',
       component: require('./components/equipment/pages/off.vue')
     }, {

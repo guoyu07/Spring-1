@@ -103,12 +103,16 @@
           category: '设备流程',
           children: [{
             icon: 'fa-upload',
-            title: '上架',
-            path: '/equipment/on'
+            title: '服务器上架',
+            path: '/equipment/on/HOSTINFO'
           }, {
-            icon: 'fa-download',
-            title: '下架',
-            path: '/equipment/off'
+            icon: 'fa-upload',
+            title: '存储设备上架',
+            path: '/equipment/on/STORAGE'
+          }, {
+            icon: 'fa-upload',
+            title: '网络设备上架',
+            path: '/equipment/on/NETDEVICE'
           }]
         }, {
           category: '系统流程',
