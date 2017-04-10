@@ -73,12 +73,12 @@
                 <el-input v-model="formConfig.tkey" class="code-input"></el-input>
               </el-form-item>
               <br>
-              <el-form-item label="操作按钮">
+              <el-form-item label="操作按钮" v-if="formConfig.tkey !== 'start'">
                 <el-checkbox-group v-model="checkedActions" @change="actionChange">
-                  <el-checkbox v-for="ac of actions" :label="ac.name"></el-checkbox>
+                  <el-checkbox v-for="ac of actions" :label="ac.type"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
-              <template v-if="formConfig.form.action.find(_ => _.name === '下载')">
+              <template v-if="formConfig.form.action.find(_ => _.type === 'target') || checkedActions.includes('target')">
                 <br>
                 <el-form-item label="下载 URL">
                   <el-popover
@@ -86,8 +86,26 @@
                     width="200"
                     trigger="focus">
                     <code class="information-popover"><i class="el-icon-information"></i> /download/XX?tid=XX</code>
-                    <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.name === '下载').url"></el-input>
+                    <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.type === 'target').url"></el-input>
                   </el-popover>
+                </el-form-item>
+              </template>
+
+              <template v-if="formConfig.form.action.find(_ => _.type === 'auto') || checkedActions.includes('auto')">
+                <!-- <br> -->
+                <el-form-item label="自动触发">
+                  <el-select v-model="selectedAuto.name" @change="onChangeAuto">
+                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.name"></el-option>
+                  </el-select>
+                </el-form-item>
+              </template>
+
+              <template v-if="formConfig.form.action.find(_ => _.type === 'manual') || checkedActions.includes('manual')">
+                <!-- <br> -->
+                <el-form-item label="手动触发">
+                  <el-select v-model="selectedManual.name" @change="onChangeManual">
+                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.name"></el-option>
+                  </el-select>
                 </el-form-item>
               </template>
               
@@ -205,20 +223,24 @@ export default {
       id: '',
       // 操作按钮
       actions: [
-        { 'name': '下载', 'url': '', 'type': 'target' }
+        { name: '下载', url: '', type: 'target' },
+        { name: '', id: '', desc: '', type: 'auto' },
+        { name: '', id: '', desc: '', type: 'manual' }
       ],
       checkedActions: [],
       actionDefList: [],
       formConfig: null,
       editBody: null,
-      showConditionVisible: false,
-      selectedTrigger: {},
-      selectedTriggerType: '',
-      showFlag: true
+      showConditionVisible: false
     }
   },
-  created () {
-    this.getActionDef()
+  computed: {
+    selectedAuto () {
+      return this.formConfig.form.action.find(_ => _.type === 'auto') ? this.formConfig.form.action.find(_ => _.type === 'auto') : {}
+    },
+    selectedManual () {
+      return this.formConfig.form.action.find(_ => _.type === 'manual') ? this.formConfig.form.action.find(_ => _.type === 'manual') : {}
+    }
   },
   activated () {
     /**
@@ -234,13 +256,12 @@ export default {
         this.formConfig.form.form.body.body_list = [this.formConfig.form.form.body.body_list]
       }
       // 拿到 actions 的 name
-      this.checkedActions = this.formConfig.form.action.map(item => item.name)
+      this.checkedActions = this.formConfig.form.action.map(item => item.type)
     } else {
       this.$router.go(-1)
     }
-    console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
-    if (this.formConfig.form.action.find(_ => _.type !== 'target') !== {}) this.selectedTrigger = this.formConfig.form.action.find(_ => _.type !== 'target')
-    console.log(this.selectedTrigger)
+    this.getActionDef()
+    this.assignName()
   },
   methods: {
     getActionDef () {
@@ -253,9 +274,34 @@ export default {
         this.actionDefList = res.data.data.list
       })
     },
+    assignName () {
+      // fuck this shit
+      if (this.formConfig.form.action.find(_ => _.type === 'manual')) {
+        this.actions.find(_ => _.type === 'manual').name = this.formConfig.form.action.find(_ => _.type === 'manual').name
+      }
+      if (this.formConfig.form.action.find(_ => _.type === 'auto')) {
+        this.actions.find(_ => _.type === 'auto').name = this.formConfig.form.action.find(_ => _.type === 'auto').name
+      }
+    },
     // 选择功能按钮 action
     actionChange (arr) {
-      this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.name) !== -1)
+      this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
+    },
+    onChangeAuto (val) {
+      if (val === 'CMDB更新实例') {
+        Object.assign(this.selectedAuto, { id: 'cmdb_update_instance', desc: '表单header里须包含object_id,body里为实例数据' })
+      } else {
+        Object.assign(this.selectedAuto, { id: 'cmdb_create_instance', desc: '表单header里须包含object_id,body里为实例数据' })
+      }
+      this.assignName()
+    },
+    onChangeManual (val) {
+      if (val === 'CMDB更新实例') {
+        Object.assign(this.selectedManual, { id: 'cmdb_update_instance', desc: '表单header里须包含object_id,body里为实例数据' })
+      } else {
+        Object.assign(this.selectedManual, { id: 'cmdb_create_instance', desc: '表单header里须包含object_id,body里为实例数据' })
+      }
+      this.assignName()
     },
     // 选择配置 body 个数
     countConfig (count) {
@@ -270,10 +316,10 @@ export default {
         data: this.formConfig
       }
 
-      this.formConfig.form.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
-      this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
-      this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
-      console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
+      // this.formConfig.form.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
+      // this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
+      // this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
+      // console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
 
       console.log(this.formConfig)
       this.http.post('', this.parseData(postData)).then(res => {

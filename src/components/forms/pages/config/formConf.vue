@@ -10,6 +10,12 @@
         margin-bottom: 8px;
       }
     }
+
+    .default-preview {
+      font-size: 12px;
+      margin-left: 4px;
+      color: #333;
+    }
   }
 </style>
 
@@ -26,6 +32,40 @@
                   <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
                   <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                   <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
+                  <!-- <el-checkbox v-model="itemConf.default.confVisible">默认值</el-checkbox> -->
+                </el-form-item>
+              </el-row>
+              <!-- <template v-if="itemConf.default.confVisible">
+                <el-row>
+                  <el-form-item label="默认值类型">
+                    <el-select size="small" v-model="itemConf.default.type">
+                      <el-option v-for="item in countConfig" :value="item"></el-option>
+                    </el-select>
+                  </el-form-item>
+                  <template v-if="itemConf.default.type === 'static'">
+                    <el-form-item label="静态值">
+                      <el-input size="small" v-model="itemConf.default.value"></el-input>
+                    </el-form-item>
+                  </template>
+                  <template v-if="itemConf.default.type !== 'static'">
+                    <el-form-item label="属性路径">
+                      <el-input size="small" class="code-input" v-model="itemConf.default.key_path"></el-input>
+                    </el-form-item>
+                  </template>
+                  <template v-if="itemConf.default.type.includes('message_')">
+                    <el-form-item label="流程节点 ID">
+                      <el-input size="small" class="code-input" v-model="itemConf.default.id"></el-input>
+                    </el-form-item>
+                  </template>
+                </el-row>
+              </template> -->
+              <el-row>
+                <el-form-item label="默认值" style="width: 100%">
+                  <el-popover placement="right" trigger="click">
+                    <default-conf :dialog-props="itemConf"></default-conf>
+                    <el-button size="small" slot="reference">配置默认值</el-button>
+                  </el-popover>
+                  <span v-if="itemConf.default.type" class="default-preview"><code>{{JSON.stringify(itemConf.default)}}</code></span>
                 </el-form-item>
               </el-row>
               <el-row>
@@ -87,10 +127,17 @@
 <script>
 import optionsConf from './optionsConf' // 配置下拉选项（静态）的表单
 import optionsConfCmdb from './optionsConfCMDB' // 配置下拉选项（动态）的表单
+import defaultConf from './defaultConf'
 
 export default {
   props: {
     configData: Array
+  },
+  data () {
+    return {
+      needDefault: false,
+      countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
+    }
   },
   methods: {
     // 显示静态下拉的选项
@@ -126,6 +173,15 @@ export default {
       }
       itemConf.value.confVisible = true
     },
+    // 默认值配置
+    // showDefaultConf (itemConf) {
+    //   if (itemConf.default) {
+    //     // 已有
+    //   } else {
+    //     this.$set(itemConf, 'default', { type: '' })
+    //   }
+    //   itemConf.default.confVisible = true
+    // },
     // 添加一个字段
     addBtn () {
       this.configData.push({
@@ -136,6 +192,10 @@ export default {
         required: true, // 必填
         need_submit: true, // 需要提交
         readonly: false,
+        default: {
+          confVisible: false,
+          type: ''
+        },
         value: {
           confVisible: false,
           regex: [],
@@ -150,7 +210,8 @@ export default {
   },
   components: {
     optionsConf,
-    optionsConfCmdb
+    optionsConfCmdb,
+    defaultConf
   }
 }
 </script>
