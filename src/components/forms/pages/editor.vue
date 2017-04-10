@@ -90,7 +90,7 @@
                   </el-popover>
                 </el-form-item>
               </template>
-              
+
               <template v-if="formConfig.form.action.find(_ => _.type !== 'target')">
                 <br>
                 <el-form-item label="触发方式">
@@ -271,10 +271,10 @@ export default {
         data: this.formConfig
       }
 
-      this.formConfig.form.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
-      this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
-      this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
-      console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
+      // this.formConfig.form.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
+      // this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
+      // this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
+      // console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
 
       console.log(this.formConfig)
       this.http.post('', this.parseData(postData)).then(res => {

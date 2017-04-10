@@ -195,7 +195,7 @@
           }
           console.log(res)
           this.deviceTotal = res.data.data.total
-          this.deviceTable = this.getPathResult(res.data, this.mainInfo.value.source.res.data_path)
+          this.deviceTable = this.getPathResult(res, this.mainInfo.value.source.res.data_path)
           this.deviceLoading = false
         })
       },

@@ -250,7 +250,7 @@
 
           <span v-if="deviceViewData.device.pkey==='equipment_on' && filter === '待审核'">
             <span v-for="action in deviceViewData.device.action">
-              <router-link v-if="action.type==='submit'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
+              <router-link v-if="action.type==='submit'" :to="{ path: `/equipment/equipment_on/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
               <router-link v-else-if="action.type==='back'" :to="{ path: `/equipment/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
             </span>
           </span>

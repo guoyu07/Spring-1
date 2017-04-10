@@ -4,8 +4,8 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
-          <el-form ref="applyFormHead" :model="applyFormHead" :rules="applyRules" label-width="100px" :inline="true">
-            <header-form-structure :form-data="form.header" :item="applyFormHead"></header-form-structure>
+          <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="100px" :inline="true">
+            <header-form-structure :form-data="form.header" :item="applyForm.header"></header-form-structure>
           </el-form>
           <br>
           <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
@@ -13,7 +13,7 @@
           </el-button>
           <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-position="top" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-              <el-tab-pane v-for="(item, index) in applyForm.data" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
+              <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
                 <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
               </el-tab-pane>
             </el-tabs>
@@ -44,12 +44,13 @@
           business: '',
           opsManagers: []
         },
-        applyFormHead: {
-          applyType: '',
-          applicationName: ''
-        },
+        // applyFormHead: {
+        //   applyType: '',
+        //   applicationName: ''
+        // },
         applyForm: {
-          data: [{}]
+          header: {},
+          body: [{}]
         },
         appList: [],
         businessList: [],
@@ -87,7 +88,7 @@
           id: ''
         }
       },
-      'applyForm.data': {
+      'applyForm.body': {
         handler: (val, oldVal) => {
           for (const data of val) {
             data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
@@ -111,12 +112,12 @@
           this.form = res.data.data.form
           this.form.header.map(group => {
             group.value.map(item => {
-              this.setDataType(item, this.applyFormHead, this)
+              this.setDataType(item, this.applyForm.header, this)
             })
           })
           this.form.body.body_list[0].attr_list.map(group => {
             group.value.map(item => {
-              this.setDataType(item, this.applyForm.data[0], this)
+              this.setDataType(item, this.applyForm.body[0], this)
             })
           })
         })
@@ -176,7 +177,7 @@
         this.applyForm.business = ''
       },
       handleRemove (tab) {
-        this.applyForm.data.splice(tab.index, 1)
+        this.applyForm.body.splice(tab.index, 1)
         // console.log(tab.index, this.instockForm.data)
       },
       handleClick (tab, event) {
@@ -195,11 +196,11 @@
         }, 1000)
       },
       onRecheckBusiness () {
-        if (!this.businessList.some(business => business.name === this.applyFormHead.business.name)) { // 若项目组为新增，则先进行新增请求
+        if (!this.businessList.some(business => business.name === this.applyForm.header.business.name)) { // 若项目组为新增，则先进行新增请求
           let postData = {
             action: `/object/instance/BUSINESS`,
             method: 'POST',
-            data: { name: this.applyFormHead.business }
+            data: { name: this.applyForm.header.business }
           }
           this.http.post('easyops/', this.parseData(postData)).then((res) => {
             // 新增毕，方出库
@@ -213,7 +214,7 @@
         console.log(this.applyForm)
         this.$refs[applyForm].validate((valid) => {
           if (valid) {
-            this.$refs['applyFormHead'].validate(valid => {
+            this.$refs['applyForm'].validate(valid => {
               if (valid) {
                 let postData = {}
                 if (this.editInfo.id) {
@@ -233,8 +234,8 @@
                     data: {
                       pkey: 'host_apply',
                       form: {
-                        'body': this.applyForm.data,
-                        'header': this.applyFormHead
+                        'body': this.applyForm.body,
+                        'header': this.applyForm.header
                       }
                     }
                   }
@@ -265,7 +266,7 @@
         this.$refs[applyForm].resetFields()
       },
       removeTab (targetName) {
-        let tabs = this.applyForm.data
+        let tabs = this.applyForm.body
         let activeName = this.tabsValue
         // if (activeName === targetName) {
         tabs.forEach((tab, index) => {
@@ -278,9 +279,10 @@
         })
         // }
         this.tabsValue = activeName + ''
-        this.applyForm.data.splice(targetName, 1)
+        this.applyForm.body.splice(targetName, 1)
       },
       addTab (targetName) {
+        console.log('00000')
         // let newTabName = ++this.tabIndex + ''
         var that = this
         let newData = {}
@@ -291,10 +293,10 @@
         })
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
-            if (that.applyForm.data.length < this.form.body.count.max) {
-              that.applyForm.data.push(newData)
-              this.tabsValue = that.applyForm.data.length - 1 + ''
-              // this.$watch('applyForm.data.' + this.tabsValue, newVal => {
+            if (that.applyForm.body.length < this.form.body.count.max) {
+              that.applyForm.body.push(newData)
+              this.tabsValue = that.applyForm.body.length - 1 + ''
+              // this.$watch('applyForm.body.' + this.tabsValue, newVal => {
               //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
               // }, {deep: true})
             } else {
