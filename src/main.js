@@ -156,14 +156,17 @@ Vue.prototype.findTaskMsgR = findTaskMsgR
 
 // 收集所有最新 task_key 数据
 Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
-  const rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
+  let rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
+  // console.log(taskKeyArr)
   taskKeyArr
     .filter(t => findTaskMsgR(arrMsg, [t]))
     .map(t => findTaskMsgR(arrMsg, [t]).form.body)
     .map(tsk => {
+      console.log(tsk)
       if (Array.isArray(tsk)) {
         !rs.body.length && tsk.forEach(t => rs.body.push({}))
         tsk.map((host, index) => Object.assign(rs.body[index], host))
+        console.log(rs.body)
       }
     })
   console.log(rs)

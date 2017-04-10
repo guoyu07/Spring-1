@@ -35,7 +35,7 @@
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- 信息显示 -->
                 <div v-for="task in form">
-                  <p class="h5">{{task.tname}}</p>
+                  <!-- <p class="h5">{{task.tname}}</p> -->
                   <div v-if="task.form.form.body.body_list.length > 1">
                     <div v-for="taskform in task.form.form.body.body_list">
                       <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
@@ -59,15 +59,15 @@
                       </template>
                     </div>
                   </div>
-                  <div v-else>
+                  <div v-else-if="task.form.form.body.body_list.length === 1">
                     <!-- 这里是判断 body_list 是不是空数组 -->
                     <div v-if="task.form.form.body.body_list[0]">
                       <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
                     </div>
                   </div>
-                  <!-- <div v-else-if="task.form.form.body.body_list.length === 0">
+                  <div v-else-if="task.form.form.body.body_list.length === 0">
                     <form-structure-display :item="data" :form-data="readOnly" :index="index"></form-structure-display>
-                  </div> -->
+                  </div>
                 </div>
 
                 <!-- 这里只是taskForm的body -->
@@ -98,10 +98,9 @@
                     </div>
                   </div>
                   <div v-else>
-                    <!-- {{taskForm.body.body_list[0].attr_list[0]}} -->
                     <!-- 表单填写 -->
                     <form-structure
-                      :form-data="taskForm.body.body_list[0].attr_list[0]"
+                      :form-data="filterTaskFrom"
                       :item="assignForm.body[index]"
                       :index="index">
                     </form-structure>
@@ -163,8 +162,8 @@
         searchKeys: {},
         searchData: {},
         path_list: [],
-        // readOnly: [],
-        // filterTaskFrom: [],
+        readOnly: [],
+        filterTaskFrom: [],
         historyMessage: [],
         taskKeyArr: []
       }
@@ -207,11 +206,11 @@
           }
           if (this.applyData.body.length !== 0) {
             // 希望 this.taskForm.body.body_list[0].name 成为 body 的名字
-            let newData = {bodyname: this.taskForm.body.body_list[0].name}
-            const length = this.applyData.body.length
-            for (var i = 0; i < length; i++) {
-              this.applyData.body[i] = newData
-            }
+            // let newData = {bodyname: this.taskForm.body.body_list[0].name}
+            // const length = this.applyData.body.length
+            // for (var i = 0; i < length; i++) {
+            //   this.applyData.body[i] = newData
+            // }
             // this.applyData = this.getTaskInfo(this.historyMessage, this.taskKeyArr) 这是直接从历史传递过来的信息
             if (this.taskForm.body.count) {
               if (this.taskForm.body.count.type === 'message_header') {
@@ -247,26 +246,31 @@
                 })
               }
             } else {
-              this.applyData.body.forEach(item => {
+              this.applyData.body.forEach((item, k) => {
                 let newData = {}
                 body.attr_list.map(group => {
                   group.value.map(item => {
-                    // if (item.readonly) {
-                    //   if (!this.readOnly.includes(group)) {
-                    //     this.readOnly.push(group)
-                    //   }
-                    // }
+                    if (item.readonly && !item.need_submit) {
+                      if (!this.readOnly.includes(group)) {
+                        this.readOnly.push(group)
+                      }
+                    }
                     if (item.need_submit) {
-                      // if (!this.filterTaskFrom.includes(group)) {
-                      //   this.filterTaskFrom.push(group)
-                      // }
-                      // TODO: 取一个只读默认值
+                      if (!this.filterTaskFrom.includes(group)) {
+                        this.filterTaskFrom.push(group)
+                      }
                       this.setNewDataType(item, newData)
                     }
                   })
                 })
                 console.log(newData)
                 this.assignForm.body.push(newData)
+                for (const id in item) {
+                  console.log(item[id], this.assignForm.body[k][id])
+                  if (this.assignForm.body[k][id] !== undefined) {
+                    this.assignForm.body[k][id] = item[id]
+                  }
+                }
               })
             }
           })

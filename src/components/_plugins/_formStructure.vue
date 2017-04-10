@@ -107,6 +107,9 @@
             required: formItem.required,
             trigger: 'change'
           }
+        } else if (formItem.value.readonly) {
+          console.log('00000000')
+          return {}
         } else {
           let type
           if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') {

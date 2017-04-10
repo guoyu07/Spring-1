@@ -93,6 +93,7 @@
       }
     },
     created () {
+      console.log(this.hosts)
       for (const block of this.attrList) {
         for (const item of block.value) {
           this.mainInfo = item
