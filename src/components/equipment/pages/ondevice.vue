@@ -68,6 +68,10 @@
             </el-table>
           </div>
         </el-card>
+        <div class="btn-area">
+          <el-button :disabled="hostList.length === 0" type="primary" @click="onSubmit">确认</el-button>
+          <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
+        </div>
       </el-col>
     </el-row>
   </div>
@@ -83,7 +87,12 @@
   export default {
     data () {
       return {
+        assignForm: {
+          header: {},
+          body: []
+        },
         routerInfo: {},
+        deviceType: '',
         hostList: [],
         mainInfo: {},
         searchKeys: {},
@@ -142,6 +151,7 @@
           for (const block of attrList) {
             for (const item of block.value) {
               this.mainInfo = item
+              this.assignForm.header[item.id] = []
               if (item.value.type === 'search_bar') {
                 // 过滤掉 非搜索 字段
                 this.searchKeyList = item.value.source.data.params.filter(item => {
@@ -214,65 +224,20 @@
         console.log(this.$refs)
         this.$refs[formName].resetFields()
       },
-      onSubmit (assignForm) {
-        console.log(this.assignForm)
-        this.$confirm('确定提交?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'info'
-        }).then(() => {
-          const ref = this.$refs[assignForm].fields.length !== 0
-          console.log(ref)
-          if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs[assignForm].validate((valid) => {
-              if (valid) {
-                console.log(this.assignForm.body)
-                if (this.assignForm.body) {
-                  for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
-                    for (const item in data) {
-                      if (Array.isArray(data[item]) && data[item].length === 0) {
-                        this.$message.warning('未完成！')
-                        return false
-                      }
-                    }
-                  }
-                }
-                this.postMethod(this.routerInfo.id, this.assignForm)
-                // console.dir(this.assignForm)
-              } else {
-                console.log('error submit!!')
-                this.$message.warning('未完成！')
-                return false
-              }
-            })
-          } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            if (!this.assignForm.body.some(data => {
-              for (const item in data) {
-                return Array.isArray(data[item]) && data[item].length === 0
-              }
-            })) {
-              this.postMethod(this.routerInfo.id, this.assignForm)
-              // console.dir(this.assignForm)
-            } else {
-              this.$message.warning('未分配完！')
-              return false
-            }
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消审批'
-          })
-        })
-      },
-      postMethod (id, data) {
+      onSubmit () {
+        console.log(this.deviceType)
+        for (const id in this.assignForm.header) {
+          this.assignForm.header[id] = this.hostList
+        }
         const postData = {
-          action: 'runtime/task/complete',
+          action: 'runtime/process/instances',
           method: 'POST',
           data: {
-            tid: id,
-            form: data // 通过审批 需要判断一下登录的账号的角色身份
-              // pass: "流程走向控制变量,整型(可选,默认为0)"
+            pkey: this.deviceType,
+            form: {
+              'body': [],
+              'header': this.assignForm.header
+            }
           }
         }
         this.http.post('', this.parseData(postData))
@@ -280,9 +245,9 @@
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
-                message: '审批成功!'
+                message: '提交成功!'
               })
-              this.$router.go(-1) // 分配成功跳转历史的上一页
+              this.$router.replace('/orders') // 设备成功上架后跳到工单管理
             }
           })
       },
