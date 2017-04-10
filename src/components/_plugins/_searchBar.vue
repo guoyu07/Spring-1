@@ -167,7 +167,8 @@
               this.hostList = [...this.hostList, selection]
             }
           } else {
-            this.$message.warning(`下架列表中已存在${selection.name}`)
+            // this.$message.warning(`列表中已存在`)
+            return
           }
         }
       },

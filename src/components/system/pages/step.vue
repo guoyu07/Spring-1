@@ -142,23 +142,25 @@
             })
           })
           this.renderForm()
-          this.taskForm.body.body_list.forEach((body, k) => {
-            if (body.show) {
-              const keyPath = body.show.key_path.split('.')
-              if (body.show.type === 'message_body') {
-                this.applyData.body.forEach(item => {
-                  if (item[keyPath[0]] === body.show.value) {
-                    let newData = {}
+          this.applyData.body.forEach((item, k) => {
+            let newData = {}
+            this.taskForm.body.body_list.forEach(body => {
+              if (body.show) {
+                const keyPath = body.show.key_path.split('.')
+                if (body.show.type === 'message_body') {
+                  if (body.show.value === item[keyPath[0]]) {
+                    console.log(item[keyPath[0]])
                     body.attr_list.map(group => {
                       group.value.map(item => {
                         this.setNewDataType(item, newData)
                       })
                     })
-                    this.assignForm.body.push(newData)
+                    // console.log(newData)
                   }
-                })
+                }
               }
-            }
+            })
+            this.assignForm.body.push(newData)
           })
         })
       },
@@ -263,6 +265,11 @@
         })
       },
       postMethod (id, data) {
+        if (data.body.length === 0) {
+          this.applyData.body.forEach(item => {
+            data.body.push({})
+          })
+        }
         const postData = {
           action: 'runtime/task/complete',
           method: 'POST',
@@ -279,13 +286,13 @@
                 type: 'success',
                 message: '审批成功!'
               })
-              this.$router.go(-1) // 分配成功跳转历史的上一页
+              this.$router.replace('/orders') // 分配成功跳转工单管理
             }
           })
       },
       onReject (task, action) {
         console.log(task, action.pass)
-        this.$prompt('请输入对「' + task.applicationName + '」的' + action.name + '意见：', '确定' + action.name + '？', {
+        this.$prompt('请输入对「' + task.header.applicationName.name + '」的' + action.name + '意见：', '确定' + action.name + '？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({value}) => {
