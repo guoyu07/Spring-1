@@ -32,33 +32,8 @@
                   <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
                   <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                   <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
-                  <!-- <el-checkbox v-model="itemConf.default.confVisible">默认值</el-checkbox> -->
                 </el-form-item>
               </el-row>
-              <!-- <template v-if="itemConf.default.confVisible">
-                <el-row>
-                  <el-form-item label="默认值类型">
-                    <el-select size="small" v-model="itemConf.default.type">
-                      <el-option v-for="item in countConfig" :value="item"></el-option>
-                    </el-select>
-                  </el-form-item>
-                  <template v-if="itemConf.default.type === 'static'">
-                    <el-form-item label="静态值">
-                      <el-input size="small" v-model="itemConf.default.value"></el-input>
-                    </el-form-item>
-                  </template>
-                  <template v-if="itemConf.default.type !== 'static'">
-                    <el-form-item label="属性路径">
-                      <el-input size="small" class="code-input" v-model="itemConf.default.key_path"></el-input>
-                    </el-form-item>
-                  </template>
-                  <template v-if="itemConf.default.type.includes('message_')">
-                    <el-form-item label="流程节点 ID">
-                      <el-input size="small" class="code-input" v-model="itemConf.default.id"></el-input>
-                    </el-form-item>
-                  </template>
-                </el-row>
-              </template> -->
               <el-row>
                 <el-form-item label="默认值" style="width: 100%">
                   <el-popover placement="right" trigger="click">
