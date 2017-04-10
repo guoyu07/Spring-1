@@ -33,6 +33,7 @@
       height: 50px;
       line-height: 50px;
       color: #fff;
+      border-bottom: none !important;
 
       &:hover {
         background-color: @eoThemeColor;

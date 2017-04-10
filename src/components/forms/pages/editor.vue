@@ -91,7 +91,7 @@
                 </el-form-item>
               </template>
               
-              <template v-if="formConfig.form.action.find(_ => _.type !== 'target')">
+              <!-- <template v-if="formConfig.form.action.find(_ => _.type !== 'target')">
                 <br>
                 <el-form-item label="触发方式">
                   <el-select v-model="selectedTrigger" @change="showFlag = false">
@@ -103,7 +103,7 @@
                   <el-radio label="auto" v-model="formConfig.form.action.find(_ => _.type !== 'target').type">自动</el-radio>
                   <el-radio label="manual" v-model="formConfig.form.action.find(_ => _.type !== 'target').type">手动</el-radio>
                 </el-form-item>
-              </template>
+              </template> -->
             </el-form>
           </el-row>
           <el-row class="form-block">
@@ -205,8 +205,7 @@ export default {
       id: '',
       // 操作按钮
       actions: [
-        { 'name': '下载', 'url': '', 'type': 'target' },
-        { 'name': '触发', 'id': '', 'desc': '', type: '' }
+        { 'name': '下载', 'url': '', 'type': 'target' }
       ],
       checkedActions: [],
       actionDefList: [],
