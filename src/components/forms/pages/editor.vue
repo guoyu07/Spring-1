@@ -206,7 +206,7 @@
           </el-dialog>
           <el-row type="flex" justify="end">
             <el-button type="warning" :plain="true" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
-            <el-button type="success" icon="fa-check" @click="submitBtn">确认提交</el-button>
+            <el-button type="success" icon="fa-check" @click="onSubmit" :loading="submitting">确认提交</el-button>
           </el-row>
         </el-card>
       </el-col>
@@ -231,7 +231,8 @@ export default {
       actionDefList: [],
       formConfig: null,
       editBody: null,
-      showConditionVisible: false
+      showConditionVisible: false,
+      submitting: false
     }
   },
   computed: {
@@ -313,7 +314,7 @@ export default {
       console.log(count)
     },
     // 确认完成
-    submitBtn () {
+    onSubmit () {
       const postData = {
         action: 'activiti/task/form',
         method: 'POST',
@@ -325,17 +326,17 @@ export default {
       // this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
       // console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
       // this.$set(this.formConfig.form.action, 'target', this.selectedTarget)
-      console.log(!this.selectedTarget)
       if (!this.selectedTarget) {
-        console.log('...')
         Object.assign(this.formConfig.form.action.find(_ => _.type === 'target'), this.selectedTarget)
       }
 
       console.log(this.formConfig)
+      this.submitting = true
       this.http.post('', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
-          this.$router.go(-1) // 回退
+          this.submitting = false
           this.$message.success('修改成功！')
+          this.$router.go(-1) // 回退
         }
       })
     },

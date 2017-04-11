@@ -134,6 +134,13 @@ const routes = [{
   }, {
     path: '/orders',
     component: require('./components/orders/orders')
+  }, {
+    path: '/alarm',
+    component: require('./components/alarm/index'),
+    children: [{
+      path: '',
+      component: require('./components/alarm/pages/list.vue')
+    }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
     component: require('./components/forms/Index'),

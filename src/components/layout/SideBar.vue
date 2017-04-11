@@ -91,6 +91,10 @@
         <el-menu-item index="/orders"><i class="el-icon-fa-calendar-o"></i>工单管理</el-menu-item>
       </el-menu-item-group>
 
+      <el-menu-item-group title="告警事件">
+        <el-menu-item index="/alarm"><i class="el-icon-fa-bullhorn"></i>告警事件</el-menu-item>
+      </el-menu-item-group>
+
       <el-menu-item-group title="权限自定义">
         <el-menu-item index="/auth/users"><i class="el-icon-fa-user"></i>用户管理</el-menu-item>
         <el-menu-item index="/auth/roles"><i class="el-icon-fa-users"></i>角色管理</el-menu-item>
