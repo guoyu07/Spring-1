@@ -89,8 +89,8 @@
                             v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
                             :index="index"
                             :hosts="assignForm.body[index]"
-                            :attr-list="taskFormData.attr_list"
-                            :limit="getLimitQuantity(taskFormData.attr_list, data)"
+                            :attr-list="taskFormData.attr_list[0].value[0]"
+                            :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
                             @on-hosts-change="onHostsChange">
                           </search-bar>
                         </div>

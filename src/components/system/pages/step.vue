@@ -5,14 +5,23 @@
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
-            <header-form-structure-display :item="applyData.header" :form-data="form.header"></header-form-structure-display>
+            <!-- 表头信息显示 -->
+            <div v-for="taskheader in form">
+              <div v-if="taskheader.form.form.header.length >= 1">
+                <p class="h5">{{taskheader.tname}}</p>
+                <header-form-structure-display
+                  :item="applyData.header"
+                  :form-data="taskheader.form.form.header">
+                </header-form-structure-display>
+              </div>
+            </div>
 
             <el-tabs type="border-card" @tab-click="handleClick">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="data.environment">
                 <!-- 信息显示 -->
                 <div v-for="task in form">
-                  <p class="h5">{{task.tname}}</p>
                   <div v-if="task.form.form.body.body_list.length > 1">
+                    <p class="h5">{{task.tname}}</p>
                     <div v-for="taskform in task.form.form.body.body_list">
                       <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
                         <form-structure-display
@@ -37,31 +46,50 @@
                   </div>
                   <div v-else>
                     <!-- 这里是判断 body_list 是不是空数组 -->
+                    <p class="h5">{{task.tname}}</p>
                     <div v-if="task.form.form.body.body_list[0]">
                       <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
                     </div>
                   </div>
                 </div>
 
-                <!-- 这里只是taskForm的body -->
+                <!-- body 表单填写 -->
                 <div v-if="taskForm.body">
                   <div v-for="taskFormData in taskForm.body.body_list">
                     <div v-if="taskFormData.show && taskFormData.show.type === 'message_body'"> <!-- type来源 为 message_body 意味着就是(data, index) in applyData.body 的 data -->
-                        <!-- 表单填写 -->
-                        <!-- 设备选择 -->
                       <div v-if="taskFormData.show ? (getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value) : true">
+                        <!-- 表单填写 -->
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index">
                         </form-structure>
+                        <!-- 设备选择 -->
                         <search-bar
                           v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
                           :index="index"
                           :hosts="assignForm.body[index]"
-                          :attr-list="taskFormData.attr_list"
-                          :limit="getLimitQuantity(taskFormData.attr_list, data)"
+                          :attr-list="taskFormData.attr_list[0].value[0]"
+                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                      <div v-else-if="!taskFormData.show">
+                        <!-- 表单填写 -->
+                        <form-structure
+                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
+                          :form-data="taskFormData.attr_list"
+                          :item="assignForm.body[index]"
+                          :index="index">
+                        </form-structure>
+                        <!-- 设备选择 -->
+                        <search-bar
+                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
+                          :index="index"
+                          :hosts="assignForm.body[index]"
+                          :attr-list="taskFormData.attr_list[0].value[0]"
+                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
                           @on-hosts-change="onHostsChange">
                         </search-bar>
                       </div>

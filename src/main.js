@@ -109,9 +109,9 @@ const getPathResult = (result, path) => {
 Vue.prototype.getPathResult = getPathResult
 
 Vue.prototype.getLimitQuantity = (data, applyData) => {
-  if (data[0].value[0].value.count) {
-    if (data[0].value[0].value.count.type === 'message_body') {
-      return getPathResult(applyData, data[0].value[0].value.count.key_path)
+  if (data.value.count) {
+    if (data.value.count.type === 'message_body') {
+      return getPathResult(applyData, data.value.count.key_path)
     } else {
       return 5 // 默认限制选5台设备
     }
@@ -119,7 +119,7 @@ Vue.prototype.getLimitQuantity = (data, applyData) => {
 }
 
 Vue.prototype.setDataType = (original, goalData, _this) => {
-  if (original.value.type === 'arr' || original.value.type === 'FKs') {
+  if (original.value.type === 'arr' || original.value.type === 'FKs' || original.value.type === 'search_bar') {
     _this.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     _this.$set(goalData, original.id, undefined)
@@ -160,16 +160,24 @@ Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
   // console.log(taskKeyArr)
   taskKeyArr
     .filter(t => findTaskMsgR(arrMsg, [t]))
+    .map(t => findTaskMsgR(arrMsg, [t]).form.header)
+    .map(tsk => {
+      if (Object.prototype.toString.call(tsk) === '[object Object]') {
+        Object.assign(rs.header, tsk)
+      }
+    })
+  taskKeyArr
+    .filter(t => findTaskMsgR(arrMsg, [t]))
     .map(t => findTaskMsgR(arrMsg, [t]).form.body)
     .map(tsk => {
       console.log(tsk)
       if (Array.isArray(tsk)) {
         !rs.body.length && tsk.forEach(t => rs.body.push({}))
         tsk.map((host, index) => Object.assign(rs.body[index], host))
-        console.log(rs.body)
+        // console.log(rs.body)
       }
     })
-  console.log(rs)
+  // console.log(rs)
   return rs
 }
 

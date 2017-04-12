@@ -69,15 +69,15 @@
 <script>
   export default {
     props: {
-      index: { type: Number },
-      hosts: { type: Object },
-      attrList: { type: Array },
-      limit: { type: Number }
+      index: { type: Number }, // body 的 index
+      hosts: { type: Object }, // 选取设备的id
+      attrList: { type: Object }, // search_bar 源数据
+      limit: { type: Number } // 设备数量选择限制
     },
 
     data () {
       return {
-        hostList: this.hosts[this.attrList[0].value[0].id], // ①创建 props 属性 hosts 的副本--hostList
+        hostList: this.hosts[this.attrList.id], // ①创建 props 属性 hosts 的副本--hostList
         mainInfo: {},
         searchKeys: {},
         searchKeyList: [],
@@ -94,29 +94,29 @@
     },
     created () {
       console.log(this.hosts)
-      for (const block of this.attrList) {
-        for (const item of block.value) {
-          this.mainInfo = item
-          if (item.value.type === 'search_bar') {
-            // 过滤掉 非搜索 字段
-            this.searchKeyList = item.value.source.data.params.filter(item => {
-              return item.value.type === 'input'
-            })
-            // 取搜索字段的必读字段(非输入的搜索字段)
-            for (const param of item.value.source.data.params) {
-              if (param.value.type === 'static') {
-                this.searchData[param.id] = param.value.value
-              }
-            }
-            // 绑定搜索字段，响应式取值
-            for (const key of this.searchKeyList) {
-              this.$set(this.searchKeys, key.id, {})
-              this.$set(this.searchKeys[key.id], 'value', '')
-              this.$set(this.searchKeys[key.id], 'op', 'reg')
-            }
+      // for (const block of this.attrList) {
+      //   for (const item of block.value) {
+      this.mainInfo = this.attrList
+      if (this.attrList.value.type === 'search_bar') {
+        // 过滤掉 非搜索 字段
+        this.searchKeyList = this.attrList.value.source.data.params.filter(item => {
+          return item.value.type === 'input'
+        })
+        // 取搜索字段的必读字段(非输入的搜索字段)
+        for (const param of this.attrList.value.source.data.params) {
+          if (param.value.type === 'static') {
+            this.searchData[param.id] = param.value.value
           }
         }
+        // 绑定搜索字段，响应式取值
+        for (const key of this.searchKeyList) {
+          this.$set(this.searchKeys, key.id, {})
+          this.$set(this.searchKeys[key.id], 'value', '')
+          this.$set(this.searchKeys[key.id], 'op', 'reg')
+        }
       }
+      //   }
+      // }
     },
 
     watch: {
@@ -151,7 +151,7 @@
           if (!res.data.data.total) {
             this.$message.warning('找不到结果！')
           }
-          console.log(res)
+          // console.log(res, this.mainInfo.value.source.res.data_path)
           this.deviceTotal = res.data.data.total
           this.deviceTable = this.getPathResult(res, this.mainInfo.value.source.res.data_path)
           this.deviceLoading = false
@@ -159,16 +159,21 @@
       },
       onAddtoOff () {
         for (const selection of this.selectedDevices) {
-          console.log(this.hostList)
+          // console.log(this.hostList)
           if (!this.hostList.includes(selection)) {
-            if (this.selectedDevices.length > this.limit) {
+            // if (this.selectedDevices.length > this.limit) {
+            //   this.$message.warning(`设备选择最多${this.limit}个！`)
+            //   return false
+            // } else {
+            if (this.hostList.length >= this.limit) {
               this.$message.warning(`设备选择最多${this.limit}个！`)
             } else {
               this.hostList = [...this.hostList, selection]
             }
+            // }
           } else {
-            // this.$message.warning(`列表中已存在`)
-            return
+            this.$message.warning(`列表中已存在该条数据`)
+            return false
           }
         }
       },

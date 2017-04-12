@@ -10,16 +10,6 @@
         :value="option"></el-option>
     </el-select>
     {{typeof vmodel[strucData.id] === 'string' ? '新建名：' + vmodel[strucData.id] : ''}}
-
-    <!-- <el-select
-      v-else-if="strucData.value.type === 'dicts'"
-      v-model="vmodel[strucData.id]"
-      filterable
-      multiple>
-      <el-option v-for="option in optionList"
-        :label="option[strucData.value.source.res.show_key]"
-        :value="option[strucData.value.source.res.show_key]"></el-option>
-    </el-select> -->
   </div>
 </template>
 
@@ -54,6 +44,8 @@
       .then((response) => {
         this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
         if (this.strucData.value.source.data.action === 'import/device/items') {
+          this.vmodel[this.strucData.id] = this.optionList[0]
+        } else if (this.strucData.value.source.data.action === 'export/device/items') {
           this.vmodel[this.strucData.id] = this.optionList[0]
         } else if (this.strucData.value.source.data.action === 'users/all') {
           const user = window.localStorage.userName

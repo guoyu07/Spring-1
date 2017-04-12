@@ -52,15 +52,13 @@
     <el-menu mode="vertical" router="router">
       <div class="sidebar-title">IT 服务中心</div>
       <el-menu-item-group title="仓库管理">
-        <el-menu-item index="/storemanage/instock" @click="$router.go(0)"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
+        <!-- @click="$router.go(0)" -->
+        <el-menu-item index="/storemanage/instock"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
         <el-menu-item index="/storemanage/outstock"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
         <!-- <el-menu-item index="/storemanage/outstock/edit"><i class="el-icon-fa-edit"></i>信息变更</el-menu-item> -->
       </el-menu-item-group>
       <el-menu-item-group title="设备上架">
         <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
-        <el-menu-item index="/equipment/on/HOSTINFO"><i class="el-icon-fa-upload"></i>服务器</el-menu-item>
-        <el-menu-item index="/equipment/on/STORAGE"><i class="el-icon-fa-upload"></i>存储设备</el-menu-item>
-        <el-menu-item index="/equipment/on/NETDEVICE"><i class="el-icon-fa-upload"></i>网络设备</el-menu-item>
         <!-- <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item> -->
       </el-menu-item-group>
       <el-menu-item-group title="系统上下线">

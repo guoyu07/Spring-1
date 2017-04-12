@@ -107,7 +107,7 @@
       //   })
       // },
       'bodylistIndex' (newVal) {
-        this.$set(this.instockForm, 'data', [{}]) // 切换设备类型时，初始化表单数据
+        this.$set(this.instockForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
         this.form.body.body_list[newVal].attr_list.map(group => {
           group.value.map(item => {
             if (item.value.type === 'arr' || item.value.type === 'FKs') {
@@ -232,29 +232,14 @@
           }
           this.form.header.map(group => {
             group.value.map(item => {
-              if (item.value.type === 'arr' || item.value.type === 'FKs') {
-                this.$set(this.instockForm.header, item.id, [])
-              } else if (item.value.type === 'str' || item.value.type === 'FK') {
-                this.$set(this.instockForm.header, item.id, '')
-              } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
-                this.$set(this.instockForm.header, item.id, null)
-              } else {
-                // 'date' || 'datetime' || 'int'
-                this.$set(this.instockForm, item.id, undefined)
-              }
+              this.setDataType(item, this.instockForm.header, this)
             })
           })
+          // this.instockForm.body[0] = {}
           this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
             group.value.map(item => {
-              if (item.value.type === 'arr' || item.value.type === 'FKs') {
-                this.$set(this.instockForm.body[0], item.id, [])
-              } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
-                this.$set(this.instockForm.body[0], item.id, undefined)
-              } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
-                this.$set(this.instockForm.body[0], item.id, null)
-              } else {
-                this.$set(this.instockForm.body[0], item.id, '')
-              }
+              // this.$set(this.instockForm.body, original.id, [])
+              this.setDataType(item, this.instockForm.body[0], this)
             })
           })
           // 如果是修改页面
