@@ -9,10 +9,50 @@
             <div v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
                 <p class="h5">{{taskheader.tname}}</p>
-                <header-form-structure-display
-                  :item="applyData.header"
-                  :form-data="taskheader.form.form.header">
-                </header-form-structure-display>
+                <div v-for="taskformheader in taskheader.form.form.header">
+                  <!-- {{taskformheader.name}} -->
+                  <span v-for="valueheader in taskformheader.value">
+                    <!-- 有 show 条件的时候 -->
+                    <div v-if="valueheader.value.show">
+                      <!-- 判断 show.type 这里只判断了一种情况-->
+                      <div v-if="valueheader.value.show.type==='form_header'">
+                        <!-- 判断是设备选择，还是普通表单显示 TODO：需要写一下表单显示的情况 -->
+                        <div v-if="valueheader.value.type === 'search_bar'">
+                          <el-table
+                            class="margin-bottom"
+                            v-if="valueheader.value.show.value === getPathResult(applyData.header, valueheader.value.show.key_path)"
+                            :data="applyData.header[valueheader.id]">
+                            <el-table-column
+                              v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                              :prop="item.id"
+                              :label="item.name">
+                            </el-table-column>
+                          </el-table>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 无 show 条件的时候 -->
+                    <span v-else>
+                      <!-- 表单信息显示 -->
+                      <header-form-display
+                        v-if="valueheader.value.type !== 'search_bar'"
+                        :item="applyData.header"
+                        :form-item="valueheader">
+                      </header-form-display>
+                      <!-- 选择设备信息显示 -->
+                      <el-table
+                        class="margin-bottom"
+                        v-if="valueheader.value.type === 'search_bar'"
+                        :data="applyData.header[valueheader.id]">
+                        <el-table-column
+                          v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                          :prop="item.id"
+                          :label="item.name">
+                        </el-table-column>
+                      </el-table>
+                    </span>
+                  </span>
+                </div>
               </div>
             </div>
 
@@ -21,9 +61,9 @@
                 <!-- 信息显示 -->
                 <div v-for="task in form">
                   <div v-if="task.form.form.body.body_list.length > 1">
-                    <p class="h5">{{task.tname}}</p>
                     <div v-for="taskform in task.form.form.body.body_list">
                       <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
+                        <p class="h5">{{task.tname}}</p>
                         <form-structure-display
                           v-if="taskform.attr_list[0].value[0].value.type !== 'searchBar'"
                           :item="data"
@@ -46,9 +86,11 @@
                   </div>
                   <div v-else>
                     <!-- 这里是判断 body_list 是不是空数组 -->
-                    <p class="h5">{{task.tname}}</p>
                     <div v-if="task.form.form.body.body_list[0]">
-                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
+                      <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -119,6 +161,7 @@
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
   import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
+  import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
@@ -163,6 +206,7 @@
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
+          console.log(res)
           this.taskForm = res.data.data.form
           this.taskForm.header.forEach((header, k) => {
             header.value.map(item => {
@@ -352,6 +396,7 @@
     components: {
       // searchFormStructure,
       headerFormStructureDisplay,
+      headerFormDisplay,
       formStructureDisplay,
       formStructure,
       headerFormStructure,
@@ -374,6 +419,10 @@
   .el-button {
     margin-right: 8px;
   }
+}
+
+.margin-bottom {
+  margin-bottom: 15px;
 }
 
 .form-block {

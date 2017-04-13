@@ -1,399 +1,257 @@
 <template>
-  <div class="onshelf">
+  <div id="item1-side" class="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
-        <el-card
-          class="box-card step-card"
-          v-loading.fullscreen.lock="loading"
-          element-loading-text="拼命加载中">
-          <h3><i class="el-icon-fa-upload icon-lg"></i> 上架流程</h3>
-          <el-form ref="onForm" label-width="100px">
-            <el-form-item label="设备类型">
-              <el-radio-group v-model="deviceType" @change="onDeviceTypeChange">
-                <el-radio v-for="device in deviceList" :label="device.object_id">{{device.name}}</el-radio>
-              </el-radio-group>
-            </el-form-item>
-            <!-- <el-form-item label="模糊搜索">
-              <el-switch
-                v-model="isAdvanceSearch"
-                on-text="开启"
-                on-color="#42d885"
-                off-text="关闭"></el-switch>
-            </el-form-item> -->
+        <el-card class="box-card">
+          <h3 class="form-title"><i class="el-icon-sign-upload"></i>上架流程</h3>
+          <el-form label-position="left" ref="assignForm" :model="assignForm" :inline="true">
+            <div v-for="task in taskFormData.header">
+              <div v-for="taskform in task.value">
+                <header-form
+                  v-if="!taskform.value.show"
+                  :item="assignForm.header"
+                  :form-item="taskform">
+                </header-form>
+                <div v-if="taskform.value.show">
+                  <search-bar
+                    v-if="taskform.value.show.value === deviceType"
+                    :hosts="assignForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, data)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
+                </div>
+              </div>
+            </div>
           </el-form>
-          <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-            <search-form-structure
-              :search-key-list="searchKeyList"
-              :search-keys="searchKeys"
-              :is-advance-search="isAdvanceSearch"
-              :device-type="deviceType">
-            </search-form-structure>
-
-            <el-form-item>
-              <el-button size="small" :type="!isAdvanceSearch ? 'primary' : 'success'" @click="onSearchDevices(isAdvanceSearch)">{{ !isAdvanceSearch ? '搜索' : '高级搜索' }}</el-button>
-              <el-button size="small" @click="onEmptySearch('searchKeys')">清空</el-button>
-            </el-form-item>
-          </el-form>
-          <el-table
-            :data="deviceTable"
-            border
-            v-loading.body="deviceLoading"
-            @selection-change="onSelectRow"
-            style="width: 100%; min-width: 460px">
-            <el-table-column
-              width="55"
-              fixed
-              type="selection"></el-table-column>
-            <el-table-column
-              v-for="item in searchKeyList"
-              :label="item.name">
-              <template scope="scope">
-                <span v-if="item.value.type === 'FK'">
-                  {{ Object.assign({}, scope.row[item.id]).name }}
-                </span>
-                <span v-else-if="item.value.type === 'FKs'">
-                  <span v-for="span in scope.row[item.id]">{{span.name}}</span>
-                </span>
-                <span v-else-if="item.value.type === 'arr'">
-                  <span v-for="span in scope.row[item.id]">{{span}}</span>
-                </span>
-                <span v-else>{{scope.row[item.id]}}</span>
-              </template>
-            </el-table-column>
-            <!-- <el-table-column
-              prop="name"
-              label="设备"></el-table-column>
-            <el-table-column
-              prop="creator"
-              label="创建者"></el-table-column>
-            <el-table-column
-              prop="ctime"
-              label="创建时间"></el-table-column> -->
-          </el-table>
-          <div class="pagination-block clear">
-            <el-pagination
-              class="fr"
-              layout="prev, pager, next"
-              :current-page="devicePage"
-              :page-size="10"
-              @current-change="onDevicePageChange"
-              :total="deviceTotal">
-            </el-pagination>
-          </div>
-          <div class="btn-area">
-            <el-button
-              type="primary"
-              size="small"
-              class="md"
-              :disabled="!selectedDevices.length"
-              @click="onPushInQueue">加入上架队列</el-button>
-          </div>
-              <!-- </div> -->
-              <!-- <div class="step step-3" v-show="deployStep === 3"> -->
-          <h5>上架列表</h5>
-          <el-table
-            :data="deviceQueue"
-            border>
-            <el-table-column
-              v-for="item in searchKeyList"
-              :label="item.name">
-              <template scope="scope">
-                <span v-if="item.value.type === 'FK'">
-                  {{ Object.assign({}, scope.row[item.id]).name }}
-                </span>
-                <span v-else-if="item.value.type === 'FKs'">
-                  <span v-for="span in scope.row[item.id]">{{span.name}}</span>
-                </span>
-                <span v-else-if="item.value.type === 'arr'">
-                  <span v-for="span in scope.row[item.id]">{{span}}</span>
-                </span>
-                <span v-else>{{scope.row[item.id]}}</span>
-              </template>
-            </el-table-column>
-            <el-table-column
-              inline-template
-              :context="_self"
-              label="操作"
-              fixed="right">
-              <template>
-                <el-button size="small" type="warning" @click="onRemove(row)">移除</el-button>
-              </template>
-            </el-table-column>
-          </el-table>
-          <br>
-          <div class="btn-area">
-            <el-button type="primary" class="md" :disabled="!deviceQueue.length" @click="onConfirm">确定</el-button>
-          </div>
         </el-card>
+        <div class="btn-area">
+          <el-button :disabled="hostList.length === 0" type="primary" @click="onSubmit">确认</el-button>
+          <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
+        </div>
       </el-col>
     </el-row>
-    <!-- <el-dialog
-      title="填写上架信息"
-      v-model="deployViewData.visible"
-      top="10%"
-      :modal="true">
-      <el-form label-position="top" :inline="true" ref="onShelveForm" :model="onShelveForm">
-        <el-tabs type="border-card">
-          <el-tab-pane  v-for="(item, index) in onShelveForm.data" :key="item.instanceId" :label="item.name">
-            <form-structure :form-data="formStructure" :item="item" :index="index"></form-structure>
-            <el-form inline class="form-display-info">
-              <el-form-item v-for="form in searchKeyList" :label="form.name">
-                <span>{{ item.data[form.id] }}</span>
-              </el-form-item>
-            </el-form>
-          </el-tab-pane>
-        </el-tabs>
-      </el-form>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="deployViewData.visible = false">取 消</el-button>
-        <el-button type="primary" @click="onConfirm('onShelveForm')">确 定</el-button>
-      </span>
-    </el-dialog> -->
   </div>
 </template>
-
 <script>
-  import searchFormStructure from '../../_plugins/_searchFormStructure'
+  // import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
+  import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
+  import headerFormStructure from '../../_plugins/_headerFormStructure'
+  import headerForm from '../../_plugins/_headerForm'
+  import searchBar from '../../_plugins/_searchBar'
 
   export default {
     data () {
       return {
-        loading: false,
-        isAdvanceSearch: true,
-        formStructure: [{
-          name: '',
-          value: []
-        }],
-        deviceType: '',
-        deviceList: [],
-        deviceLoading: false,
-        deviceListStructure: {},
-        searchKey: '',
-        searchKeys: {},
-        searchKeyList: [],
-        deviceTable: [],
-        devicePage: 1,
-        deviceTotal: 0,
-        deployViewData: {
-          visible: false
+        assignForm: {
+          header: {},
+          body: []
         },
-        selectedDevices: [],
-        deviceQueue: [],
-        onShelveForm: {
-          data: []
+        routerInfo: {},
+        deviceType: '',
+        hostList: [],
+        mainInfo: {},
+        taskFormData: {},
+        applyData: {
+          header: {},
+          body: []
         }
       }
     },
     created () {
-      this.renderDeviceList()
+      this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
+      this.renderForm()
+      // this.renderTaskForm()
     },
+    // watch: {
+    //   '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
+    //     this.routerInfo = this.$route.params
+    //     this.renderForm()
+    //   }
+    // },
     methods: {
-      renderDeviceList () {
-        let postData = {
-          action: 'on/device/items',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('custom/', this.parseData(postData)).then((res) => {
-          console.log(res)
-          this.deviceList = res.data.data.list
-          this.deviceType = this.deviceList[0].object_id
-          this.deviceList.map(item => {
-            this.deviceListStructure[item.object_id] = item.pkey
-          })
-        })
+      onHostsChange (val) {
+        // console.log(val)
+        this.hostList = []
+        // this.assignForm.header[this.deviceType] = val
+        this.hostList = val
+        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
       },
-
-      renderFormStructure () {
-        let postData = {
-          action: `cmdb/object/on/attr`,
-          method: 'GET',
-          data: { object_id: this.deviceType }
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          console.log(res)
-          this.formStructure[0].value = res.data.data.attr_list
-        })
-      },
-
-      onDeviceTypeChange () {
-        // this.deviceTable = [] // 清空搜索列表
-        this.onSearchDevices() // 不用清空，就是取到当前设备的所有数据
-        this.deviceQueue = [] // 清空上架列表
-        this.renderFormStructure()
-        var postData = {
-          action: 'cmdb/object/search/attr',
+      renderForm () {
+        const renderFromData = {
+          action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            object_id: this.deviceType
+            pkey: 'equipment_on',
+            tkey: 'start'
           }
         }
-        this.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
-          this.searchKeyList = res.data.data.attr_list
-          this.searchKeyList.map(item => {
-            if (item.value.type === 'FK' || item.value.type === 'FKs') {
-              this.$set(this.searchKeys, item.id, [])
-            } else {
-              this.$set(this.searchKeys, item.id, '')
-            }
+        this.http.post('', this.parseData(renderFromData)).then((res) => {
+          // console.log(res)
+          this.taskFormData = res.data.data.form
+          this.taskFormData.header.map(group => {
+            group.value.map(item => {
+              // if (!item.value.show) {
+              //   this.setDataType(item, this.assignForm.header, this)
+              // }
+              this.setDataType(item, this.assignForm.header, this)
+              if (item.value.show) {
+                const key = []
+                if (item.value.show.type === 'form_header') {
+                  const keyPath = item.value.show.key_path.split('.')
+                  if (!key.includes(keyPath[0])) {
+                    key.push(keyPath[0])
+
+                    this.$watch('assignForm.header.' + keyPath[0], (newVal, oldVal) => {
+                      const _value = newVal && newVal[keyPath[1]] || ''
+                      this.deviceType = _value
+                      console.log(item)
+                      // this.setDataType(item, this.assignForm.header, this)
+                      // if (item.value.show.op === 'eq') {
+                      //   console.log(_value === item.value.show.value)
+                      //   return _value === item.value.show.value
+                      // } else {
+                      //   return _value !== item.value.show.value
+                      // }
+                    })
+                  }
+                }
+              }
+            })
           })
-          this.loading = false
         })
       },
-
-      onSearchDevices (isAdvance) {
-        // if (!isAdvance) {
-          // if (!this.searchKey) {
-          //   this.$message.warning('请填写关键词！')
-          //   return false
-          // }
-        //   let postData = {
-        //     action: 'cmdb/fulltext/search',
-        //     method: 'POST',
-        //     data: {
-        //       object_id: this.deviceType,
-        //       page: this.devicePage,
-        //       pageSize: 10,
-        //       keyword: this.searchKey
-        //     }
-        //   }
-        //   this.deviceLoading = true
-        //   this.http.post('', this.parseData(postData)).then((res) => {
-        //     processRes(res)
-        //   })
-        // } else {
-        // if (this.isEmptyObj(this.filterObj(this.searchKeys, isAdvance))) {
-        //   this.$message.info('搜索条件不能为空！')
-        //   return false
-        // }
-        let searchData = { status: '已出库', isapply: 'no', ...this.filterObj(this.searchKeys, isAdvance) }
+      onSearchDevices () {
+        let searchData = Object.assign(this.searchData, this.filterObj(this.searchKeys))
         console.log(searchData)
-        let postData = {
-          action: `/object/${this.deviceType}/instance/_search`,
-          method: 'POST',
-          data: {
-            query: searchData,
-            page: this.devicePage,
-            pageSize: 10,
-            fields: {},
-            sort: {}
-          }
+        if (this.isEmptyObj(searchData)) {
+          this.$message.info('搜索条件不能为空！')
+          return false
         }
-        this.deviceLoading = true
-        this.http.post('easyops/', this.parseData(postData)).then((res) => {
-          processRes(res)
-        })
-        // }
-        const processRes = (res) => {
+        // searchData.isapply = 'no' // 未被占用
+        let postData = {
+          action: this.mainInfo.value.source.data.action,
+          method: this.mainInfo.value.source.data.method,
+          data: searchData
+        }
+        this.deviceLoading = false
+        this.http.post(this.mainInfo.value.source.url.substring(4), this.parseData(postData)).then((res) => {
           console.log(res)
-          if (!res.data.data.data.total) {
+          if (!res.data.data.total) {
             this.$message.warning('找不到结果！')
           }
-          this.deviceTotal = res.data.data.data.total
-          this.deviceTable = res.data.data.data.list
+          console.log(res)
+          this.deviceTotal = res.data.data.total
+          this.deviceTable = this.getPathResult(res, this.mainInfo.value.source.res.data_path)
           this.deviceLoading = false
-        }
+        })
       },
-
-      onDevicePageChange (val) {
-        this.devicePage = val
-        this.onSearchDevices(this.isAdvanceSearch)
-      },
-
-      onEmptySearch (formName) {
-        console.log(this.$refs[formName])
-        this.$refs[formName].resetFields()
-      },
-
-      onSelectRow (val) {
-        this.selectedDevices = val
-      },
-
-      onPushInQueue () {
-        for (const device of this.selectedDevices) {
-          if (!this.deviceQueue.includes(device)) {
-            if (this.selectedDevices.length > 5) {
-              this.$message.warning('上架设备最多 5 个！')
+      onAddtoOff () {
+        for (const selection of this.selectedDevices) {
+          console.log(this.hostList)
+          if (!this.hostList.includes(selection)) {
+            if (this.selectedDevices.length > this.limit) {
+              this.$message.warning(`设备选择最多${this.limit}个！`)
             } else {
-              this.deviceQueue = [...this.deviceQueue, device]
+              this.hostList = [...this.hostList, selection]
             }
+          } else {
+            this.$message.warning(`下架列表中已存在${selection.name}`)
           }
         }
       },
-
-      // bulkEditAndDeploy () {
-      //   this.deviceQueue.forEach((v, k) => {
-      //     let data = {
-      //       // data: {}
-      //     }
-      //     this.formStructure[0].value.map(item => {
-      //       if (item.value.type === 'arr' || item.value.type === 'FKs') {
-      //         data[item.id] = []
-      //       } else if (item.value.type === 'int') {
-      //         data[item.id] = 0
-      //       } else if (item.value.type === 'date' || item.value.type === 'datetime') {
-      //         data[item.id] = undefined
-      //       } else {
-      //         data[item.id] = ''
-      //       }
-      //     })
-      //     data.name = v.name
-      //     data.instanceId = v.instanceId
-      //     data.data = v
-      //     if (!this.onShelveForm.data.some(item => item.instanceId === data.instanceId)) {  // push if not exist
-      //       this.onShelveForm.data.push(data)
-      //     }
-      //   })
-      //   this.deployViewData.visible = true
-      // },
-
-      onConfirm () {
-        // // this.deployViewData.visible = false
-        // let objectList = this.onShelveForm.data
-        // // for (const form in this.onShelveForm.data) {
-        // //   objectList.push(form)
-        // // }
-        // // console.log(objectList)
-        // this.$refs[formName].validate((valid) => {
-          // if (valid) {
-        console.log('submit!')
+      handleSelectionChange (val) {
+        this.selectedDevices = val
+      },
+      onRemove (row) {
+        const index = this.hostList.indexOf(row)
+        this.hostList.splice(index, 1)
+      },
+      resetForm (formName) {
+        console.log(this.$refs)
+        this.$refs[formName].resetFields()
+      },
+      onSubmit () {
+        // console.log(this.deviceType)
+        // for (const id in this.assignForm.header) {
+        // }
+        // this.assignForm.header[this.deviceType] = this.hostList
+        this.taskFormData.header.map(header => {
+          header.value.map(item => {
+            if (item.value.show) {
+              if (item.value.show.value === this.deviceType) {
+                // 留下所选的的设备类型的值
+                this.assignForm.header[item.id] = this.hostList
+              } else {
+                // 删除其他无关属性
+                delete this.assignForm.header[item.id]
+              }
+            }
+          })
+        })
         const postData = {
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
-            pkey: this.deviceListStructure[this.deviceType],
+            pkey: 'equipment_on',
             form: {
-              'object_list': this.deviceQueue,
-              'object_id': this.deviceType
+              'body': [],
+              'header': this.assignForm.header
             }
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          console.log(res)
-          if (res.statusCode === 406) {
-            this.$message.error(res.errorMessage)
-          } else {
-            this.$message.success('提交成功！')
-            this.$router.replace('/orders')
+        this.http.post('', this.parseData(postData))
+          .then((res) => {
+            if (res && res.status === 200) {
+              this.$message({
+                type: 'success',
+                message: '提交成功!'
+              })
+              this.$router.replace('/orders') // 设备成功上架后跳到工单管理
+            }
+          })
+      },
+      onReject (task, action) {
+        console.log(task, action.pass)
+        this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({value}) => {
+          if (!value) {
+            this.$message.error('失败：驳回意见不可留空！')
+            return
           }
-            // })
-          // } else {
-          //   this.$message.warning('表单未填写完整！')
-          //   return false
-          // }
+          let postData = {
+            action: 'runtime/task/complete',
+            method: 'POST',
+            data: {
+              tid: this.routerInfo.id,
+              form: { value },
+              pass: action.pass
+            }
+          }
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('已驳回！')
+            }
+            this.$router.go(-1) // 跳转历史的上一页
+          })
         })
       },
-
-      onRemove (device) {
-        const index = this.deviceQueue.indexOf(device)
-        this.deviceQueue.splice(index, 1)
+      cancel () {
+        this.$router.go(-1) // 跳转历史的上一页
       }
     },
     components: {
-      searchFormStructure,
-      formStructure
+      // searchFormStructure,
+      headerFormStructureDisplay,
+      formStructureDisplay,
+      formStructure,
+      headerFormStructure,
+      headerForm,
+      searchBar
     }
   }
 </script>

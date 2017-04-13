@@ -97,11 +97,15 @@ const parseData = obj => {
 
 Vue.prototype.parseData = parseData
 
-const getPathResult = (result, path) => {
+const getPathResult = (result, path, k) => {
   let _result = result
   const _path = path.split('.')
-  for (const i in _path) {
-    _result = _result[_path[i]]
+  if (Array.isArray(_result[_path[0]]) && _path.length === 2) { // 第一个参数是一个数组,而且层级为两级
+    _result = _result[_path[0]][k][_path[1]]
+  } else { // 为对象时
+    for (const i in _path) {
+      _result = _result[_path[i]]
+    }
   }
   return _result
 }
@@ -197,6 +201,12 @@ Vue.prototype.getTask = (arrMsg, taskKeyArr) => {
       }
     })
   return rs
+}
+
+Vue.prototype.isEmptyObj = obj => {
+  for (const id in obj) {
+    return id
+  }
 }
 
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段

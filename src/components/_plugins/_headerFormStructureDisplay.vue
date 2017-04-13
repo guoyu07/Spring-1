@@ -3,35 +3,16 @@
     <div class="form-block" v-for="formBlock in formData">
       <h4>{{formBlock.name}}</h4>
       <div class="headerform">
-        <el-form-item
-          v-for="formItem in formBlock.value"
-          :label="formItem.name">
-          <span v-if="formItem.value.type === 'dict'">
-            {{ item && item[formItem.id][formItem.value.source.res.show_key] }}
-          </span>
-
-          <span v-else-if="formItem.value.type === 'dicts'">
-            <span v-for="span in item && item[formItem.id]">
-              {{ span[formItem.value.source.res.show_key] }}
-            </span>
-          </span>
-
-          <span v-else-if="formItem.value.type === 'FKs'">
-            <span v-for="span in item && item[formItem.id]">{{ span.name }}</span>
-          </span>
-
-          <span v-else-if="formItem.value.type === 'arr'">
-            <span v-for="span in item && item[formItem.id]">{{ span }}</span>
-          </span>
-
-          <span v-else>{{ item && item[formItem.id] }}</span>
-        </el-form-item>
+        <span v-for="formItem in formBlock.value">
+          <header-form-display :item="item" :form-item="formItem"></header-form-display>
+        </span>
       </div>
     </div>
   </div>
 </template>
 
 <script>
+  import headerFormDisplay from './_headerFormDisplay'
   export default {
     props: {
       item: { type: Object },
@@ -46,6 +27,10 @@
     },
 
     methods: {
+    },
+
+    components: {
+      headerFormDisplay
     }
   }
 </script>

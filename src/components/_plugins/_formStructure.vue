@@ -17,7 +17,8 @@
 
         <el-input-number
           v-else-if="formItem.value.type === 'int'"
-          v-model="item[formItem.id]" :min="1">
+          v-model="item[formItem.id]" :min="1"
+          :disabled="formItem.readonly">
         </el-input-number>
 
         <el-select
