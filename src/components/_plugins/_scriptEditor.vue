@@ -10,8 +10,8 @@
 </style>
 
 <template>
-  <el-dialog title="编辑后置脚本" v-model="editorProps.visible">
-    <h5 class="editor-title"><i class="el-icon-information"></i> 在下方的编辑器里编辑后置脚本（.python）：</h5>
+  <el-dialog title="编辑后置脚本" v-model="editorProps.visible" size="large">
+    <h5 class="editor-title"><i class="el-icon-information"></i> 在下方的编辑器里编辑后置脚本（.py）：</h5>
     <codemirror v-model="editorProps.data" :options="editorOptions"></codemirror>
 
     <div class="dialog-footer" slot="footer">
