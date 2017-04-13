@@ -101,7 +101,7 @@
       </el-menu-item-group>
 
       <el-menu-item-group title="流程自定义">
-        <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>BPMN 配置</el-menu-item>
+        <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>流程设计</el-menu-item>
         <el-menu-item index="/process-admin/basics"><i class="el-icon-fa-circle-o"></i>流程基本管理</el-menu-item>
         <el-menu-item index="/process-admin/steps"><i class="el-icon-fa-circle-o-notch"></i>流程环节管理</el-menu-item>
         <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>表单配置</el-menu-item>
