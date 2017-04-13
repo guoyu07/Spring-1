@@ -117,14 +117,23 @@
       <span class="dialog-footer" slot="footer">
         <el-row v-if="isAssignable" style="text-align: left">
           <el-col :span="20" :offset="2">
-            <h5 class="sub-title"><i class="el-icon-circle-check"></i> 请勾选欲指派的用户：</h5>
-            <el-radio-group v-model="newAssignee">
-              <el-radio v-for="user in userList" :label="user.userId" :disabled="taskViewData.task.assignee === user.userId">{{user.code}}</el-radio>
-            </el-radio-group>
+            <h5 class="sub-title"><i class="el-icon-circle-check"></i> 请勾选欲指派的用户或候选组：</h5>
+            <el-form label-width="60px" label-position="left">
+              <el-form-item label="用户">
+                <el-radio-group v-model="newAssignee">
+                  <el-radio v-for="user in userList" :label="user.userId" :disabled="taskViewData.task.assignee === user.userId">{{user.code}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="候选组">
+                <el-checkbox-group v-model="newAssigneeGroup">
+                  <el-checkbox v-for="role in roleList" :label="role.key" :checked="taskViewData.task.candidate_groups.includes(role.key)">{{role.name}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-form>
           </el-col>
         </el-row>
         <el-button v-if="!isAssignable" type="info" @click="isAssignable = true" icon="more">指派</el-button>
-        <el-button v-if="isAssignable" type="success" @click="onAssign(taskViewData.task.id, newAssignee)" icon="check" :disabled="!newAssignee" :loading="taskViewData.loading">确认指派</el-button>
+        <el-button v-if="isAssignable" type="success" @click="onAssign(taskViewData.task.id, newAssignee, newAssigneeGroup)" icon="check" :disabled="!newAssignee && !newAssigneeGroup.length" :loading="taskViewData.loading">确认指派</el-button>
       </span>
     </el-dialog>
   </div>
@@ -132,9 +141,10 @@
 
 <script>
   import getUserList from './../../mixins/getUserList'
+  import getRoleList from './../../mixins/getRoleList'
 
   export default {
-    mixins: [getUserList],
+    mixins: [getUserList, getRoleList],
 
     data () {
       return {
@@ -154,6 +164,7 @@
           total: 0
         },
         newAssignee: '',
+        newAssigneeGroup: [],
         isAssignable: false
       }
     },
@@ -162,6 +173,7 @@
       this.getProcessList()
       this.getTaskList()
       this.getUserList()
+      this.getRoleList()
     },
 
     methods: {
@@ -213,7 +225,7 @@
         this.getTaskList()
       },
 
-      onAssign (tid, assignee) {
+      onAssign (tid, assignee, assigneeGroup) {
         let postData = {
           action: 'runtime/task/assignee',
           method: 'POST',
@@ -222,13 +234,30 @@
         this.taskViewData.loading = true
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.taskViewData.loading = true
-            this.taskViewData.visible = false
-            this.$message.success('指派成功！')
-            this.isAssignable = false
-            this.getTaskList()
+            if (assigneeGroup.length) {
+              let postData = {
+                action: 'runtime/task/assignee/group',
+                method: 'POST',
+                data: { tid, groupId: assigneeGroup }
+              }
+              this.http.post('', this.parseData(postData)).then((res) => {
+                if (res.status === 200) {
+                  _finish()
+                }
+              })
+            } else {
+              _finish()
+            }
           }
         })
+
+        const _finish = () => {
+          this.taskViewData.loading = false
+          this.taskViewData.visible = false
+          this.$message.success('指派成功！')
+          this.isAssignable = false
+          this.getTaskList()
+        }
       },
 
       filterProcess (value, row) {

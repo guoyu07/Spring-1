@@ -15,14 +15,14 @@
         <el-card class="box-card">
           <h3><i class="el-icon-fa-sitemap icon-lg"></i> BPMN 配置</h3>
           <el-alert
-            title="在此修改或新建流程的 BPMN（业务流程建模标记），以自定义流程的环节和走向 :)"
+            title="在此修改流程的 BPMN（业务流程建模标记），以自定义流程的环节和走向 :)"
             type="info"
             show-icon
             class="mgb12">
           </el-alert>
-          <div class="btn-area clear">
+          <!-- <div class="btn-area clear">
             <el-button type="info" :plain="true" @click="onNewBpmn" icon="plus">新建流程 BPMN</el-button>
-          </div>
+          </div> -->
           <el-table
             :data="permittedProcessList"
             border>
