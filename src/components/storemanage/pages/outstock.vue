@@ -3,25 +3,29 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <h3 class="form-title"><i class="el-icon-sign-out"></i>出库流程</h3>
+          <h3 class="form-title"><!-- <i class="el-icon-sign-out"></i> -->{{ routerInfo.pkey === 'alter_device' ? '设备变更' : '设备出库'}}</h3>
           <el-form label-position="left" ref="assignForm" :model="assignForm" :inline="true">
             <div v-for="task in taskFormData.header">
-              <div v-for="taskform in task.value">
+              <span v-for="taskform in task.value">
                 <header-form
                   v-if="!taskform.value.show"
                   :item="assignForm.header"
                   :form-item="taskform">
                 </header-form>
                 <div v-if="taskform.value.show">
-                  <search-bar
-                    v-if="taskform.value.show.value === deviceType"
-                    :hosts="assignForm.header"
-                    :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, data)"
-                    @on-hosts-change="onHostsChange">
-                  </search-bar>
+                  <div v-if="taskform.value.show.type==='form_header'">
+                    <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
+                      <search-bar
+                        v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
+                        :hosts="assignForm.header"
+                        :attr-list="taskform"
+                        :limit="getLimitQuantity(taskform, data)"
+                        @on-hosts-change="onHostsChange">
+                      </search-bar>
+                    </div>
+                  </div>
                 </div>
-              </div>
+              </span>
             </div>
           </el-form>
         </el-card>
@@ -63,14 +67,13 @@
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderForm()
-      // this.renderTaskForm()
     },
-    // watch: {
-    //   '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
-    //     this.routerInfo = this.$route.params
-    //     this.renderForm()
-    //   }
-    // },
+    watch: {
+      '$route' (to, from) { // 复用组件时，想对路由参数的变化作出响应的话,你可以简单地 watch（监测变化） $route 对象
+        this.routerInfo = this.$route.params
+        this.renderForm()
+      }
+    },
     methods: {
       onHostsChange (val) {
         // console.log(val)
@@ -84,7 +87,7 @@
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            pkey: 'export_device',
+            pkey: this.routerInfo.pkey,
             tkey: 'start'
           }
         }
@@ -174,20 +177,23 @@
         this.$refs[formName].resetFields()
       },
       onSubmit () {
-        // console.log(this.deviceType)
-        // for (const id in this.assignForm.header) {
-        // }
-        // this.assignForm.header[this.deviceType] = this.hostList
         this.taskFormData.header.map(header => {
           header.value.map(item => {
             if (item.value.show) {
-              if (item.value.show.value === this.deviceType) {
-                // 留下所选的的设备类型的值
-                this.assignForm.header[item.id] = this.hostList
-              } else {
-                // 删除其他无关属性
-                delete this.assignForm.header[item.id]
+              // show.type 有四种类型
+              if (item.value.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+                  this.assignForm.header[item.id] = this.hostList
+                }
               }
+              // if (item.value.show.value === this.deviceType) {
+              //   // 留下所选的的设备类型的值
+              //   this.assignForm.header[item.id] = this.hostList
+              // }
+              // else {
+              //   // 删除其他无关属性
+              //   delete this.assignForm.header[item.id]
+              // }
             }
           })
         })
@@ -195,7 +201,7 @@
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
-            pkey: 'export_device',
+            pkey: this.routerInfo.pkey,
             form: {
               'body': [],
               'header': this.assignForm.header

@@ -100,11 +100,22 @@ Vue.prototype.parseData = parseData
 const getPathResult = (result, path, k) => {
   let _result = result
   const _path = path.split('.')
-  if (Array.isArray(_result[_path[0]]) && _path.length === 2) { // 第一个参数是一个数组,而且层级为两级
-    _result = _result[_path[0]][k][_path[1]]
-  } else { // 为对象时
+  // console.log(k)
+  if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
+    // TODO 这里可以优化
+    if (_path.length === 2) {
+      _result = _result[_path[0]][k][_path[1]]
+    } else if (_path.length === 3) {
+      _result = _result[_path[0]][k][_path[1]][_path[2]]
+    }
+  } else {
     for (const i in _path) {
-      _result = _result[_path[i]]
+      if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
+        _result = _result[_path[i]]
+      } else {
+        console.log('getPathResult 出错')
+        return false
+      }
     }
   }
   return _result

@@ -9,11 +9,24 @@
         :label="formItem.name"
         :rules="rules(formItem)">
 
-        <el-input
-          v-if="formItem.value.type === 'str'"
-          v-model="item[formItem.id]"
-          :disabled="formItem.readonly">
-        </el-input>
+        <span v-if="formItem.value.type === 'str'">
+          <!-- 普通表单填写 不管需不需要提交 都是这样 -->
+          <el-input
+            v-if="!formItem.readonly"
+            v-model="item[formItem.id]">
+          </el-input>
+          <!-- 读取默认值并提交 -->
+          <el-input
+            v-if="formItem.readonly && formItem.need_submit"
+            v-model="item[formItem.id]"
+            disabled>
+          </el-input>
+          <!-- 读取默认值不提交 -->
+          <span v-if="formItem.readonly && !formItem.need_submit">
+            {{getPathResult(readInfo, formItem.default.key_path, index)}}
+          </span>
+
+        </span>
 
         <el-input-number
           v-else-if="formItem.value.type === 'int'"
@@ -24,7 +37,8 @@
         <el-select
           filterable
           v-else-if="formItem.value.type === 'enum'"
-          v-model="item[formItem.id]">
+          v-model="item[formItem.id]"
+          :disabled="formItem.readonly">
           <el-option v-for="option in formItem.value.regex"
             :label="option"
             :value="option"></el-option>
@@ -77,7 +91,8 @@
     props: {
       item: { type: Object },
       index: { type: Number },
-      formData: { type: Array }
+      formData: { type: Array },
+      readInfo: { type: Object }
     },
 
     data () {

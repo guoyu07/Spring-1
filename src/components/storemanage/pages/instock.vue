@@ -34,6 +34,7 @@
   export default {
     data () {
       return {
+        routerInfo: {},
         form: {},
         tabsValue: '0',
         bodylistIndex: 0,
@@ -74,6 +75,7 @@
     created () {
       this.renderTaskForm()
       // console.log(this.form)
+      this.routerInfo = this.$route.params
       this.userInfo = window.localStorage
       this.application = this.userInfo.userName // 默认申请人为填写人
       if (this.$route.params.id) {

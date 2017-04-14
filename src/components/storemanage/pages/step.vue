@@ -56,77 +56,75 @@
               </div>
             </div>
 
-            <!-- 当 body 没有表单需要填写 且 没有信息需要显示时，以下不加载 -->
-            <div v-if="applyData.body.length !== 0 && taskForm.body.body_list.length !== 0">
-              <el-tabs type="border-card" @tab-click="handleClick">
-                <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
-                  <!-- 信息显示 -->
-                  <div v-for="task in form">
-                    <div v-if="task.form.form.body.body_list.length > 1">
-                      <div v-for="taskform in task.form.form.body.body_list">
-                        <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
-                          <p class="h5">{{task.tname}}</p>
-                          <form-structure-display
-                            v-if="taskform.attr_list[0].value[0].value.type !== 'searchBar'"
-                            :item="data"
-                            :form-data="taskform.attr_list"
-                            :index="index">
-                          </form-structure-display>
+            <el-tabs type="border-card" @tab-click="handleClick">
+              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
+                <!-- 信息显示 -->
+                <div v-for="task in form">
+                  <div v-if="task.form.form.body.body_list.length > 1">
+                    <div v-for="taskform in task.form.form.body.body_list">
+                      <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display
+                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
+                          :item="data"
+                          :form-data="taskform.attr_list"
+                          :index="index">
+                        </form-structure-display>
 
-                          <el-table
-                            v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
-                            :data="data[taskform.attr_list[0].value[0].id]">
-                            <el-table-column
-                              v-for="item in taskform.attr_list[0].value[0].value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                              :prop="item.id"
-                              :label="item.name">
-                            </el-table-column>
-                          </el-table>
+                        <el-table
+                          v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
+                          :data="data[taskform.attr_list[0].value[0].id]">
+                          <el-table-column
+                            v-for="item in taskform.attr_list[0].value[0].value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                            :prop="item.id"
+                            :label="item.name">
+                          </el-table-column>
+                        </el-table>
 
-                        </template>
-                      </div>
+                      </template>
                     </div>
-                    <div v-else>
-                      <!-- 这里是判断 body_list 是不是空数组 -->
-                      <div v-if="task.form.form.body.body_list[0]">
-                        <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true">
-                          <p class="h5">{{task.tname}}</p>
-                          <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
-                        </div>
+                  </div>
+                  <div v-else>
+                    <!-- 这里是判断 body_list 是不是空数组 -->
+                    <div v-if="task.form.form.body.body_list[0]">
+                      <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
                       </div>
                     </div>
                   </div>
+                </div>
 
-                  <!-- body 表单填写 -->
-                  <div v-if="taskForm.body">
-                    <div v-for="taskFormData in taskForm.body.body_list">
-                      <!-- <div v-if="taskFormData.show && taskFormData.show.type === 'message_body'"> -->
-                        <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
-                        <div v-if="taskFormData.show ? (getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value) : true">
-                          <!-- 表单填写 -->
-                          <form-structure
-                            v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
-                            :form-data="taskFormData.attr_list"
-                            :item="assignForm.body[index]"
-                            :index="index">
-                          </form-structure>
-                          <!-- 设备选择 -->
-                          <search-bar
-                            v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
-                            :index="index"
-                            :hosts="assignForm.body[index]"
-                            :attr-list="taskFormData.attr_list[0].value[0]"
-                            :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
-                            @on-hosts-change="onHostsChange">
-                          </search-bar>
-                        </div>
-                      <!-- </div> -->
-                      <!-- <div v-if="!taskFormData.show">000</div> -->
-                    </div>
+                <!-- body 表单填写 -->
+                <div v-if="taskForm.body">
+                  <div v-for="taskFormData in taskForm.body.body_list">
+                    <!-- <div v-if="taskFormData.show "> -->
+                      <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
+                      <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
+                        <!-- 表单填写 -->
+                        <form-structure
+                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
+                          :form-data="taskFormData.attr_list"
+                          :item="assignForm.body[index]"
+                          :index="index"
+                          :read-info="applyData.header">
+                        </form-structure>
+                        <!-- 设备选择 -->
+                        <search-bar
+                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
+                          :index="index"
+                          :hosts="assignForm.body[index]"
+                          :attr-list="taskFormData.attr_list[0].value[0]"
+                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                    <!-- </div> -->
+                    <!-- <div v-if="!taskFormData.show">000</div> -->
                   </div>
-                </el-tab-pane>
-              </el-tabs>
-            </div>
+                </div>
+              </el-tab-pane>
+            </el-tabs>
             <!-- header 表单填写 -->
             <div v-if="taskForm.header">
               <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure>
@@ -205,10 +203,18 @@
                   this.applyData.body.push({})
                 }
               } else if (typeof keyData === 'number') {
-                this.applyData.body.length = keyData
+                // this.applyData.body.length = keyData
+                const num = keyData
+                for (let i = 0; i < num; i++) {
+                  this.applyData.body.push({})
+                }
               } else if (typeof keyData === 'string') {
                 if (typeof +keyData === 'number') {
-                  this.applyData.body.length = +keyData
+                  // this.applyData.body.length = +keyData
+                  const num = +keyData
+                  for (let i = 0; i < num; i++) {
+                    this.applyData.body.push({})
+                  }
                 } else {
                   this.$message('数据有错')
                 }
@@ -249,21 +255,32 @@
                     })
                     console.log(newData)
                   }
+                } else if (body.show.type === 'message_header') {
+                  body.attr_list.map(group => {
+                    group.value.map(value => {
+                      if (value.need_submit) {
+                        this.setNewDataType(value, newData)
+                        // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                        if (value.default.type) {
+                          if (value.default.type === 'message_header') {
+                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          }
+                        }
+                      }
+                      if (!value.need_submit && value.readonly) {
+                        if (value.default.type === 'message_header') {
+                          // item === this.applyData.body
+                          item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        }
+                      }
+                    })
+                  })
                 }
               } else {
                 console.log(item, body)
                 body.attr_list.map(group => {
                   group.value.map(value => {
-                    // this.setNewDataType(item, newData)
-                    // if (item.readonly && !item.need_submit) {
-                    //   if (!this.readOnly.includes(group)) {
-                    //     this.readOnly.push(group)
-                    //   }
-                    // }
                     if (value.need_submit) {
-                      // if (!this.filterTaskFrom.includes(group)) {
-                      //   this.filterTaskFrom.push(group)
-                      // }
                       this.setNewDataType(value, newData)
                       // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                       if (value.default.type) {
