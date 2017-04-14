@@ -201,24 +201,18 @@
              pkey: deviceViewData.device.pkey,
              taskList: deviceViewData.device.task_list
              }"></progress-wrap>
-            <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
-            <el-collapse v-if="deviceViewData.device.variables">
-              <el-collapse-item v-for="(task, key) in deviceViewData.device.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
-                <el-form label-position="left" inline>
-                  <el-form-item v-if="task.author" label="发起者：">
-                    <span>{{task.author}}</span>
+            <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 完整历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
+            <el-collapse v-if="deviceViewData.device.history_list">
+              <el-collapse-item v-for="(task, key) in deviceViewData.device.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+                <el-form label-position="left" label-width="90px" inline>
+                  <el-form-item v-if="task.operator" label="任务 Key：">
+                    <code>{{task.task_key}}</code>
                   </el-form-item>
-                  <el-form-item v-if="task.operator.name" label="操作者：">
+                  <el-form-item v-if="task.operator" label="发起者：">
                     <span>{{task.operator.name}}</span>
                   </el-form-item>
-                  <el-form-item v-if="task.operator.time" label="时间：">
-                    <small>{{task.time}}</small>
-                  </el-form-item>
-                  <el-form-item v-if="task.form.applyType" label="申请类型：">
-                    <span>{{task.form.applyType}}</span>
-                  </el-form-item>
-                  <el-form-item label="备注：">
-                    <span>{{task.form.remark || '无'}}</span>
+                  <el-form-item v-if="task.time" label="时间：">
+                    <span>{{task.time}}</span>
                   </el-form-item>
                 </el-form>
               </el-collapse-item>

@@ -1,16 +1,19 @@
-<style>
-  .CodeMirror {
-    font-size: 12px;
-  }
+<style lang="less">
+  .el-dialog {
+    .CodeMirror {
+      font-size: 12px;
+      height: 420px;
+    }
 
-  .editor-title {
-    margin-top: 0;
-    margin-bottom: 12px;
+    .editor-title {
+      margin-top: 0;
+      margin-bottom: 12px;
+    }
   }
 </style>
 
 <template>
-  <el-dialog title="编辑后置脚本" v-model="editorProps.visible" size="large">
+  <el-dialog title="编辑后置脚本" v-model="editorProps.visible" size="large" top="8%">
     <h5 class="editor-title"><i class="el-icon-information"></i> 在下方的编辑器里编辑后置脚本（.py）：</h5>
     <codemirror v-model="editorProps.data" :options="editorOptions"></codemirror>
 
