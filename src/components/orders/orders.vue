@@ -177,6 +177,9 @@
               <el-form-item v-if="deviceViewData.device.id" label="任务 ID：">
                 <span>{{deviceViewData.device.id}}</span>
               </el-form-item>
+              <el-form-item v-if="deviceViewData.device.variables.author" label="发起者：">
+                <span>{{deviceViewData.device.variables.author}}</span>
+              </el-form-item>
               <el-form-item v-if="deviceViewData.device.assignee" label="指派者：">
                 <span>{{deviceViewData.device.assignee}}</span>
               </el-form-item>
@@ -205,10 +208,10 @@
             <el-collapse v-if="deviceViewData.device.history_list">
               <el-collapse-item v-for="(task, key) in deviceViewData.device.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
                 <el-form label-position="left" label-width="90px" inline>
-                  <el-form-item v-if="task.operator" label="任务 Key：">
+                  <el-form-item v-if="task.task_key" label="任务 Key：">
                     <code>{{task.task_key}}</code>
                   </el-form-item>
-                  <el-form-item v-if="task.operator" label="发起者：">
+                  <el-form-item v-if="task.operator" label="操作者：">
                     <span>{{task.operator.name}}</span>
                   </el-form-item>
                   <el-form-item v-if="task.time" label="时间：">
