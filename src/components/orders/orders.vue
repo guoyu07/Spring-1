@@ -167,6 +167,7 @@
       <el-dialog
         :title="deviceViewData.device.name ? deviceViewData.device.pname + '—' + deviceViewData.device.name : deviceViewData.device.pname"
         v-model="deviceViewData.visible"
+        size="large"
         :modal="true">
         <el-row>
           <el-col :span="20" :offset="2">
