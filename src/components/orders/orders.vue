@@ -178,7 +178,7 @@
               <el-form-item v-if="deviceViewData.device.id" label="任务 ID：">
                 <span>{{deviceViewData.device.id}}</span>
               </el-form-item>
-              <el-form-item v-if="deviceViewData.device.variables.author" label="发起者：">
+              <el-form-item v-if="deviceViewData.device.variables" label="发起者：">
                 <span>{{deviceViewData.device.variables.author}}</span>
               </el-form-item>
               <el-form-item v-if="deviceViewData.device.assignee" label="指派者：">
@@ -208,7 +208,7 @@
             <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 完整历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
             <el-collapse v-if="deviceViewData.device.history_list">
               <el-collapse-item v-for="(task, key) in deviceViewData.device.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
-                <el-form label-position="left" label-width="90px" inline>
+                <el-form label-position="left" label-width="90px" inline class="expanded-form">
                   <el-form-item v-if="task.task_key" label="任务 Key：">
                     <code>{{task.task_key}}</code>
                   </el-form-item>
