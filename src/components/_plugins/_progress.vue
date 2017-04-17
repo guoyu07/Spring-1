@@ -175,6 +175,10 @@
         &::before {
           background-color: @activeColor;
           border: none;
+          content: '\2714';
+          color: #fff;
+          font-size: 10px;
+          text-align: center;
         }
       }
 
@@ -185,7 +189,7 @@
 
         &::before {
           background-color: @success;
-          animation: ing 2s infinite;
+          animation: ing .8s infinite;
           border: none;
         }
       }
@@ -193,12 +197,12 @@
       &::before {
         content: '';
         position: absolute;
-        top: -4px;
+        top: -6px;
         // left: 8px;
         display: block;
         // margin-top: -6px;
-        width: 12px;
-        height: 12px;
+        width: 18px;
+        height: 18px;
         border-radius: 50%;
         border: 1px solid @activeColor;
         background-color: #fff;
@@ -208,13 +212,13 @@
 
   @keyframes ing {
     0% {
-        transform: scale(1.2);
+        transform: scale(1);
     }
-    50% {
-        transform: scale(1.1);
+    40% {
+        transform: scale(.6);
     }
     100% {
-        transform: scale(1.2);
+        transform: scale(1);
     }
   }
 </style>
