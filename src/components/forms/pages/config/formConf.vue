@@ -27,7 +27,7 @@
           <el-col :span="22" :offset="1">
             <el-form label-position="left" :inline="true">
               <el-row>
-                <el-form-item>
+                <el-form-item style="width: 100%">
                   <el-checkbox v-model="itemConf.required">必填</el-checkbox>
                   <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
                   <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
