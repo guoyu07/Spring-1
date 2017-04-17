@@ -62,7 +62,7 @@
               </div>
             </div>
 
-            <el-tabs type="border-card" @tab-click="handleClick" v-if="taskForm.body.body_list.length !== 0 && applyData.body.length !== 0">
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="taskForm.body.body_list.length !== 0 && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- 信息显示 -->
                 <div v-for="task in form">
@@ -162,7 +162,9 @@
             <div class="btn-area">
               <span v-for="action in applyData.action">
                 <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-                <el-button v-else-if="action.type==='manual'" type="primary" @click="onManual">{{action.name}}</el-button>
+                <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
+                  <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
+                </el-tooltip>
                 <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
@@ -266,8 +268,17 @@
           // }
           this.taskForm.header.forEach((header, k) => {
             if (header) {
-              header.value.map(item => {
-                this.setDataType(item, this.assignForm.header, this)
+              header.value.map(value => {
+                console.log(value)
+                if (value.need_submit) {
+                  this.setDataType(value, this.assignForm.header, this)
+                  // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                  if (value.default.type) {
+                    if (value.default.type === 'message_header') {
+                      this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                    }
+                  }
+                }
               })
             }
           })
@@ -481,8 +492,64 @@
             }
           })
       },
-      onManual () {
-        console.log(this.applyData)
+      onManual (action) {
+        const ref = this.$refs['assignForm'].fields.length !== 0
+        if (ref) { // 有表单的情况下，表单的自验证
+          this.$refs['assignForm'].validate((valid) => {
+            if (valid) {
+              console.log(this.assignForm.body)
+              if (this.assignForm.body) {
+                for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+                  for (const item in data) {
+                    if (Array.isArray(data[item]) && data[item].length === 0) {
+                      this.$message.warning('未完成！')
+                      return false
+                    }
+                  }
+                }
+              }
+              this.manualMethod(action)
+              // console.dir(this.assignForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('未完成！')
+              return false
+            }
+          })
+        } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+          if (!this.assignForm.body.some(data => {
+            for (const item in data) {
+              return Array.isArray(data[item]) && data[item].length === 0
+            }
+          })) {
+            this.manualMethod(action)
+            // console.dir(this.assignForm)
+          } else {
+            this.$message.warning('未分配完！')
+            return false
+          }
+        }
+      },
+      manualMethod (action) {
+        const postData = {
+          action: 'do/activiti/form/action',
+          method: 'POST',
+          data: {
+            form: this.assignForm,
+            tid: this.routerInfo.id,
+            action_id: action.id
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          if (res && res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '提交成功!'
+            })
+            this.$router.replace('/orders') // 分配成功跳转工单管理
+          }
+        })
       },
       onReject (task, action) {
         console.log(task, action.pass)
