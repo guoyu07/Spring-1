@@ -79,7 +79,7 @@
                     width="200"
                     trigger="focus">
                     <code class="information-popover"><i class="el-icon-information"></i> /download/XX?tid=XX</code>
-                    <el-input slot="reference" size="small" v-model="formConfig.form.action.find(_ => _.type === 'target').url"></el-input>
+                    <el-input slot="reference" size="small" v-model="selectedTarget.url"></el-input>
                   </el-popover>
                 </el-form-item>
               </template>
@@ -197,7 +197,7 @@
           </el-dialog>
           <el-row type="flex" justify="end">
             <el-button type="warning" :plain="true" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
-            <el-button type="success" icon="fa-check" @click="submitBtn">确认提交</el-button>
+            <el-button type="success" icon="fa-check" @click="onSubmit" :loading="submitting">确认提交</el-button>
           </el-row>
         </el-card>
       </el-col>
@@ -212,7 +212,7 @@ export default {
       id: '',
       // 操作按钮
       actions: [
-        { name: '下载', url: '', type: 'target' },
+        { name: '', url: '', type: 'target' },
         { name: '', id: '', desc: '', type: 'auto' },
         { name: '', id: '', desc: '', type: 'manual' }
       ],
@@ -220,10 +220,14 @@ export default {
       actionDefList: [],
       formConfig: null,
       editBody: null,
-      showConditionVisible: false
+      showConditionVisible: false,
+      submitting: false
     }
   },
   computed: {
+    selectedTarget () {
+      return this.formConfig.form.action.find(_ => _.type === 'target') ? this.formConfig.form.action.find(_ => _.type === 'target') : {}
+    },
     selectedAuto () {
       return this.formConfig.form.action.find(_ => _.type === 'auto') ? this.formConfig.form.action.find(_ => _.type === 'auto') : {}
     },
@@ -250,7 +254,7 @@ export default {
       this.$router.go(-1)
     }
     this.getActionDef()
-    this.assignName()
+    this.initActions()
   },
   methods: {
     getActionDef () {
@@ -263,7 +267,7 @@ export default {
         this.actionDefList = res.data.data.list
       })
     },
-    assignName () {
+    initActions () {
       // fuck this shit
       if (this.formConfig.form.action.find(_ => _.type === 'manual')) {
         this.actions.find(_ => _.type === 'manual').name = this.formConfig.form.action.find(_ => _.type === 'manual').name
@@ -275,6 +279,7 @@ export default {
     // 选择功能按钮 action
     actionChange (arr) {
       this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
+      console.log(this.formConfig.form.action)
     },
     onChangeAuto (val) {
       if (val === 'CMDB更新实例') {
@@ -282,7 +287,7 @@ export default {
       } else {
         Object.assign(this.selectedAuto, { id: 'cmdb_create_instance', desc: '表单header里须包含object_id,body里为实例数据' })
       }
-      this.assignName()
+      this.initActions()
     },
     onChangeManual (val) {
       if (val === 'CMDB更新实例') {
@@ -290,7 +295,7 @@ export default {
       } else {
         Object.assign(this.selectedManual, { id: 'cmdb_create_instance', desc: '表单header里须包含object_id,body里为实例数据' })
       }
-      this.assignName()
+      this.initActions()
     },
     // 选择配置 body 个数
     countConfig (count) {
@@ -298,7 +303,7 @@ export default {
       console.log(count)
     },
     // 确认完成
-    submitBtn () {
+    onSubmit () {
       const postData = {
         action: 'activiti/task/form',
         method: 'POST',
@@ -308,11 +313,18 @@ export default {
       // this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
       // this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
       // console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
+      // this.$set(this.formConfig.form.action, 'target', this.selectedTarget)
+      if (!this.selectedTarget) {
+        Object.assign(this.formConfig.form.action.find(_ => _.type === 'target'), this.selectedTarget)
+      }
+
       console.log(this.formConfig)
+      this.submitting = true
       this.http.post('', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
-          this.$router.go(-1) // 回退
+          this.submitting = false
           this.$message.success('修改成功！')
+          this.$router.go(-1) // 回退
         }
       })
     },

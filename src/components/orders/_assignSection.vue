@@ -56,7 +56,7 @@
       <el-table-column
         label="操作">
         <template scope="scope">
-          <el-button type="info" size="small" :plain="true" @click="taskViewData.visible = true; taskViewData.task = scope.row">详情</el-button>
+          <el-button type="info" size="small" :plain="true" @click="assignViewData.visible = true; assignViewData.task = scope.row">详情</el-button>
         </template>
       </el-table-column>
     </el-table>
@@ -72,29 +72,29 @@
     </div>
 
     <el-dialog
-      :title="taskViewData.task.name"
-      v-model="taskViewData.visible"
+      :title="assignViewData.task.name"
+      v-model="assignViewData.visible"
       @close="isAssignable = false"
       :modal="true">
       <el-row>
         <el-col :span="20" :offset="2">
           <el-form label-position="left" inline class="expanded-form">
-            <el-form-item v-if="taskViewData.task.pname" label="所属流程：">
-              <span>{{taskViewData.task.pname}}</span>
+            <el-form-item v-if="assignViewData.task.pname" label="所属流程：">
+              <span>{{assignViewData.task.pname}}</span>
             </el-form-item>
-            <el-form-item v-if="taskViewData.task.name" label="任务名称：">
-              <span>{{taskViewData.task.name}}</span>
+            <el-form-item v-if="assignViewData.task.name" label="任务名称：">
+              <span>{{assignViewData.task.name}}</span>
             </el-form-item>
-            <el-form-item v-if="taskViewData.task.id" label="任务 ID：">
-              <span>{{taskViewData.task.id}}</span>
+            <el-form-item v-if="assignViewData.task.id" label="任务 ID：">
+              <span>{{assignViewData.task.id}}</span>
             </el-form-item>
-            <el-form-item v-if="taskViewData.task.createTime" label="创建时间：">
-              <span>{{taskViewData.task.createTime | convertTime}}</span>
+            <el-form-item v-if="assignViewData.task.createTime" label="创建时间：">
+              <span>{{assignViewData.task.createTime | convertTime}}</span>
             </el-form-item>
           </el-form>
-          <h5 class="sub-title" v-if="taskViewData.task.variables && taskViewData.task.variables.message"><i class="el-icon-information"></i> 历史步骤（{{taskViewData.task.variables.message.length}}）</h5>
-          <el-collapse v-if="taskViewData.task.variables">
-            <el-collapse-item v-for="(task, key) in taskViewData.task.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
+          <h5 class="sub-title" v-if="assignViewData.task.variables && assignViewData.task.variables.message"><i class="el-icon-information"></i> 历史步骤（{{assignViewData.task.variables.message.length}}）</h5>
+          <el-collapse v-if="assignViewData.task.variables">
+            <el-collapse-item v-for="(task, key) in assignViewData.task.variables.message" :title="(key + 1).toString() + '. ' + task.task_name">
               此处数据未统一标准，暂不编写 :(
               <!-- <el-form label-position="left" inline>
                 <el-form-item v-if="task.form.applyType" label="申请类型：">
@@ -117,14 +117,23 @@
       <span class="dialog-footer" slot="footer">
         <el-row v-if="isAssignable" style="text-align: left">
           <el-col :span="20" :offset="2">
-            <h5 class="sub-title"><i class="el-icon-circle-check"></i> 请勾选欲指派的用户：</h5>
-            <el-radio-group v-model="newAssignee">
-              <el-radio v-for="user in userList" :label="user.userId" :disabled="taskViewData.task.assignee === user.userId">{{user.code}}</el-radio>
-            </el-radio-group>
+            <h5 class="sub-title"><i class="el-icon-circle-check"></i> 请勾选欲指派的用户或候选组：</h5>
+            <el-form label-width="60px" label-position="left">
+              <el-form-item label="用户">
+                <el-radio-group v-model="newAssignee">
+                  <el-radio v-for="user in userList" :label="user.userId" :disabled="assignViewData.task.assignee === user.userId">{{user.code}}</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <el-form-item label="候选组">
+                <el-checkbox-group v-model="newAssigneeGroup">
+                  <el-checkbox v-for="role in roleList" :label="role.key" :checked="assignViewData.task.candidate_groups.includes(role.key)">{{role.name}}</el-checkbox>
+                </el-checkbox-group>
+              </el-form-item>
+            </el-form>
           </el-col>
         </el-row>
         <el-button v-if="!isAssignable" type="info" @click="isAssignable = true" icon="more">指派</el-button>
-        <el-button v-if="isAssignable" type="success" @click="onAssign(taskViewData.task.id, newAssignee)" icon="check" :disabled="!newAssignee" :loading="taskViewData.loading">确认指派</el-button>
+        <el-button v-if="isAssignable" type="success" @click="onAssign(assignViewData.task.id, newAssignee, newAssigneeGroup)" icon="check" :disabled="!newAssignee && !newAssigneeGroup.length" :loading="assignViewData.loading">确认指派</el-button>
       </span>
     </el-dialog>
   </div>
@@ -132,9 +141,11 @@
 
 <script>
   import getUserList from './../../mixins/getUserList'
+  import getRoleList from './../../mixins/getRoleList'
+  import onAssign from './../../mixins/onAssign'
 
   export default {
-    mixins: [getUserList],
+    mixins: [getUserList, getRoleList, onAssign],
 
     data () {
       return {
@@ -143,7 +154,7 @@
         processTagList: [],
         selectedProcess: '',
         taskList: [],
-        taskViewData: {
+        assignViewData: {
           visible: false,
           loading: false,
           task: {}
@@ -152,9 +163,7 @@
           page: 1,
           pageSize: 10,
           total: 0
-        },
-        newAssignee: '',
-        isAssignable: false
+        }
       }
     },
 
@@ -162,6 +171,7 @@
       this.getProcessList()
       this.getTaskList()
       this.getUserList()
+      this.getRoleList()
     },
 
     methods: {
@@ -211,24 +221,6 @@
       onPageChange (val) {
         this.pagination.page = val
         this.getTaskList()
-      },
-
-      onAssign (tid, assignee) {
-        let postData = {
-          action: 'runtime/task/assignee',
-          method: 'POST',
-          data: { tid, assignee }
-        }
-        this.taskViewData.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.taskViewData.loading = true
-            this.taskViewData.visible = false
-            this.$message.success('指派成功！')
-            this.isAssignable = false
-            this.getTaskList()
-          }
-        })
       },
 
       filterProcess (value, row) {

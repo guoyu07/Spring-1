@@ -136,24 +136,6 @@ export default {
   },
 
   methods: {
-    // customizeEditor () {
-    //   const queries = [
-    //     '[data-group="data-store"]',
-    //     '[data-group="collaboration"]',
-    //     '[data-group="data-store"]',
-    //     '.bpmn-icon-subprocess-expanded',
-    //     '[data-group="externalTaskConfiguration"]',
-    //     '[data-group="jobConfiguration"]',
-    //     '[data-group="documentation"]',
-    //     '[data-tab-target="listeners"]',
-    //     '[data-tab-target="extensionElements"]'
-    //   ]
-    //   document.getElementsByClassName('bpp-properties-panel')[0].style.height = '100%'
-    //   for (let query of queries) {
-    //     document.querySelector(query).style = 'display: none'
-    //   }
-    // },
-
     _importXML (xml) {
       this.bpmnModeler.importXML(xml, err => {
         if (err) console.log(err)

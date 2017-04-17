@@ -63,10 +63,13 @@
           <b>EasyOps</b> 运维管理系统
         </router-link>
       </el-menu-item>
-      <el-menu-item index="3" class="fr">
+      <el-menu-item index="2">
+        <a href="http://preview.easyops.cn/">返回 EasyOps</a>
+      </el-menu-item>
+      <el-menu-item index="4" class="fr">
         <a @click="logout">退出</a>
       </el-menu-item>
-      <el-menu-item index="2" class="fr disabled"><!--<i class="el-icon-fa-user-circle"></i>--><b>
+      <el-menu-item index="3" class="fr disabled"><!--<i class="el-icon-fa-user-circle"></i>--><b>
         {{userName}}</b></el-menu-item>
     </el-menu>
   </header>
