@@ -57,7 +57,7 @@
             </div>
 
             <el-tabs type="border-card" @tab-click="handleClick">
-              <el-tab-pane v-for="(data, index) in applyData.body" :label="data.environment">
+              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index + 1)">
                 <!-- 信息显示 -->
                 <div v-for="task in form">
                   <div v-if="task.form.form.body.body_list.length > 1">

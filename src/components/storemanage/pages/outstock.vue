@@ -151,27 +151,6 @@
           this.deviceLoading = false
         })
       },
-      onAddtoOff () {
-        for (const selection of this.selectedDevices) {
-          console.log(this.hostList)
-          if (!this.hostList.includes(selection)) {
-            if (this.selectedDevices.length > this.limit) {
-              this.$message.warning(`设备选择最多${this.limit}个！`)
-            } else {
-              this.hostList = [...this.hostList, selection]
-            }
-          } else {
-            this.$message.warning(`下架列表中已存在${selection.name}`)
-          }
-        }
-      },
-      handleSelectionChange (val) {
-        this.selectedDevices = val
-      },
-      onRemove (row) {
-        const index = this.hostList.indexOf(row)
-        this.hostList.splice(index, 1)
-      },
       resetForm (formName) {
         console.log(this.$refs)
         this.$refs[formName].resetFields()

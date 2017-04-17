@@ -16,7 +16,13 @@
                     <div v-if="valueheader.value.show">
                       <!-- 判断 show.type 这里只判断了一种情况-->
                       <div v-if="valueheader.value.show.type==='form_header'">
-                        <!-- 判断是设备选择，还是普通表单显示 TODO：需要写一下表单显示的情况 -->
+                        <!-- 表单信息显示 -->
+                        <header-form-display
+                          v-if="valueheader.value.type !== 'search_bar'"
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                        <!-- 设备选择 -->
                         <div v-if="valueheader.value.type === 'search_bar'">
                           <el-table
                             class="margin-bottom"
@@ -56,7 +62,7 @@
               </div>
             </div>
 
-            <el-tabs type="border-card" @tab-click="handleClick">
+            <el-tabs type="border-card" @tab-click="handleClick" v-if="taskForm.body.body_list.length !== 0 && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- 信息显示 -->
                 <div v-for="task in form">
@@ -87,16 +93,16 @@
                   <div v-else>
                     <!-- 这里是判断 body_list 是不是空数组 -->
                     <div v-if="task.form.form.body.body_list[0]">
-                      <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true">
-                        <p class="h5">{{task.tname}}</p>
-                        <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
-                      </div>
+                      <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
+                      <p class="h5">{{task.tname}}</p>
+                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
+                      <!-- </div> -->
                     </div>
                   </div>
                 </div>
 
                 <!-- body 表单填写 -->
-                <div v-if="taskForm.body">
+                <div v-if="taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
                     <!-- <div v-if="taskFormData.show "> -->
                       <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
@@ -127,12 +133,36 @@
             </el-tabs>
             <!-- header 表单填写 -->
             <div v-if="taskForm.header">
-              <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure>
+
+              <div v-for="task in taskForm.header">
+                <span v-for="taskform in task.value">
+                  <header-form
+                    v-if="!taskform.value.show"
+                    :item="assignForm.header"
+                    :form-item="taskform">
+                  </header-form>
+                  <div v-if="taskform.value.show">
+                    <div v-if="taskform.value.show.type==='form_header'">
+                      <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
+                        <search-bar
+                          v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
+                          :hosts="assignForm.header"
+                          :attr-list="taskform"
+                          :limit="getLimitQuantity(taskform, data)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <!-- <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure> -->
             </div>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
                 <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='manual'" type="primary" @click="onManual">{{action.name}}</el-button>
                 <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
@@ -150,6 +180,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
+  import headerForm from '../../_plugins/_headerForm'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -170,7 +201,8 @@
         searchKeyList: [],
         searchKeys: {},
         searchData: {},
-        path_list: []
+        path_list: [],
+        hostList: []
       }
     },
     created () {
@@ -347,12 +379,32 @@
         console.log(this.index)
       },
       onHostsChange (val, index) {
-        for (const id in this.assignForm.body[index]) {
-          this.assignForm.body[index][id] = val
+        console.log(val, index)
+        if (index !== undefined) {
+          for (const id in this.assignForm.body[index]) {
+            this.assignForm.body[index][id] = val
+          }
+        } else {
+          this.hostList = []
+          this.hostList = val
         }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
       },
       onSubmit (assignForm) {
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.value.show) {
+              // show.type 有四种类型
+              if (item.value.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.assignForm.header[item.id] = this.hostList
+                  }
+                }
+              }
+            }
+          })
+        })
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
@@ -429,9 +481,12 @@
             }
           })
       },
+      onManual () {
+        console.log(this.applyData)
+      },
       onReject (task, action) {
         console.log(task, action.pass)
-        this.$prompt('请输入对「' + task.header.applicationName.name + '」的' + action.name + '意见：', '确定' + action.name + '？', {
+        this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({value}) => {
@@ -467,6 +522,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
+      headerForm,
       searchBar
     }
   }

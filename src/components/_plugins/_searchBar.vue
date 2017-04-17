@@ -81,6 +81,7 @@
         mainInfo: {},
         searchKeys: {},
         searchKeyList: [],
+        selectedDevices: [],
         deviceTable: [],
         deviceLoading: false,
         deviceTotal: 0,
