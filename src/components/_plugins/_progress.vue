@@ -2,7 +2,7 @@
   <div>
     <div class="progressWarp">
       <ul class="progress-bar">
-        <li v-for="(item, index) in proConfig[progress.pkey]" class="progress-step" :class="[{ active: item.value < ing }, { ing: item.value === ing }]">
+        <li v-for="(item, index) in proConfig" class="progress-step" :class="[{ active: item.value < ing }, { ing: item.value === ing }]">
           <div class="detail">
             <div v-for="(step, stepindex) in item.list">
               {{ step.tname }}
@@ -22,107 +22,35 @@
     },
     created () {
       this.getFilteredList()
+      this.renderPro()
+    },
+    watch: {
+      'progress': {
+        handler: 'renderPro',
+        deep: true
+      }
     },
     data () {
       return {
         step: 0,
-        proConfig: {
-          equipment_on: [{
-            value: 1,
-            list: [{
-              tkey: 'start',
-              tname: '选取设备'
-            }]
-          }, {
-            value: 2,
-            list: [{
-              tkey: 'deviceInfo',
-              tname: '填写上架信息'
-            }, {
-              tkey: 'ipinfo',
-              tname: '填写IP信息'
-            }]
-          }, {
-            value: 3,
-            list: [{
-              tkey: 'approve',
-              tname: '运维主管审批'
-            }]
-          }, {
-            value: 4,
-            list: [{
-              tkey: 'netLine',
-              tname: '准备网线连接'
-            }, {
-              tkey: 'installDB',
-              tname: '安装数据库'
-            }, {
-              tkey: 'deviceMove',
-              tname: '设备搬迁/挂牌及配置'
-            }]
-          }],
-          import_device: [{
-            value: 1,
-            list: [{
-              tkey: 'start',
-              tname: '填写入库单'
-            }]
-          }, {
-            value: 2,
-            list: [{
-              tkey: 'approve',
-              tname: '审批'
-            }]
-          }],
-          alter_device: [{
-            value: 1,
-            list: [{
-              tkey: 'start',
-              tname: '填写变更申请单'
-            }]
-          }, {
-            value: 2,
-            list: [{
-              tkey: 'approve',
-              tname: '审批'
-            }]
-          }],
-          host_apply: [{
-            value: 1,
-            list: [{
-              tkey: 'start',
-              tname: '填写入库单'
-            }]
-          }, {
-            value: 2,
-            list: [{
-              tkey: 'restart',
-              tname: '准备服务器资源'
-            }]
-          }, {
-            value: 3,
-            list: [{
-              tkey: 'approve',
-              tname: '资源审批'
-            }]
-          }, {
-            value: 4,
-            list: [{
-              tkey: 'assignIP',
-              tname: '分配虚拟机IP'
-            }]
-          }, {
-            value: 5,
-            list: [{
-              tkey: 'createVM',
-              tname: '创建虚拟机'
-            }]
-          }]
-        }
+        proConfig: []
       }
     },
 
     methods: {
+      renderPro () {
+        // TODO: 这里只写了简单的流程任务数据，未判断是否为并发任务
+        this.proConfig = []
+        this.progress.taskList.forEach((item, k) => {
+          this.proConfig.push({
+            value: k,
+            list: [{
+              tkey: item.tkey,
+              tname: item.tname
+            }]
+          })
+        })
+      },
       getFilteredList () {
         console.log(this.progress.taskList)
         let postData = {
@@ -142,7 +70,7 @@
 
     computed: {
       ing () {
-        for (const item of this.proConfig[this.progress.pkey]) {
+        for (const item of this.proConfig) {
           for (const list of item.list) {
             if (this.progress.task === list.tkey) {
               return item.value

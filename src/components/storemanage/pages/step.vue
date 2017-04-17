@@ -269,7 +269,6 @@
           this.taskForm.header.forEach((header, k) => {
             if (header) {
               header.value.map(value => {
-                console.log(value)
                 if (value.need_submit) {
                   this.setDataType(value, this.assignForm.header, this)
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
