@@ -204,8 +204,8 @@
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 1px solid @activeColor;
-        background-color: #fff;
+        border: 2px solid #fff;
+        background-color: #9e9e9e;
       }
     }
   }

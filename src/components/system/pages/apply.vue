@@ -39,11 +39,10 @@
         editInfo: {
           id: ''
         },
-        editData: {
-          applicationName: '',
-          business: '',
-          opsManagers: []
-        },
+        // editData: {
+        //   header: {},
+        //   body: []
+        // },
         // applyFormHead: {
         //   applyType: '',
         //   applicationName: ''
@@ -74,8 +73,6 @@
     },
     created () {
       this.renderTaskForm()
-      this.renderAppList()
-      this.renderBusinessList()
       this.editInfo.userName = window.localStorage.userName
       if (this.$route.params.id) {
         this.editInfo.id = this.$route.params.id
@@ -133,48 +130,11 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           const message = res.data.data.variables.message
           this.applyForm = this.findTaskMsgR(message, ['start']).form
-          this.editData.applicationName = this.applyForm.applicationName
-          this.editData.business = this.applyForm.business
-          this.editData.opsManagers = this.applyForm.opsManagers
-          console.log(this.editData)
+          // this.editData.applicationName = this.applyForm.applicationName
+          // this.editData.business = this.applyForm.business
+          // this.editData.opsManagers = this.applyForm.opsManagers
+          // console.log(this.editData)
         })
-      },
-      renderAppList () {
-        const postData = {
-          action: 'object/instance/list',
-          method: 'GET',
-          data: {
-            object_id: 'APP'
-            // page: "不传则获取该对象所有实例",
-            // pageSize: "默认30"
-          }
-        }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          console.log(res, res.data.data.list)
-          this.appList = res.data.data.list
-          this.applyForm.applicationName = this.editData.applicationName
-        })
-      },
-      renderBusinessList () {
-        const postData = {
-          action: 'object/instance/list',
-          method: 'GET',
-          data: {
-            object_id: 'BUSINESS'
-             // page: "不传则获取该对象所有实例",
-             // pageSize: "默认30"
-          }
-        }
-        this.http.post('', this.parseData(postData))
-        .then((res) => {
-          this.businessList = res.data.data.list
-          this.applyForm.business = this.editData.business
-        })
-      },
-      onChangeType () {
-        this.applyForm.applicationName = ''
-        this.applyForm.business = ''
       },
       handleRemove (tab) {
         this.applyForm.body.splice(tab.index, 1)

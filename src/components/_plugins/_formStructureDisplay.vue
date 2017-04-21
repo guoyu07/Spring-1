@@ -6,15 +6,27 @@
         v-for="formItem in formBlock.value"
         :label="formItem.name">
 
-         <span v-if="formItem.value.type === 'dict' || formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span> <!-- 这个name报错，回头看看dict和FK的格式 -->
+        <span v-if="formItem.value.type === 'dict'">
+          {{ item && item[formItem.id][formItem.value.source.res.show_key] }}
+        </span>
 
-        <span v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'FKs'">
+        <span v-else-if="formItem.value.type === 'dicts'">
+          <span v-for="span in item && item[formItem.id]">
+            {{ span[formItem.value.source.res.show_key] }}
+          </span>
+        </span>
+
+         <span v-else-if="formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span>
+
+        <span v-else-if="formItem.value.type === 'FKs'">
           <span v-for="span in item[formItem.id]">{{ span.name }}</span>
         </span>
 
-        <span v-else-if="formItem.value.type === 'arr'">
-          <span v-for="span in item[formItem.id]">{{ span }}</span>
-        </span>
+        <template v-else-if="formItem.value.type === 'arr'">
+          <span class="arr-span" v-for="span in item[formItem.id]">
+            {{ span }}
+          </span>
+        </template>
 
         <!-- <span v-else-if="formItem.value.type === 'search_bar'">
           <pre>{{ item[formItem.id] }}</pre>
@@ -60,6 +72,9 @@
     .el-form-item {
       margin: 0;
       width: 33.33%;
+    }
+    .arr-span {
+      margin-right: 10px;
     }
   }
 

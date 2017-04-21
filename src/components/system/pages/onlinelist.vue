@@ -4,7 +4,6 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>上线列表</h3>
-          <!-- <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link> -->
           <el-table
             :data="applyList"
             border
@@ -52,7 +51,7 @@
 </template>
 
 <script>
-  import getApplyList from './../../../mixins/getApplyList'
+  import getApplyList from './../../../mixins/getOnlineList'
 
   export default {
     mixins: [getApplyList],

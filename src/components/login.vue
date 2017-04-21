@@ -51,21 +51,23 @@
           <h2><b>EasyOps</b><br>
           IT 服务中心</h2>
         </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-input placeholder="请输入用户名" icon="fa-user-o" auto-complete="off" v-model="credentials.username"></el-input>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-input placeholder="请输入密码" type="password" icon="fa-lock" auto-complete="off" v-model="credentials.password"></el-input>
-          </el-col>
-        </el-row>
-        <el-row>
-          <el-col :span="24">
-            <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 录</el-button>
-          </el-col>
-        </el-row>
+        <el-form>
+          <el-row>
+            <el-col :span="24">
+              <el-input id="userId" :autofocus="autoFocus" @keyup.enter.native="submit" placeholder="请输入用户名" icon="fa-user-o" auto-complete="off" v-model="credentials.username" ref="username"></el-input>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-input @keyup.enter.native="submit" placeholder="请输入密码" type="password" icon="fa-lock" auto-complete="off" v-model="credentials.password"></el-input>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col :span="24">
+              <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 录</el-button>
+            </el-col>
+          </el-row>
+        </el-form>
       </div>
     </transition>
   </div>
@@ -90,7 +92,16 @@
           username: '',
           password: ''
         },
+        autoFocus: true,
         error: ''
+      }
+    },
+
+    watch: {
+      '$route' (to, from) {
+        console.log(to, from)
+        console.log(this.$refs.username.autofocus)
+        this.$refs.username.autofocus = true
       }
     },
 

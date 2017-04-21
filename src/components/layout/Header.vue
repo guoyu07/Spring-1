@@ -8,7 +8,14 @@
     box-shadow: 0 1px 2px #b6b6b6;
 
     .logo {
-      font-size: 16px;
+      // font-size: 16px;
+      .logo-img {
+        img {
+          // max-width: 100%;
+          height: 50px;
+          padding: 9px 0;
+        }
+      }
     }
 
     .disabled {
@@ -60,11 +67,14 @@
     <el-menu default-active="1" mode="horizontal">
       <el-menu-item index="1" class="logo">
         <router-link to="/">
-          <b>EasyOps</b> 运维管理系统
+          <!-- <b>EasyOps</b> 运维管理系统 -->
+          <div class="logo-img">
+            <img src="../../assets/logo.png" alt="">
+          </div>
         </router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <a href="http://preview.easyops.cn/">返回 EasyOps</a>
+        <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a>
       </el-menu-item>
       <el-menu-item index="4" class="fr">
         <a @click="logout">退出</a>
@@ -91,6 +101,7 @@
     methods: {
       logout () {
         Auth.logout()
+        // this.$router.go(0)
       }
     }
   }

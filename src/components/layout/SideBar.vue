@@ -63,15 +63,15 @@
       </el-menu-item-group>
       <el-menu-item-group title="系统上下线">
         <el-menu-item index="/system/applylist"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
-        <!-- <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item> -->
+        <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
         <!-- <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item> -->
       </el-menu-item-group>
-      <el-menu-item-group title="防火墙">
+      <!-- <el-menu-item-group title="防火墙">
         <el-menu-item index="/firewall/apply"><i class="el-icon-fa-fire"></i>防火墙开通申请</el-menu-item>
         <el-menu-item index="/firewall/approve"><i class="el-icon-fa-gavel"></i>开通审批</el-menu-item>
         <el-menu-item index="/firewall/result"><i class="el-icon-fa-list-alt"></i>审批结果</el-menu-item>
-      </el-menu-item-group>
-      <!--  -->
+      </el-menu-item-group> -->
+
       <el-menu-item-group title="工单管理">
         <el-menu-item index="/orders"><i class="el-icon-fa-calendar-o"></i>工单管理</el-menu-item>
       </el-menu-item-group>
