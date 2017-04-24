@@ -21,8 +21,8 @@
 
 <template>
   <div class="form-config">
-    <el-collapse v-if="configData.length">
-      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name">
+    <el-collapse v-if="configData.length" :value="activatedItem">
+      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name" :name="itemConf.name">
         <el-row>
           <el-col :span="22" :offset="1">
             <el-form label-position="left" :inline="true">
@@ -44,11 +44,16 @@
                 </el-form-item>
               </el-row>
               <el-row>
-                <el-form-item label="Label 名称">
-                  <el-input size="small" v-model="itemConf.name"></el-input>
-                </el-form-item>
                 <el-form-item label="属性名称">
+                  <el-input size="small" v-model="itemConf.name" placeholder="属性 Label"></el-input>
+                </el-form-item>
+                <el-form-item label="属性 ID">
                   <el-input size="small" class="code-input" v-model="itemConf.id"></el-input>
+                </el-form-item>
+              </el-row>
+              <el-row>
+                <el-form-item label="占位描述">
+                  <el-input size="small" v-model="itemConf.placeholder" placeholder="控件的 placeholder"></el-input>
                 </el-form-item>
               </el-row>
               <el-row>
@@ -91,11 +96,11 @@
           </el-col>
         </el-row>
         <el-row type="flex" justify="end">
-          <el-button size="small" type="danger" icon="delete" @click="delBtn(configData, itemConf)">删除字段</el-button>
+          <el-button size="small" type="danger" icon="delete" @click="onDeleteField(configData, itemConf)">删除字段</el-button>
         </el-row>
       </el-collapse-item>
     </el-collapse>
-    <el-button icon="plus" type="info" :plain="true" size="small" @click="addBtn">添加字段</el-button>
+    <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField">添加字段</el-button>
   </div>
 </template>
 
@@ -110,6 +115,7 @@ export default {
   },
   data () {
     return {
+      activatedItem: [],
       needDefault: false,
       countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
     }
@@ -158,12 +164,12 @@ export default {
     //   itemConf.default.confVisible = true
     // },
     // 添加一个字段
-    addBtn () {
+    onAddField () {
       this.configData.push({
         id: '',
-        name: '',
+        name: '新字段',
         category: '', // 分组
-        unique: true, // 唯一
+        unique: false, // 唯一
         required: true, // 必填
         need_submit: true, // 需要提交
         readonly: false,
@@ -177,10 +183,16 @@ export default {
           type: ''
         }
       })
+      this.activatedItem.push('新字段')
     },
     // 删除一个字段 （删除操作 可以封装为全局方法）
-    delBtn (arr, item) {
-      arr.splice(arr.indexOf(item), 1)
+    onDeleteField (arr, item) {
+      this.$confirm('确定要删除这个字段吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消'
+      }).then(() => {
+        arr.splice(arr.indexOf(item), 1)
+      })
     }
   },
   components: {

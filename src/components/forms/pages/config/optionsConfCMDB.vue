@@ -36,17 +36,17 @@
 <template>
   <el-dialog class="cmdb-config-dialog" title="动态选项 API 配置" v-model="dialogProps.value.confVisible" @close="onClose">
     <div class="conf-cmdb-contain" v-if="dialogProps.value.source">
-      <el-form :model="dialogProps.value.source" label-width="100px" :inline="true">
-        <el-form-item label="URL">
+      <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
+        <el-form-item label="URL (请求地址)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>
         </el-form-item>
-        <el-form-item label="Action">
+        <el-form-item label="Action (动作)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.data.action"></el-input>
         </el-form-item>
-        <el-form-item label="Method">
+        <el-form-item label="Method (方法)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.data.method"></el-input>
         </el-form-item>
-        <el-form-item label="Params">
+        <el-form-item label="Params (参数)">
           <el-dropdown trigger="click" @command="selectParams">
             <el-button size="small" type="primary" :plain="true" icon="plus">添加 Param</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -105,11 +105,11 @@
 
       <h5>选项数据路径配置：</h5>
       <el-card>
-        <el-form label-width="120px" :inline="true">
-          <el-form-item label="data_path">
+        <el-form label-position="top" :inline="true">
+          <el-form-item label="data_path (属性路径)">
             <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.data_path"></el-input>
           </el-form-item>
-          <el-form-item label="show_key">
+          <el-form-item label="show_key (显示键名)">
             <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.show_key"></el-input>
           </el-form-item>
         </el-form>

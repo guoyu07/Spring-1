@@ -167,7 +167,7 @@
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
-                    @click="delBodyBtn(formConfig.form.form.body.body_list, body)">删除 Body</el-button>
+                    @click="onDeleteBody(formConfig.form.form.body.body_list, body)">删除 Body</el-button>
                 </div>
               </el-card>
             </el-row>
@@ -347,8 +347,14 @@ export default {
       })
     },
     // 删除 body
-    delBodyBtn (arr, item) {
-      arr.splice(arr.indexOf(item), 1)
+    onDeleteBody (arr, item) {
+      this.$confirm('确定要删除这个 body 吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        arr.splice(arr.indexOf(item), 1)
+      })
     },
     // 配置显示条件弹窗
     showCondition (body) {
