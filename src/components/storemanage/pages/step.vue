@@ -61,10 +61,10 @@
                 </div>
               </div>
             </div>
-
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="taskForm.body.body_list.length !== 0 && applyData.body.length !== 0">
+            <!-- taskForm.body.body_list.length !== 0 && -->
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
-                <!-- 信息显示 -->
+                <!-- body 信息显示 -->
                 <div v-for="task in form">
                   <div v-if="task.form.form.body.body_list.length > 1">
                     <div v-for="taskform in task.form.form.body.body_list">

@@ -7,11 +7,40 @@ export default {
       currentPage: 1,
       pageSize: 10,
       totalFiltered: 0,
-      dialogReject: false
+      dialogReject: false,
+      form: {}
     }
   },
 
   methods: {
+    renderTaskForm () { // 渲染表单数据
+      const renderFromData = {
+        action: 'activiti/task/form',
+        method: 'GET',
+        data: {
+          pkey: 'systemOnline',
+          tkey: 'start'
+        }
+      }
+      // this.loading = true
+      this.http.post('', this.parseData(renderFromData)).then((res) => {
+        this.form = res.data.data.form
+        this.form.header.map(group => {
+          group.value.map(item => {
+            this.setDataType(item, this.applyFormHead, this)
+          })
+        })
+        this.form.body.body_list[0].attr_list.map(group => {
+          group.value.map(item => {
+            this.setDataType(item, this.applyForm.data[0], this)
+            // this.$watch('applyForm.data.0', newVal => {
+            //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
+            // }, {deep: true})
+          })
+        })
+        // this.loading = false
+      })
+    },
     getApplyList () {
       let postData = {
         action: 'runtime/tasks/self',
@@ -31,6 +60,7 @@ export default {
                 this.applyList[k] = item.form
                 this.applyList[k].id = list.id
                 this.applyList[k].taskDefinitionKey = list.taskDefinitionKey
+                this.applyList[k].pkey = list.pkey
                 this.applyList[k].name = list.name
                 this.applyList[k].action = list.action
               }

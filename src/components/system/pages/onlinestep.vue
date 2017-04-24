@@ -5,149 +5,170 @@
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
-            <el-row :gutter="10">
-              <el-form-item label="申请类型">
-                {{ applyData.applyType }}
-              </el-form-item>
-              <el-form-item label="项目组">
-                {{ applyData.business }}
-              </el-form-item>
-              <el-form-item label="应用名">
-                {{ applyData.applicationName }}
-              </el-form-item>
-              <el-form-item label="备注">
-                {{ applyData.mark }}
-              </el-form-item>
-              <el-form-item
-                v-if="routerInfo.step==='approve'"
-                label=""
-                prop="approve"
-                style="width:1%;display:none;">
-                <el-input
-                  v-model="assignForm.approve">
-                </el-input>
-              </el-form-item>
-            </el-row>
-            <el-tabs type="border-card" @tab-click="handleClick">
-              <el-tab-pane v-for="(data, index) in applyData.data" :label="data.environment">
-                <div class="el-table el-table--fit el-table--border el-table--enable-row-hover el-table--enable-row-transition">
-                  <table>
-                    <tr>
-                      <th>使用环境</th>
-                      <td>{{ data.environment }}</td>
-                      <th>OS</th>
-                      <td>{{ data.operateSystem }}</td>
-                      <th>主机</th>
-                      <td>{{ data.hostType }}</td>
-                    </tr>
-                    <tr>
-                      <th>数量</th>
-                      <td>{{ data.quantity }}</td>
-                      <th>CPU核数</th>
-                      <td>{{ data.cpu }}</td>
-                      <th>内存(G)</th>
-                      <td>{{ data.internalStorage }}</td>
-                    </tr>
-                    <tr>
-                      <th>硬盘(G)</th>
-                      <td>{{ data.hardDisk }}</td>
-                      <th>资源分数</th>
-                      <td>{{ data.score }}</td>
-                      <th><!-- 资产编号 --></th>
-                      <td><!-- {{ data.assetNumber }} --></td>
-                    </tr>
-                    <template v-if="data.hostType === '虚拟机'">
-                      <tr>
-                        <template v-if="data.idc">
-                          <th>IDC</th>
-                          <td>{{ data.idc }}</td>
-                          <th>IDC集群</th>
-                          <td>{{ data.idcgroup }}</td>
-                        </template>
-                        <template v-if="data.ip">
-                          <th>IP</th>
-                          <td>{{ data.ip }}</td>
-                        </template>
-                      </tr>
-                      <template v-if="data.setAgent">
-                        <tr>
-                          <th>创建虚拟机</th>
-                          <td>{{ data.setVirtual ? '是' : '否' }}</td>
-                          <th>配置IP</th>
-                          <td>{{ data.setIP ? '是' : '否' }}</td>
-                          <th>安装Agent</th>
-                          <td>{{ data.setAgent ? '是' : '否' }}</td>
-                        </tr>
-                        <tr>
-                          <th>描述文件URL</th>
-                          <td colspan="5"><a :href="data.url" target="new_blank">{{ data.url }}</a></td>
-                        </tr>
-                      </template>
-                    </template>
-                  </table>
+            <!-- 表头信息显示 -->
+            <div v-for="taskheader in form">
+              <div v-if="taskheader.form.form.header.length >= 1">
+                <p class="h5">{{taskheader.tname}}</p>
+                <div v-for="taskformheader in taskheader.form.form.header">
+                  <!-- {{taskformheader.name}} -->
+                  <span v-for="valueheader in taskformheader.value">
+                    <!-- 有 show 条件的时候 -->
+                    <div v-if="valueheader.value.show">
+                      <!-- 判断 show.type 这里只判断了一种情况-->
+                      <div v-if="valueheader.value.show.type==='form_header'">
+                        <!-- 表单信息显示 -->
+                        <header-form-display
+                          v-if="valueheader.value.type !== 'search_bar'"
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                        <!-- 设备选择 -->
+                        <div v-if="valueheader.value.type === 'search_bar'">
+                          <el-table
+                            class="margin-bottom"
+                            v-if="valueheader.value.show.value === getPathResult(applyData.header, valueheader.value.show.key_path)"
+                            :data="applyData.header[valueheader.id]">
+                            <el-table-column
+                              v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                              :prop="item.id"
+                              :label="item.name">
+                            </el-table-column>
+                          </el-table>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 无 show 条件的时候 -->
+                    <span v-else>
+                      <!-- 表单信息显示 -->
+                      <header-form-display
+                        v-if="valueheader.value.type !== 'search_bar'"
+                        :item="applyData.header"
+                        :form-item="valueheader">
+                      </header-form-display>
+                      <!-- 选择设备信息显示 -->
+                      <el-table
+                        class="margin-bottom"
+                        v-if="valueheader.value.type === 'search_bar'"
+                        :data="applyData.header[valueheader.id]">
+                        <el-table-column
+                          v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                          :prop="item.id"
+                          :label="item.name">
+                        </el-table-column>
+                      </el-table>
+                    </span>
+                  </span>
                 </div>
-                <div class="form-block">
-                  <div v-if="routerInfo.step==='assignIP'">
-                    <h5>请选择IP</h5>
-                    <el-form-item
-                      label="IP"
-                      :prop="'data.' + index + '.ip'"
-                      :rules="{
-                        required: true, message: 'IP不能为空', trigger: 'change'
-                      }">
-                      <el-select v-model="assignForm.data[index].ip" placeholder="请选择IP">
-                        <el-option v-for="ip in ipList" :label="ip.name" :value="ip.name"></el-option>
-                      </el-select>
-                    </el-form-item>
+              </div>
+            </div>
+
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="taskForm.body.body_list.length !== 0 && applyData.body.length !== 0">
+              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
+                <!-- 信息显示 -->
+                <div v-for="task in form">
+                  <div v-if="task.form.form.body.body_list.length > 1">
+                    <div v-for="taskform in task.form.form.body.body_list">
+                      <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display
+                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
+                          :item="data"
+                          :form-data="taskform.attr_list"
+                          :index="index">
+                        </form-structure-display>
+
+                        <el-table
+                          v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
+                          :data="data[taskform.attr_list[0].value[0].id]">
+                          <el-table-column
+                            v-for="item in taskform.attr_list[0].value[0].value.source.data.params.filter(item => {return item.value.type === 'input'})"
+                            :prop="item.id"
+                            :label="item.name">
+                          </el-table-column>
+                        </el-table>
+
+                      </template>
+                    </div>
                   </div>
-                  <div v-if="routerInfo.step==='createVM'">
-                    <h5>安装信息</h5>
-                    <el-form-item
-                      label="创建虚拟机"
-                      :prop="'data.' + index + '.setVirtual'">
-                      <el-switch on-text="" off-text="" v-model="assignForm.data[index].setVirtual">
-                      </el-switch>
-                    </el-form-item>
-                    <el-form-item
-                      label="配置IP"
-                      :prop="'data.' + index + '.setIP'">
-                      <el-switch on-text="" off-text="" v-model="assignForm.data[index].setIP">
-                      </el-switch>
-                    </el-form-item>
-                    <el-form-item
-                      label="安装Agent"
-                      :prop="'data.' + index + '.setAgent'">
-                      <el-switch on-text="" off-text="" v-model="assignForm.data[index].setAgent">
-                      </el-switch>
-                    </el-form-item>
-                    <el-form-item label="描述文件URL" style="width:80%;" label-width="100px">
-                      <el-input v-model="assignForm.data[index].url" placeholder="http://"></el-input>
-                    </el-form-item>
+                  <div v-else>
+                    <!-- 这里是判断 body_list 是不是空数组 -->
+                    <div v-if="task.form.form.body.body_list[0]">
+                      <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
+                      <p class="h5">{{task.tname}}</p>
+                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
+                      <!-- </div> -->
+                    </div>
+                  </div>
+                </div>
+
+                <!-- body 表单填写 -->
+                <div v-if="taskForm.body.body_list.length !== 0">
+                  <div v-for="taskFormData in taskForm.body.body_list">
+                    <!-- <div v-if="taskFormData.show "> -->
+                      <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
+                      <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
+                        <!-- 表单填写 -->
+                        <form-structure
+                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
+                          :form-data="taskFormData.attr_list"
+                          :item="assignForm.body[index]"
+                          :index="index"
+                          :read-info="applyData.header">
+                        </form-structure>
+                        <!-- 设备选择 -->
+                        <search-bar
+                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
+                          :index="index"
+                          :hosts="assignForm.body[index]"
+                          :attr-list="taskFormData.attr_list[0].value[0]"
+                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                    <!-- </div> -->
+                    <!-- <div v-if="!taskFormData.show">000</div> -->
                   </div>
                 </div>
               </el-tab-pane>
             </el-tabs>
-            <div v-if="routerInfo.step==='restart'">
-              <h5 class="h5-title">请填写评审文件URL</h5>
-              <el-form-item label="评审文件"
-                prop="url"
-                :rules="{
-                  required: true, message: '评审文件不能为空', trigger: 'blur'
-                }">
-                 <el-input v-model="assignForm.url" placeholder="http://"></el-input>
-              </el-form-item>
-            </div>
-            <!-- <el-form-item> -->
-              <div class="btn-area">
-                <span v-for="action in applyData.action">
-                  <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
+            <!-- header 表单填写 -->
+            <div v-if="taskForm.header">
+
+              <div v-for="task in taskForm.header">
+                <span v-for="taskform in task.value">
+                  <header-form
+                    v-if="!taskform.value.show"
+                    :item="assignForm.header"
+                    :form-item="taskform">
+                  </header-form>
+                  <div v-if="taskform.value.show">
+                    <div v-if="taskform.value.show.type==='form_header'">
+                      <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
+                        <search-bar
+                          v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
+                          :hosts="assignForm.header"
+                          :attr-list="taskform"
+                          :limit="getLimitQuantity(taskform, data)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                    </div>
+                  </div>
                 </span>
-                <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
               </div>
-              <!-- <el-button type="primary" @click="onSubmit('assignForm')">审批</el-button>
-              <el-button @click="onReject(applyData)">驳回</el-button> -->
-            <!-- </el-form-item> -->
+              <!-- <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure> -->
+            </div>
+            <!-- 按钮区域 -->
+            <div class="btn-area">
+              <span v-for="action in applyData.action">
+                <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
+                  <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
+                </el-tooltip>
+                <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
+              </span>
+              <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
+            </div>
           </el-form>
         </el-card>
       </el-col>
@@ -155,367 +176,442 @@
   </div>
 </template>
 <script>
-import searchFormStructure from '../../_plugins/_searchFormStructure'
-export default {
-  data () {
-    return {
-      loading: false,
-      routerInfo: {},
-      index: 0,
-      applyData: [],
-      assignForm: {
-        data: []
-      },
-      ipList: [],
-      selectedDevices: [], // 选择到的服务器设备
-      hostTabel: [], // 服务器列表
-      deviceLoading: false,
-      deviceTable: [], // 搜索出来的服务器设备列表
-      devicePage: 1,
-      deviceTotal: 0,
-      searchKeys: {
-        status: '已出库'
-      },
-      searchKeyList: [],
-      deviceType: 'chHOST',
-      isAdvanceSearch: true,
-      idcList: [],
-      idcGroupList: []
-    }
-  },
-  created () {
-    this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
-    this.renderInstanceDetail() // 通过 id 渲染本实例
-    switch (this.routerInfo.step) {
-      case 'restart':
-        this.renderIDCList()
-        this.renderIDCGroupList()
-        this.renderSearchKeyList()
-        break
-      case 'assignIP':
-        this.renderIPList()
-        break
-      case 'approve':
-        this.assignForm = {'approve': '通过'}
-        break
-      // case 'judge':
-      //   this.assignForm = {'judge': '通过'}
-      //   break
-      default:
-        return false
-    }
-  },
-  methods: {
-    renderIPList () {
-      const postData = {
-        action: 'object/instance/list',
-        method: 'GET',
-        data: {
-          object_id: 'APP' // 这里应该是取 IP 列表的 object_id
-          // page: "不传则获取该对象所有实例",
-          // pageSize: "默认30"
-        }
+  // import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
+  import headerFormDisplay from '../../_plugins/_headerFormDisplay'
+  import formStructureDisplay from '../../_plugins/_formStructureDisplay'
+  import formStructure from '../../_plugins/_formStructure'
+  import headerFormStructure from '../../_plugins/_headerFormStructure'
+  import headerForm from '../../_plugins/_headerForm'
+  import searchBar from '../../_plugins/_searchBar'
+
+  export default {
+    data () {
+      return {
+        routerInfo: {},
+        applyData: {},
+        form: {},
+        taskForm: {},
+        bodylistIndex: [], // 可删
+        showTaskForm: [],
+        assignForm: {
+          header: {},
+          body: []
+        },
+        index: 0,
+        selectedDevices: [],
+        searchKeyList: [],
+        searchKeys: {},
+        searchData: {},
+        path_list: [],
+        hostList: []
       }
-      this.http.post('', this.parseData(postData))
-      .then((res) => {
-        this.ipList = res.data.data.list
-      })
     },
-    renderSearchKeyList () {
-      this.loading = true
-      var postData = {
-        action: 'cmdb/object/search/attr',
-        method: 'GET',
-        data: {
-          object_id: this.deviceType // 服务器的 object_id
-        }
-      }
-      this.loading = true
-      this.http.post('', this.parseData(postData)).then((res) => {
-        this.searchKeyList = res.data.data.attr_list
-        this.searchKeyList.map(item => {
-          if (item.value.type === 'FK' || item.value.type === 'FKs') {
-            this.$set(this.searchKeys, item.id, [])
-          } else {
-            this.$set(this.searchKeys, item.id, '')
+    created () {
+      this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
+      this.renderInstanceDetail()
+      // this.renderForm()
+      // this.renderTaskForm()
+    },
+    methods: {
+      renderTaskForm () { // 渲染表单数据
+        const renderFromData = {
+          action: 'activiti/task/form/group',
+          method: 'GET',
+          data: {
+            pkey: this.routerInfo.pkey,
+            tkey: this.routerInfo.tkey
           }
-        })
-        this.loading = false
-      })
-    },
-    renderIDCList () {
-      const postData = {
-        action: 'object/instance/list',
-        method: 'GET',
-        data: {
-          object_id: 'APP' // 这里应该是取 IDC 列表的 object_id
-          // page: "不传则获取该对象所有实例",
-          // pageSize: "默认30"
         }
-      }
-      this.http.post('', this.parseData(postData))
-      .then((res) => {
-        this.idcList = res.data.data.list
-      })
-    },
-    renderIDCGroupList () {
-      const postData = {
-        action: 'object/instance/list',
-        method: 'GET',
-        data: {
-          object_id: 'APP' // 这里应该是取 IDC集群 列表的 object_id
-          // page: "不传则获取该对象所有实例",
-          // pageSize: "默认30"
-        }
-      }
-      this.http.post('', this.parseData(postData))
-      .then((res) => {
-        this.idcGroupList = res.data.data.list
-      })
-    },
-    renderInstanceDetail () {
-      let postData = {
-        action: 'runtime/task',
-        method: 'GET',
-        data: {
-          taskId: this.routerInfo.id
-        }
-      }
-      this.http.post('', this.parseData(postData)).then((res) => {
-        const message = res.data.data.variables.message
-        const taskKeyArr = ['restart', 'approve', 'assignIP', 'createVM']
-        this.applyData = this.getTaskInfo(message, taskKeyArr)
-        this.applyData.action = res.data.data.action
-        if (this.applyData.data) {
-          this.applyData.data.forEach((item, k) => {
-            if (item.hostType === '虚拟机') {
-              switch (this.routerInfo.step) {
-                case 'createVM':
-                  this.assignForm.data.push({
-                    setVirtual: false,
-                    setIP: false,
-                    setAgent: false,
-                    url: ''
-                  })
-                  break
-
-                case 'restart':
-                  this.assignForm.data.push({
-                    idc: '',
-                    idcgroup: ''
-                  })
-                  break
-
-                case 'assignIP':
-                  this.assignForm.data.push({
-                    ip: ''
-                  })
-                  break
-
-                default:
-                  if (this.assignForm.data) {
-                    this.assignForm.data.push({})
+        this.http.post('', this.parseData(renderFromData)).then((res) => {
+          console.log(res)
+          this.taskForm = res.data.data.form
+          console.log(this.applyData)
+          if (this.applyData.body.length === 0) {
+            if (this.taskForm.body.count.type === 'message_header') {
+              const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
+              if (Array.isArray(keyData)) {
+                // this.applyData.body.length = keyData.length
+                const num = keyData.length
+                for (let i = 0; i < num; i++) {
+                  this.applyData.body.push({})
+                }
+              } else if (typeof keyData === 'number') {
+                // this.applyData.body.length = keyData
+                const num = keyData
+                for (let i = 0; i < num; i++) {
+                  this.applyData.body.push({})
+                }
+              } else if (typeof keyData === 'string') {
+                if (typeof +keyData === 'number') {
+                  // this.applyData.body.length = +keyData
+                  const num = +keyData
+                  for (let i = 0; i < num; i++) {
+                    this.applyData.body.push({})
                   }
-              }
-            } else {
-              switch (this.routerInfo.step) {
-                case 'restart':
-                  this.assignForm.data.push({
-                    machines: []
-                  })
-                  break
-
-                default:
-                  if (this.assignForm.data) {
-                    this.assignForm.data.push({})
-                  }
-              }
-              // this.assignForm.data.push(machineData) // 这样对应上是第几个环境才设置了IP
-            }
-          })
-        }
-      })
-    },
-    handleClick (tab, event) {
-      this.index = tab.index
-      console.log(this.index)
-    },
-    onSubmit (assignForm) {
-      console.log(this.assignForm)
-      this.$confirm('确定通过审批?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'info'
-      }).then(() => {
-        this.$refs[assignForm].validate((valid) => {
-          if (valid) {
-            if (this.assignForm.data) {
-              for (const item of this.assignForm.data) { // 用 for...of 可以轻松退出循环
-                if (this.routerInfo.step === 'restart' && item.machines && item.machines.length === 0) {
-                  this.$message.warning('未分配完！')
-                  return false
+                } else {
+                  this.$message('数据有错')
                 }
               }
             }
-            const postData = {
-              action: 'runtime/task/complete',
-              method: 'POST',
-              data: {
-                tid: this.routerInfo.id,
-                form: this.assignForm // 通过审批 需要判断一下登录的账号的角色身份
-                  // pass: "流程走向控制变量,整型(可选,默认为0)"
-              }
-            }
-            this.http.post('', this.parseData(postData))
-              .then((res) => {
-                if (res && res.status === 200) {
-                  this.$message({
-                    type: 'success',
-                    message: '审批成功!'
-                  })
-                  this.$router.go(-1) // 分配成功跳转历史的上一页
+          }
+          // 这里是按 this.taskForm.body.count.type 复制进 this.applyData.body 里
+          // if (this.applyData.body.length !== 0) {
+          //   if (this.taskForm.body.count) {
+          //     if (this.taskForm.body.count.type === 'message_header') {
+          //       const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
+          //       this.applyData.body.forEach((body, k) => {
+          //         Object.assign(body, keyData[k])
+          //       })
+          //     }
+          //   }
+          // }
+          this.taskForm.header.forEach((header, k) => {
+            if (header) {
+              header.value.map(value => {
+                if (value.need_submit) {
+                  this.setDataType(value, this.assignForm.header, this)
+                  // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                  if (value.default.type) {
+                    if (value.default.type === 'message_header') {
+                      this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                    }
+                  }
                 }
               })
-          } else {
-            console.log('error submit!!')
-            this.$message.warning('未分配完！')
-            return false
-          }
+            }
+          })
+          this.renderForm()
+          this.applyData.body.forEach((item, k) => {
+            let newData = {}
+            this.taskForm.body.body_list.forEach(body => {
+              if (body.show) {
+                const keyPath = body.show.key_path.split('.')
+                if (body.show.type === 'message_body') {
+                  if (body.show.value === item[keyPath[0]]) {
+                    console.log(item[keyPath[0]])
+                    body.attr_list.map(group => {
+                      group.value.map(item => {
+                        this.setNewDataType(item, newData)
+                      })
+                    })
+                    console.log(newData)
+                  }
+                } else if (body.show.type === 'message_header') {
+                  body.attr_list.map(group => {
+                    group.value.map(value => {
+                      if (value.need_submit) {
+                        this.setNewDataType(value, newData)
+                        // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                        if (value.default.type) {
+                          if (value.default.type === 'message_header') {
+                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          }
+                        }
+                      }
+                      if (!value.need_submit && value.readonly) {
+                        if (value.default.type === 'message_header') {
+                          // item === this.applyData.body
+                          item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        }
+                      }
+                    })
+                  })
+                }
+              } else {
+                console.log(item, body)
+                body.attr_list.map(group => {
+                  group.value.map(value => {
+                    if (value.need_submit) {
+                      this.setNewDataType(value, newData)
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                      if (value.default.type) {
+                        if (value.default.type === 'message_header') {
+                          newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        }
+                      }
+                    }
+                  })
+                })
+              }
+            })
+            this.assignForm.body.push(newData)
+            for (const id in item) {
+              console.log(item[id], this.assignForm.body[k][id])
+              if (this.assignForm.body[k][id] !== undefined) {
+                this.assignForm.body[k][id] = item[id]
+              }
+            }
+          })
         })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消审批'
-        })
-      })
-    },
-    cancel () {
-      this.$router.go(-1) // 跳转历史的上一页
-    },
-    onSearchDevices (isAdvance) {
-      // if (!isAdvance) {
-      //   if (!this.searchKeys.searchKey) {
-      //     this.$message.warning('请填写关键词！')
-      //     return false
-      //   }
-      //   let postData = {
-      //     action: 'cmdb/fulltext/search',
-      //     method: 'POST',
-      //     data: {
-      //       object_id: this.deviceType,
-      //       page: this.devicePage,
-      //       pageSize: 10,
-      //       keyword: this.searchKeys.searchKey
-      //     }
-      //   }
-      //   this.deviceLoading = true
-      //   this.http.post('', this.parseData(postData)).then((res) => {
-      //     if (!res.data.data.data.total) {
-      //       this.$message.warning('找不到结果！')
-      //     }
-      //     this.deviceTotal = res.data.data.data.total
-      //     this.deviceTable = res.data.data.data.list
-      //     this.deviceLoading = false
-      //   })
-      // } else {
-      this.searchKeys.searchKey = ''
-      let searchData = this.filterObj(this.searchKeys, isAdvance)
-      if (this.isEmptyObj(searchData)) {
-        this.$message.info('搜索条件不能为空！')
-        return false
-      }
-      searchData.isapply = 'no' // 未被占用
-      let postData = {
-        action: `/object/${this.deviceType}/instance/_search`,
-        method: 'POST',
-        data: {
-          query: searchData,
-          page: this.devicePage,
-          pageSize: 10,
-          fields: {},
-          sort: {}
-        }
-      }
-      this.deviceLoading = true
-      this.http.post('easyops/', this.parseData(postData)).then((res) => {
-        if (!res.data.data.data.total) {
-          this.$message.warning('找不到结果！')
-        }
-        this.deviceTotal = res.data.data.data.total
-        this.deviceTable = res.data.data.data.list
-        this.deviceLoading = false
-      })
-      // }
-    },
-    resetForm (formName) {
-      if (formName === 'searchKeys') {
-        this.$refs[formName][0].resetFields()
-      } else {
-        this.$refs[formName].resetFields()
-      }
-    },
-    handleSelectionChange (val) {
-      this.selectedDevices = val
-    },
-    onAddtoOff () {
-      for (const selection of this.selectedDevices) {
-        if (!this.assignForm.data[this.index].machines.includes(selection)) {
-          if (this.selectedDevices.length > 5) {
-            this.$message.warning('下架设备最多 5 个！')
-          } else {
-            this.assignForm.data[this.index].machines = [...this.assignForm.data[this.index].machines, selection]
-          }
-        } else {
-          this.$message.warning(`下架列表中已存在${selection.name}`)
-        }
-      }
-    },
-    onReject (task, action) {
-      console.log(task, action.pass)
-      this.$prompt('请输入对「' + task.applicationName + '」的' + action.name + '意见：', '确定' + action.name + '？', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(({value}) => {
-        if (!value) {
-          this.$message.error('失败：驳回意见不可留空！')
-          return
-        }
+      },
+      renderInstanceDetail () {
         let postData = {
-          action: 'runtime/task/complete',
-          method: 'POST',
+          action: 'runtime/task',
+          method: 'GET',
           data: {
-            tid: this.routerInfo.id,
-            form: { value },
-            pass: action.pass
+            taskId: this.routerInfo.id
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.$message.success('已驳回！')
-          }
-          this.$router.go(-1) // 跳转历史的上一页
+          const message = res.data.data.variables.message
+          res.data.data.path_list.map(list => {
+            list.map(path => {
+              if (!this.path_list.includes(path.tkey)) {
+                this.path_list.push(path.tkey)
+              }
+            })
+          })
+          const taskKeyArr = this.path_list.filter(item => item !== 'start')
+          // console.log(taskKeyArr)
+          this.applyData = this.getTaskInfo(message, taskKeyArr)
+          // console.log(this.applyData)
+          this.applyData.action = res.data.data.action
+          this.renderTaskForm()
         })
-      })
+      },
+      renderForm () { // 渲染表单数据
+        const renderFromData = {
+          action: 'activiti/task/form/group',
+          method: 'GET',
+          data: {
+            pkey: this.routerInfo.pkey,
+            tkey: this.path_list
+          }
+        }
+        // this.loading = true
+        this.http.post('', this.parseData(renderFromData)).then((res) => {
+          this.form = res.data.data.list
+        })
+      },
+      handleClick (tab, event) {
+        this.index = tab.index
+        console.log(this.index)
+      },
+      onHostsChange (val, index) {
+        console.log(val, index)
+        if (index !== undefined) {
+          for (const id in this.assignForm.body[index]) {
+            this.assignForm.body[index][id] = val
+          }
+        } else {
+          this.hostList = []
+          this.hostList = val
+        }
+        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+      },
+      onSubmit (assignForm) {
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.value.show) {
+              // show.type 有四种类型
+              if (item.value.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.assignForm.header[item.id] = this.hostList
+                  }
+                }
+              }
+            }
+          })
+        })
+        console.log(this.assignForm)
+        this.$confirm('确定提交?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }).then(() => {
+          const ref = this.$refs[assignForm].fields.length !== 0
+          console.log(ref)
+          if (ref) { // 有表单的情况下，表单的自验证
+            this.$refs[assignForm].validate((valid) => {
+              if (valid) {
+                console.log(this.assignForm.body)
+                if (this.assignForm.body) {
+                  for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+                    for (const item in data) {
+                      if (Array.isArray(data[item]) && data[item].length === 0) {
+                        this.$message.warning('未完成！')
+                        return false
+                      }
+                    }
+                  }
+                }
+                this.postMethod(this.routerInfo.id, this.assignForm)
+                // console.dir(this.assignForm)
+              } else {
+                console.log('error submit!!')
+                this.$message.warning('未完成！')
+                return false
+              }
+            })
+          } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+            if (!this.assignForm.body.some(data => {
+              for (const item in data) {
+                return Array.isArray(data[item]) && data[item].length === 0
+              }
+            })) {
+              this.postMethod(this.routerInfo.id, this.assignForm)
+              // console.dir(this.assignForm)
+            } else {
+              this.$message.warning('未分配完！')
+              return false
+            }
+          }
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消审批'
+          })
+        })
+      },
+      postMethod (id, data) {
+        if (data.body.length === 0) {
+          this.applyData.body.forEach(item => {
+            data.body.push({})
+          })
+        }
+        const postData = {
+          action: 'runtime/task/complete',
+          method: 'POST',
+          data: {
+            tid: id,
+            form: data // 通过审批 需要判断一下登录的账号的角色身份
+              // pass: "流程走向控制变量,整型(可选,默认为0)"
+          }
+        }
+        this.http.post('', this.parseData(postData))
+          .then((res) => {
+            if (res && res.status === 200) {
+              this.$message({
+                type: 'success',
+                message: '审批成功!'
+              })
+              this.$router.replace('/orders') // 分配成功跳转工单管理
+            }
+          })
+      },
+      onManual (action) {
+        const ref = this.$refs['assignForm'].fields.length !== 0
+        if (ref) { // 有表单的情况下，表单的自验证
+          this.$refs['assignForm'].validate((valid) => {
+            if (valid) {
+              console.log(this.assignForm.body)
+              if (this.assignForm.body) {
+                for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+                  for (const item in data) {
+                    if (Array.isArray(data[item]) && data[item].length === 0) {
+                      this.$message.warning('未完成！')
+                      return false
+                    }
+                  }
+                }
+              }
+              this.manualMethod(action)
+              // console.dir(this.assignForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('未完成！')
+              return false
+            }
+          })
+        } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+          if (!this.assignForm.body.some(data => {
+            for (const item in data) {
+              return Array.isArray(data[item]) && data[item].length === 0
+            }
+          })) {
+            this.manualMethod(action)
+            // console.dir(this.assignForm)
+          } else {
+            this.$message.warning('未分配完！')
+            return false
+          }
+        }
+      },
+      manualMethod (action) {
+        const postData = {
+          action: 'do/activiti/form/action',
+          method: 'POST',
+          data: {
+            form: this.assignForm,
+            tid: this.routerInfo.id,
+            action_id: action.id
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          if (res && res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '提交成功!'
+            })
+            this.$router.replace('/orders') // 分配成功跳转工单管理
+          }
+        })
+      },
+      onReject (task, action) {
+        console.log(task, action.pass)
+        this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({value}) => {
+          if (!value) {
+            this.$message.error('失败：驳回意见不可留空！')
+            return
+          }
+          let postData = {
+            action: 'runtime/task/complete',
+            method: 'POST',
+            data: {
+              tid: this.routerInfo.id,
+              form: { value },
+              pass: action.pass
+            }
+          }
+          this.http.post('', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('已驳回！')
+            }
+            this.$router.go(-1) // 跳转历史的上一页
+          })
+        })
+      },
+      cancel () {
+        this.$router.go(-1) // 跳转历史的上一页
+      }
     },
-    onRemove (row) {
-      const index = this.assignForm.data[this.index].machines.indexOf(row)
-      this.assignForm.data[this.index].machines.splice(index, 1)
+    components: {
+      // searchFormStructure,
+      headerFormStructureDisplay,
+      headerFormDisplay,
+      formStructureDisplay,
+      formStructure,
+      headerFormStructure,
+      headerForm,
+      searchBar
     }
-  },
-  components: {
-    searchFormStructure
   }
-}
 </script>
 <style lang="less" scoped>
-.h5-title {
-  margin-top: 15px;
+.el-tag {
+  font-size: 14px;
+  & +.el-tag {
+    margin-left: 10px;
+  }
+}
+.advance-search-form .el-form-item {
+  margin-bottom: 18px;
 }
 .btn-area {
   margin: 15px 0;
   .el-button {
     margin-right: 8px;
   }
+}
+
+.margin-bottom {
+  margin-bottom: 15px;
 }
 
 .form-block {
@@ -530,6 +626,12 @@ export default {
 
 .el-form--inline .el-form-item {
   min-width: 280px;
+}
+
+.h5 {
+  margin: 10px 0;
+  font-size: 12px;
+  color: #ccc;
 }
 
 .el-table {

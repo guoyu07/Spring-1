@@ -9,25 +9,29 @@
             border
             style="width: 100%; min-width: 460px">
             <el-table-column
-              prop="applicationName"
-              label="应用名"></el-table-column>
-            <el-table-column
-              prop="applyType"
-              label="申请类型"></el-table-column>
-            <el-table-column
-              prop="business"
-              label="项目组"></el-table-column>
-            <el-table-column
-              prop="name"
-              label="当前任务"></el-table-column>
+              v-for="formHeader in form.header"
+              :label="formHeader.name">
+              <template scope="scope">
+                <span v-if="formHeader.value.type === 'FK' || formHeader.value.type === 'dict'">
+                  <span v-if="typeof Object.assign({}, scope.row.header)[formHeader.id] === 'object'">
+                    {{ Object.assign({}, Object.assign({}, scope.row.header)[formHeader.id])['name'] }}
+                  </span>
+                  <span v-else>{{ Object.assign({}, scope.row.header)[formHeader.id] }}</span>
+                </span>
+                <span v-else-if="formHeader.value.type === 'FKs' || formHeader.value.type === 'dicts'">
+                  <span v-for="span in Object.assign({}, scope.row.header)[formHeader.id]">{{span.name}}</span>
+                </span>
+                <span v-else>{{ Object.assign({}, scope.row.header)[formHeader.id] }}</span>
+              </template>
+            </el-table-column>
             <el-table-column
               inline-template
               :context="_self"
               label="操作">
               <div class="btn-block">
-                <router-link v-if="row.name==='填写申请单'" :to="{ path: `/system/online/apply/${row.id}`}" class="el-button el-button--primary el-button--small">填写</router-link>
-                <span v-else v-for="action in row.action">
-                  <router-link v-if="action.type==='submit'" :to="{ path: `/system/online/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
+                <!-- <router-link v-if="row.name==='填写申请单'" :to="{ path: `/system/online/apply/${row.id}`}" class="el-button el-button--primary el-button--small">填写</router-link> -->
+                <span v-for="action in row.action">
+                  <router-link v-if="action.type==='submit'" :to="{ path: `/storemanage/${row.pkey}/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
                   <el-button v-else-if="action.type==='back'" :plain="true" type="danger" size="small" @click="onReject(row, action)">{{action.pass===2?'驳回':'撤单'}}</el-button>
                   <!-- action.pass===1?'驳回':'撤销' -->
                 </span>
@@ -58,6 +62,7 @@
 
     created () {
       this.getApplyList()
+      this.renderTaskForm()
     }
   }
 </script>

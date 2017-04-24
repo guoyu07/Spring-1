@@ -215,7 +215,7 @@
         transform: scale(1);
     }
     40% {
-        transform: scale(.6);
+        transform: scale(.8);
     }
     100% {
         transform: scale(1);
