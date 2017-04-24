@@ -97,10 +97,13 @@ const routes = [{
     }, {
       path: '/system/onlinelist',
       component: require('./components/system/pages/onlinelist.vue')
-    }, {
-      path: '/system/online/:step/:id/:name', // 上线流程具体步骤操作
-      component: require('./components/system/pages/onlinestep.vue')
-    }]
+    }
+    // , {
+    //   path: '/system/online/:step/:id/:name', // 上线流程具体步骤操作
+    //   component: require('./components/storemanage/pages/step.vue')
+    //   // component: require('./components/system/pages/onlinestep.vue')
+    // }
+    ]
   }, {
     path: '/auth',
     component: require('./components/auth/index'),
