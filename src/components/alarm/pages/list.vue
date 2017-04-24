@@ -164,6 +164,20 @@
         }
         if (this.filter === '待处理') {
           Object.assign(this.handleViewData, { visible: true, task: row })
+          this.$prompt('处理手段', '请输入', {
+            confirmButtonText: '完成',
+            cancelButtonText: '取消'
+          }).then(({ value }) => {
+            this.$message({
+              type: 'success',
+              message: '你的处理手段是：' + value
+            })
+          }).catch(() => {
+            this.$message({
+              type: 'info',
+              message: '取消输入'
+            })
+          })
         }
       }
     },
