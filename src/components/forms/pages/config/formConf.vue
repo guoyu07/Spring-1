@@ -32,6 +32,11 @@
                   <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
                   <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                   <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
+                  <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enum/multi'" v-model="itemConf.isAlias">
+                    <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
+                    <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
+                    <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enum/multi'">多选框（checkbox）</span>
+                  </el-checkbox>
                 </el-form-item>
               </el-row>
               <el-row>
@@ -55,6 +60,9 @@
                 <el-form-item label="占位描述">
                   <el-input size="small" v-model="itemConf.placeholder" placeholder="控件的 placeholder"></el-input>
                 </el-form-item>
+                <el-form-item label="额外描述">
+                  <el-input size="small" v-model="itemConf.description" placeholder="控件的外部描述"></el-input>
+                </el-form-item>
               </el-row>
               <el-row>
                 <el-form-item label="分组组名">
@@ -63,7 +71,6 @@
                 <el-form-item label="字段类型">
                   <el-select size="small" v-model="itemConf.value.type">
                     <el-option label="字符串" value="str"></el-option>
-                    <el-option label="长文本" value="strArea"></el-option>
                     <el-option label="数字" value="int"></el-option>
                     <el-option label="数组" value="arr"></el-option>
                     <el-option label="日期" value="date"></el-option>

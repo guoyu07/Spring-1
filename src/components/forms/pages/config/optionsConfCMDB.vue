@@ -34,8 +34,20 @@
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="动态选项 API 配置" v-model="dialogProps.value.confVisible" @close="onClose">
-    <div class="conf-cmdb-contain" v-if="dialogProps.value.source">
+  <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose">
+    <el-radio class="radio" v-model="optionType" label="dynamic">动态</el-radio>
+    <el-radio class="radio" v-model="optionType" label="static">静态</el-radio>
+    <hr>
+
+    <div class="conf-cmdb-contain" v-if="optionType === 'static'">
+      <el-collapse>
+        <el-collapse-item v-for="dict of dialogProps.value.regex" :title="dict.key">
+          
+        </el-collapse-item>
+      </el-collapse>
+    </div>
+
+    <div class="conf-cmdb-contain" v-if="optionType === 'dynamic' && dialogProps.value.source">
       <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
         <el-form-item label="URL (请求地址)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>
@@ -192,6 +204,7 @@
     },
     data () {
       return {
+        optionType: 'dynamic',
         allowCreate: this.dialogProps.value && this.dialogProps.value.allowCreate ? this.dialogProps.value.allowCreate : true,
         countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }

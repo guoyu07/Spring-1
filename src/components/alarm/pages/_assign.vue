@@ -34,6 +34,7 @@
             <el-radio-group v-model="newAssignee">
               <el-radio v-for="user in userList" :label="user.userId" :disabled="assignViewData.task.assignee === user.userId">{{user.code}}</el-radio>
             </el-radio-group>
+            <el-button v-if="newAssignee" type="warning" :plain="true" size="mini" @click="newAssignee=''">重置用户</el-button>
           </el-form-item>
           <el-form-item label="候选组">
             <el-checkbox-group v-model="newAssigneeGroup" v-if="assignViewData.task.candidate_groups">
