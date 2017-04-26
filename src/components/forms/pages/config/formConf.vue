@@ -21,8 +21,8 @@
 
 <template>
   <div class="form-config">
-    <el-collapse v-if="configData.length" :value="activatedItem">
-      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name" :name="itemConf.name">
+    <el-collapse v-if="configData.length">
+      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name">
         <el-row>
           <el-col :span="22" :offset="1">
             <el-form label-position="left" :inline="true">
@@ -32,10 +32,10 @@
                   <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
                   <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                   <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
-                  <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enum/multi'" v-model="itemConf.isAlias">
+                  <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'" v-model="itemConf.isAlias">
                     <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
                     <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
-                    <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enum/multi'">多选框（checkbox）</span>
+                    <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
                   </el-checkbox>
                 </el-form-item>
               </el-row>
@@ -76,13 +76,13 @@
                     <el-option label="日期" value="date"></el-option>
                     <el-option label="时间" value="datetime"></el-option>
                     <el-option label="下拉单选" value="enum"></el-option>
-                    <el-option label="下拉多选" value="enum/multi"></el-option>
+                    <el-option label="下拉多选" value="enums"></el-option>
                     <el-option label="下拉单选（API）" value="dict"></el-option>
                     <el-option label="下拉多选（API）" value="dicts"></el-option>
                     <el-option label="搜索条件" value="search_bar"></el-option>
                   </el-select>
                   <!--静态选项-->
-                  <el-popover v-if="['enum', 'enum/multi'].includes(itemConf.value.type)"
+                  <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
                     placement="right" trigger="click" @show="showMultiConf(itemConf)">
                     <options-conf :conf-arr="itemConf.value.regex"></options-conf>
                     <el-button size="small" slot="reference">配置选项</el-button>
@@ -122,7 +122,6 @@ export default {
   },
   data () {
     return {
-      activatedItem: [],
       needDefault: false,
       countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
     }
@@ -174,7 +173,7 @@ export default {
     onAddField () {
       this.configData.push({
         id: '',
-        name: '新字段',
+        name: '',
         category: '', // 分组
         unique: false, // 唯一
         required: true, // 必填
@@ -190,7 +189,7 @@ export default {
           type: ''
         }
       })
-      this.activatedItem.push('新字段')
+      // this.activatedItem.push('新字段')
     },
     // 删除一个字段 （删除操作 可以封装为全局方法）
     onDeleteField (arr, item) {
