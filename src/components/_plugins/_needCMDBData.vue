@@ -42,6 +42,7 @@
   export default {
     props: {
       vmodel: { type: Object },
+      whole: { type: Object },
       strucData: { type: Object }
     },
 
@@ -51,18 +52,33 @@
       }
     },
     created () {
-      this.renderOptions()
-      // if (this.strucData.value.type === 'dict' || this.strucData.value.type === 'dicts') {
-      // }
+      if (this.strucData.watch) {
+        this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
+          this.renderOptions()
+        })
+      } else {
+        this.renderOptions()
+      }
     },
 
     methods: {
       renderOptions () {
+        if (this.strucData.value.type === 'dicts') {
+          this.vmodel[this.strucData.id] = [] // 重置
+        } else {
+          this.vmodel[this.strucData.id] = {} // 重置
+        }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
           for (const para of this.strucData.value.source.data.params) {
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
+            } else if (para.value.type === 'form_header') {
+              if (this.getPathResult(this.whole && this.whole.header, para.value.key_path)) {
+                params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
+              } else {
+                return false // 如果没取到值就不发请求
+              }
             }
           }
         }
@@ -79,27 +95,35 @@
           } else if (this.strucData.value.source.data.action === 'export/device/items') {
             this.vmodel[this.strucData.id] = this.optionList[0]
           } else if (this.strucData.value.source.data.action === 'users/all') {
-            const user = window.localStorage.userName
-            this.optionList.map(option => {
-              if (option.userId === user) {
-                if (Array.isArray(this.vmodel[this.strucData.id])) {
-                  this.vmodel[this.strucData.id].push(option)
-                } else {
-                  this.vmodel[this.strucData.id] = option
-                }
+            if (this.strucData.default.type) {
+              if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
+                const user = window.localStorage.userName
+                this.optionList.map(option => {
+                  if (option.userId === user) {
+                    if (Array.isArray(this.vmodel[this.strucData.id])) {
+                      this.vmodel[this.strucData.id].push(option)
+                    } else {
+                      this.vmodel[this.strucData.id] = option
+                    }
+                  }
+                })
               }
-            })
+            }
           } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER') {
-            const user = window.localStorage.userName
-            this.optionList.map(option => {
-              if (option.name === user) {
-                if (Array.isArray(this.vmodel[this.strucData.id])) {
-                  this.vmodel[this.strucData.id].push(option)
-                } else {
-                  this.vmodel[this.strucData.id] = option
-                }
+            if (this.strucData.default.type) {
+              if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
+                const user = window.localStorage.userName
+                this.optionList.map(option => {
+                  if (option.name === user) {
+                    if (Array.isArray(this.vmodel[this.strucData.id])) {
+                      this.vmodel[this.strucData.id].push(option)
+                    } else {
+                      this.vmodel[this.strucData.id] = option
+                    }
+                  }
+                })
               }
-            })
+            }
           }
         })
       }

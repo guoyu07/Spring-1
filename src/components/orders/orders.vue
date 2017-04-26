@@ -241,6 +241,10 @@
             <router-link :to="{ path: `/storemanage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
+          <span v-if="deviceViewData.device.pkey==='host' && filter === '待审核'">
+            <router-link :to="{ path: `/storemanage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
+          </span>
+
           <!-- <span v-if="deviceViewData.device.pkey==='alter_device' && filter === '待审核'">
             <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/storemanage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
             <router-link v-else :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>

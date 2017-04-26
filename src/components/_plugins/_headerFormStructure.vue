@@ -4,7 +4,7 @@
       <h4>{{formBlock.name}}</h4>
       <div class="headerform">
         <span v-for="formItem in formBlock.value">
-          <header-form :item="item" :form-item="formItem"></header-form>
+          <header-form :item="item" :form-item="formItem" :whole="whole"></header-form>
         </span>
       </div>
     </div>
@@ -16,6 +16,7 @@
   export default {
     props: {
       item: { type: Object },
+      whole: { type: Object },
       formData: { type: Array }
     },
 

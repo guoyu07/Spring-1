@@ -111,7 +111,11 @@ const getPathResult = (result, path, k) => {
   } else {
     for (const i in _path) {
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
-        _result = _result[_path[i]]
+        if (_result[_path[i]]) { // 读取不到值时 return false
+          _result = _result[_path[i]]
+        } else {
+          return false
+        }
       } else {
         console.log('getPathResult 出错')
         return false

@@ -233,6 +233,7 @@
         // left: 8px;
         display: block;
         // margin-top: -6px;
+        padding-top: 3px;
         width: 18px;
         height: 18px;
         border-radius: 50%;

@@ -39,7 +39,8 @@ export default {
         this.assignViewData.visible = false
         this.isAssignable = false
         this.$message.success('指派成功！')
-        this.getTaskList()
+        // this.getTaskList()
+        this.$router.go(0) // 刷新页面
       }
     }
   }

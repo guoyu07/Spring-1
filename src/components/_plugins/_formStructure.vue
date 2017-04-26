@@ -74,7 +74,7 @@
 
         <need-cmdb-data
           v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
-          :vmodel="item" :strucData="formItem">
+          :vmodel="item" :strucData="formItem" :whole="whole">
         </need-cmdb-data>
 
         <!-- <search-bar
@@ -94,7 +94,8 @@
       item: { type: Object },
       index: { type: Number },
       formData: { type: Array },
-      readInfo: { type: Object }
+      readInfo: { type: Object },
+      whole: { type: Object }
     },
 
     data () {

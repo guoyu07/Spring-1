@@ -23,6 +23,16 @@ const routes = [{
     path: '/home',
     component: require('./components/layout/Dashboard')
   }, {
+    path: '/guosen',
+    component: require('./components/guosen/index'),
+    children: [{
+      path: '/guosen/on',
+      component: require('./components/guosen/pages/on.vue')
+    }, {
+      path: '/guosen/:pkey/:tkey/:id/:name',
+      component: require('./components/guosen/pages/step.vue')
+    }]
+  }, {
     path: '/storemanage',
     component: require('./components/storemanage/index'),
     children: [{

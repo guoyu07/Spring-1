@@ -37,6 +37,7 @@
     <template v-else-if="formItem.value.type === 'enum'">
       <el-select
         filterable
+        :clearable="!formItem.required"
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]">
         <el-option v-for="option in formItem.value.regex"
@@ -54,6 +55,7 @@
       <el-select
         filterable
         v-if="!formItem.isAlias"
+        :clearable="!formItem.required"
         v-model="item[formItem.id]">
         <el-option v-for="option in formItem.value.object_list"
           :label="option.name"
@@ -101,7 +103,7 @@
 
     <need-cmdb-data
       v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
-      :vmodel="item" :strucData="formItem">
+      :vmodel="item" :strucData="formItem" :whole="whole">
     </need-cmdb-data>
   </el-form-item>
 </template>
@@ -111,6 +113,7 @@
   export default {
     props: {
       item: { type: Object },
+      whole: { type: Object },
       formItem: { type: Object }
     },
 

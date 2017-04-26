@@ -113,8 +113,7 @@
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index"
-                          :read-info="applyData.header"
-                          :whole="assignForm">
+                          :read-info="applyData.header">
                         </form-structure>
                         <!-- 设备选择 -->
                         <search-bar
@@ -140,8 +139,7 @@
                   <header-form
                     v-if="!taskform.value.show"
                     :item="assignForm.header"
-                    :form-item="taskform"
-                    :whole="assignForm">
+                    :form-item="taskform">
                   </header-form>
                   <div v-if="taskform.value.show">
                     <div v-if="taskform.value.show.type==='form_header'">
@@ -276,7 +274,6 @@
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                   if (value.default.type) {
                     if (value.default.type === 'message_header') {
-                      console.log(value, this.getPathResult(this.applyData.header, value.default.key_path))
                       this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
                     }
                   }

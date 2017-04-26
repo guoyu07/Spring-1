@@ -49,7 +49,8 @@
           if (res.status === 200) {
             this.$message.success('已认领！')
             this.claimViewData.visible = false
-            this.getTaskList()
+            // this.getTaskList()
+            this.$router.replace(`/storemanage/${this.claimViewData.task.pkey}/${this.claimViewData.task.taskDefinitionKey}/${this.claimViewData.task.id}/${this.claimViewData.task.name}`)
           }
         })
       }
