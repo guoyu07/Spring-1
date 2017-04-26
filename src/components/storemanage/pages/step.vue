@@ -466,10 +466,16 @@
         })
       },
       postMethod (id, data) {
-        if (data.body.length === 0) {
-          this.applyData.body.forEach(item => {
-            data.body.push({})
-          })
+        // if (data.body.length === 0) {
+        //   this.applyData.body.forEach(item => {
+        //     data.body.push({})
+        //   })
+        // }
+        // console.log(data)
+        for (const id in data.header) {
+          if (!data.header[id]) {
+            delete data.header[id] // 删除头部空值 TODO：删除 body 的空值
+          }
         }
         const postData = {
           action: 'runtime/task/complete',
@@ -485,9 +491,13 @@
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
-                message: '审批成功!'
+                message: '成功!'
               })
-              this.$router.replace('/orders') // 分配成功跳转工单管理
+              if (this.routerInfo.pkey === 'easyops_monitor') {
+                this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
+              } else {
+                this.$router.replace('/orders') // 跳转工单管理
+              }
             }
           })
       },

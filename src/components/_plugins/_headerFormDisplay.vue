@@ -2,7 +2,9 @@
   <el-form-item
     :label="formItem.name">
     <span v-if="formItem.value.type === 'dict'">
-      {{ item && item[formItem.id][formItem.value.source.res.show_key] }}
+      <!-- 新建应用时，是一个字符串，非选取的对象 -->
+      <span v-if="item && typeof item[formItem.id] === 'string'">{{ item && item[formItem.id] }}</span>
+      <span v-else>{{ item && item[formItem.id][formItem.value.source.res.show_key] }}</span>
     </span>
 
     <span v-else-if="formItem.value.type === 'dicts'">

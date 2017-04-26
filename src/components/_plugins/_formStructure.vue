@@ -5,7 +5,7 @@
       <!-- v-if="formItem.value.type !== 'search_bar'" -->
       <el-form-item
         v-for="formItem in formBlock.value"
-        :prop="'body.' + index + '.' + formItem.id"
+        :prop="formItem.required ? 'body.' + index + '.' + formItem.id : ''"
         :label="formItem.name"
         :rules="rules(formItem)">
 
@@ -38,6 +38,7 @@
           filterable
           v-else-if="formItem.value.type === 'enum'"
           v-model="item[formItem.id]"
+          :clearable="!formItem.required"
           :disabled="formItem.readonly">
           <el-option v-for="option in formItem.value.regex"
             :label="option"
@@ -48,6 +49,7 @@
           filterable
           v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
           v-model="item[formItem.id]"
+          :clearable="!formItem.required && formItem.value.type === 'FK'"
           :multiple="formItem.value.type === 'FKs'">
           <el-option v-for="option in formItem.value.object_list"
             :label="option.name"
@@ -123,8 +125,9 @@
             required: formItem.required,
             trigger: 'change'
           }
-        } else if (formItem.value.readonly) {
-          console.log('00000000')
+        } else if (formItem.readonly) {
+          return {}
+        } else if (!formItem.required) {
           return {}
         } else {
           let type

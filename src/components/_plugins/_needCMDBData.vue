@@ -1,15 +1,40 @@
 <template>
   <div>
-    <el-select
-      v-model="vmodel[strucData.id]"
-      :multiple="strucData.value.type === 'dicts'"
-      :allow-create="strucData.value.allow_create"
-      filterable>
-      <el-option v-for="option in optionList"
-        :label="option[strucData.value.source.res.show_key]"
-        :value="option"></el-option>
-    </el-select>
-    <!-- {{typeof vmodel[strucData.id] === 'string' ? '新建名：' + vmodel[strucData.id] : ''}} -->
+    <template v-if="strucData.value.type === 'dict'">
+      <el-select
+        v-if="!strucData.isAlias"
+        v-model="vmodel[strucData.id]"
+        :clearable="!strucData.required"
+        :allow-create="strucData.value.allow_create"
+        filterable>
+        <el-option v-for="option in optionList"
+          :label="option[strucData.value.source.res.show_key]"
+          :value="option"></el-option>
+      </el-select>
+      <el-radio-group
+        v-else
+        v-model="vmodel[strucData.id]">
+        <el-radio v-for="option in optionList" :label="option">{{option[strucData.value.source.res.show_key]}}</el-radio>
+      </el-radio-group>
+    </template>
+
+    <template v-else-if="strucData.value.type === 'dicts'">
+      <el-select
+        filterable
+        v-if="!strucData.isAlias"
+        v-model="vmodel[strucData.id]"
+        :allow-create="strucData.value.allow_create"
+        multiple>
+        <el-option v-for="option in optionList"
+          :label="option[strucData.value.source.res.show_key]"
+          :value="option"></el-option>
+      </el-select>
+      <el-checkbox-group
+        v-else
+        v-model="vmodel[strucData.id]">
+        <el-checkbox v-for="option in optionList" :label="option" :name="strucData.id">{{option[strucData.value.source.res.show_key]}}</el-checkbox>
+      </el-checkbox-group>
+    </template>
   </div>
 </template>
 

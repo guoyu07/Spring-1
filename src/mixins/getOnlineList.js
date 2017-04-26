@@ -25,19 +25,6 @@ export default {
       // this.loading = true
       this.http.post('', this.parseData(renderFromData)).then((res) => {
         this.form = res.data.data.form
-        this.form.header.map(group => {
-          group.value.map(item => {
-            this.setDataType(item, this.applyFormHead, this)
-          })
-        })
-        this.form.body.body_list[0].attr_list.map(group => {
-          group.value.map(item => {
-            this.setDataType(item, this.applyForm.data[0], this)
-            // this.$watch('applyForm.data.0', newVal => {
-            //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
-            // }, {deep: true})
-          })
-        })
         // this.loading = false
       })
     },
