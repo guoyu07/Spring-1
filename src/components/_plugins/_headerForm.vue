@@ -1,9 +1,9 @@
 <template>
   <el-form-item
-    :prop="'header.' + formItem.id"
+    :prop="formItem.required ? 'header.' + formItem.id : ''"
     :label="formItem.name"
-    :rules="rules(formItem)">
-
+    :rules="rules(formItem)"
+    :class="formItem.isAlias ? 'blockElement' : ''">
     <!-- <el-input
       v-if="formItem.value.type === 'str'"
       v-model="item[formItem.id]">
@@ -12,6 +12,8 @@
       <!-- 普通表单填写 不管需不需要提交 都是这样 -->
       <el-input
         v-if="!formItem.readonly"
+        :type="formItem.isAlias ? 'textarea' : 'text'"
+        :autosize="{ minRows: 5}"
         v-model="item[formItem.id]">
       </el-input>
       <!-- 读取默认值并提交 -->
@@ -32,24 +34,54 @@
       v-model="item[formItem.id]" :min="1">
     </el-input-number>
 
-    <el-select
-      filterable
-      v-else-if="formItem.value.type === 'enum'"
-      v-model="item[formItem.id]">
-      <el-option v-for="option in formItem.value.regex"
-        :label="option"
-        :value="option"></el-option>
-    </el-select>
+    <template v-else-if="formItem.value.type === 'enum'">
+      <el-select
+        filterable
+        v-if="!formItem.isAlias"
+        v-model="item[formItem.id]">
+        <el-option v-for="option in formItem.value.regex"
+          :label="option"
+          :value="option"></el-option>
+      </el-select>
+      <el-radio-group
+        v-else
+        v-model="item[formItem.id]">
+        <el-radio  v-for="option in formItem.value.regex" :label="option"></el-radio>
+      </el-radio-group>
+    </template>
 
-    <el-select
-      filterable
-      v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-      v-model="item[formItem.id]"
-      :multiple="formItem.value.type === 'FKs'">
-      <el-option v-for="option in formItem.value.object_list"
-        :label="option.name"
-        :value="option"></el-option>
-    </el-select>
+    <template v-else-if="formItem.value.type === 'FK'">
+      <el-select
+        filterable
+        v-if="!formItem.isAlias"
+        v-model="item[formItem.id]">
+        <el-option v-for="option in formItem.value.object_list"
+          :label="option.name"
+          :value="option"></el-option>
+      </el-select>
+      <el-radio-group
+        v-else
+        v-model="item[formItem.id]">
+        <el-radio v-for="option in formItem.value.object_list" :label="option">{{option.name}}</el-radio>
+      </el-radio-group>
+    </template>
+
+    <template v-else-if="formItem.value.type === 'FKs'">
+      <el-select
+        filterable
+        v-if="!formItem.isAlias"
+        v-model="item[formItem.id]"
+        multiple>
+        <el-option v-for="option in formItem.value.object_list"
+          :label="option.name"
+          :value="option"></el-option>
+      </el-select>
+      <el-checkbox-group
+        v-else
+        v-model="item[formItem.id]">
+        <el-checkbox v-for="option in formItem.value.object_list" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
+      </el-checkbox-group>
+    </template>
 
     <el-select
       v-else-if="formItem.value.type === 'arr'"
@@ -91,7 +123,7 @@
 
     methods: {
       rules (formItem) {
-        // console.log(formItem)
+        console.log(formItem)
         if (formItem.value.allow_create) {
           var validateAllowCreate = (rule, value, cb) => {
             if (!value) {
@@ -111,6 +143,10 @@
             required: formItem.required,
             trigger: 'change'
           }
+        } else if (formItem.readonly) {
+          return {}
+        } else if (!formItem.required) {
+          return {}
         } else {
           let type
           if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') {
@@ -140,3 +176,15 @@
     }
   }
 </script>
+<style>
+  .blockElement {
+    width: 100%;
+    display: flex;
+  }
+  .blockElement .el-form-item__content {
+    width: 50%;
+    width:-moz-calc(100% - 85px);
+    width:-webkit-calc(100% - 85px);
+    width: calc(100% - 85px);
+  }
+</style>

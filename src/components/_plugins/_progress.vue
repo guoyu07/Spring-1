@@ -41,14 +41,46 @@
       renderPro () {
         // TODO: 这里只写了简单的流程任务数据，未判断是否为并发任务
         this.proConfig = []
+        // let allcontasks = []
         this.progress.taskList.forEach((item, k) => {
-          this.proConfig.push({
+          let data = {
             value: k,
             list: [{
               tkey: item.tkey,
               tname: item.tname
             }]
-          })
+          }
+          this.proConfig.push(data)
+        //   let contasks = []
+        //   if (item.next.length) {
+        //     item.next.map(next => {
+        //       if (next.pass === 0) {
+        //         if (!allcontasks.includes(next.tkey)) {
+        //           allcontasks.push(next.tkey)
+        //           contasks.push(next.tkey)
+        //         }
+        //       }
+        //     })
+        //   }
+          // else { // 这是最后一步的tkey,最后一步的next为空数组
+          //   // contasks.push(item.tkey)
+          // }
+          // console.log(contasks)
+          // let data = {
+          //   value: k,
+          //   list: []
+          // }
+          // this.progress.taskList.map(task => {
+          //   if (contasks.includes(task.tkey)) {
+          //     data.list.push({
+          //       tkey: task.tkey,
+          //       tname: task.tname
+          //     })
+          //     if (!this.proConfig.some(config => { return config.value === k })) {
+          //       this.proConfig.push(data)
+          //     }
+          //   }
+          // })
         })
       },
       getFilteredList () {
@@ -149,10 +181,10 @@
         // height: 30px;
         position: absolute;
         top: 0;
-        left: 0;
+        left: 14px;
         z-index: 2;
         transform: rotate(-35deg);
-        transform-origin: -155% -155%;
+        transform-origin: -114% -78%;
         white-space: nowrap;
         color: #696969;
         text-align: center;

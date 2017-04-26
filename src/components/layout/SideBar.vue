@@ -61,6 +61,10 @@
         <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
         <!-- <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item> -->
       </el-menu-item-group>
+      <el-menu-item-group title="国信">
+        <el-menu-item index="/guosen/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
+        <!-- <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item> -->
+      </el-menu-item-group>
       <el-menu-item-group title="系统上下线">
         <el-menu-item index="/system/applylist"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
         <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>

@@ -61,10 +61,10 @@
                 </div>
               </div>
             </div>
-
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="taskForm.body.body_list.length !== 0 && applyData.body.length !== 0">
+            <!-- taskForm.body.body_list.length !== 0 && -->
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
-                <!-- 信息显示 -->
+                <!-- body 信息显示 -->
                 <div v-for="task in form">
                   <div v-if="task.form.form.body.body_list.length > 1">
                     <div v-for="taskform in task.form.form.body.body_list">
@@ -92,7 +92,7 @@
                   </div>
                   <div v-else>
                     <!-- 这里是判断 body_list 是不是空数组 -->
-                    <div v-if="task.form.form.body.body_list[0]">
+                    <div v-if="task.form.form.body.body_list && task.form.form.body.body_list[0]">
                       <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
                       <p class="h5">{{task.tname}}</p>
                       <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
@@ -337,7 +337,7 @@
             })
             this.assignForm.body.push(newData)
             for (const id in item) {
-              console.log(item[id], this.assignForm.body[k][id])
+              // console.log(item[id], this.assignForm.body[k][id])
               if (this.assignForm.body[k][id] !== undefined) {
                 this.assignForm.body[k][id] = item[id]
               }
