@@ -108,13 +108,15 @@
                       <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
                       <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
                         <!-- 表单填写 -->
+                        <!-- :read-info="applyData.header" 只读信息不该只有 applyData.header 应该根据只读信息的来源type来决定，read-info 属性可以去掉，用 message 顶替 -->
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index"
                           :read-info="applyData.header"
-                          :whole="assignForm">
+                          :whole="assignForm"
+                          :message="applyData">
                         </form-structure>
                         <!-- 设备选择 -->
                         <search-bar
@@ -226,9 +228,9 @@
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.taskForm = res.data.data.form
-          console.log(this.applyData)
+          // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
             if (this.taskForm.body.count.type === 'message_header') {
               const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
@@ -273,17 +275,21 @@
               header.value.map(value => {
                 if (value.need_submit) {
                   this.setDataType(value, this.assignForm.header, this)
+                  console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                   if (value.default.type) {
                     if (value.default.type === 'message_header') {
-                      console.log(value, this.getPathResult(this.applyData.header, value.default.key_path))
-                      this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                      console.log(this.assignForm.header[value.id])
                     }
                   }
                 }
               })
             }
           })
+          // console.log(this.assignForm.header.host_type)
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
@@ -340,7 +346,7 @@
             })
             this.assignForm.body.push(newData)
             for (const id in item) {
-              console.log(item[id], this.assignForm.body[k][id])
+              // console.log(item[id], this.assignForm.body[k][id])
               if (this.assignForm.body[k][id] !== undefined) {
                 this.assignForm.body[k][id] = item[id]
               }

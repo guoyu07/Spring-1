@@ -126,7 +126,7 @@
 
     methods: {
       rules (formItem) {
-        console.log(formItem)
+        // console.log(formItem)
         if (formItem.value.allow_create) {
           var validateAllowCreate = (rule, value, cb) => {
             if (!value) {

@@ -43,7 +43,9 @@
     props: {
       vmodel: { type: Object },
       whole: { type: Object },
-      strucData: { type: Object }
+      message: { type: Object },
+      strucData: { type: Object },
+      index: { type: Number }
     },
 
     data () {
@@ -63,10 +65,15 @@
 
     methods: {
       renderOptions () {
-        if (this.strucData.value.type === 'dicts') {
-          this.vmodel[this.strucData.id] = [] // 重置
+        if (!this.strucData.default.type) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
+          if (this.strucData.value.type === 'dicts') {
+            this.vmodel[this.strucData.id] = [] // 重置
+          } else {
+            this.vmodel[this.strucData.id] = {} // 重置
+          }
         } else {
-          this.vmodel[this.strucData.id] = {} // 重置
+          // 这个是默认值
+          console.log(this.vmodel[this.strucData.id])
         }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
@@ -75,7 +82,29 @@
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
               if (this.getPathResult(this.whole && this.whole.header, para.value.key_path)) {
+                // 这里要区分一下 this.whole.header 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
+              } else {
+                return false // 如果没取到值就不发请求
+              }
+            } else if (para.value.type === 'form_body') {
+              if (this.getPathResult(this.whole && this.whole.body[this.index], para.value.key_path)) {
+                // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
+                params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
+              } else {
+                return false // 如果没取到值就不发请求
+              }
+            } else if (para.value.type === 'message_header') {
+              if (this.getPathResult(this.message && this.message.header, para.value.key_path)) {
+                // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
+                params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
+              } else {
+                return false // 如果没取到值就不发请求
+              }
+            } else if (para.value.type === 'message_body') {
+              if (this.getPathResult(this.message && this.message.body[this.index], para.value.key_path)) {
+                // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
+                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
@@ -90,6 +119,14 @@
         this.http.post(this.strucData.value.source.url.substring(4), this.parseData(postHeadvData))
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+          // 将默认值(对象类型)放回值里面
+          if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id].instanceId) {
+            this.optionList.map(option => {
+              if (option.instanceId === this.vmodel[this.strucData.id].instanceId) {
+                this.vmodel[this.strucData.id] = option
+              }
+            })
+          }
           if (this.strucData.value.source.data.action === 'import/device/items') {
             this.vmodel[this.strucData.id] = this.optionList[0]
           } else if (this.strucData.value.source.data.action === 'export/device/items') {

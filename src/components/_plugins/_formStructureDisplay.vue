@@ -71,7 +71,9 @@
     }
     .el-form-item {
       margin: 0;
-      width: 33.33%;
+      // width: 33.33%;
+      min-width: 280px;
+      display: inline-flex;
     }
     .arr-span {
       margin-right: 10px;
