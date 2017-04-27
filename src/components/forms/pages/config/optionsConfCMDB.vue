@@ -34,17 +34,30 @@
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose">
-    <el-radio class="radio" v-model="optionType" label="dynamic">动态</el-radio>
-    <el-radio class="radio" v-model="optionType" label="static">静态</el-radio>
+  <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose" top="10%">
+    <el-radio-group v-model="optionType">
+      <el-radio label="dynamic">动态</el-radio>
+      <el-radio label="static">静态</el-radio>
+    </el-radio-group>
     <hr>
 
     <div class="conf-cmdb-contain" v-if="optionType === 'static'">
       <el-collapse>
-        <el-collapse-item v-for="dict of dialogProps.value.regex" :title="dict.key">
-          
+        <el-collapse-item v-for="(obj, index) of dialogProps.value.regex" :title="'字典' + index">
+          <el-row>
+            <el-form label-width="80px">
+              <el-form-item v-for="(value, key) in obj" :label="key">
+                <!-- <span>{{value}}</span> -->
+                <el-input size="small" v-model="obj[key]"></el-input>
+              </el-form-item>
+            </el-form>
+          </el-row>
         </el-collapse-item>
       </el-collapse>
+      <el-row style="margin-top: 12px">
+        <el-button type="success" :plain="true" size="small" icon="plus" @click="onAddRegex">添加字典对象</el-button>
+        <el-button type="info" :plain="true" size="small" icon="plus" @click="onAddDict(index)">添加键值对</el-button>
+      </el-row>
     </div>
 
     <div class="conf-cmdb-contain" v-if="optionType === 'dynamic' && dialogProps.value.source">
@@ -299,6 +312,23 @@
       // 删除操作
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
+      },
+      onAddRegex () {
+        console.log(this.dialogProps.value)
+        if (!this.dialogProps.value.regex.length) {
+          this.dialogProps.value.regex.push({
+            name: 'new'
+          })
+        } else {
+          this.dialogProps.value.regex.push(this.dialogProps.value.regex[this.dialogProps.value.regex.length - 1])
+        }
+      },
+      onAddDict (index) {
+        if (!this.dialogProps.value.regex[index].name) {
+          this.$set(this.dialogProps.value.regex[index], 'name', '')
+        } else {
+          this.$set(this.dialogProps.value.regex[index], '', '')
+        }
       },
       onSubmit () {
         this.dialogProps.value.confVisible = false
