@@ -37,9 +37,6 @@
               label="任务"
               prop="name"></el-table-column>
             <el-table-column
-              v-if="filter !== '待指派'"
-              label="流程"
-              prop="pname"></el-table-column>
             <el-table-column
               v-if="filter !== '待指派'"
               prop="variables.author"
@@ -76,6 +73,16 @@
               </template>
             </el-table-column>
           </el-table>
+          <div class="pagination-block clear">
+            <el-pagination
+              class="fr"
+              layout="prev, pager, next"
+              :current-page="pagination.current"
+              :page-size="pagination.pageSize"
+              @current-change="onPageChange"
+              :total="pagination.total">
+            </el-pagination>
+          </div>
         </el-card>
       </el-col>
     </el-row>
@@ -181,6 +188,11 @@
         handleViewData: {
           visible: false,
           task: {}
+        },
+        pagination: {
+          current: 1,
+          pageSize: 10,
+          total: 0
         }
       }
     },
@@ -199,12 +211,18 @@
 
     methods: {
       onFilterChange () {
+        this.pagination.current = 1
         if (this.filter === '待指派' && !this.isProcessAdmin) {
           this.$message.error('你非流程管理员，无法指派！')
           this.filter === '待认领'
           return
         }
         this.getTaskList()
+      },
+
+      onPageChange (val) {
+        this.pagination.current = val
+        this.getFilteredList()
       },
 
       getTaskList () {
@@ -216,6 +234,7 @@
         this.loadingFiltered = true
         this.http.post('', this.parseData(postData)).then((res) => {
           this.filteredList = res.data.data.data
+          this.pagination.total = res.data.data.total
           this.loadingFiltered = false
         })
       },
