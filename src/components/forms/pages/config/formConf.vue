@@ -41,12 +41,15 @@
                 </el-form-item>
               </el-row>
               <el-row>
-                <el-form-item label="默认值" style="width: 100%">
+                <el-form-item label="默认值">
                   <el-popover placement="right" trigger="click">
                     <default-conf :dialog-props="itemConf"></default-conf>
                     <el-button size="small" slot="reference">配置默认值</el-button>
                   </el-popover>
                   <span v-if="itemConf.default.type" class="default-preview"><code>{{JSON.stringify(itemConf.default)}}</code></span>
+                </el-form-item>
+                <el-form-item label="监听字段">
+                  <el-input v-model="itemConf.watch" placeholder="字段 ID" class="code-input" size="small"></el-input>
                 </el-form-item>
               </el-row>
               <el-row>
