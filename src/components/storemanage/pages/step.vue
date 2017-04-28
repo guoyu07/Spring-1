@@ -232,7 +232,7 @@
           this.taskForm = res.data.data.form
           // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
-            if (this.taskForm.body.count.type === 'message_header') {
+            if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
               if (Array.isArray(keyData)) {
                 // this.applyData.body.length = keyData.length
@@ -315,6 +315,10 @@
                         if (value.default.type) {
                           if (value.default.type === 'message_header') {
                             newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          } else if (value.default.type === 'form_body') {
+                            this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              this.assignForm.body[k][value.id] = newVal
+                            })
                           }
                         }
                       }
@@ -333,10 +337,14 @@
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
                       if (value.default.type) {
                         if (value.default.type === 'message_header') {
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        } else if (value.default.type === 'form_body') {
+                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                            this.assignForm.body[k][value.id] = newVal
+                          })
                         }
                       }
                     }
@@ -430,10 +438,10 @@
           cancelButtonText: '取消',
           type: 'info'
         }).then(() => {
-          const ref = this.$refs[assignForm].fields.length !== 0
+          const ref = this.$refs['assignForm'].fields.length !== 0
           console.log(ref)
           if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs[assignForm].validate((valid) => {
+            this.$refs['assignForm'].validate((valid) => {
               if (valid) {
                 console.log(this.assignForm.body)
                 if (this.assignForm.body) {
@@ -446,8 +454,8 @@
                     }
                   }
                 }
-                this.postMethod(this.routerInfo.id, this.assignForm)
-                // console.dir(this.assignForm)
+                // this.postMethod(this.routerInfo.id, this.assignForm)
+                console.dir(this.assignForm)
               } else {
                 console.log('error submit!!')
                 this.$message.warning('未完成！')
@@ -460,8 +468,8 @@
                 return Array.isArray(data[item]) && data[item].length === 0
               }
             })) {
-              this.postMethod(this.routerInfo.id, this.assignForm)
-              // console.dir(this.assignForm)
+              // this.postMethod(this.routerInfo.id, this.assignForm)
+              console.dir(this.assignForm)
             } else {
               this.$message.warning('未分配完！')
               return false

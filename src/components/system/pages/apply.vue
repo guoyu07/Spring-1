@@ -208,7 +208,7 @@
                       title: '成功',
                       message: '已成功创建申请单'
                     })
-                    this.$router.replace('/system/applylist')
+                    this.$router.replace('/orders')
                   }
                 })
               } else {

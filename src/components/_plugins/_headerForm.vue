@@ -38,6 +38,7 @@
       <el-select
         filterable
         :clearable="!formItem.required"
+        :disabled="formItem.readonly"
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]">
         <el-option v-for="option in formItem.value.regex"
@@ -46,7 +47,8 @@
       </el-select>
       <el-radio-group
         v-else
-        v-model="item[formItem.id]">
+        v-model="item[formItem.id]"
+        :disabled="formItem.readonly">
         <el-radio  v-for="option in formItem.value.regex" :label="option"></el-radio>
       </el-radio-group>
     </template>
@@ -56,6 +58,7 @@
         filterable
         v-if="!formItem.isAlias"
         :clearable="!formItem.required"
+        :disabled="formItem.readonly"
         v-model="item[formItem.id]">
         <el-option v-for="option in formItem.value.object_list"
           :label="option.name"
@@ -63,7 +66,8 @@
       </el-select>
       <el-radio-group
         v-else
-        v-model="item[formItem.id]">
+        v-model="item[formItem.id]"
+        :disabled="formItem.readonly">
         <el-radio v-for="option in formItem.value.object_list" :label="option">{{option.name}}</el-radio>
       </el-radio-group>
     </template>
@@ -71,6 +75,7 @@
     <template v-else-if="formItem.value.type === 'FKs'">
       <el-select
         filterable
+        :disabled="formItem.readonly"
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]"
         multiple>
@@ -80,7 +85,8 @@
       </el-select>
       <el-checkbox-group
         v-else
-        v-model="item[formItem.id]">
+        v-model="item[formItem.id]"
+        :disabled="formItem.readonly">
         <el-checkbox v-for="option in formItem.value.object_list" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
       </el-checkbox-group>
     </template>
@@ -146,7 +152,7 @@
             required: formItem.required,
             trigger: 'change'
           }
-        } else if (formItem.readonly) {
+        } else if (formItem.readonly && !formItem.required) {
           return {}
         } else if (!formItem.required) {
           return {}

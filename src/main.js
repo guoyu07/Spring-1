@@ -83,7 +83,8 @@ http.interceptors.response.use(rs => {
     NProgress.done()
   }
   Promise.reject(err)
-  new Vue({}).$message.error(err.response.data.errorMessage)
+  // new Vue({}).$message.error(err.response.data.errorMessage)
+  Vue.prototype.$message.error(err.response.data.errorMessage)
 })
 
 Vue.prototype.http = http

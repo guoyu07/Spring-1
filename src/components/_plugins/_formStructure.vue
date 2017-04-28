@@ -50,7 +50,8 @@
           v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
           v-model="item[formItem.id]"
           :clearable="!formItem.required && formItem.value.type === 'FK'"
-          :multiple="formItem.value.type === 'FKs'">
+          :multiple="formItem.value.type === 'FKs'"
+          :disabled="formItem.readonly">
           <el-option v-for="option in formItem.value.object_list"
             :label="option.name"
             :value="option"></el-option>
@@ -69,6 +70,7 @@
           v-else-if="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
           v-model="item[formItem.id]"
           :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
+          :disabled="formItem.readonly"
           placeholder="选择时间">
         </el-date-picker>
 
@@ -131,7 +133,7 @@
             required: formItem.required,
             trigger: 'change'
           }
-        } else if (formItem.readonly) {
+        } else if (formItem.readonly && !formItem.required) {
           return {}
         } else if (!formItem.required) {
           return {}
