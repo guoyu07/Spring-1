@@ -12,7 +12,7 @@
     }
 
     .default-preview {
-      font-size: 12px;
+      font-size: 10px;
       margin-left: 4px;
       color: #333;
     }
@@ -183,6 +183,7 @@ export default {
         required: true, // 必填
         need_submit: true, // 需要提交
         readonly: false,
+        isAlias: false,
         default: {
           confVisible: false,
           type: ''

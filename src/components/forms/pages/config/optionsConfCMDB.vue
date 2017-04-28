@@ -55,8 +55,8 @@
         </el-collapse-item>
       </el-collapse>
       <el-row style="margin-top: 12px">
-        <el-button type="success" :plain="true" size="small" icon="plus" @click="onAddRegex">添加字典对象</el-button>
-        <el-button type="info" :plain="true" size="small" icon="plus" @click="onAddDict(index)">添加键值对</el-button>
+        <el-button type="success" :plain="true" size="small" icon="plus" @click="onAddDict">添加字典对象</el-button>
+        <el-button type="info" :plain="true" size="small" icon="plus" @click="onAddField">添加键值对</el-button>
       </el-row>
     </div>
 
@@ -313,7 +313,7 @@
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
       },
-      onAddRegex () {
+      onAddDict () {
         console.log(this.dialogProps.value)
         if (!this.dialogProps.value.regex.length) {
           this.dialogProps.value.regex.push({
@@ -323,12 +323,14 @@
           this.dialogProps.value.regex.push(this.dialogProps.value.regex[this.dialogProps.value.regex.length - 1])
         }
       },
-      onAddDict (index) {
-        if (!this.dialogProps.value.regex[index].name) {
-          this.$set(this.dialogProps.value.regex[index], 'name', '')
-        } else {
-          this.$set(this.dialogProps.value.regex[index], '', '')
+      onAddField () {
+        // 弹窗填写 k-v，非空时执行以下
+        let key = ''
+        let value = ''
+        for (let dict of this.dialogProps.value.regex) {
+          this.$set(dict, key, value)
         }
+        console.log(this.dialogProps.value.regex)
       },
       onSubmit () {
         this.dialogProps.value.confVisible = false
