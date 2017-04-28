@@ -70,11 +70,7 @@
     methods: {
       renderOptions () {
         if (!this.strucData.default.type) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
-          if (this.strucData.value.type === 'dicts') {
-            this.vmodel[this.strucData.id] = [] // 重置
-          } else {
-            this.vmodel[this.strucData.id] = {} // 重置
-          }
+          this.vmodel[this.strucData.id] = null // 重置
         } else {
           // 这个是默认值
           console.log(this.vmodel[this.strucData.id], this.strucData)

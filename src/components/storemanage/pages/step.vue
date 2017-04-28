@@ -454,8 +454,8 @@
                     }
                   }
                 }
-                // this.postMethod(this.routerInfo.id, this.assignForm)
-                console.dir(this.assignForm)
+                this.postMethod(this.routerInfo.id, this.assignForm)
+                // console.dir(this.assignForm)
               } else {
                 console.log('error submit!!')
                 this.$message.warning('未完成！')
@@ -468,8 +468,8 @@
                 return Array.isArray(data[item]) && data[item].length === 0
               }
             })) {
-              // this.postMethod(this.routerInfo.id, this.assignForm)
-              console.dir(this.assignForm)
+              this.postMethod(this.routerInfo.id, this.assignForm)
+              // console.dir(this.assignForm)
             } else {
               this.$message.warning('未分配完！')
               return false
