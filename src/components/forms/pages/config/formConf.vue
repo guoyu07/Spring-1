@@ -41,7 +41,7 @@
                 </el-form-item>
               </el-row>
               <el-row>
-                <el-form-item label="默认值">
+                <el-form-item label="默认值" v-if="itemConf.value.type !== 'table'">
                   <el-popover placement="right" trigger="click">
                     <default-conf :dialog-props="itemConf"></default-conf>
                     <el-button size="small" slot="reference">配置默认值</el-button>
@@ -84,6 +84,7 @@
                     <el-option label="下拉单选（API）" value="dict"></el-option>
                     <el-option label="下拉多选（API）" value="dicts"></el-option>
                     <el-option label="搜索条件" value="search_bar"></el-option>
+                    <el-option label="表格" value="table"></el-option>
                   </el-select>
                   <!--静态选项-->
                   <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
@@ -95,6 +96,11 @@
                   <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
                     <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
                     <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+                  </template>
+                  <!--表格-->
+                  <template v-if="itemConf.value.type === 'table'">
+                    <el-button size="small" @click="showTableConf(itemConf)">配置表格</el-button>
+                    <table-conf :dialog-props="itemConf"></table-conf>
                   </template>
                   <!-- 搜索元件 -->
                   <template v-if="itemConf.value.type === 'search_bar'">
@@ -118,6 +124,7 @@
 <script>
 import optionsConf from './optionsConf' // 配置下拉选项（静态）的表单
 import optionsConfCmdb from './optionsConfCMDB' // 配置下拉选项（动态）的表单
+import tableConf from './tableConf' // 配置表格
 import defaultConf from './defaultConf'
 
 export default {
@@ -162,6 +169,12 @@ export default {
           value: ''
         })
       }
+      itemConf.value.confVisible = true
+    },
+    // 表格配置
+    showTableConf (itemConf) {
+      if (!itemConf.value.count) this.$set(itemConf.value, 'count', { type: '' })
+      if (!itemConf.value.attr_list) this.$set(itemConf.value, 'attr_list', [])
       itemConf.value.confVisible = true
     },
     // 默认值配置
@@ -209,6 +222,7 @@ export default {
   components: {
     optionsConf,
     optionsConfCmdb,
+    tableConf,
     defaultConf
   }
 }

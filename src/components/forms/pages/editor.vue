@@ -107,9 +107,8 @@
                     <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.name"></el-option>
                   </el-select>
                 </el-form-item>
+                <br>
               </template>
-              
-              <br>
               <el-form-item width="100%">
                 <el-checkbox v-model="formConfig.form.show_progress">是否显示进度条</el-checkbox>
                 <el-checkbox v-model="formConfig.form.show_history">是否显示步骤</el-checkbox>
@@ -253,6 +252,14 @@ export default {
     }
   },
   activated () {
+    let meh = {
+      action: 'cmdb/object/list',
+      method: 'GET',
+      data: {}
+    }
+    this.http.post('', this.parseData(meh)).then((res) => {
+      console.log(res.data)
+    })
     /**
      * 正常的 Restfull API 是拿一个 id 再去获取详情。
      * 这里是直接路由传对象过来，所以刷新时让他回退。
