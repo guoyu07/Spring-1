@@ -11,6 +11,10 @@
     background-color: @eoSideBgColor;
     border-right: 1px solid @eoBorderColor;
 
+    @media screen and (max-width: 450px) {
+      display: none;
+    }
+
     .el-menu {
       background-color: @eoSideBgColor;
       padding-top: 50px;

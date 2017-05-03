@@ -33,7 +33,12 @@
       height: 50px;
       line-height: 50px;
       color: #fff;
-      border-bottom: none !important;
+      border-bottom: none !important;      
+
+      @media screen and (max-width: 450px) {
+        font-size: 12px;
+        padding: 0 10px;
+      }
 
       &:hover {
         background-color: @eoThemeColor;
