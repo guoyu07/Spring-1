@@ -9,7 +9,7 @@
 </style>
 
 <template>
-  <el-dialog title="表格配置" v-model="dialogProps.value.confVisible" top="10%" size="large">
+  <el-dialog title="表格配置" v-model="dialogProps.value.confVisible">
     <el-collapse v-if="dialogProps.value.attr_list.length">
       <el-collapse-item v-for="attr of dialogProps.value.attr_list" :title="attr.name">
         <el-form label-position="left" :inline="true">

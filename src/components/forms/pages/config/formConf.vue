@@ -118,6 +118,13 @@
       </el-collapse-item>
     </el-collapse>
     <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField">添加字段</el-button>
+    <el-row style="margin-top: 12px">
+      <el-select size="small" v-model="selectedPreset" placeholder="选择预设集">
+        <el-option v-for="obj in presets" :key="obj" :value="obj" :label="obj.name"></el-option>
+      </el-select>
+      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset !== {}">配置预设集</el-button>
+    </el-row>
+    <preset-conf :selected-preset="selectedPreset" :current-fields="configData"></preset-conf>
   </div>
 </template>
 
@@ -126,18 +133,35 @@ import optionsConf from './optionsConf' // 配置下拉选项（静态）的表�
 import optionsConfCmdb from './optionsConfCMDB' // 配置下拉选项（动态）的表单
 import tableConf from './tableConf' // 配置表格
 import defaultConf from './defaultConf'
+import presetConf from './presetConf'
 
 export default {
   props: {
-    configData: Array
+    configData: Array,
+    presets: Array
   },
   data () {
     return {
+      selectedPreset: {},
       needDefault: false,
       countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
     }
   },
   methods: {
+    // 导入预设集
+    importPreset (preset, currentFields) {
+      for (let attr of preset) {
+        if (currentFields.every(i => i.id !== attr.id)) {
+          Object.assign(attr, { need_submit: false, isAlias: false, default: { type: '', confVisible: false } })
+          currentFields.push(attr)
+        }
+      }
+      console.log(currentFields)
+    },
+    // 显示预设集弹窗
+    showPresetConf () {
+      this.selectedPreset.confVisible = true
+    },
     // 显示静态下拉的选项
     showMultiConf (itemConf) {
       if (!itemConf.value.regex) itemConf.value.regex = []
@@ -188,6 +212,7 @@ export default {
     // },
     // 添加一个字段
     onAddField () {
+      console.log(this)
       this.configData.push({
         id: '',
         name: '',
@@ -223,7 +248,8 @@ export default {
     optionsConf,
     optionsConfCmdb,
     tableConf,
-    defaultConf
+    defaultConf,
+    presetConf
   }
 }
 </script>

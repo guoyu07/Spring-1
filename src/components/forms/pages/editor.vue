@@ -131,7 +131,7 @@
           </el-row>
           <el-row class="form-block">
             <h4>Header 配置</h4>
-            <form-conf :config-data="formConfig.form.form.header"></form-conf>
+            <form-conf :config-data="formConfig.form.form.header" :presets="presets"></form-conf>
           </el-row>
           <el-row class="form-block">
             <h4>Body 配置 ({{formConfig.form.form.body.body_list.length}})</h4>
@@ -225,6 +225,7 @@ import formConf from './config/formConf' // 配置字段的表单
 export default {
   data () {
     return {
+      presets: [],
       id: '',
       // 操作按钮
       actions: [
@@ -252,14 +253,7 @@ export default {
     }
   },
   activated () {
-    let meh = {
-      action: 'cmdb/object/list',
-      method: 'GET',
-      data: {}
-    }
-    this.http.post('', this.parseData(meh)).then((res) => {
-      console.log(res.data)
-    })
+    this.getPresets()
     /**
      * 正常的 Restfull API 是拿一个 id 再去获取详情。
      * 这里是直接路由传对象过来，所以刷新时让他回退。
@@ -281,6 +275,17 @@ export default {
     this.initActions()
   },
   methods: {
+    // 获取预设集
+    getPresets () {
+      let postData = {
+        action: 'cmdb/object/list',
+        method: 'GET',
+        data: {}
+      }
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.presets = res.data.data.list
+      })
+    },
     getActionDef () {
       let postData = {
         action: 'activiti/action/define/list',
