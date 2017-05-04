@@ -172,6 +172,14 @@
       },
       onSubmit (applyForm) {
         console.log(this.applyForm)
+        if (this.applyForm.header.applyType === '新建应用' && typeof this.applyForm.header.applicationName === 'object') {
+          this.$message('请填写新建的应用名')
+          return false
+        }
+        if (this.applyForm.header.applyType === '新建集群节点' && typeof this.applyForm.header.applicationName === 'string') {
+          this.$message('请选择已有的应用名')
+          return false
+        }
         this.$refs[applyForm].validate((valid) => {
           if (valid) {
             this.$refs['applyForm'].validate(valid => {
