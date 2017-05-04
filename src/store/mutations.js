@@ -10,5 +10,10 @@ export default {
   [types.REMOVE_USERINFO] (state) {
     // store.remove('userinfo')
     state.userinfo = {}
+  },
+
+  [types.IDCRACK_DATA] (state, data) {
+    state.idcrackData = data.idcrackData
+    // store.set('idcrack_data', state.idcrackData)
   }
 }

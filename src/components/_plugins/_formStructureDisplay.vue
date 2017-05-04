@@ -4,7 +4,8 @@
       <!-- <h5>{{formBlock.name}}</h5> -->
       <el-form-item
         v-for="formItem in formBlock.value"
-        :label="formItem.name">
+        :label="formItem.name"
+        :class="formItem.value.type === 'table' ? 'blockElement' : ''">
 
         <span v-if="formItem.value.type === 'dict'">
           {{ item && item[formItem.id][formItem.value.source.res.show_key] }}
@@ -35,6 +36,17 @@
         <span v-else-if="formItem.value.type === 'str' || formItem.value.type==='enum' || formItem.value.type==='int'">
           {{ item[formItem.id] }}
         </span>
+
+        <el-table
+          v-else-if="formItem.value.type === 'table'"
+          :data="item[formItem.id]">
+          <el-table-column
+            v-for="col in formItem.value.attr_list"
+            :prop="col.id"
+            :label="col.name">
+          </el-table-column>
+        </el-table>
+        <!-- <div v-else-if="formItem.value.type === 'table'"><pre>{{item}}</pre></div> -->
 
       </el-form-item>
     </div>

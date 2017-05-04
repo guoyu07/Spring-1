@@ -37,6 +37,16 @@
           :prop="item.id"
           :label="item.name"></el-table-column>
       </el-table>
+      <div class="pagination-block clear">
+        <el-pagination
+          class="fr"
+          layout="prev, pager, next"
+          :current-page="currentPage"
+          :page-size="pageSize"
+          @current-change="onPageChange"
+          :total="deviceTotal">
+        </el-pagination>
+      </div>
       <div class="btn-area">
         <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至设备列表</el-button>
       </div>
@@ -90,7 +100,9 @@
           {id: 'eq', name: '等于'},
           {id: 'neq', name: '不等于'},
           {id: 'reg', name: '包含'}
-        ]
+        ],
+        currentPage: 1,
+        pageSize: 10
       }
     },
     created () {
@@ -131,17 +143,15 @@
 
     methods: {
       onSearchDevices () {
-        // this.searchKeys.searchKey = ''
-        // this.searchKeyList = item.value.source.data.params.filter(item => {
-        //   return item.value.type !== 'input'
-        // })
-        let searchData = Object.assign(this.searchData, this.filterObj(this.searchKeys))
+        let searchData = {}
+        searchData.query = Object.assign(this.searchData, this.filterObj(this.searchKeys))
+        searchData.page = this.currentPage
+        searchData.page_size = this.pageSize
         console.log(searchData)
-        if (this.isEmptyObj(searchData)) {
+        if (this.isEmptyObj(searchData.query)) {
           this.$message.info('搜索条件不能为空！')
           return false
         }
-        // searchData.isapply = 'no' // 未被占用
         let postData = {
           action: this.mainInfo.value.source.data.action,
           method: this.mainInfo.value.source.data.method,
@@ -158,6 +168,10 @@
           this.deviceLoading = false
         })
       },
+      onPageChange (val) {
+        this.currentPage = val
+        this.onSearchDevices()
+      },
       onAddtoOff () {
         for (const selection of this.selectedDevices) {
           // console.log(this.hostList)
@@ -172,10 +186,11 @@
               this.hostList = [...this.hostList, selection]
             }
             // }
-          } else {
-            this.$message.warning(`列表中已存在该条数据`)
-            return false
           }
+          //  else {
+          //   this.$message.warning(`列表中已存在该条数据`)
+          //   return false
+          // }
         }
       },
       handleSelectionChange (val) {

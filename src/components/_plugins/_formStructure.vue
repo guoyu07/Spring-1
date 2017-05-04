@@ -7,12 +7,15 @@
         v-for="formItem in formBlock.value"
         :prop="formItem.required ? 'body.' + index + '.' + formItem.id : ''"
         :label="formItem.name"
-        :rules="rules(formItem)">
+        :rules="rules(formItem)"
+        :class="formItem.isAlias ? 'blockElement' : ''">
 
         <span v-if="formItem.value.type === 'str'">
           <!-- 普通表单填写 不管需不需要提交 都是这样 -->
           <el-input
             v-if="!formItem.readonly"
+            :type="formItem.isAlias ? 'textarea' : 'text'"
+            :autosize="{ minRows: 5}"
             v-model="item[formItem.id]">
           </el-input>
           <!-- 读取默认值并提交 -->
@@ -34,28 +37,62 @@
           :disabled="formItem.readonly">
         </el-input-number>
 
-        <el-select
-          filterable
-          v-else-if="formItem.value.type === 'enum'"
-          v-model="item[formItem.id]"
-          :clearable="!formItem.required"
-          :disabled="formItem.readonly">
-          <el-option v-for="option in formItem.value.regex"
-            :label="option"
-            :value="option"></el-option>
-        </el-select>
+        <template v-else-if="formItem.value.type === 'enum'">
+          <el-select
+            filterable
+            :clearable="!formItem.required"
+            :disabled="formItem.readonly"
+            v-if="!formItem.isAlias"
+            v-model="item[formItem.id]">
+            <el-option v-for="option in formItem.value.regex"
+              :label="option"
+              :value="option"></el-option>
+          </el-select>
+          <el-radio-group
+            v-else
+            v-model="item[formItem.id]"
+            :disabled="formItem.readonly">
+            <el-radio v-for="option in formItem.value.regex" :label="option"></el-radio>
+          </el-radio-group>
+        </template>
 
-        <el-select
-          filterable
-          v-else-if="formItem.value.type === 'FK' || formItem.value.type === 'FKs'"
-          v-model="item[formItem.id]"
-          :clearable="!formItem.required && formItem.value.type === 'FK'"
-          :multiple="formItem.value.type === 'FKs'"
-          :disabled="formItem.readonly">
-          <el-option v-for="option in formItem.value.object_list"
-            :label="option.name"
-            :value="option"></el-option>
-        </el-select>
+        <template v-else-if="formItem.value.type === 'FK'">
+          <el-select
+            filterable
+            v-if="!formItem.isAlias"
+            :clearable="!formItem.required"
+            :disabled="formItem.readonly"
+            v-model="item[formItem.id]">
+            <el-option v-for="option in formItem.value.object_list"
+              :label="option.name"
+              :value="option"></el-option>
+          </el-select>
+          <el-radio-group
+            v-else
+            v-model="item[formItem.id]"
+            :disabled="formItem.readonly">
+            <el-radio v-for="option in formItem.value.object_list" :label="option">{{option.name}}</el-radio>
+          </el-radio-group>
+        </template>
+
+        <template v-else-if="formItem.value.type === 'FKs'">
+          <el-select
+            filterable
+            :disabled="formItem.readonly"
+            v-if="!formItem.isAlias"
+            v-model="item[formItem.id]"
+            multiple>
+            <el-option v-for="option in formItem.value.object_list"
+              :label="option.name"
+              :value="option"></el-option>
+          </el-select>
+          <el-checkbox-group
+            v-else
+            v-model="item[formItem.id]"
+            :disabled="formItem.readonly">
+            <el-checkbox v-for="option in formItem.value.object_list" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
+          </el-checkbox-group>
+        </template>
 
         <el-select
           v-else-if="formItem.value.type === 'arr'"
@@ -82,11 +119,6 @@
           :message="message"
           :index="index">
         </need-cmdb-data>
-
-        <!-- <search-bar
-          v-else-if="formItem.value.type === 'search_bar'"
-          :vmodel="item" :strucData="formItem">
-        </search-bar> -->
       </el-form-item>
     </div>
   </div>
@@ -166,3 +198,15 @@
     }
   }
 </script>
+<style>
+  .blockElement {
+    width: 100%;
+    display: flex;
+  }
+  .blockElement .el-form-item__content {
+    width: 50%;
+    width:-moz-calc(100% - 85px);
+    width:-webkit-calc(100% - 85px);
+    width: calc(100% - 85px);
+  }
+</style>

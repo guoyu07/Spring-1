@@ -61,6 +61,9 @@
                 </div>
               </div>
             </div>
+            <div class="clear">
+              <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview" class="margin-bottom">机柜预览图</el-button>
+            </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
@@ -70,6 +73,12 @@
                     <div v-for="taskform in task.form.form.body.body_list">
                       <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
                         <p class="h5">{{task.tname}}</p>
+                        <form-structure-display
+                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
+                          :item="data"
+                          :form-data="taskform.attr_list"
+                          :index="index">
+                        </form-structure-display>
 
                         <el-table
                           v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
@@ -81,21 +90,12 @@
                           </el-table-column>
                         </el-table>
 
-                        <!--  -->
-                        <form-structure-display
-                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
-                          :item="data"
-                          :form-data="taskform.attr_list"
-                          :index="index">
-                        </form-structure-display>
-
                       </template>
                     </div>
                   </div>
-                  <!-- task.form.form.body.body_list.length === 1 -->
                   <div v-else>
                     <!-- 这里是判断 body_list 是不是空数组 -->
-                    <div v-if="task.form.form.body.body_list && task.form.form.body.body_list[0]">
+                    <div v-if="task.form.form.body.body_list[0]">
                       <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
                       <p class="h5">{{task.tname}}</p>
                       <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
@@ -111,12 +111,15 @@
                       <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
                       <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
                         <!-- 表单填写 -->
+                        <!-- :read-info="applyData.header" 只读信息不该只有 applyData.header 应该根据只读信息的来源type来决定，read-info 属性可以去掉，用 message 顶替 -->
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index"
-                          :read-info="applyData.header">
+                          :read-info="applyData.header"
+                          :whole="assignForm"
+                          :message="applyData">
                         </form-structure>
                         <!-- 设备选择 -->
                         <search-bar
@@ -142,7 +145,8 @@
                   <header-form
                     v-if="!taskform.value.show"
                     :item="assignForm.header"
-                    :form-item="taskform">
+                    :form-item="taskform"
+                    :whole="assignForm">
                   </header-form>
                   <div v-if="taskform.value.show">
                     <div v-if="taskform.value.show.type==='form_header'">
@@ -164,11 +168,11 @@
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
                 <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
                   <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
                 </el-tooltip>
-                <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>
@@ -176,6 +180,34 @@
         </el-card>
       </el-col>
     </el-row>
+    <!-- 机柜图预览 -->
+    <div v-if="routerInfo.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
+      <h5 class="cabinet-title">
+        <span>机柜预览</span>
+      </h5>
+      <span class="close-btn" >
+        <el-button type="text" size="small" icon="close" @click="closePreview"></el-button>
+      </span>
+      <div class="paginate-btn clearfix">
+        <el-button type="primary" size="mini" icon="arrow-left" :disabled="previewPage === 1" class="fl" @click="prevPreview">上一页</el-button>
+        <span class="preview-indicator"><span class="current-page">{{previewPage}}</span>/<span class="total-page">{{pageNum}}</span></span>
+        <el-button type="primary" size="mini" :disabled="previewPage === pageNum" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+      </div>
+      <el-row :gutter="10">
+        <el-col :sm="6" v-for="idcrack in idcrackData">
+          <table class="el-table__body table-condensed table-cabinet text-navy">
+            <caption>{{ idcrack.code }}</caption>
+            <tbody>
+              <tr v-for="(nindex, n) in idcrack.u_info.jgUHeight">
+                <td :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - n)) }">
+                  U{{idcrack.u_info.jgUHeight - n}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 <script>
@@ -207,7 +239,11 @@
         searchKeys: {},
         searchData: {},
         path_list: [],
-        hostList: []
+        hostList: [],
+        previewShown: false,
+        idcrackData: [],
+        previewPage: 1,
+        pageNum: 1
       }
     },
     created () {
@@ -216,7 +252,45 @@
       // this.renderForm()
       // this.renderTaskForm()
     },
+    watch: {
+      'idcrackData': 'idcrackIsTaked'
+    },
     methods: {
+      idcrackIsTaked () {
+        for (const item of this.idcrackData) {
+          item.isTaked = []
+          for (const ed of item.u_info.assetList) {
+            for (let i = 0; i < item.u_info.jgUHeight; i++) {
+              if (i >= ed.beginU && i <= ed.endU) {
+                item.isTaked.push(i)
+              }
+            }
+          }
+        }
+      },
+      getPreview () {
+        this.previewShown = !this.previewShown
+        this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
+        this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
+      },
+      closePreview () {
+        this.previewShown = !this.previewShown
+      },
+      nextPreview () {
+        const page = this.previewPage + 1
+        if (this.previewPage !== this.pageNum) {
+          this.idcrackData = this.$store.state.idcrackData.slice((page - 1) * 4, page * 4)
+          this.previewPage = page
+        }
+      },
+
+      prevPreview () {
+        const page = this.previewPage > 1 ? this.previewPage - 1 : 1
+        if (this.previewPage !== 1) {
+          this.idcrackData = this.$store.state.idcrackData.slice((page - 1) * 4, page * 4)
+          this.previewPage = page
+        }
+      },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
@@ -227,11 +301,11 @@
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.taskForm = res.data.data.form
-          console.log(this.applyData)
+          // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
-            if (this.taskForm.body.count.type === 'message_header') {
+            if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
               if (Array.isArray(keyData)) {
                 // this.applyData.body.length = keyData.length
@@ -274,16 +348,21 @@
               header.value.map(value => {
                 if (value.need_submit) {
                   this.setDataType(value, this.assignForm.header, this)
+                  console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                   if (value.default.type) {
                     if (value.default.type === 'message_header') {
-                      this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                      console.log(this.assignForm.header[value.id])
                     }
                   }
                 }
               })
             }
           })
+          // console.log(this.assignForm.header.host_type)
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
@@ -309,6 +388,10 @@
                         if (value.default.type) {
                           if (value.default.type === 'message_header') {
                             newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          } else if (value.default.type === 'form_body') {
+                            this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              this.assignForm.body[k][value.id] = newVal
+                            })
                           }
                         }
                       }
@@ -327,10 +410,14 @@
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
                       if (value.default.type) {
                         if (value.default.type === 'message_header') {
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        } else if (value.default.type === 'form_body') {
+                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                            this.assignForm.body[k][value.id] = newVal
+                          })
                         }
                       }
                     }
@@ -424,10 +511,10 @@
           cancelButtonText: '取消',
           type: 'info'
         }).then(() => {
-          const ref = this.$refs[assignForm].fields.length !== 0
+          const ref = this.$refs['assignForm'].fields.length !== 0
           console.log(ref)
           if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs[assignForm].validate((valid) => {
+            this.$refs['assignForm'].validate((valid) => {
               if (valid) {
                 console.log(this.assignForm.body)
                 if (this.assignForm.body) {
@@ -469,10 +556,16 @@
         })
       },
       postMethod (id, data) {
-        if (data.body.length === 0) {
-          this.applyData.body.forEach(item => {
-            data.body.push({})
-          })
+        // if (data.body.length === 0) {
+        //   this.applyData.body.forEach(item => {
+        //     data.body.push({})
+        //   })
+        // }
+        // console.log(data)
+        for (const id in data.header) {
+          if (!data.header[id]) {
+            delete data.header[id] // 删除头部空值 TODO：删除 body 的空值
+          }
         }
         const postData = {
           action: 'runtime/task/complete',
@@ -488,9 +581,13 @@
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
-                message: '审批成功!'
+                message: '成功!'
               })
-              this.$router.replace('/orders') // 分配成功跳转工单管理
+              if (this.routerInfo.pkey === 'easyops_monitor') {
+                this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
+              } else {
+                this.$router.replace('/orders') // 跳转工单管理
+              }
             }
           })
       },
@@ -652,5 +749,119 @@
       word-wrap: break-word;
     }
   }
+}
+.cabinet-preview {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 99.9vh;
+  background: rgba(255, 255, 255, .9);
+  padding: 2px 8px;
+  z-index: 99999;
+  width: 26%;
+  transition: all 320ms cubic-bezier(0.175, 0.185, 0.320, 1.255) 0s;
+  transform: translateX(100%);
+  overflow-y: scroll;
+  text-align: center;
+}
+
+.cabinet-preview table caption {
+  text-align: center;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.cabinet-preview.shown {
+  transform: translateX(0);
+  box-shadow: -6px 0px 12px -6px #777;
+}
+
+.cabinet-preview .close-btn {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  font-size: 12px;
+  color: rgba(0,0,0,.28);
+  cursor: pointer;
+}
+
+.cabinet-preview .close-btn:hover {
+  color: rgba(0,0,0,.56);
+}
+
+.cabinet-title {
+  margin: 8px 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, .42);
+  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  letter-spacing: .42em;
+  font-weight: bold;
+}
+
+.cabinet-title span {
+  padding: 0 16px;
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  z-index: 11;
+}
+
+.cabinet-preview.shown .table-cabinet {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.table-cabinet {
+  border: 1px solid rgba(82, 100, 115, 0.84);
+  border-left-width: 2px;
+  border-right-width: 2px;
+  opacity: 0;
+  transform: translateY(0);
+  transition-property: opacity, transform;
+  transition-duration: .25s;
+  transition-delay: .15s;
+  width: 100%;
+}
+
+.table-cabinet td {
+  border: 1px solid rgba(173, 194, 212, 0.84);
+  padding: 0 4px;
+  background: rgba(0,0,0,.04);
+  font-size: 10px;
+}
+
+.table-cabinet td.occupied {
+  background-color: #b5bbc8;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0,0,0,.3);
+  font-weight: bold;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,.3) 4px, rgba(255,255,255,.3) 8px);
+  // cursor: not-allowed;
+}
+
+.table-cabinet caption {
+  font-size: 12px;
+  height: 70px;
+  overflow: hidden;
+}
+
+.preview-container.loading {
+  opacity: .5
+}
+
+.preview-indicator {
+  color: #333;
+}
+
+.paginate-btn {
+  margin-bottom: 10px;
+}
+
+.total-page {
+  font-size: 12px;
+  color: #616161;
 }
 </style>
