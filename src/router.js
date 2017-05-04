@@ -53,6 +53,9 @@ const routes = [{
     }, {
       path: '/storemanage/:pkey/:tkey/:id/:name',
       component: require('./components/storemanage/pages/step.vue')
+    }, {
+      path: '/onlinestep/:pkey/:tkey/:id/:name',
+      component: require('./components/storemanage/pages/onlinestep.vue')
     }]
   }, {
     path: '/equipment',

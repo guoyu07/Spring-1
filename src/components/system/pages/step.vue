@@ -147,8 +147,8 @@
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-                <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>

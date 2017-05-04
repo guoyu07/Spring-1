@@ -29,5 +29,18 @@ module.exports = {
       commit(types.REMOVE_USERINFO)
       resolve()
     })
+  },
+
+  idcrack_data: ({
+    commit
+  }, {
+    idcrackData
+  }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.IDCRACK_DATA, {
+        idcrackData
+      })
+      resolve()
+    })
   }
 }

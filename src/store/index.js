@@ -48,7 +48,8 @@ Vue.use(Vuex)
 // const store = new Store()
 
 const state = {
-  userinfo: window.localStorage || {}
+  userinfo: window.localStorage || {},
+  idcrackData: []
 }
 
 export default new Vuex.Store({

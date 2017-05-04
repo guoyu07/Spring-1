@@ -1,5 +1,14 @@
 <template>
   <div>
+    <!-- <el-select
+      v-model="vmodel[strucData.id]"
+      :multiple="strucData.value.type === 'dicts'"
+      :allow-create="strucData.value.allow_create"
+      filterable>
+      <el-option v-for="option in optionList"
+        :label="option[strucData.value.source.res.show_key]"
+        :value="option"></el-option>
+    </el-select> -->
     <template v-if="strucData.value.type === 'dict'">
       <el-select
         v-if="!strucData.isAlias"
@@ -60,6 +69,7 @@
     created () {
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
+          console.log(this.strucData.watch)
           this.renderOptions()
         })
       } else {
@@ -70,7 +80,11 @@
     methods: {
       renderOptions () {
         if (!this.strucData.default.type) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
-          this.vmodel[this.strucData.id] = null // 重置
+          if (this.strucData.value.type === 'dicts') {
+            this.vmodel[this.strucData.id] = []
+          } else {
+            this.vmodel[this.strucData.id] = null
+          }
         } else {
           // 这个是默认值
           console.log(this.vmodel[this.strucData.id], this.strucData)
@@ -161,9 +175,14 @@
                 })
               }
             }
+          } else if (this.strucData.value.source.data.action === 'idcrack/list') {
+            this.$store.dispatch('idcrack_data', {
+              idcrackData: this.optionList
+            })
           }
           // 将默认值(对象类型)放回值里面
-          console.log(this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key], this.strucData.value.source.res.show_key)
+          // console.log(this.strucData.id)
+          console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
           if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
             this.optionList.map(option => {
               if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
@@ -171,9 +190,11 @@
                 return false
               }
             })
-          } else {
-            this.optionList.push(this.vmodel[this.strucData.id])
           }
+          // else {
+          //   console.log(this.strucData.id)
+          //   this.optionList.push(this.vmodel[this.strucData.id])
+          // }
         })
       }
     }
