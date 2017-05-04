@@ -10,10 +10,21 @@
     .logo {
       // font-size: 16px;
       .logo-img {
+        height: 100%;
+
         img {
           // max-width: 100%;
           height: 50px;
           padding: 9px 0;
+
+          @media screen and (max-width: 450px) {
+            padding: 0;
+            height: auto;
+            width: 72px;
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+          }
         }
       }
     }
@@ -40,7 +51,24 @@
       height: 50px;
       line-height: 50px;
       color: #fff;
-      border-bottom: none !important;
+      border-bottom: none !important;      
+
+      @media screen and (max-width: 450px) {
+        font-size: 12px;
+        padding: 0 10px;
+      }
+
+      &:nth-child(2) {
+        @media screen and (max-width: 450px) {
+          margin-left: 58px;
+        }
+      }
+
+      &.fr {
+        @media screen and (max-width: 450px) {
+          padding: 0 6px;
+        }
+      }
 
       &:hover {
         background-color: @eoThemeColor;

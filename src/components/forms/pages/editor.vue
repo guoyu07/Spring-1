@@ -98,8 +98,14 @@
                     <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.name"></el-option>
                   </el-select>
                 </el-form-item>
+                <br>
               </template>
 
+              <el-form-item width="100%">
+                <el-checkbox v-model="formConfig.form.show_progress">是否显示进度条</el-checkbox>
+                <el-checkbox v-model="formConfig.form.show_history">是否显示步骤</el-checkbox>
+              </el-form-item>
+              
               <!-- <template v-if="formConfig.form.action.find(_ => _.type !== 'target')">
                 <br>
                 <el-form-item label="触发方式">
@@ -117,7 +123,7 @@
           </el-row>
           <el-row class="form-block">
             <h4>Header 配置</h4>
-            <form-conf :config-data="formConfig.form.form.header"></form-conf>
+            <form-conf :config-data="formConfig.form.form.header" :presets="presets"></form-conf>
           </el-row>
           <el-row class="form-block">
             <h4>Body 配置 ({{formConfig.form.form.body.body_list.length}})</h4>
@@ -154,11 +160,11 @@
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
               <h5>Body #{{index + 1}}</h5>
               <el-card>
-                <form-conf :config-data="body.attr_list"></form-conf>
+                <form-conf :config-data="body.attr_list" :presets="presets"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
-                    @click="delBodyBtn(formConfig.form.form.body.body_list, body)">删除 Body</el-button>
+                    @click="onDeleteBody(formConfig.form.form.body.body_list, body)">删除 Body</el-button>
                 </div>
               </el-card>
             </el-row>
@@ -209,6 +215,7 @@ import formConf from './config/formConf' // 配置字段的表单
 export default {
   data () {
     return {
+      presets: [],
       id: '',
       // 操作按钮
       actions: [
@@ -236,6 +243,7 @@ export default {
     }
   },
   activated () {
+    this.getPresets()
     /**
      * 正常的 Restfull API 是拿一个 id 再去获取详情。
      * 这里是直接路由传对象过来，所以刷新时让他回退。
@@ -257,6 +265,17 @@ export default {
     this.initActions()
   },
   methods: {
+    // 获取预设集
+    getPresets () {
+      let postData = {
+        action: 'cmdb/object/list',
+        method: 'GET',
+        data: {}
+      }
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.presets = res.data.data.list
+      })
+    },
     getActionDef () {
       let postData = {
         action: 'activiti/action/define/list',
@@ -335,8 +354,14 @@ export default {
       })
     },
     // 删除 body
-    delBodyBtn (arr, item) {
-      arr.splice(arr.indexOf(item), 1)
+    onDeleteBody (arr, item) {
+      this.$confirm('确定要删除这个 body 吗？', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        arr.splice(arr.indexOf(item), 1)
+      })
     },
     // 配置显示条件弹窗
     showCondition (body) {

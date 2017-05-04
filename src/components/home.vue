@@ -7,6 +7,11 @@
     padding-right: 20px;
     padding-bottom: 50px;
     /*overflow: auto;*/
+
+    @media screen and (max-width: 450px) {
+      padding-left: 10px;
+      padding-right: 10px;
+    }
   }
 
   .el-menu-item-group__title {

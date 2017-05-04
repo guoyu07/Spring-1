@@ -34,19 +34,44 @@
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="动态选项 API 配置" v-model="dialogProps.value.confVisible" @close="onClose">
-    <div class="conf-cmdb-contain" v-if="dialogProps.value.source">
-      <el-form :model="dialogProps.value.source" label-width="100px" :inline="true">
-        <el-form-item label="URL">
+  <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose" top="10%">
+    <el-radio-group v-model="optionType">
+      <el-radio label="dynamic">动态</el-radio>
+      <el-radio label="static">静态</el-radio>
+    </el-radio-group>
+    <hr>
+
+    <div class="conf-cmdb-contain" v-if="optionType === 'static'">
+      <el-collapse>
+        <el-collapse-item v-for="(obj, index) of dialogProps.value.regex" :title="'字典' + index">
+          <el-row>
+            <el-form label-width="80px">
+              <el-form-item v-for="(value, key) in obj" :label="key">
+                <!-- <span>{{value}}</span> -->
+                <el-input size="small" v-model="obj[key]"></el-input>
+              </el-form-item>
+            </el-form>
+          </el-row>
+        </el-collapse-item>
+      </el-collapse>
+      <el-row style="margin-top: 12px">
+        <el-button type="success" :plain="true" size="small" icon="plus" @click="onAddDict">添加字典对象</el-button>
+        <el-button type="info" :plain="true" size="small" icon="plus" @click="onAddField">添加键值对</el-button>
+      </el-row>
+    </div>
+
+    <div class="conf-cmdb-contain" v-if="optionType === 'dynamic' && dialogProps.value.source">
+      <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
+        <el-form-item label="URL (请求地址)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>
         </el-form-item>
-        <el-form-item label="Action">
+        <el-form-item label="Action (动作)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.data.action"></el-input>
         </el-form-item>
-        <el-form-item label="Method">
+        <el-form-item label="Method (方法)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.data.method"></el-input>
         </el-form-item>
-        <el-form-item label="Params">
+        <el-form-item label="Params (参数)">
           <el-dropdown trigger="click" @command="selectParams">
             <el-button size="small" type="primary" :plain="true" icon="plus">添加 Param</el-button>
             <el-dropdown-menu slot="dropdown">
@@ -132,11 +157,11 @@
 
       <h5>选项数据路径配置：</h5>
       <el-card>
-        <el-form label-width="120px" :inline="true">
-          <el-form-item label="data_path">
+        <el-form label-position="top" :inline="true">
+          <el-form-item label="data_path (属性路径)">
             <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.data_path"></el-input>
           </el-form-item>
-          <el-form-item label="show_key">
+          <el-form-item label="show_key (显示键名)">
             <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.show_key"></el-input>
           </el-form-item>
         </el-form>
@@ -219,6 +244,7 @@
     },
     data () {
       return {
+        optionType: 'dynamic',
         allowCreate: this.dialogProps.value && this.dialogProps.value.allowCreate ? this.dialogProps.value.allowCreate : true,
         countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
@@ -313,6 +339,25 @@
       // 删除操作
       paramsDelBtn (arr, item) {
         arr.splice(arr.indexOf(item), 1)
+      },
+      onAddDict () {
+        console.log(this.dialogProps.value)
+        if (!this.dialogProps.value.regex.length) {
+          this.dialogProps.value.regex.push({
+            name: 'new'
+          })
+        } else {
+          this.dialogProps.value.regex.push(this.dialogProps.value.regex[this.dialogProps.value.regex.length - 1])
+        }
+      },
+      onAddField () {
+        // 弹窗填写 k-v，非空时执行以下
+        let key = ''
+        let value = ''
+        for (let dict of this.dialogProps.value.regex) {
+          this.$set(dict, key, value)
+        }
+        console.log(this.dialogProps.value.regex)
       },
       onSubmit () {
         this.dialogProps.value.confVisible = false

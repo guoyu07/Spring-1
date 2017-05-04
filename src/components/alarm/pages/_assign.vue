@@ -5,6 +5,21 @@
     <el-row v-if="assignViewData.task !== {}">
       <el-col :span="20" :offset="2">
         <el-form label-position="left" inline class="expanded-form" v-if="assignViewData.task.variables">
+          <!-- <el-form-item label="流程名称">
+            <span>{{assignViewData.pname}}</span>
+          </el-form-item>
+          <el-form-item label="任务名称">
+            <span>{{assignViewData.name}}</span>
+          </el-form-item>
+          <el-form-item label="任务 ID">
+            <span>{{assignViewData.id}}</span>
+          </el-form-item>
+          <el-form-item label="现被指派者">
+            <span>{{assignViewData.assignee}}</span>
+          </el-form-item>
+          <el-form-item label="创建时间">
+            <small>{{assignViewData.createTime}}</small>
+          </el-form-item> -->
           <el-form-item label="告警对象：">
             <span>{{assignViewData.task.variables.message[0].form.header.alter_obj}}</span>
           </el-form-item>
@@ -34,6 +49,7 @@
             <el-radio-group v-model="newAssignee">
               <el-radio v-for="user in userList" :label="user.userId" :disabled="assignViewData.task.assignee === user.userId">{{user.code}}</el-radio>
             </el-radio-group>
+            <el-button v-if="newAssignee" type="warning" :plain="true" size="mini" @click="newAssignee=''">重置用户</el-button>
           </el-form-item>
           <el-form-item label="候选组">
             <el-checkbox-group v-model="newAssigneeGroup" v-if="assignViewData.task.candidate_groups">
