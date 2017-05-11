@@ -167,7 +167,7 @@
         </el-form>
       </el-card>
 
-      <template v-if="dialogProps.value.type === 'dicts'">
+      <!-- <template v-if="dialogProps.value.type === 'dicts'">
         <h5>多选选择个数配置：</h5>
         <el-card>
           <el-form label-width="90px" :inline="true">
@@ -200,7 +200,7 @@
             </template>
           </el-form>
         </el-card>
-      </template>
+      </template> -->
 
       <template v-if="isSearchBar">
         <h5>显示条件配置：</h5>

@@ -11,26 +11,26 @@
   <div class="conf-contain">
     <el-form label-width="100px">
       <el-form-item label="个数限制来源">
-        <el-select size="small" v-model="dialogProps.value.count.type">
+        <el-select size="small" v-model="dialogProps.limit.type">
           <el-option v-for="item in countConfig" :value="item"></el-option>
         </el-select>
       </el-form-item>
-      <template v-if="dialogProps.value.count.type === 'static'">
+      <template v-if="dialogProps.limit.type === 'static'">
         <el-form-item label="静态值">
-          <el-input size="small" v-model="dialogProps.value.count.value"></el-input>
+          <el-input size="small" v-model="dialogProps.limit.value"></el-input>
         </el-form-item>
       </template>
-      <template v-if="dialogProps.value.count.type !== 'static'">
+      <template v-if="dialogProps.limit.type !== 'static'">
         <el-form-item label="属性路径">
-          <el-input size="small" class="code-input" v-model="dialogProps.value.count.key_path"></el-input>
+          <el-input size="small" class="code-input" v-model="dialogProps.limit.key_path"></el-input>
         </el-form-item>
       </template>
-      <template v-if="dialogProps.value.count.type.includes('message_')">
+      <template v-if="dialogProps.limit.type.includes('message_')">
         <el-form-item label="流程节点 ID">
-          <el-input size="small" class="code-input" v-model="dialogProps.value.count.id"></el-input>
+          <el-input size="small" class="code-input" v-model="dialogProps.limit.id"></el-input>
         </el-form-item>
       </template>
-      <template v-if="dialogProps.value.count.type">
+      <template v-if="dialogProps.limit.type">
         <el-form-item>
           <el-button size="small" @click="onReset"><i class="el-icon-fa-refresh"></i> 重置</el-button>
         </el-form-item>
@@ -53,7 +53,7 @@
 
     methods: {
       onReset () {
-        this.dialogProps.value.count = { type: '' }
+        this.dialogProps.limit = { type: '' }
       }
     }
   }
