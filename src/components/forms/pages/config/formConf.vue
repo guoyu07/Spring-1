@@ -22,7 +22,7 @@
 <template>
   <div class="form-config">
     <el-collapse v-if="configData.length">
-      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name">
+      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name + ' - ' + itemConf.value.type">
         <el-row>
           <el-col :span="22" :offset="1">
             <el-form label-position="left" :inline="true">
@@ -46,7 +46,15 @@
                     <default-conf :dialog-props="itemConf"></default-conf>
                     <el-button size="small" slot="reference">配置默认值</el-button>
                   </el-popover>
-                  <span v-if="itemConf.default.type" class="default-preview"><code>{{JSON.stringify(itemConf.default)}}</code></span>
+                  <el-tooltip placement="top" v-if="itemConf.default.type">
+                    <div slot="content">
+                      <p><b>默认值来源：</b>{{itemConf.default.type}}</p>
+                      <p v-if="itemConf.default.type === 'static'"><b>静态值：</b>{{itemConf.default.value}}</p>
+                      <p v-if="itemConf.default.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.default.id}}</p>
+                      <p v-if="itemConf.default.type !== 'static'"><b>属性路径：</b>{{itemConf.default.key_path}}</p>
+                    </div>
+                    <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+                  </el-tooltip>
                 </el-form-item>
                 <el-form-item label="监听字段">
                   <el-input v-model="itemConf.watch" placeholder="字段 ID" class="code-input" size="small"></el-input>
@@ -116,7 +124,15 @@
                       <limit-conf :dialog-props="itemConf"></limit-conf>
                       <el-button size="small" slot="reference">配置个数</el-button>
                     </el-popover>
-                    <span class="default-preview"><code>{{JSON.stringify(itemConf.limit)}}</code></span>
+                    <el-tooltip placement="top" v-if="itemConf.limit.type">
+                      <div slot="content">
+                        <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
+                        <p v-if="itemConf.limit.type === 'static'"><b>静态值：</b>{{itemConf.limit.value}}</p>
+                        <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
+                        <p v-if="itemConf.limit.type !== 'static'"><b>属性路径：</b>{{itemConf.limit.key_path}}</p>
+                      </div>
+                      <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+                    </el-tooltip>
                   </el-form-item>
                 </el-row>
               </template>
@@ -164,7 +180,7 @@ export default {
     importPreset (preset, currentFields) {
       for (let attr of preset) {
         if (currentFields.every(i => i.id !== attr.id)) {
-          Object.assign(attr, { need_submit: false, isAlias: false, default: { type: '', confVisible: false } })
+          Object.assign(attr, { need_submit: false, isAlias: false, default: { type: '' } })
           currentFields.push(attr)
         }
       }
@@ -235,10 +251,16 @@ export default {
         readonly: false,
         isAlias: false,
         default: {
-          type: ''
+          type: '',
+          value: '',
+          id: '',
+          key_path: ''
         },
         limit: {
-          type: ''
+          type: '',
+          value: '',
+          id: '',
+          key_path: ''
         },
         value: {
           confVisible: false,
