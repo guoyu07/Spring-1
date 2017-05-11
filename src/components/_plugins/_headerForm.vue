@@ -3,7 +3,7 @@
     :prop="formItem.required ? 'header.' + formItem.id : ''"
     :label="formItem.name"
     :rules="rules(formItem)"
-    :class="formItem.isAlias ? 'blockElement' : ''">
+    :class="formItem.isAlias ||  formItem.value.type === 'table'? 'blockElement' : ''">
     <!-- <el-input
       v-if="formItem.value.type === 'str'"
       v-model="item[formItem.id]">
@@ -111,11 +111,39 @@
       v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
       :vmodel="item" :strucData="formItem" :whole="whole">
     </need-cmdb-data>
+
+    <div v-else-if="formItem.value.type === 'table'">
+      <el-tabs type="card">
+        <el-tab-pane :label="'body1'">
+          hello
+          <pre>{{item}}</pre>
+          <pre>{{formItem}}</pre>
+          <!-- <form-structure
+            :form-data="taskFormData.attr_list"
+            :item="item[index]"
+            :index="index">
+          </form-structure> -->
+        </el-tab-pane>
+      </el-tabs>
+    </div>
+
+    <!-- <el-tabs
+      v-else-if="formItem.value.type === 'table'">
+      <el-tab-pane v-for="(data, index) in whole.body" :label="'body' + (index+1)">
+        <pre>{{data}}</pre>
+        <form-structure
+          :form-data="taskFormData.attr_list"
+          :item="item[index]"
+          :index="index">
+        </form-structure>
+      </el-tab-pane>
+    </el-tabs> -->
   </el-form-item>
 </template>
 
 <script>
   import needCmdbData from './_needCMDBData'
+  import formStructure from './_formStructure'
   export default {
     props: {
       item: { type: Object },
@@ -181,7 +209,8 @@
     },
 
     components: {
-      needCmdbData
+      needCmdbData,
+      formStructure
     }
   }
 </script>

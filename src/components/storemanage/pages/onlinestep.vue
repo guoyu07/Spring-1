@@ -191,7 +191,7 @@
       <div class="paginate-btn clearfix">
         <el-button type="primary" size="mini" icon="arrow-left" :disabled="previewPage === 1" class="fl" @click="prevPreview">上一页</el-button>
         <span class="preview-indicator"><span class="current-page">{{previewPage}}</span>/<span class="total-page">{{pageNum}}</span></span>
-        <el-button type="primary" size="mini" :disabled="previewPage === pageNum" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+        <el-button type="primary" size="mini" :disabled="previewPage === pageNum || pageNum === 0" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
       </div>
       <el-row :gutter="10">
         <el-col :sm="6" v-for="idcrack in idcrackData">

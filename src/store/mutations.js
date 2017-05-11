@@ -14,6 +14,5 @@ export default {
 
   [types.IDCRACK_DATA] (state, data) {
     state.idcrackData = data.idcrackData
-    // store.set('idcrack_data', state.idcrackData)
   }
 }
