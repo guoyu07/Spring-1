@@ -102,9 +102,9 @@
         <div class="sidebar-title">IT 服务中心</div>
         <el-menu-item-group title="仓库管理">
           <!-- @click="$router.go(0)" -->
-          <el-menu-item index="/storemanage/instock"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
-          <el-menu-item index="/storemanage/export_device"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
-          <el-menu-item index="/storemanage/alter_device"><i class="el-icon-fa-edit"></i>设备变更</el-menu-item>
+          <el-menu-item index="/store-manage/instock"><i class="el-icon-fa-sign-in"></i>入库</el-menu-item>
+          <el-menu-item index="/store-manage/export_device"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
+          <el-menu-item index="/store-manage/alter_device"><i class="el-icon-fa-edit"></i>设备变更</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group title="设备上架">
           <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>

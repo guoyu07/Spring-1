@@ -33,29 +33,29 @@ const routes = [{
       component: require('./components/guosen/pages/step.vue')
     }]
   }, {
-    path: '/storemanage',
-    component: require('./components/storemanage/index'),
+    path: '/store-manage',
+    component: require('./components/storeManage/index'),
     children: [{
-      path: '/storemanage/instock',
-      component: require('./components/storemanage/pages/instock.vue')
+      path: '/store-manage/instock',
+      component: require('./components/storeManage/pages/instock.vue')
     }, {
-      path: '/storemanage/instock/:id',
-      component: require('./components/storemanage/pages/instock.vue')
+      path: '/store-manage/instock/:id',
+      component: require('./components/storeManage/pages/instock.vue')
     }, {
-      path: '/storemanage/instock/edit/:taskid',
-      component: require('./components/storemanage/pages/instock.vue')
+      path: '/store-manage/instock/edit/:taskid',
+      component: require('./components/storeManage/pages/instock.vue')
     }, {
-      path: '/storemanage/outstock',
-      component: require('./components/storemanage/pages/outstock.vue')
+      path: '/store-manage/outstock',
+      component: require('./components/storeManage/pages/outstock.vue')
     }, {
-      path: '/storemanage/:pkey',
-      component: require('./components/storemanage/pages/outstock.vue')
+      path: '/store-manage/:pkey',
+      component: require('./components/storeManage/pages/outstock.vue')
     }, {
-      path: '/storemanage/:pkey/:tkey/:id/:name',
-      component: require('./components/storemanage/pages/step.vue')
+      path: '/store-manage/:pkey/:tkey/:id/:name',
+      component: require('./components/storeManage/pages/step.vue')
     }, {
       path: '/onlinestep/:pkey/:tkey/:id/:name',
-      component: require('./components/storemanage/pages/onlinestep.vue')
+      component: require('./components/storeManage/pages/onlinestep.vue')
     }]
   }, {
     path: '/equipment',
@@ -90,6 +90,16 @@ const routes = [{
       component: require('./components/firewall/pages/result.vue')
     }]
   }, {
+    path: '/event-hub',
+    component: require('./components/eventHub/index'),
+    children: [{
+      path: '/event-hub/list',
+      component: require('./components/eventHub/pages/list.vue')
+    }, {
+      path: '/event-hub/event',
+      component: require('./components/eventHub/pages/event.vue')
+    }]
+  }, {
     path: '/system',
     component: require('./components/system/index'),
     children: [{
@@ -112,7 +122,7 @@ const routes = [{
       component: require('./components/system/pages/onlinelist.vue')
     }, {
       path: '/system/online/:pkey/:tkey/:id/:name', // 上线流程具体步骤操作
-      // component: require('./components/storemanage/pages/step.vue')
+      // component: require('./components/storeManage/pages/step.vue')
       component: require('./components/system/pages/onlinestep.vue')
     }]
   }, {
