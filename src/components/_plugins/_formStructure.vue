@@ -123,7 +123,7 @@
         <el-tabs
           v-else-if="formItem.value.type === 'table'">
           <el-tab-pane v-for="(data, index) in whole.body" :label="'body' + (index+1)">
-            <pre>{{data}}</pre>
+            <!-- <pre>{{data}}</pre> -->
             <!-- <form-structure
               :form-data="taskFormData.attr_list"
               :item="item[index]"
