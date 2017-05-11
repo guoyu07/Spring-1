@@ -145,13 +145,17 @@ Vue.prototype.setDataType = (original, goalData, _this) => {
     _this.$set(goalData, original.id, undefined)
   } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
     _this.$set(goalData, original.id, null)
+  } else if (original.value.type === 'table') {
+    _this.$set(goalData, original.id, [])
+    console.log(original, goalData)
+    // _this.setDataType(original, goalData, _this)
   } else {
     _this.$set(goalData, original.id, '')
   }
 }
 
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'FKs' || original.value.type === 'search_bar') {
+  if (original.value.type === 'arr' || original.value.type === 'FKs' || original.value.type === 'search_bar' || original.value.type === 'table') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined

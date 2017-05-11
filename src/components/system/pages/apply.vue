@@ -4,14 +4,14 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
-          <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-width="100px" :inline="true">
+          <el-form ref="applyForm" :model="applyForm" label-width="100px" :inline="true">
             <header-form-structure :form-data="form.header" :item="applyForm.header"></header-form-structure>
           </el-form>
           <br>
           <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
             增加服务器
           </el-button>
-          <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-position="top" :inline="true">
+          <el-form ref="applyForm" :model="applyForm" label-position="top" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
                 <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
@@ -52,23 +52,7 @@
           body: [{}]
         },
         appList: [],
-        businessList: [],
-        applyTypes: [{
-          label: '新建应用',
-          value: 'newApplication'
-        }, {
-          label: '新建集群节点',
-          value: 'newGroup'
-        }],
-        applyRules: {
-          applyType: [
-            { required: true, message: '请选择申请类型', trigger: 'change' }
-            // { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
-          ],
-          applicationName: [
-            { required: true, message: '请输入应用名', trigger: 'change, blur' }
-          ]
-        }
+        businessList: []
       }
     },
     created () {
