@@ -116,8 +116,8 @@
       <el-tabs type="card">
         <el-tab-pane :label="'body1'">
           hello
-          <pre>{{item}}</pre>
-          <pre>{{formItem}}</pre>
+          <!-- <pre>{{item}}</pre> -->
+          <!-- <pre>{{formItem}}</pre> -->
           <!-- <form-structure
             :form-data="taskFormData.attr_list"
             :item="item[index]"

@@ -116,7 +116,7 @@
         </el-menu-item-group> -->
         <el-menu-item-group title="系统上下线">
           <el-menu-item index="/system/apply"><i class="el-icon-fa-envelope-open-o"></i>服务器资源申请</el-menu-item>
-          <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>上线列表</el-menu-item>
+          <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>系统上线</el-menu-item>
           <!-- <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item> -->
         </el-menu-item-group>
         <!-- <el-menu-item-group title="防火墙">

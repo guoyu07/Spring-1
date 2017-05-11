@@ -228,17 +228,17 @@
 
           <!-- <span v-if="deviceViewData.device.pkey==='alter_device' && filter === '待审核'">
             <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/instock/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--success">{{ action.name }}</router-link>
-            <router-link v-else :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
+            <router-link v-else :to="{ path: `/store-manage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">{{ action.name }}</router-link>
           </span> -->
 
           <span v-if="(deviceViewData.device.pkey==='import_device' || deviceViewData.device.pkey==='alter_device') && filter === '待审核'">
             <!-- <span v-for="action in deviceViewData.device.action"> -->
-            <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/storemanage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
-            <router-link v-else :to="{ path: `/storemanage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
+            <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/store-manage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
+            <router-link v-else :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
           <span v-if="deviceViewData.device.pkey==='export_device' && filter === '待审核'">
-            <router-link :to="{ path: `/storemanage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
+            <router-link :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
           <span v-if="deviceViewData.device.pkey==='host' && filter === '待审核'">
@@ -246,8 +246,8 @@
           </span>
 
           <!-- <span v-if="deviceViewData.device.pkey==='alter_device' && filter === '待审核'">
-            <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/storemanage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
-            <router-link v-else :to="{ path: `/storemanage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
+            <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/store-manage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
+            <router-link v-else :to="{ path: `/store-manage/${deviceViewData.device.variables.message[0].form.object_id}/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span> -->
 
           <span v-if="deviceViewData.device.pkey==='equipment_on' && filter === '待审核'">
@@ -260,7 +260,7 @@
           <span v-if="deviceViewData.device.pkey==='host_apply' && filter === '待审核'">
             <!-- <span v-for="action in deviceViewData.device.action"> -->
             <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/system/apply/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
-            <router-link v-else :to="{ path: `/storemanage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
+            <router-link v-else :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
           <!-- <el-button v-if="filter === '待审核'" type="success" @click="onApprove(deviceViewData.device)"><i class="el-icon-more"></i> 审批</el-button> -->
           <!-- <el-button v-if="filter === '待审核'" type="danger" @click="onReject(deviceViewData.device)"><i class="el-icon-close"></i> 驳回</el-button> -->
