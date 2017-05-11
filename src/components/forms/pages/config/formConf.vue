@@ -117,19 +117,19 @@
                   </template>
                 </el-form-item>
               </el-row>
-              <template v-if="['enums', 'dicts'].includes(itemConf.value.type)">
+              <template v-if="itemConf.value.type === 'enums'">
                 <el-row>
                   <el-form-item label="个数限制">
                     <el-popover placement="right" trigger="click">
                       <limit-conf :dialog-props="itemConf"></limit-conf>
                       <el-button size="small" slot="reference">配置个数</el-button>
                     </el-popover>
-                    <el-tooltip placement="top" v-if="itemConf.limit.type">
+                    <el-tooltip placement="top" v-if="itemConf.value.count.type">
                       <div slot="content">
-                        <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
-                        <p v-if="itemConf.limit.type === 'static'"><b>静态值：</b>{{itemConf.limit.value}}</p>
-                        <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
-                        <p v-if="itemConf.limit.type !== 'static'"><b>属性路径：</b>{{itemConf.limit.key_path}}</p>
+                        <p><b>默认值来源：</b>{{itemConf.value.count.type}}</p>
+                        <p v-if="itemConf.value.count.type === 'static'"><b>静态值：</b>{{itemConf.value.count.value}}</p>
+                        <p v-if="itemConf.value.count.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.value.count.id}}</p>
+                        <p v-if="itemConf.value.count.type !== 'static'"><b>属性路径：</b>{{itemConf.value.count.key_path}}</p>
                       </div>
                       <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
                     </el-tooltip>
@@ -256,16 +256,16 @@ export default {
           id: '',
           key_path: ''
         },
-        limit: {
-          type: '',
-          value: '',
-          id: '',
-          key_path: ''
-        },
         value: {
           confVisible: false,
           regex: [],
-          type: ''
+          type: '',
+          count: {
+            type: '',
+            value: '',
+            id: '',
+            key_path: ''
+          }
         }
       })
       // this.activatedItem.push('新字段')
