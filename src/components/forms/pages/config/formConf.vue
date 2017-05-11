@@ -117,7 +117,7 @@
                   </template>
                 </el-form-item>
               </el-row>
-              <template v-if="['enums', 'dicts'].includes(itemConf.value.type)">
+              <template v-if="['enums', 'dicts', 'search_bar', 'table'].includes(itemConf.value.type)">
                 <el-row>
                   <el-form-item label="个数限制">
                     <el-popover placement="right" trigger="click">
