@@ -109,6 +109,17 @@
                   </template>
                 </el-form-item>
               </el-row>
+              <template v-if="['enums', 'dicts'].includes(itemConf.value.type)">
+                <el-row>
+                  <el-form-item label="个数限制">
+                    <el-popover placement="right" trigger="click">
+                      <limit-conf :dialog-props="itemConf"></limit-conf>
+                      <el-button size="small" slot="reference">配置个数</el-button>
+                    </el-popover>
+                    <span class="default-preview"><code>{{JSON.stringify(itemConf.limit)}}</code></span>
+                  </el-form-item>
+                </el-row>
+              </template>
             </el-form>
           </el-col>
         </el-row>
@@ -133,6 +144,7 @@ import optionsConf from './optionsConf' // 配置下拉选项（静态）的表�
 import optionsConfCmdb from './optionsConfCMDB' // 配置下拉选项（动态）的表单
 import tableConf from './tableConf' // 配置表格
 import defaultConf from './defaultConf'
+import limitConf from './limitConf'
 import presetConf from './presetConf'
 
 export default {
@@ -223,7 +235,9 @@ export default {
         readonly: false,
         isAlias: false,
         default: {
-          confVisible: false,
+          type: ''
+        },
+        limit: {
           type: ''
         },
         value: {
@@ -249,6 +263,7 @@ export default {
     optionsConfCmdb,
     tableConf,
     defaultConf,
+    limitConf,
     presetConf
   }
 }
