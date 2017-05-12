@@ -203,7 +203,7 @@
           </el-dialog>
           <el-row type="flex" justify="end">
             <el-button type="warning" :plain="true" icon="fa-undo" @click="$router.go(-1)">取消</el-button>
-            <el-button type="success" icon="fa-check" @click="onSubmit" :loading="submitting">确认提交</el-button>
+            <el-button type="success" icon="fa-check" @click="onSubmit">确认提交</el-button>
           </el-row>
         </el-card>
       </el-col>
