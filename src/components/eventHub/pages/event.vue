@@ -1,5 +1,9 @@
 <style lang="less">
   @import url("./../../../assets/css/variables.less");
+  .btn-row {
+    margin: 18px 0 10px;
+  }
+
   .detail-block {
     margin: 6px 0 24px;
 
@@ -62,8 +66,19 @@
       border-bottom: 1px solid @borderColor;
 
       &:hover {
-        background-color: @bgLighter;
+        background-color: @eoSideBgColor;
+        border-left: 4px solid @eoThemeColor;
+        padding-left: 8px;
       }
+    }
+  }
+
+  .change-table {
+    margin-top: 4px;
+
+    td, th {
+      height: 24px;
+      font-size: 13px;
     }
   }
 </style>
@@ -71,6 +86,13 @@
 <template>
   <div class="event">
     <h3>{{event.name}}</h3>
+    <div class="btn-row">
+      <el-button-group>
+        <el-button size="small" icon="edit"></el-button>
+        <el-button size="small" icon="share"></el-button>
+        <el-button size="small" icon="delete"></el-button>
+      </el-button-group>
+    </div>
     <el-row :gutter="24">
       <el-col :span="16" :xs="24">
         <div class="detail-block">
@@ -139,7 +161,18 @@
                     <el-tooltip content="用户详情" placement="top">
                       <a href="">Weimi</a>
                     </el-tooltip> 作出变更（昨天）
-                    <p><b>优先度</b>：<i>高</i><i class="el-icon-fa-long-arrow-right"></i><i>低</i></p>
+                    <el-table class="change-table" :data="changeData">
+                      <el-table-column
+                        prop="field"
+                        label="字段"></el-table-column>
+                      <el-table-column
+                        prop="oldValue"
+                        label="旧值"></el-table-column>
+                      <el-table-column
+                        prop="newValue"
+                        label="新值"></el-table-column>
+                    </el-table>
+                    <!-- <p><b>优先度</b>：<i>高</i><i class="el-icon-fa-long-arrow-right"></i><i>低</i></p> -->
                   </li>
                 </ul>
               </el-tab-pane>
@@ -240,6 +273,15 @@
           updated: '2017-05-08',
           resolved: '2017-05-09'
         },
+        changeData: [{
+          field: '优先度',
+          oldValue: '高',
+          newValue: '低'
+        }, {
+          field: '追踪者',
+          oldValue: 'Jason Lam',
+          newValue: ''
+        }],
         editor: {
           content: '<p>Comment here...</p>',
           options: {

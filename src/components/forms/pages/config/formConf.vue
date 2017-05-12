@@ -117,25 +117,27 @@
                   </template>
                 </el-form-item>
               </el-row>
-              <template v-if="['enums', 'dicts', 'search_bar', 'table'].includes(itemConf.value.type)">
-                <el-row>
-                  <el-form-item label="个数限制">
-                    <el-popover placement="right" trigger="click">
-                      <limit-conf :dialog-props="itemConf"></limit-conf>
-                      <el-button size="small" slot="reference">配置个数</el-button>
-                    </el-popover>
-                    <el-tooltip placement="top" v-if="itemConf.limit.type">
-                      <div slot="content">
-                        <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
-                        <p v-if="itemConf.limit.type === 'static'"><b>静态值：</b>{{itemConf.limit.value}}</p>
-                        <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
-                        <p v-if="itemConf.limit.type !== 'static'"><b>属性路径：</b>{{itemConf.limit.key_path}}</p>
-                      </div>
-                      <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
-                    </el-tooltip>
-                  </el-form-item>
-                </el-row>
-              </template>
+              <el-row>
+                <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
+                  <el-popover placement="right" trigger="click">
+                    <limit-conf :dialog-props="itemConf"></limit-conf>
+                    <el-button size="small" slot="reference">配置个数</el-button>
+                  </el-popover>
+                  <el-tooltip placement="top" v-if="itemConf.limit.type">
+                    <div slot="content">
+                      <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
+                      <p v-if="itemConf.limit.type === 'static'"><b>最大值：</b>{{itemConf.limit.max}}</p>
+                      <p v-if="itemConf.limit.type === 'static'"><b>最小值：</b>{{itemConf.limit.min}}</p>
+                      <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
+                      <p v-if="itemConf.limit.type !== 'static'"><b>属性路径：</b>{{itemConf.limit.key_path}}</p>
+                    </div>
+                    <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+                  </el-tooltip>
+                </el-form-item>
+                <el-form-item label="数据规则" v-if="['arr', 'str'].includes(itemConf.value.type)">
+                  <el-input v-model="itemConf.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input>
+                </el-form-item>
+              </el-row>
             </el-form>
           </el-col>
         </el-row>
@@ -258,7 +260,8 @@ export default {
         },
         limit: {
           type: '',
-          value: '',
+          max: 0,
+          min: 0,
           id: '',
           key_path: ''
         },
