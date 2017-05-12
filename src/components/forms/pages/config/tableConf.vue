@@ -81,7 +81,7 @@
       </el-collapse-item>
     </el-collapse>
     <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField" style="margin-top: 8px;">添加字段</el-button>
-    <template>
+    <!-- <template>
       <h5>多选选择个数配置：</h5>
       <el-card>
         <el-form label-width="90px" :inline="true">
@@ -114,7 +114,7 @@
           </template>
         </el-form>
       </el-card>
-    </template>
+    </template> -->
     <div slot="footer" class="dialog-footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
     </div>
@@ -185,7 +185,6 @@
           readonly: false,
           isAlias: false,
           default: {
-            confVisible: false,
             type: ''
           },
           value: {

@@ -135,7 +135,15 @@
                   </el-tooltip>
                 </el-form-item>
                 <el-form-item label="数据规则" v-if="['arr', 'str'].includes(itemConf.value.type)">
-                  <el-input v-model="itemConf.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input>
+                  <el-select
+                    v-model="itemConf.value.regex"
+                    multiple
+                    filterable
+                    allow-create
+                    placeholder="一个或多个正则表达式"
+                    class="code-input"
+                    size="small"></el-select>
+                  <!-- <el-input v-model="itemConf.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input> -->
                 </el-form-item>
               </el-row>
             </el-form>
