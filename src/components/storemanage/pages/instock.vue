@@ -7,6 +7,7 @@
           <h3><i :class="editInfo.instanceId ? 'el-icon-edit' : 'el-icon-fa-sign-in' "></i> {{ editInfo.instanceId || editInfo.taskid ? '更改信息' : '入库流程'}}</h3>
           <el-form label-position="left" ref="instockForm" :model="instockForm" :inline="true">
             <header-form-structure :form-data="form.header" :item="instockForm.header"></header-form-structure>
+            <header-table :form-data="form.header" :item="instockForm.header" :headerTable="true"></header-table>
           </el-form>
           <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
             <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
@@ -28,6 +29,7 @@
 </template>
 <script>
   import formStructure from '../../_plugins/_formStructure'
+  import headerTable from '../../_plugins/_headerTable'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   import needCmdbData from '../../_plugins/_needCMDBData'
   // import { Loading } from 'element-ui'
@@ -112,15 +114,16 @@
         this.$set(this.instockForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
         this.form.body.body_list[newVal].attr_list.map(group => {
           group.value.map(item => {
-            if (item.value.type === 'arr' || item.value.type === 'FKs') {
-              this.$set(this.instockForm.body[0], item.id, [])
-            } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
-              this.$set(this.instockForm.body[0], item.id, undefined)
-            } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
-              this.$set(this.instockForm.body[0], item.id, null)
-            } else {
-              this.$set(this.instockForm.body[0], item.id, '')
-            }
+            this.setDataType(item, this.instockForm.body[0], this)
+            // if (item.value.type === 'arr' || item.value.type === 'FKs') {
+            //   this.$set(this.instockForm.body[0], item.id, [])
+            // } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
+            //   this.$set(this.instockForm.body[0], item.id, undefined)
+            // } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
+            //   this.$set(this.instockForm.body[0], item.id, null)
+            // } else {
+            //   this.$set(this.instockForm.body[0], item.id, '')
+            // }
           })
         })
       }
@@ -165,7 +168,7 @@
           data: {}
         }
         this.http.post('custom/', this.parseData(renderDeviceListData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.deviceList = res.data.data.list
           if (!this.editInfo.object_id) {
             this.deviceType = this.deviceList[0].object_id
@@ -235,6 +238,13 @@
           this.form.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.instockForm.header, this)
+              if (item.value.type === 'table') {
+                this.$set(this.instockForm.header[item.id], 0, {})
+                let data = this.instockForm.header[item.id][0]
+                item.value.attr_list.map(item => {
+                  this.setDataType(item, data, this)
+                })
+              }
             })
           })
           // this.instockForm.body[0] = {}
@@ -519,6 +529,7 @@
     },
     components: {
       formStructure,
+      headerTable,
       headerFormStructure,
       needCmdbData
     }

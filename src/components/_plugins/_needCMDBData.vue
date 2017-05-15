@@ -69,7 +69,7 @@
     created () {
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          console.log(this.strucData.watch)
+          // console.log(this.strucData.watch)
           this.renderOptions()
         })
       } else {
@@ -87,7 +87,7 @@
           }
         } else {
           // 这个是默认值
-          console.log(this.vmodel[this.strucData.id], this.strucData)
+          // console.log(this.vmodel[this.strucData.id], this.strucData)
         }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
@@ -182,7 +182,7 @@
           }
           // 将默认值(对象类型)放回值里面
           // console.log(this.strucData.id)
-          console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
+          // console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
           if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
             this.optionList.map(option => {
               if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {

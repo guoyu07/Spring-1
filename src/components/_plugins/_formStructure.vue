@@ -5,7 +5,8 @@
       <!-- v-if="formItem.value.type !== 'search_bar'" -->
       <el-form-item
         v-for="formItem in formBlock.value"
-        :prop="formItem.required ? 'body.' + index + '.' + formItem.id : ''"
+        v-if="formItem.value.type !== 'table'"
+        :prop="prop(formItem)"
         :label="formItem.name"
         :rules="rules(formItem)"
         :class="formItem.isAlias ? 'blockElement' : ''">
@@ -54,6 +55,25 @@
             :disabled="formItem.readonly">
             <el-radio v-for="option in formItem.value.regex" :label="option"></el-radio>
           </el-radio-group>
+        </template>
+
+        <template v-else-if="formItem.value.type === 'enums'">
+          <el-select
+            filterable
+            multiple
+            :disabled="formItem.readonly"
+            v-if="!formItem.isAlias"
+            v-model="item[formItem.id]">
+            <el-option v-for="option in formItem.value.regex"
+              :label="option"
+              :value="option"></el-option>
+          </el-select>
+          <el-checkbox-group
+            v-else
+            v-model="item[formItem.id]"
+            :disabled="formItem.readonly">
+            <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
+          </el-checkbox-group>
         </template>
 
         <template v-else-if="formItem.value.type === 'FK'">
@@ -119,18 +139,6 @@
           :message="message"
           :index="index">
         </need-cmdb-data>
-
-        <el-tabs
-          v-else-if="formItem.value.type === 'table'">
-          <el-tab-pane v-for="(data, index) in whole.body" :label="'body' + (index+1)">
-            <!-- <pre>{{data}}</pre> -->
-            <!-- <form-structure
-              :form-data="taskFormData.attr_list"
-              :item="item[index]"
-              :index="index">
-            </form-structure> -->
-          </el-tab-pane>
-        </el-tabs>
       </el-form-item>
     </div>
   </div>
@@ -146,7 +154,10 @@
       formData: { type: Array },
       readInfo: { type: Object },
       whole: { type: Object },
-      message: { type: Object }
+      message: { type: Object },
+      headerTable: { type: Boolean },
+      bodyTable: { type: Boolean },
+      valueId: { type: String }
     },
 
     data () {
@@ -157,6 +168,21 @@
     },
 
     methods: {
+      prop (formItem) {
+        if (formItem.required) {
+          if (!this.headerTable && !this.bodyTable) {
+            return 'body.' + this.index + '.' + formItem.id
+          } else {
+            if (this.headerTable) {
+              return 'header.' + this.valueId + '.' + this.index + '.' + formItem.id
+            } else if (this.bodyTable) {
+              return 'body.' + this.valueId + '.' + this.index + '.' + formItem.id
+            }
+          }
+        } else {
+          return ''
+        }
+      },
       rules (formItem) {
         if (formItem.value.allow_create) {
           var validateAllowCreate = (rule, value, cb) => {
@@ -183,7 +209,7 @@
           return {}
         } else {
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
