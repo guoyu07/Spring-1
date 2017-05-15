@@ -1,5 +1,6 @@
 <template>
   <el-form-item
+    v-if="formItem.value.type !== 'table'"
     :prop="formItem.required ? 'header.' + formItem.id : ''"
     :label="formItem.name"
     :rules="rules(formItem)"
@@ -51,6 +52,25 @@
         :disabled="formItem.readonly">
         <el-radio  v-for="option in formItem.value.regex" :label="option"></el-radio>
       </el-radio-group>
+    </template>
+
+    <template v-else-if="formItem.value.type === 'enums'">
+      <el-select
+        filterable
+        multiple
+        :disabled="formItem.readonly"
+        v-if="!formItem.isAlias"
+        v-model="item[formItem.id]">
+        <el-option v-for="option in formItem.value.regex"
+          :label="option"
+          :value="option"></el-option>
+      </el-select>
+      <el-checkbox-group
+        v-else
+        v-model="item[formItem.id]"
+        :disabled="formItem.readonly">
+        <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
+      </el-checkbox-group>
     </template>
 
     <template v-else-if="formItem.value.type === 'FK'">
@@ -111,33 +131,6 @@
       v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
       :vmodel="item" :strucData="formItem" :whole="whole">
     </need-cmdb-data>
-
-    <div v-else-if="formItem.value.type === 'table'">
-      <el-tabs type="card">
-        <el-tab-pane :label="'body1'">
-          hello
-          <!-- <pre>{{item}}</pre> -->
-          <!-- <pre>{{formItem}}</pre> -->
-          <!-- <form-structure
-            :form-data="taskFormData.attr_list"
-            :item="item[index]"
-            :index="index">
-          </form-structure> -->
-        </el-tab-pane>
-      </el-tabs>
-    </div>
-
-    <!-- <el-tabs
-      v-else-if="formItem.value.type === 'table'">
-      <el-tab-pane v-for="(data, index) in whole.body" :label="'body' + (index+1)">
-        <pre>{{data}}</pre>
-        <form-structure
-          :form-data="taskFormData.attr_list"
-          :item="item[index]"
-          :index="index">
-        </form-structure>
-      </el-tab-pane>
-    </el-tabs> -->
   </el-form-item>
 </template>
 
