@@ -30,7 +30,15 @@
               <default-conf :dialog-props="attr"></default-conf>
               <el-button size="small" slot="reference">配置默认值</el-button>
             </el-popover>
-            <span v-if="attr.default.type" class="default-preview"><code>{{JSON.stringify(attr.default)}}</code></span>
+            <el-tooltip placement="top" v-if="attr.default.type">
+              <div slot="content">
+                <p><b>默认值来源：</b>{{attr.default.type}}</p>
+                <p v-if="attr.default.type === 'static'"><b>静态值：</b>{{attr.default.value}}</p>
+                <p v-if="attr.default.type.includes('message_')"><b>流程节点 ID：</b>{{attr.default.id}}</p>
+                <p v-if="attr.default.type !== 'static'"><b>属性路径：</b>{{attr.default.key_path}}</p>
+              </div>
+              <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+            </el-tooltip>
           </el-form-item>
           <el-form-item label="监听字段">
             <el-input v-model="attr.watch" placeholder="字段 ID" class="code-input" size="small"></el-input>
@@ -73,6 +81,33 @@
               <el-button size="small" @click="showCMDBConf(attr)">配置选项</el-button>
               <options-conf-cmdb :dialog-props="attr"></options-conf-cmdb>
             </template>
+          </el-form-item>
+          <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(attr.value.type)">
+            <el-popover placement="right" trigger="click">
+              <limit-conf :dialog-props="attr"></limit-conf>
+              <el-button size="small" slot="reference">配置个数</el-button>
+            </el-popover>
+            <el-tooltip placement="top" v-if="attr.limit.type">
+              <div slot="content">
+                <p><b>默认值来源：</b>{{attr.limit.type}}</p>
+                <p v-if="attr.limit.type === 'static'"><b>最大值：</b>{{attr.limit.max}}</p>
+                <p v-if="attr.limit.type === 'static'"><b>最小值：</b>{{attr.limit.min}}</p>
+                <p v-if="attr.limit.type.includes('message_')"><b>流程节点 ID：</b>{{attr.limit.id}}</p>
+                <p v-if="attr.limit.type !== 'static'"><b>属性路径：</b>{{attr.limit.key_path}}</p>
+              </div>
+              <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+            </el-tooltip>
+          </el-form-item>
+          <el-form-item label="数据规则" v-if="['arr', 'str'].includes(attr.value.type)">
+            <el-select
+              v-model="attr.value.regex"
+              multiple
+              filterable
+              allow-create
+              placeholder="一个或多个正则表达式"
+              class="code-input"
+              size="small"></el-select>
+            <!-- <el-input v-model="attr.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input> -->
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="danger" icon="delete" @click="onDeleteField(dialogProps.value.attr_list, attr)">删除字段</el-button>
@@ -122,9 +157,10 @@
 </template>
 
 <script>
-  import optionsConf from './optionsConf'
-  import optionsConfCmdb from './optionsConfCMDB'
-  import defaultConf from './defaultConf'
+  import optionsConf from './_optionsConf'
+  import optionsConfCmdb from './_optionsConfCMDB'
+  import defaultConf from './_defaultConf'
+  import limitConf from './_limitConf'
 
   export default {
     props: {
@@ -185,7 +221,17 @@
           readonly: false,
           isAlias: false,
           default: {
-            type: ''
+            type: '',
+            value: '',
+            id: '',
+            key_path: ''
+          },
+          limit: {
+            type: '',
+            max: 0,
+            min: 0,
+            id: '',
+            key_path: ''
           },
           value: {
             confVisible: false,
@@ -228,7 +274,8 @@
     components: {
       optionsConf,
       optionsConfCmdb,
-      defaultConf
+      defaultConf,
+      limitConf
     }
   }
 </script>

@@ -86,13 +86,17 @@
 <template>
   <div class="event">
     <h3>{{event.name}}</h3>
-    <div class="btn-row">
+    <el-row type="flex" justify="end" class="btn-row">
       <el-button-group>
-        <el-button size="small" icon="edit"></el-button>
-        <el-button size="small" icon="share"></el-button>
-        <el-button size="small" icon="delete"></el-button>
+        <el-button size="small" v-if="['open', 'pending'].includes(event.status)"><i class="el-icon-fa-play"></i> 开始</el-button>
+        <el-button size="small" v-if="['open', 'progress'].includes(event.status)"><i class="el-icon-fa-check"></i> 完成</el-button>
+        <el-button size="small" v-if="['open', 'progress'].includes(event.status)"><i class="el-icon-fa-pause"></i> 延缓</el-button>
+        <el-button size="small" v-if="event.status ==='completed'"><i class="el-icon-fa-refresh"></i> 重新处理</el-button>
+        <el-button size="small" v-if="['open', 'progress', 'pending'].includes(event.status)"><i class="el-icon-fa-close"></i> 取消工单</el-button>
+        <el-button size="small" v-if="['completed', 'canceled'].includes(event.status)"><i class="el-icon-fa-close"></i> 关闭工单</el-button>
       </el-button-group>
-    </div>
+    </el-row>
+
     <el-row :gutter="24">
       <el-col :span="16" :xs="24">
         <div class="detail-block">
@@ -106,9 +110,12 @@
               </el-form-item>
               <el-form-item label="状态">
                 <template>
-                  <el-tag v-if="event.status ==='OPEN'" type="success">OPEN</el-tag>
-                  <el-tag v-if="event.status ==='PENDING'" type="warning">PENDING</el-tag>
-                  <el-tag v-if="event.status ==='CLOSED'" type="error">CLOSED</el-tag>
+                  <el-tag v-if="event.status ==='open'" type="success">待处理</el-tag>
+                  <el-tag v-if="event.status ==='progress'" type="warning">处理中</el-tag>
+                  <el-tag v-if="event.status ==='pending'" type="warning">延缓中</el-tag>
+                  <el-tag v-if="event.status ==='completed'" type="primary">已完成</el-tag>
+                  <el-tag v-if="event.status ==='canceled'" type="danger">已取消</el-tag>
+                  <el-tag v-if="event.status ==='closed'" type="gray">已关闭</el-tag>
                 </template>
               </el-form-item>
               <el-form-item label="优先度">
@@ -260,7 +267,7 @@
         event: {
           name: '事件名',
           type: '事故',
-          status: 'OPEN',
+          status: 'open',
           priority: 'high',
           components: ['分类 1', '分类 2'],
           labels: ['标签 1', '标签 2'],
