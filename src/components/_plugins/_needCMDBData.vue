@@ -16,6 +16,7 @@
         :clearable="!strucData.required"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
+        :placeholder="strucData.placeholder"
         filterable>
         <el-option v-for="option in optionList"
           :label="option[strucData.value.source.res.show_key]"
@@ -36,6 +37,7 @@
         v-model="vmodel[strucData.id]"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
+        :placeholder="strucData.placeholder"
         multiple>
         <el-option v-for="option in optionList"
           :label="option[strucData.value.source.res.show_key]"

@@ -152,6 +152,42 @@
     },
 
     methods: {
+      arrLimitValid (formItem) {
+        let keyData
+        if (formItem.limit.type === 'message_body') {
+          keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
+        }
+        if (Array.isArray(keyData)) {
+          this.limitNum = keyData.length
+        } else if (typeof keyData === 'number') {
+          this.limitNum = keyData
+        } else if (typeof keyData === 'string') {
+          if (typeof +keyData === 'number') {
+            this.limitNum = +keyData
+          } else {
+            this.$message('limit数据配置有误')
+          }
+        }
+        var validateLimit = (rule, value, cb) => {
+          function isMatch (ele, i, arr) {
+            const reg = new RegExp(ele)
+            return value.some(val => { return !val.match(reg) }) // 要value数组里每一个值都通过正则，否则报错
+          }
+          if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch)) {
+            return cb(new Error(`请输入正确的${formItem.name}`))
+          }
+          if (value.length < this.limitNum) {
+            return cb(new Error(`需要输入${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+          } else {
+            cb()
+          }
+        }
+        return {
+          validator: validateLimit,
+          required: formItem.required,
+          trigger: 'change'
+        }
+      },
       rules (formItem) {
         // console.log(formItem)
         if (formItem.value.allow_create) {
@@ -173,19 +209,40 @@
             required: formItem.required,
             trigger: 'change'
           }
+        } else if ((formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') && formItem.limit && formItem.limit.type) {
+          return this.arrLimitValid(formItem)
+        } else if (formItem.value.type === 'str' && formItem.value.regex && formItem.value.regex.length) {
+          // console.log('str' + formItem.name)
+          var validateRegex = (rule, value, cb) => {
+            function isMatch (ele, i, arr) {
+              console.log(value)
+              const reg = new RegExp(ele)
+              return !value.match(reg)
+            }
+            if (value && formItem.value.regex.some(isMatch)) {
+              return cb(new Error(`请输入正确的${formItem.name}`))
+            } else {
+              cb()
+            }
+          }
+          return {
+            validator: validateRegex,
+            required: formItem.required,
+            trigger: 'blur'
+          }
         } else if (formItem.readonly && !formItem.required) {
           return {}
         } else if (!formItem.required) {
           return {}
         } else {
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
           } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
             type = 'date'
-          } else if (formItem.value.type === 'FK' || formItem.value.type === 'dict') {
+          } else if (formItem.value.type === 'dict') {
             type = 'object'
           } else {
             // console.log(formItem.value.type)

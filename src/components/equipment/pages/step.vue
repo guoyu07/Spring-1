@@ -202,10 +202,18 @@
                   this.applyData.body.push({})
                 }
               } else if (typeof keyData === 'number') {
-                this.applyData.body.length = keyData
+                // this.applyData.body.length = keyData
+                const num = keyData
+                for (let i = 0; i < num; i++) {
+                  this.applyData.body.push({})
+                }
               } else if (typeof keyData === 'string') {
                 if (typeof +keyData === 'number') {
-                  this.applyData.body.length = +keyData
+                  // this.applyData.body.length = +keyData
+                  const num = +keyData
+                  for (let i = 0; i < num; i++) {
+                    this.applyData.body.push({})
+                  }
                 } else {
                   this.$message('数据有错')
                 }
