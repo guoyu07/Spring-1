@@ -16,6 +16,7 @@
           <el-input
             v-if="!formItem.readonly"
             :type="formItem.isAlias ? 'textarea' : 'text'"
+            :placeholder="formItem.placeholder"
             :autosize="{ minRows: 5}"
             v-model="item[formItem.id]">
           </el-input>
@@ -43,6 +44,7 @@
             filterable
             :clearable="!formItem.required"
             :disabled="formItem.readonly"
+            :placeholder="formItem.placeholder"
             v-if="!formItem.isAlias"
             v-model="item[formItem.id]">
             <el-option v-for="option in formItem.value.regex"
@@ -62,6 +64,7 @@
             filterable
             multiple
             :disabled="formItem.readonly"
+            :placeholder="formItem.placeholder"
             v-if="!formItem.isAlias"
             v-model="item[formItem.id]">
             <el-option v-for="option in formItem.value.regex"
@@ -72,11 +75,11 @@
             v-else
             v-model="item[formItem.id]"
             :disabled="formItem.readonly">
-            <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
+            <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="formItem.id">{{option}}</el-checkbox>
           </el-checkbox-group>
         </template>
 
-        <template v-else-if="formItem.value.type === 'FK'">
+        <!-- <template v-else-if="formItem.value.type === 'FK'">
           <el-select
             filterable
             v-if="!formItem.isAlias"
@@ -93,9 +96,9 @@
             :disabled="formItem.readonly">
             <el-radio v-for="option in formItem.value.object_list" :label="option">{{option.name}}</el-radio>
           </el-radio-group>
-        </template>
+        </template> -->
 
-        <template v-else-if="formItem.value.type === 'FKs'">
+        <!-- <template v-else-if="formItem.value.type === 'FKs'">
           <el-select
             filterable
             :disabled="formItem.readonly"
@@ -112,7 +115,7 @@
             :disabled="formItem.readonly">
             <el-checkbox v-for="option in formItem.value.object_list" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
           </el-checkbox-group>
-        </template>
+        </template> -->
 
         <el-select
           v-else-if="formItem.value.type === 'arr'"
@@ -120,7 +123,7 @@
           multiple
           filterable
           allow-create
-          placeholder="请创建">
+          :placeholder="formItem.placeholder">
         </el-select>
 
         <el-date-picker
@@ -139,6 +142,7 @@
           :message="message"
           :index="index">
         </need-cmdb-data>
+        <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
       </el-form-item>
     </div>
   </div>
@@ -151,6 +155,7 @@
     props: {
       item: { type: Object },
       index: { type: Number },
+      tableIndex: { type: Number },
       formData: { type: Array },
       readInfo: { type: Object },
       whole: { type: Object },
@@ -162,12 +167,74 @@
 
     data () {
       return {
+        limitNum: 0,
+        limitMaxNum: 0
       }
     },
     created () {
     },
 
     methods: {
+      arrLimitValid (formItem) {
+        let keyData
+        if (formItem.limit.type === 'message_body') {
+          keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
+        } else if (formItem.limit.type === 'message_header') {
+          keyData = this.getPathResult(this.message.header, formItem.limit.key_path)
+        } else if (formItem.limit.type === 'static') {
+          keyData = formItem.limit.min
+          this.limitMaxNum = formItem.limit.max
+        } else if (formItem.limit.type === 'form_body') {
+          keyData = this.getPathResult(this.whole.body[this.index], formItem.limit.key_path) // this.whole.body[this.index] 就是 this.item
+        } else if (formItem.limit.type === 'form_header') {
+          keyData = this.getPathResult(this.whole.header, formItem.limit.key_path)
+        }
+        if (Array.isArray(keyData)) {
+          this.limitNum = keyData.length
+        } else if (typeof keyData === 'number') {
+          this.limitNum = keyData
+        } else if (typeof keyData === 'string') {
+          if (typeof +keyData === 'number') {
+            this.limitNum = +keyData
+          } else {
+            this.$message('limit数据配置有误')
+          }
+        }
+        var validateLimit = (rule, value, cb) => {
+          function isMatch (ele, i, arr) {
+            const reg = new RegExp(ele)
+            return value.some(val => { return !val.match(reg) }) // 要value数组里每一个值都通过正则，否则报错
+          }
+          if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch)) {
+            return cb(new Error(`请输入正确的${formItem.name}`))
+          }
+          if (this.limitMaxNum) { // static时，有一个范围值
+            if (value.length < this.limitNum) {
+              return cb(new Error(`至少需要输入${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+            } else if (value.length > this.limitMaxNum) {
+              return cb(new Error(`至多输入${this.limitMaxNum}个${formItem.name},请删除${value.length - this.limitMaxNum}个`))
+            } else {
+              cb()
+            }
+          } else { // 除static外，其他都是一个固定的数值，不准多不准少
+            if (value.length < this.limitNum) {
+              return cb(new Error(`需要输入${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+            } else if (value.length > this.limitNum) {
+              return cb(new Error(`只需要输入${this.limitNum}个${formItem.name},请删除${value.length - this.limitNum}个`))
+            } else {
+              cb()
+            }
+            // else if (!value.length) {
+            //   return cb(new Error(`${formItem.name}不能为空`))
+            // }
+          }
+        }
+        return {
+          validator: validateLimit,
+          required: formItem.required,
+          trigger: 'change'
+        }
+      },
       prop (formItem) {
         if (formItem.required) {
           if (!this.headerTable && !this.bodyTable) {
@@ -176,7 +243,7 @@
             if (this.headerTable) {
               return 'header.' + this.valueId + '.' + this.index + '.' + formItem.id
             } else if (this.bodyTable) {
-              return 'body.' + this.valueId + '.' + this.index + '.' + formItem.id
+              return 'body.' + this.index + '.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id
             }
           }
         } else {
@@ -203,19 +270,43 @@
             required: formItem.required,
             trigger: 'change'
           }
+        } else if ((formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') && formItem.limit && formItem.limit.type) {
+          return this.arrLimitValid(formItem)
+        } else if (formItem.value.type === 'str' && formItem.value.regex && formItem.value.regex.length) {
+          // console.log('str' + formItem.name)
+          var validateRegex = (rule, value, cb) => {
+            function isMatch (ele, i, arr) {
+              console.log(value)
+              const reg = new RegExp(ele)
+              return !value.match(reg)
+            }
+            if (value && formItem.value.regex.some(isMatch)) {
+              return cb(new Error(`请输入正确的${formItem.name}`))
+            } else if (!value) {
+              return cb(new Error(`${formItem.name}不能为空`))
+            } else {
+              cb()
+            }
+          }
+          return {
+            validator: validateRegex,
+            required: formItem.required,
+            trigger: 'blur'
+          }
         } else if (formItem.readonly && !formItem.required) {
           return {}
         } else if (!formItem.required) {
           return {}
         } else {
+          // console.log('else' + formItem.name)
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'FKs' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
           } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
             type = 'date'
-          } else if (formItem.value.type === 'FK' || formItem.value.type === 'dict') {
+          } else if (formItem.value.type === 'dict') {
             type = 'object'
           } else {
             type = 'string'
@@ -246,5 +337,11 @@
     width:-moz-calc(100% - 85px);
     width:-webkit-calc(100% - 85px);
     width: calc(100% - 85px);
+  }
+  .help-block {
+    font-size: 12px;
+    color: #666;
+    margin: 0.5em 0 0;
+    line-height: 1.2;
   }
 </style>

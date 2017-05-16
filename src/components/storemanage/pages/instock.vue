@@ -16,6 +16,12 @@
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in instockForm.body" :label="form.body && form.body.body_list[bodylistIndex].name + (index + 1)" :name="index + ''" :closable="index !== 0">
                 <form-structure :form-data="form.body && form.body.body_list[bodylistIndex].attr_list" :item="item" :index="index"></form-structure>
+                <body-table
+                  :form-data="form.body && form.body.body_list[bodylistIndex].attr_list"
+                  :item="item"
+                  :index="index"
+                  :bodyTable="true">
+                </body-table>
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -30,6 +36,7 @@
 <script>
   import formStructure from '../../_plugins/_formStructure'
   import headerTable from '../../_plugins/_headerTable'
+  import bodyTable from '../../_plugins/_bodyTable'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   import needCmdbData from '../../_plugins/_needCMDBData'
   // import { Loading } from 'element-ui'
@@ -130,6 +137,7 @@
     },
     methods: {
       removeTab (targetName) {
+        console.log(targetName)
         let tabs = this.instockForm.body
         let activeName = this.tabsValue
         // if (activeName === targetName) {
@@ -249,9 +257,16 @@
           })
           // this.instockForm.body[0] = {}
           this.form.body.body_list[this.bodylistIndex].attr_list.map(group => {
-            group.value.map(item => {
+            group.value.map((item, itemIndex) => {
               // this.$set(this.instockForm.body, original.id, [])
               this.setDataType(item, this.instockForm.body[0], this)
+              if (item.value.type === 'table') {
+                this.$set(this.instockForm.body[0][item.id], 0, {})
+                let data = this.instockForm.body[0][item.id][0]
+                item.value.attr_list.map(item => {
+                  this.setDataType(item, data, this)
+                })
+              }
             })
           })
           // 如果是修改页面
@@ -530,6 +545,7 @@
     components: {
       formStructure,
       headerTable,
+      bodyTable,
       headerFormStructure,
       needCmdbData
     }

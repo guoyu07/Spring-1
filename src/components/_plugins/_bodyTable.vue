@@ -1,18 +1,19 @@
 <template>
   <div>
-    <div v-for="header in formData">
-      <div v-for="value in header.value">
+    <div v-for="bodylist in formData">
+      <div v-for="value in bodylist.value">
         <div v-if="value.value.type === 'table'">
           <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
           <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
             <el-tab-pane
-              v-for="(body, bodyindex) in item[value.id]" :label="value.name + (bodyindex + 1)"
-              :closable="closableIndex(bodyindex, value)">
+              v-for="(table, tableindex) in item[value.id]" :label="value.name + (tableindex + 1)"
+              :closable="closableIndex(tableindex, value)">
               <form-structure
-                :form-data="[{name: header.name, value: value.value.attr_list}]"
-                :item="body"
-                :index="0"
-                :header-table="true"
+                :form-data="[{name: bodylist.name, value: value.value.attr_list}]"
+                :item="table"
+                :index="index"
+                :table-index="tableindex"
+                :body-table="true"
                 :value-id="value.id">
               </form-structure>
             </el-tab-pane>
@@ -28,7 +29,8 @@
   export default {
     props: {
       item: { type: Object },
-      formData: { type: Array }
+      formData: { type: Array },
+      index: { type: Number }
     },
 
     data () {
