@@ -158,14 +158,14 @@
 </template>
 
 <script>
-  import getUserList from './../../../mixins/getUserList'
-  import getRoleList from './../../../mixins/getRoleList'
+  import getPermittedUserList from './../../../mixins/getPermittedUserList'
+  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import assign from './_assign.vue'
   import claim from './_claim.vue'
   import progressWrap from '../../_plugins/_progress'
 
   export default {
-    mixins: [getUserList, getRoleList],
+    mixins: [getPermittedUserList, getPermittedRoleList],
 
     data () {
       return {
@@ -205,8 +205,8 @@
 
     created () {
       this.getTaskList()
-      this.getUserList()
-      this.getRoleList()
+      this.getPermittedUserList()
+      this.getPermittedRoleList()
     },
 
     methods: {

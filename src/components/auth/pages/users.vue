@@ -87,10 +87,10 @@
 </template>
 
 <script>
-  import getUserList from './../../../mixins/getUserList'
+  import getPermittedUserList from './../../../mixins/getPermittedUserList'
 
   export default {
-    mixins: [getUserList],
+    mixins: [getPermittedUserList],
 
     data () {
       return {
@@ -112,7 +112,7 @@
     },
 
     created () {
-      this.getUserList()
+      this.getPermittedUserList()
     },
 
     methods: {
@@ -130,7 +130,7 @@
           if (res.status === 200) {
             this.addUserData.visible = false
             this.$message.success(`成功新建用户 ${code}！`)
-            this.getUserList()
+            this.getPermittedUserList()
           }
         })
       },
@@ -149,7 +149,7 @@
           if (res.status === 200) {
             this.editUserData.visible = false
             this.$message.success('修改成功！')
-            this.getUserList()
+            this.getPermittedUserList()
           }
         })
       },
@@ -168,7 +168,7 @@
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success(`已移除用户「${code}」！`)
-              this.getUserList()
+              this.getPermittedUserList()
             }
           })
         })

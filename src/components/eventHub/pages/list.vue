@@ -15,7 +15,7 @@
         <el-card class="box-card">
           <h3><i class="el-icon-fa-bullhorn icon-lg"></i> {{filter}}告警</h3>
           <div class="tag-container clear">
-            <el-button icon="plus" @click="addEventData.visible = true">新建事件</el-button>
+            <el-button icon="plus" @click="addEventData.visible = true">创建事件</el-button>
             <el-radio-group v-model="filter" @change="onFilterChange" size="small" class="fr">
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
@@ -92,7 +92,7 @@
 
     <assign :assign-view-data="assignViewData" :role-list="roleList" :user-list="userList"></assign> -->
 
-    <el-dialog
+    <!-- <el-dialog
       :title="handleViewData.task.pname"
       v-model="handleViewData.visible"
       size="large"
@@ -154,19 +154,21 @@
       <span class="dialog-footer" slot="footer">
         <router-link :to="{ path: `/storemanage/${handleViewData.task.pkey}/${handleViewData.task.taskDefinitionKey}/${handleViewData.task.id}/${handleViewData.task.name}`}" class="el-button el-button--plain el-button--small">处理</router-link>
       </span>
-    </el-dialog>
+    </el-dialog> -->
+    <add-event :add-event-data="addEventData"></add-event>
   </div>
 </template>
 
 <script>
-  import getUserList from './../../../mixins/getUserList'
-  import getRoleList from './../../../mixins/getRoleList'
+  import getAllUserList from './../../../mixins/getAllUserList.js'
+  import getAllRoleList from './../../../mixins/getAllRoleList.js'
+  import addEvent from './_config/_addEvent.vue'
   // import assign from './_assign.vue'
   // import claim from './_claim.vue'
   // import progressWrap from '../../_plugins/_progress'
 
   export default {
-    mixins: [getUserList, getRoleList],
+    mixins: [getAllUserList, getAllRoleList],
 
     data () {
       return {
@@ -178,17 +180,31 @@
         },
         loadingFiltered: false,
         filteredList: [],
-        assignViewData: {
-          visible: false,
-          task: {}
-        },
-        claimViewData: {
-          visible: false,
-          task: {}
-        },
-        handleViewData: {
-          visible: false,
-          task: {}
+        // assignViewData: {
+        //   visible: false,
+        //   task: {}
+        // },
+        // claimViewData: {
+        //   visible: false,
+        //   task: {}
+        // },
+        // handleViewData: {
+        //   visible: false,
+        //   task: {}
+        // },
+        addEventData: {
+          event: {
+            summary: '',
+            reporter: '',
+            components: [],
+            description: '',
+            issue: '',
+            assignee: '',
+            approvers: [],
+            priority: '',
+            labels: []
+          },
+          visible: false
         },
         pagination: {
           current: 1,
@@ -206,8 +222,8 @@
 
     created () {
       this.getTaskList()
-      this.getUserList()
-      this.getRoleList()
+      this.getAllUserList()
+      this.getAllRoleList()
     },
 
     methods: {
@@ -265,12 +281,13 @@
           })
         }
       }
-    }
+    },
 
-    // components: {
-    //   assign,
-    //   claim,
-    //   progressWrap
-    // }
+    components: {
+      // assign,
+      // claim,
+      // progressWrap
+      addEvent
+    }
   }
 </script>

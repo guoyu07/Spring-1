@@ -104,11 +104,11 @@
 </template>
 
 <script>
-  import getRoleList from './../../../mixins/getRoleList'
-  import getUserList from './../../../mixins/getUserList'
+  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
+  import getPermittedUserList from './../../../mixins/getPermittedUserList'
 
   export default {
-    mixins: [getRoleList, getUserList],
+    mixins: [getPermittedRoleList, getPermittedUserList],
   
     data () {
       return {
@@ -143,8 +143,8 @@
     },
 
     created () {
-      this.getRoleList()
-      this.getUserList()
+      this.getPermittedRoleList()
+      this.getPermittedUserList()
     },
 
     methods: {
@@ -164,7 +164,7 @@
             this.addedRoleData.loading = false
             this.addedRoleData.visible = false
             this.$message.success(`成功新建角色 ${name}！`)
-            this.getRoleList()
+            this.getPermittedRoleList()
           }
         })
       },
@@ -185,7 +185,7 @@
             this.$message.success('修改成功！')
             this.editRoleData.loading = false
             this.editRoleData.visible = false
-            this.getRoleList()
+            this.getPermittedRoleList()
           }
         })
       },
@@ -204,7 +204,7 @@
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success(`已移除角色「${name}」！`)
-              this.getRoleList()
+              this.getPermittedRoleList()
             }
           })
         })
@@ -239,7 +239,7 @@
             this.userViewData.loading = false
             this.userViewData.visible = false
             this.$message.success('成功添加用户！')
-            this.getRoleList()
+            this.getPermittedRoleList()
           }
         })
       },
@@ -271,7 +271,7 @@
             if (res.status === 200) {
               this.$message.success('移除成功！')
               this.isCheckable = false
-              this.getRoleList()
+              this.getPermittedRoleList()
             }
           })
         }).catch(() => {

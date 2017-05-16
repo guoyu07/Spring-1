@@ -160,12 +160,12 @@
 </template>
 
 <script>
-  import getRoleList from './../../../mixins/getRoleList'
-  import getUserList from './../../../mixins/getUserList'
+  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
+  import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedProcessList from './../../../mixins/getPermittedProcessList'
 
   export default {
-    mixins: [getRoleList, getUserList, getPermittedProcessList],
+    mixins: [getPermittedRoleList, getPermittedUserList, getPermittedProcessList],
 
     data () {
       return {
@@ -195,8 +195,8 @@
 
     created () {
       this.getPermittedProcessList()
-      this.getUserList()
-      this.getRoleList()
+      this.getPermittedUserList()
+      this.getPermittedRoleList()
     },
 
     methods: {
