@@ -1,26 +1,31 @@
 <template>
   <div>
-    <div v-for="bodylist in formData">
-      <div v-for="value in bodylist.value">
-        <div v-if="value.value.type === 'table'">
-          <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
-          <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
-            <el-tab-pane
-              v-for="(table, tableindex) in item[value.id]" :label="value.name + (tableindex + 1)"
-              :closable="closableIndex(tableindex, value)">
-              <form-structure
-                :form-data="[{name: bodylist.name, value: value.value.attr_list}]"
-                :item="table"
-                :index="index"
-                :table-index="tableindex"
-                :body-table="true"
-                :value-id="value.id">
-              </form-structure>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-      </div>
-    </div>
+    <template v-for="bodylist in formData">
+      <template v-for="value in bodylist.value">
+        <template v-if="value.value.type === 'table'">
+          <el-form-item
+            :prop="prop(value)"
+            :rules="rules(value)"
+            class="block">
+            <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
+            <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
+              <el-tab-pane
+                v-for="(table, tableindex) in item[value.id]" :label="value.name + (tableindex + 1)"
+                :closable="closableIndex(tableindex, value)">
+                <form-structure
+                  :form-data="[{name: bodylist.name, value: value.value.attr_list}]"
+                  :item="table"
+                  :index="index"
+                  :table-index="tableindex"
+                  :body-table="true"
+                  :value-id="value.id">
+                </form-structure>
+              </el-tab-pane>
+            </el-tabs>
+          </el-form-item>
+        </template>
+      </template>
+    </template>
   </div>
 </template>
 
@@ -35,7 +40,9 @@
 
     data () {
       return {
-        tabsValue: '0'
+        tabsValue: '0',
+        limitTable: 0,
+        limitTableMax: 0
       }
     },
     created () {
@@ -43,6 +50,73 @@
     },
 
     methods: {
+      prop (value) {
+        if (value.required) {
+          return 'body.' + this.index + '.' + value.id
+        } else {
+          return ''
+        }
+      },
+      tableValid (formItem) {
+        let keyData
+        if (formItem.limit.type === 'message_body') {
+          keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
+        } else if (formItem.limit.type === 'message_header') {
+          keyData = this.getPathResult(this.message.header, formItem.limit.key_path)
+        } else if (formItem.limit.type === 'static') {
+          keyData = formItem.limit.min
+          this.limitTableMax = formItem.limit.max
+        } else if (formItem.limit.type === 'form_body') {
+          keyData = this.getPathResult(this.whole.body[this.index], formItem.limit.key_path) // this.whole.body[this.index] 就是 this.item
+        } else if (formItem.limit.type === 'form_header') {
+          keyData = this.getPathResult(this.whole.header, formItem.limit.key_path)
+        }
+        if (Array.isArray(keyData)) {
+          this.limitNum = keyData.length
+        } else if (typeof keyData === 'number') {
+          this.limitNum = keyData
+        } else if (typeof keyData === 'string') {
+          if (typeof +keyData === 'number') {
+            this.limitNum = +keyData
+          } else {
+            this.$message('limit数据配置有误')
+          }
+        }
+        var validateLimit = (rule, value, cb) => {
+          function isMatch (ele, i, arr) {
+            const reg = new RegExp(ele)
+            return value.some(val => { return !val.match(reg) }) // 要value数组里每一个值都通过正则，否则报错
+          }
+          if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch)) {
+            return cb(new Error(`请输入正确的${formItem.name}`))
+          }
+          if (this.limitTableMax) { // static时，有一个范围值
+            if (value.length < this.limitNum) {
+              return cb(new Error(`至少需要${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+            } else if (value.length > this.limitTableMax) {
+              return cb(new Error(`至多可以增加${this.limitTableMax}个${formItem.name},请删除${value.length - this.limitTableMax}个`))
+            } else {
+              cb()
+            }
+          } else { // 除static外，其他都是一个固定的数值，不准多不准少
+            if (value.length < this.limitNum) {
+              return cb(new Error(`需要${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+            } else if (value.length > this.limitNum) {
+              return cb(new Error(`只需要${this.limitNum}个${formItem.name},请删除${value.length - this.limitNum}个`))
+            } else {
+              cb()
+            }
+          }
+        }
+        return {
+          validator: validateLimit,
+          required: formItem.required,
+          trigger: 'blur, change'
+        }
+      },
+      rules (formItem) {
+        return this.tableValid(formItem)
+      },
       closableIndex (index, value) {
         if (value.limit.type === 'static') {
           // return !(value.limit.min > index && index < value.limit.max)
@@ -82,19 +156,6 @@
         } else {
           this.$message.warning(`最多只能增加${value.limit.max}个设备！`)
         }
-        // this.$refs['instockForm'].validate((valid) => {
-          // if (valid) {
-          //   if (this.item[value.id].length < this.form.body.count.max) {
-          //     this.item[value.id].push(newData)
-          //     this.tabsValue = this.item[value.id].length - 1 + ''
-          //   } else {
-          //     this.$message.warning(`最多只能增加${value.limit.max}个设备！`)
-          //   }
-          // } else {
-          //   this.$message.warning('请填写完整后再增加！')
-          //   return false
-          // }
-        // })
       }
     },
 
@@ -104,15 +165,11 @@
   }
 </script>
 <style>
-  .blockElement {
+  .block {
     width: 100%;
-    display: flex;
   }
-  .blockElement .el-form-item__content {
-    width: 50%;
-    width:-moz-calc(100% - 85px);
-    width:-webkit-calc(100% - 85px);
-    width: calc(100% - 85px);
+  .el-form-item .el-form-item {
+    margin-bottom: 22px;
   }
   .margin-bottom {
     margin-bottom: 8px;

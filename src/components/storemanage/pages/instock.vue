@@ -5,11 +5,11 @@
         <el-card
           class="box-card">
           <h3><i :class="editInfo.instanceId ? 'el-icon-edit' : 'el-icon-fa-sign-in' "></i> {{ editInfo.instanceId || editInfo.taskid ? '更改信息' : '入库流程'}}</h3>
-          <el-form label-position="left" ref="instockForm" :model="instockForm" :inline="true">
+          <el-form label-position="top" ref="instockForm" :model="instockForm" :inline="true">
             <header-form-structure :form-data="form.header" :item="instockForm.header"></header-form-structure>
             <header-table :form-data="form.header" :item="instockForm.header" :headerTable="true"></header-table>
-          </el-form>
-          <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm">
+          <!-- </el-form>
+          <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm"> -->
             <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
               新增
             </el-button>

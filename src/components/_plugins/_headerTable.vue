@@ -1,25 +1,30 @@
 <template>
   <div>
-    <div v-for="header in formData">
-      <div v-for="value in header.value">
-        <div v-if="value.value.type === 'table'">
-          <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
-          <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
-            <el-tab-pane
-              v-for="(body, bodyindex) in item[value.id]" :label="value.name + (bodyindex + 1)"
-              :closable="closableIndex(bodyindex, value)">
-              <form-structure
-                :form-data="[{name: header.name, value: value.value.attr_list}]"
-                :item="body"
-                :index="0"
-                :header-table="true"
-                :value-id="value.id">
-              </form-structure>
-            </el-tab-pane>
-          </el-tabs>
-        </div>
-      </div>
-    </div>
+    <template v-for="header in formData">
+      <template v-for="value in header.value">
+        <template v-if="value.value.type === 'table'">
+          <el-form-item
+            :prop="prop(value)"
+            :rules="rules(value)"
+            class="block">
+            <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
+            <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
+              <el-tab-pane
+                v-for="(body, bodyindex) in item[value.id]" :label="value.name + (bodyindex + 1)"
+                :closable="closableIndex(bodyindex, value)">
+                <form-structure
+                  :form-data="[{name: header.name, value: value.value.attr_list}]"
+                  :item="body"
+                  :index="0"
+                  :header-table="true"
+                  :value-id="value.id">
+                </form-structure>
+              </el-tab-pane>
+            </el-tabs>
+          </el-form-item>
+        </template>
+      </template>
+    </template>
   </div>
 </template>
 
@@ -33,7 +38,9 @@
 
     data () {
       return {
-        tabsValue: '0'
+        tabsValue: '0',
+        limitTable: 0,
+        limitTableMax: 0
       }
     },
     created () {
@@ -41,6 +48,73 @@
     },
 
     methods: {
+      prop (value) {
+        if (value.required) {
+          return 'header.' + value.id
+        } else {
+          return ''
+        }
+      },
+      tableValid (formItem) {
+        let keyData
+        if (formItem.limit.type === 'message_body') {
+          keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
+        } else if (formItem.limit.type === 'message_header') {
+          keyData = this.getPathResult(this.message.header, formItem.limit.key_path)
+        } else if (formItem.limit.type === 'static') {
+          keyData = formItem.limit.min
+          this.limitTableMax = formItem.limit.max
+        } else if (formItem.limit.type === 'form_body') {
+          keyData = this.getPathResult(this.whole.body[this.index], formItem.limit.key_path) // this.whole.body[this.index] 就是 this.item
+        } else if (formItem.limit.type === 'form_header') {
+          keyData = this.getPathResult(this.whole.header, formItem.limit.key_path)
+        }
+        if (Array.isArray(keyData)) {
+          this.limitNum = keyData.length
+        } else if (typeof keyData === 'number') {
+          this.limitNum = keyData
+        } else if (typeof keyData === 'string') {
+          if (typeof +keyData === 'number') {
+            this.limitNum = +keyData
+          } else {
+            this.$message('limit数据配置有误')
+          }
+        }
+        var validateLimit = (rule, value, cb) => {
+          function isMatch (ele, i, arr) {
+            const reg = new RegExp(ele)
+            return value.some(val => { return !val.match(reg) }) // 要value数组里每一个值都通过正则，否则报错
+          }
+          if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch)) {
+            return cb(new Error(`请输入正确的${formItem.name}`))
+          }
+          if (this.limitTableMax) { // static时，有一个范围值
+            if (value.length < this.limitNum) {
+              return cb(new Error(`至少需要${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+            } else if (value.length > this.limitTableMax) {
+              return cb(new Error(`至多可以增加${this.limitTableMax}个${formItem.name},请删除${value.length - this.limitTableMax}个`))
+            } else {
+              cb()
+            }
+          } else { // 除static外，其他都是一个固定的数值，不准多不准少
+            if (value.length < this.limitNum) {
+              return cb(new Error(`需要${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
+            } else if (value.length > this.limitNum) {
+              return cb(new Error(`只需要${this.limitNum}个${formItem.name},请删除${value.length - this.limitNum}个`))
+            } else {
+              cb()
+            }
+          }
+        }
+        return {
+          validator: validateLimit,
+          required: formItem.required,
+          trigger: 'blur, change'
+        }
+      },
+      rules (formItem) {
+        return this.tableValid(formItem)
+      },
       closableIndex (index, value) {
         if (value.limit.type === 'static') {
           // return !(value.limit.min > index && index < value.limit.max)
