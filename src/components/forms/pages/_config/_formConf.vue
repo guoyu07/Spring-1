@@ -166,12 +166,12 @@
 </template>
 
 <script>
-import optionsConf from './optionsConf' // 配置下拉选项（静态）的表单
-import optionsConfCmdb from './optionsConfCMDB' // 配置下拉选项（动态）的表单
-import tableConf from './tableConf' // 配置表格
-import defaultConf from './defaultConf'
-import limitConf from './limitConf'
-import presetConf from './presetConf'
+import optionsConf from './_optionsConf' // 配置下拉选项（静态）的表单
+import optionsConfCmdb from './_optionsConfCMDB' // 配置下拉选项（动态）的表单
+import tableConf from './_tableConf' // 配置表格
+import defaultConf from './_defaultConf'
+import limitConf from './_limitConf'
+import presetConf from './_presetConf'
 
 export default {
   props: {

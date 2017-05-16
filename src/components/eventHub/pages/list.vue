@@ -13,8 +13,9 @@
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card">
+          <h3><i class="el-icon-fa-bullhorn icon-lg"></i> {{filter}}告警</h3>
           <div class="tag-container clear">
-            <h3><i class="el-icon-fa-bullhorn icon-lg"></i> {{filter}}告警</h3>
+            <el-button icon="plus" @click="addEventData.visible = true">新建事件</el-button>
             <el-radio-group v-model="filter" @change="onFilterChange" size="small" class="fr">
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>

@@ -211,7 +211,7 @@
   </div>
 </template>
 <script>
-import formConf from './config/formConf' // 配置字段的表单
+import formConf from './_config/_formConf' // 配置字段的表单
 export default {
   data () {
     return {
