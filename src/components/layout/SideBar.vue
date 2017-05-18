@@ -120,9 +120,8 @@
           <!-- <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item> -->
         </el-menu-item-group>
         <el-menu-item-group title="应用发布更新">
-          <el-menu-item index="/system/apply"><i class="el-icon-fa-bomb"></i>应用发布更新</el-menu-item>
-          <el-menu-item index="/system/onlinelist"><i class="el-icon-fa-bullhorn"></i>其他发布更新</el-menu-item>
-          <!-- <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item> -->
+          <el-menu-item index="/deploy-app/apps"><i class="el-icon-fa-bomb"></i>应用发布更新</el-menu-item>
+          <el-menu-item index="/deploy-app/others"><i class="el-icon-fa-bullhorn"></i>其他发布更新</el-menu-item>
         </el-menu-item-group>
         <!-- <el-menu-item-group title="防火墙">
           <el-menu-item index="/firewall/apply"><i class="el-icon-fa-fire"></i>防火墙开通申请</el-menu-item>

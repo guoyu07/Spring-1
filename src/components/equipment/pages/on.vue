@@ -8,11 +8,11 @@
             <div v-for="task in taskFormData.header">
               <div v-for="taskform in task.value">
                 <header-form
-                  v-if="!taskform.value.show"
+                  v-if="!taskform.value.show.type"
                   :item="assignForm.header"
                   :form-item="taskform">
                 </header-form>
-                <div v-if="taskform.value.show">
+                <div v-if="taskform.value.show.type">
                   <search-bar
                     v-if="taskform.value.show.value === deviceType"
                     :hosts="assignForm.header"
@@ -97,7 +97,7 @@
               //   this.setDataType(item, this.assignForm.header, this)
               // }
               this.setDataType(item, this.assignForm.header, this)
-              if (item.value.show) {
+              if (item.value.show.type) {
                 const key = []
                 if (item.value.show.type === 'form_header') {
                   const keyPath = item.value.show.key_path.split('.')
@@ -180,7 +180,7 @@
         // this.assignForm.header[this.deviceType] = this.hostList
         this.taskFormData.header.map(header => {
           header.value.map(item => {
-            if (item.value.show) {
+            if (item.value.show.type) {
               if (item.value.show.value === this.deviceType) {
                 // 留下所选的的设备类型的值
                 this.assignForm.header[item.id] = this.hostList

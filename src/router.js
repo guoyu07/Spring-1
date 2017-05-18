@@ -39,6 +39,9 @@ const routes = [{
       path: '/store-manage/instock',
       component: require('./components/storeManage/pages/instock.vue')
     }, {
+      path: '/store-manage/instock',
+      component: require('./components/storeManage/pages/instock.vue')
+    }, {
       path: '/store-manage/instock/:id',
       component: require('./components/storeManage/pages/instock.vue')
     }, {
@@ -75,6 +78,19 @@ const routes = [{
     }, {
       path: '/equipment/:pkey/:tkey/:id/:name', // 具体步骤操作
       component: require('./components/equipment/pages/step.vue')
+    }]
+  }, {
+    path: '/deploy-app',
+    component: require('./components/deployapp/index'),
+    children: [{
+      path: '/deploy-app/apps',
+      component: require('./components/deployapp/pages/apps.vue')
+    }, {
+      path: '/deploy-app/others',
+      component: require('./components/deployapp/pages/others.vue')
+    }, {
+      path: '/deploy-app/:pkey/:tkey/:id/:name',
+      component: require('./components/deployapp/pages/step.vue')
     }]
   }, {
     path: '/firewall',

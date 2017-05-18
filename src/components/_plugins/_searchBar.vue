@@ -1,6 +1,6 @@
 <template>
-  <div>
-    <div class="form-block">
+  <span>
+    <div v-if="mainInfo.value.type === 'search_bar'" class="form-block">
       <h5>{{mainInfo.name}}</h5>
       <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
         <el-form-item v-for="search in searchKeyList" :label="search.name" :prop="search.id">
@@ -73,7 +73,7 @@
 
       </el-table>
     </div>
-  </div>
+  </span>
 </template>
 
 <script>

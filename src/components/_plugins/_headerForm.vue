@@ -1,6 +1,6 @@
 <template>
   <el-form-item
-    v-if="formItem.value.type !== 'table'"
+    v-if="formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'"
     :prop="formItem.required ? 'header.' + formItem.id : ''"
     :label="formItem.name"
     :rules="rules(formItem)"
@@ -25,7 +25,12 @@
       </el-input>
       <!-- 读取默认值不提交 -->
       <span v-if="formItem.readonly && !formItem.need_submit">
-        {{getPathResult(readInfo, formItem.default.key_path, index)}}
+        <span v-if="formItem.default.type === 'static'">
+          {{formItem.default.value}}
+        </span>
+        <span v-else>
+          {{getPathResult(readInfo, formItem.default.key_path)}}
+        </span>
       </span>
 
     </span>
@@ -73,7 +78,7 @@
       </el-checkbox-group>
     </template>
 
-    <template v-else-if="formItem.value.type === 'FK'">
+    <!-- <template v-else-if="formItem.value.type === 'FK'">
       <el-select
         filterable
         v-if="!formItem.isAlias"
@@ -90,9 +95,9 @@
         :disabled="formItem.readonly">
         <el-radio v-for="option in formItem.value.object_list" :label="option">{{option.name}}</el-radio>
       </el-radio-group>
-    </template>
+    </template> -->
 
-    <template v-else-if="formItem.value.type === 'FKs'">
+    <!-- <template v-else-if="formItem.value.type === 'FKs'">
       <el-select
         filterable
         :disabled="formItem.readonly"
@@ -109,7 +114,7 @@
         :disabled="formItem.readonly">
         <el-checkbox v-for="option in formItem.value.object_list" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
       </el-checkbox-group>
-    </template>
+    </template> -->
 
     <el-select
       v-else-if="formItem.value.type === 'arr'"
@@ -131,6 +136,7 @@
       v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
       :vmodel="item" :strucData="formItem" :whole="whole">
     </need-cmdb-data>
+    <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 
