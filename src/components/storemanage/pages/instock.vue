@@ -236,8 +236,10 @@
                     this.form && this.form.body.body_list.forEach((v, k) => {
                       if (v.show.op === 'eq' && v.show.value === _value) {
                         this.bodylistIndex = k // 取当前设备类型的索引值
+                        return
                       } else if (v.show.op === 'neq' && v.show.value !== _value) {
                         this.bodylistIndex = k
+                        return
                       } else {
                         this.$message.warning(`${v.name}表单配置有误`)
                       }
