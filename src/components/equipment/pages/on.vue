@@ -3,7 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <h3 class="form-title"><i class="el-icon-sign-upload"></i>上架流程</h3>
+          <h3 class="form-title"><i class="el-icon-sign-upload"></i> 设备上架</h3>
           <el-form label-position="left" ref="assignForm" :model="assignForm" :inline="true">
             <div v-for="task in taskFormData.header">
               <div v-for="taskform in task.value">
@@ -180,17 +180,19 @@
         // this.assignForm.header[this.deviceType] = this.hostList
         this.taskFormData.header.map(header => {
           header.value.map(item => {
-            if (item.value.show.type) {
-              if (item.value.show.value === this.deviceType) {
-                // 留下所选的的设备类型的值
-                this.assignForm.header[item.id] = this.hostList
-              } else {
-                // 删除其他无关属性
-                delete this.assignForm.header[item.id]
+            if (item.value.show) {
+              // show.type 有四种类型
+              if (item.value.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.assignForm.header[item.id] = this.hostList
+                  }
+                }
               }
             }
           })
         })
+        // console.log(this.assignForm)
         const postData = {
           action: 'runtime/process/instances',
           method: 'POST',

@@ -17,7 +17,7 @@
           </span>
         </span>
 
-         <span v-else-if="formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span>
+        <span v-else-if="formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span>
 
         <span v-else-if="formItem.value.type === 'FKs'">
           <span v-for="span in item[formItem.id]">{{ span.name }}</span>

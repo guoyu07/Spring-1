@@ -225,31 +225,40 @@
         this.$refs[formName].resetFields()
       },
       onSubmit () {
-        console.log(this.deviceType)
-        for (const id in this.assignForm.header) {
-          this.assignForm.header[id] = this.hostList
-        }
-        const postData = {
-          action: 'runtime/process/instances',
-          method: 'POST',
-          data: {
-            pkey: this.deviceType,
-            form: {
-              'body': [],
-              'header': this.assignForm.header
-            }
-          }
-        }
-        this.http.post('', this.parseData(postData))
-          .then((res) => {
-            if (res && res.status === 200) {
-              this.$message({
-                type: 'success',
-                message: '提交成功!'
-              })
-              this.$router.replace('/orders') // 设备成功上架后跳到工单管理
+        this.taskFormData.header.map(header => {
+          header.value.map(item => {
+            if (item.value.show.type) {
+              // show.type 有四种类型
+              if (item.value.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+                  this.assignForm.header[item.id] = this.hostList
+                }
+              }
             }
           })
+        })
+        console.log(this.assignForm)
+        // const postData = {
+        //   action: 'runtime/process/instances',
+        //   method: 'POST',
+        //   data: {
+        //     pkey: this.deviceType,
+        //     form: {
+        //       'body': [],
+        //       'header': this.assignForm.header
+        //     }
+        //   }
+        // }
+        // this.http.post('', this.parseData(postData))
+        //   .then((res) => {
+        //     if (res && res.status === 200) {
+        //       this.$message({
+        //         type: 'success',
+        //         message: '提交成功!'
+        //       })
+        //       this.$router.replace('/orders') // 设备成功上架后跳到工单管理
+        //     }
+        //   })
       },
       onReject (task, action) {
         console.log(task, action.pass)

@@ -13,7 +13,7 @@
                   <!-- {{taskformheader.name}} -->
                   <span v-for="valueheader in taskformheader.value">
                     <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.value.show">
+                    <div v-if="valueheader.value.show.type">
                       <!-- 判断 show.type 这里只判断了一种情况-->
                       <div v-if="valueheader.value.show.type==='form_header'">
                         <!-- 表单信息显示 -->
@@ -63,7 +63,7 @@
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
-              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
+              <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
                 <div v-for="task in form">
                   <div v-if="task.form.form.body.body_list.length > 1">
@@ -102,11 +102,11 @@
                 </div>
 
                 <!-- body 表单填写 -->
-                <div v-if="taskForm.body.body_list.length !== 0">
+                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
                     <!-- <div v-if="taskFormData.show "> -->
                       <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
-                      <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
+                      <div v-if="taskFormData.show && taskFormData.show.type ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
                         <!-- 表单填写 -->
                         <!-- :read-info="applyData.header" 只读信息不该只有 applyData.header 应该根据只读信息的来源type来决定，read-info 属性可以去掉，用 message 顶替 -->
                         <form-structure
@@ -140,12 +140,12 @@
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <header-form
-                    v-if="!taskform.value.show"
+                    v-if="!taskform.value.show.type"
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm">
                   </header-form>
-                  <div v-if="taskform.value.show">
+                  <div v-if="taskform.value.show.type">
                     <div v-if="taskform.value.show.type==='form_header'">
                       <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
                         <search-bar
@@ -208,7 +208,8 @@
         searchKeys: {},
         searchData: {},
         path_list: [],
-        hostList: []
+        hostList: [],
+        bodyLableName: []
       }
     },
     created () {
@@ -217,7 +218,16 @@
       // this.renderForm()
       // this.renderTaskForm()
     },
+    watch: {
+      'taskForm': {
+        handler: 'renderBodyLabel',
+        deep: true
+      }
+    },
     methods: {
+      renderBodyLabel () {
+        this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
+      },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
@@ -294,7 +304,7 @@
           this.applyData.body.forEach((item, k) => {
             let newData = {}
             this.taskForm.body.body_list.forEach(body => {
-              if (body.show) {
+              if (body.show && body.show.type) {
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
@@ -420,7 +430,7 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.value.show) {
+            if (item.value.show.type) {
               // show.type 有四种类型
               if (item.value.show.type === 'form_header') {
                 if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {

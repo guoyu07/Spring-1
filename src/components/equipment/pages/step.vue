@@ -13,10 +13,16 @@
                   <!-- {{taskformheader.name}} -->
                   <span v-for="valueheader in taskformheader.value">
                     <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.value.show">
+                    <div v-if="valueheader.value.show.type">
                       <!-- 判断 show.type 这里只判断了一种情况-->
                       <div v-if="valueheader.value.show.type==='form_header'">
-                        <!-- 判断是设备选择，还是普通表单显示 TODO：需要写一下表单显示的情况 -->
+                        <!-- 表单信息显示 -->
+                        <header-form-display
+                          v-if="valueheader.value.type !== 'search_bar'"
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                        <!-- 设备选择 -->
                         <div v-if="valueheader.value.type === 'search_bar'">
                           <el-table
                             class="margin-bottom"
@@ -55,17 +61,17 @@
                 </div>
               </div>
             </div>
-
-            <el-tabs type="border-card" @tab-click="handleClick">
-              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
-                <!-- 信息显示 -->
+            <!-- taskForm.body.body_list.length !== 0 && -->
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
+              <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
+                <!-- body 信息显示 -->
                 <div v-for="task in form">
                   <div v-if="task.form.form.body.body_list.length > 1">
                     <div v-for="taskform in task.form.form.body.body_list">
-                      <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
+                      <template v-if="taskform.show.type ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
                         <p class="h5">{{task.tname}}</p>
                         <form-structure-display
-                          v-if="taskform.attr_list[0].value[0].value.type !== 'searchBar'"
+                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
                           :item="data"
                           :form-data="taskform.attr_list"
                           :index="index">
@@ -87,26 +93,30 @@
                   <div v-else>
                     <!-- 这里是判断 body_list 是不是空数组 -->
                     <div v-if="task.form.form.body.body_list[0]">
-                      <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true">
-                        <p class="h5">{{task.tname}}</p>
-                        <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
-                      </div>
+                      <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
+                      <p class="h5">{{task.tname}}</p>
+                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
+                      <!-- </div> -->
                     </div>
                   </div>
                 </div>
 
                 <!-- body 表单填写 -->
-                <div v-if="taskForm.body">
+                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
-                    <!-- <div v-if="taskFormData.show && taskFormData.show.type === 'message_body'"> -->
+                    <!-- <div v-if="taskFormData.show "> -->
                       <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
-                      <div v-if="taskFormData.show ? (getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value) : true">
+                      <div v-if="taskFormData.show && taskFormData.show.type ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
                         <!-- 表单填写 -->
+                        <!-- :read-info="applyData.header" 只读信息不该只有 applyData.header 应该根据只读信息的来源type来决定，read-info 属性可以去掉，用 message 顶替 -->
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
-                          :index="index">
+                          :index="index"
+                          :read-info="applyData.header"
+                          :whole="assignForm"
+                          :message="applyData">
                         </form-structure>
                         <!-- 设备选择 -->
                         <search-bar
@@ -126,13 +136,40 @@
             </el-tabs>
             <!-- header 表单填写 -->
             <div v-if="taskForm.header">
-              <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure>
+
+              <div v-for="task in taskForm.header">
+                <span v-for="taskform in task.value">
+                  <header-form
+                    v-if="!taskform.value.show.type"
+                    :item="assignForm.header"
+                    :form-item="taskform"
+                    :whole="assignForm">
+                  </header-form>
+                  <div v-if="taskform.value.show.type">
+                    <div v-if="taskform.value.show.type==='form_header'">
+                      <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
+                        <search-bar
+                          v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
+                          :hosts="assignForm.header"
+                          :attr-list="taskform"
+                          :limit="getLimitQuantity(taskform, data)"
+                          @on-hosts-change="onHostsChange">
+                        </search-bar>
+                      </div>
+                    </div>
+                  </div>
+                </span>
+              </div>
+              <!-- <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure> -->
             </div>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
-                <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
+                  <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
+                </el-tooltip>
+                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>
@@ -149,6 +186,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
+  import headerForm from '../../_plugins/_headerForm'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -169,7 +207,9 @@
         searchKeyList: [],
         searchKeys: {},
         searchData: {},
-        path_list: []
+        path_list: [],
+        hostList: [],
+        bodyLableName: []
       }
     },
     created () {
@@ -178,22 +218,31 @@
       // this.renderForm()
       // this.renderTaskForm()
     },
+    watch: {
+      'taskForm': {
+        handler: 'renderBodyLabel',
+        deep: true
+      }
+    },
     methods: {
+      renderBodyLabel () {
+        this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
+      },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            pkey: 'equipment_on',
+            pkey: this.routerInfo.pkey,
             tkey: this.routerInfo.tkey
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.taskForm = res.data.data.form
-          console.log(this.applyData)
+          // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
-            if (this.taskForm.body.count.type === 'message_header') {
+            if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
               if (Array.isArray(keyData)) {
                 // this.applyData.body.length = keyData.length
@@ -233,16 +282,29 @@
           // }
           this.taskForm.header.forEach((header, k) => {
             if (header) {
-              header.value.map(item => {
-                this.setDataType(item, this.assignForm.header, this)
+              header.value.map(value => {
+                if (value.need_submit) {
+                  this.setDataType(value, this.assignForm.header, this)
+                  console.log(this.assignForm.header)
+                  // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                  if (value.default.type) {
+                    if (value.default.type === 'message_header') {
+                      console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                      console.log(this.assignForm.header[value.id])
+                    }
+                  }
+                }
               })
             }
           })
+          // console.log(this.assignForm.header.host_type)
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
             this.taskForm.body.body_list.forEach(body => {
-              if (body.show) {
+              if (body.show && body.show.type) {
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
@@ -254,26 +316,45 @@
                     })
                     console.log(newData)
                   }
+                } else if (body.show.type === 'message_header') {
+                  body.attr_list.map(group => {
+                    group.value.map(value => {
+                      if (value.need_submit) {
+                        this.setNewDataType(value, newData)
+                        // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                        if (value.default.type) {
+                          if (value.default.type === 'message_header') {
+                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          } else if (value.default.type === 'form_body') {
+                            this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              this.assignForm.body[k][value.id] = newVal
+                            })
+                          }
+                        }
+                      }
+                      if (!value.need_submit && value.readonly) {
+                        if (value.default.type === 'message_header') {
+                          // item === this.applyData.body
+                          item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        }
+                      }
+                    })
+                  })
                 }
               } else {
                 console.log(item, body)
                 body.attr_list.map(group => {
                   group.value.map(value => {
-                    // this.setNewDataType(item, newData)
-                    // if (item.readonly && !item.need_submit) {
-                    //   if (!this.readOnly.includes(group)) {
-                    //     this.readOnly.push(group)
-                    //   }
-                    // }
                     if (value.need_submit) {
-                      // if (!this.filterTaskFrom.includes(group)) {
-                      //   this.filterTaskFrom.push(group)
-                      // }
                       this.setNewDataType(value, newData)
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
                       if (value.default.type) {
                         if (value.default.type === 'message_header') {
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        } else if (value.default.type === 'form_body') {
+                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                            this.assignForm.body[k][value.id] = newVal
+                          })
                         }
                       }
                     }
@@ -283,7 +364,7 @@
             })
             this.assignForm.body.push(newData)
             for (const id in item) {
-              console.log(item[id], this.assignForm.body[k][id])
+              // console.log(item[id], this.assignForm.body[k][id])
               if (this.assignForm.body[k][id] !== undefined) {
                 this.assignForm.body[k][id] = item[id]
               }
@@ -321,7 +402,7 @@
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            pkey: 'equipment_on',
+            pkey: this.routerInfo.pkey,
             tkey: this.path_list
           }
         }
@@ -335,22 +416,42 @@
         console.log(this.index)
       },
       onHostsChange (val, index) {
-        for (const id in this.assignForm.body[index]) {
-          this.assignForm.body[index][id] = val
+        console.log(val, index)
+        if (index !== undefined) {
+          for (const id in this.assignForm.body[index]) {
+            this.assignForm.body[index][id] = val
+          }
+        } else {
+          this.hostList = []
+          this.hostList = val
         }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
       },
       onSubmit (assignForm) {
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.value.show.type) {
+              // show.type 有四种类型
+              if (item.value.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.assignForm.header[item.id] = this.hostList
+                  }
+                }
+              }
+            }
+          })
+        })
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'info'
         }).then(() => {
-          const ref = this.$refs[assignForm].fields.length !== 0
+          const ref = this.$refs['assignForm'].fields.length !== 0
           console.log(ref)
           if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs[assignForm].validate((valid) => {
+            this.$refs['assignForm'].validate((valid) => {
               if (valid) {
                 console.log(this.assignForm.body)
                 if (this.assignForm.body) {
@@ -392,10 +493,16 @@
         })
       },
       postMethod (id, data) {
-        if (data.body.length === 0) {
-          this.applyData.body.forEach(item => {
-            data.body.push({})
-          })
+        // if (data.body.length === 0) {
+        //   this.applyData.body.forEach(item => {
+        //     data.body.push({})
+        //   })
+        // }
+        // console.log(data)
+        for (const id in data.header) {
+          if (!data.header[id]) {
+            delete data.header[id] // 删除头部空值 TODO：删除 body 的空值
+          }
         }
         const postData = {
           action: 'runtime/task/complete',
@@ -411,15 +518,78 @@
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
-                message: '审批成功!'
+                message: '成功!'
               })
-              this.$router.replace('/orders') // 分配成功跳转工单管理
+              if (this.routerInfo.pkey === 'easyops_monitor') {
+                this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
+              } else {
+                this.$router.replace('/orders') // 跳转工单管理
+              }
             }
           })
       },
+      onManual (action) {
+        const ref = this.$refs['assignForm'].fields.length !== 0
+        if (ref) { // 有表单的情况下，表单的自验证
+          this.$refs['assignForm'].validate((valid) => {
+            if (valid) {
+              console.log(this.assignForm.body)
+              if (this.assignForm.body) {
+                for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+                  for (const item in data) {
+                    if (Array.isArray(data[item]) && data[item].length === 0) {
+                      this.$message.warning('未完成！')
+                      return false
+                    }
+                  }
+                }
+              }
+              this.manualMethod(action)
+              // console.dir(this.assignForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('未完成！')
+              return false
+            }
+          })
+        } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+          if (!this.assignForm.body.some(data => {
+            for (const item in data) {
+              return Array.isArray(data[item]) && data[item].length === 0
+            }
+          })) {
+            this.manualMethod(action)
+            // console.dir(this.assignForm)
+          } else {
+            this.$message.warning('未分配完！')
+            return false
+          }
+        }
+      },
+      manualMethod (action) {
+        const postData = {
+          action: 'do/activiti/form/action',
+          method: 'POST',
+          data: {
+            form: this.assignForm,
+            tid: this.routerInfo.id,
+            action_id: action.id
+          }
+        }
+        this.http.post('', this.parseData(postData))
+        .then((res) => {
+          if (res && res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '提交成功!'
+            })
+            this.$router.replace('/orders') // 分配成功跳转工单管理
+          }
+        })
+      },
       onReject (task, action) {
         console.log(task, action.pass)
-        this.$prompt('请输入对「' + task.header.applicationName.name + '」的' + action.name + '意见：', '确定' + action.name + '？', {
+        this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
         }).then(({value}) => {
@@ -455,6 +625,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
+      headerForm,
       searchBar
     }
   }

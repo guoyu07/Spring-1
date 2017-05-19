@@ -107,7 +107,7 @@
           <el-menu-item index="/store-manage/alter_device"><i class="el-icon-fa-edit"></i>设备变更</el-menu-item>
         </el-menu-item-group>
         <el-menu-item-group title="设备上架">
-          <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
+          <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>设备上架</el-menu-item>
           <!-- <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item> -->
         </el-menu-item-group>
         <!-- <el-menu-item-group title="国信">

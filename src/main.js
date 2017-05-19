@@ -309,6 +309,48 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, index) => {
     }
   }
 }
+
+Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
+  if (taskForm.body.body_list.length !== 0) {
+    if (taskForm.body.body_list.length === 1) {
+      messageData.body.map((body, index) => {
+        if (taskForm.body.body_list[0].name) {
+          labelArr[index] = taskForm.body.body_list[0].name + (index + 1)
+        } else {
+          labelArr[index] = 'body' + (index + 1)
+        }
+      })
+    } else {
+      messageData.body.map((body, index) => {
+        taskForm.body.body_list.map(bodyList => {
+          let compareVariable
+          if (bodyList.show.type === 'form_header') {
+            compareVariable = postForm.header
+          } else if (bodyList.show.type === 'message_header') {
+            compareVariable = messageData.header
+          } else if (bodyList.show.type === 'message_body') {
+            compareVariable = body
+          } else {
+            Vue.prototype.$message.warning('显示条件的比较变量设置有误')
+          }
+          if (bodyList.show.op === 'eq') {
+            if (Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path) === bodyList.show.value) {
+              labelArr[index] = bodyList.name + (index + 1)
+            }
+          } else if (bodyList.show.op === 'neq') {
+            if (Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path) !== bodyList.show.value) {
+              labelArr[index] = bodyList.name + (index + 1)
+            }
+          }
+        })
+      })
+    }
+  } else {
+    messageData.map((body, index) => {
+      labelArr[index] = 'body' + (index + 1)
+    })
+  }
+}
 // api mocking
 // Vue.http.interceptors.unshift((req, next) => {
 //   const route = apis.find(a => a.url === req.url)
