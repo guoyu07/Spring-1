@@ -62,7 +62,7 @@
               </div>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
                 <div v-for="task in form">
