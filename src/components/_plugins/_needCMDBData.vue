@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-if="strucData.value.source">
     <!-- <el-select
       v-model="vmodel[strucData.id]"
       :multiple="strucData.value.type === 'dicts'"
@@ -74,8 +74,10 @@
           // console.log(this.strucData.watch)
           this.renderOptions()
         })
-      } else {
+      } else if (this.strucData.value.source) {
         this.renderOptions()
+      } else {
+        this.$message.warning(`${this.strucData.name}的API表单配置有误`)
       }
     },
 
@@ -177,7 +179,7 @@
                 })
               }
             }
-          } else if (this.strucData.value.source.data.action === 'idcrack/list') {
+          } else if (this.strucData.value.source.data.action === 'idcrack/list') { // 机柜图
             this.$store.dispatch('idcrack_data', {
               idcrackData: this.optionList
             })

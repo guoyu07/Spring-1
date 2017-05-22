@@ -7,24 +7,18 @@
           <el-form label-position="left" ref="assignForm" :model="assignForm" :inline="true">
             <div v-for="task in taskFormData.header">
               <span v-for="taskform in task.value">
+                  <!-- v-if="!taskform.value.show.type" -->
                 <header-form
-                  v-if="!taskform.value.show"
                   :item="assignForm.header"
                   :form-item="taskform">
                 </header-form>
-                <div v-if="taskform.value.show">
-                  <div v-if="taskform.value.show.type==='form_header'">
-                    <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
-                      <search-bar
-                        v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
-                        :hosts="assignForm.header"
-                        :attr-list="taskform"
-                        :limit="getLimitQuantity(taskform, data)"
-                        @on-hosts-change="onHostsChange">
-                      </search-bar>
-                    </div>
-                  </div>
-                </div>
+                <search-bar
+                  v-if="showFormItem(taskform, assignForm, applyData)"
+                  :hosts="assignForm.header"
+                  :attr-list="taskform"
+                  :limit="getLimitQuantity(taskform, data)"
+                  @on-hosts-change="onHostsChange">
+                </search-bar>
               </span>
             </div>
           </el-form>
@@ -100,7 +94,7 @@
               //   this.setDataType(item, this.assignForm.header, this)
               // }
               this.setDataType(item, this.assignForm.header, this)
-              if (item.value.show) {
+              if (item.value.show.type) {
                 const key = []
                 if (item.value.show.type === 'form_header') {
                   const keyPath = item.value.show.key_path.split('.')
@@ -110,7 +104,6 @@
                     this.$watch('assignForm.header.' + keyPath[0], (newVal, oldVal) => {
                       const _value = newVal && newVal[keyPath[1]] || ''
                       this.deviceType = _value
-                      console.log(item)
                       // this.setDataType(item, this.assignForm.header, this)
                       // if (item.value.show.op === 'eq') {
                       //   console.log(_value === item.value.show.value)
@@ -152,13 +145,12 @@
         })
       },
       resetForm (formName) {
-        console.log(this.$refs)
         this.$refs[formName].resetFields()
       },
       onSubmit () {
         this.taskFormData.header.map(header => {
           header.value.map(item => {
-            if (item.value.show) {
+            if (item.value.show.type) {
               // show.type 有四种类型
               if (item.value.show.type === 'form_header') {
                 if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {

@@ -226,18 +226,16 @@
           this.form = res.data.data.form
           const key = []
           for (const body of this.form.body.body_list) { // 动态 watch
-            if (body.show.type) {
+            if (body.show) {
               const keyPath = body.show.key_path.split('.')
-              if (body.show.type === 'form_header') { // TODO 暂时只是写了一种type,还有message_header message_body 两种数据
+              if (body.show.type === 'form_header') { // TODO 暂时只是写了一种type,还有message_header message_body 两种未知数据如何
                 if (!key.includes(keyPath[0])) {
                   key.push(keyPath[0])
                   this.$watch('instockForm.header.' + keyPath[0], newVal => {
                     const _value = newVal && newVal[keyPath[1]] || '' // newVal == this.instockForm.header.deviceType
                     this.form && this.form.body.body_list.forEach((v, k) => {
-                      if (v.show.op === 'eq' && v.show.value === _value) {
+                      if (v.show.value === _value) {
                         this.bodylistIndex = k // 取当前设备类型的索引值
-                      } else if (v.show.op === 'neq' && v.show.value !== _value) {
-                        this.bodylistIndex = k
                       }
                     })
                   })
