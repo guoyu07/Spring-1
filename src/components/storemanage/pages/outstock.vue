@@ -8,10 +8,10 @@
             <div v-for="task in taskFormData.header">
               <span v-for="taskform in task.value">
                   <!-- v-if="!taskform.value.show.type" -->
-                <header-form
+                <form-body
                   :item="assignForm.header"
                   :form-item="taskform">
-                </header-form>
+                </form-body>
                 <search-bar
                   v-if="showFormItem(taskform, assignForm, applyData)"
                   :hosts="assignForm.header"
@@ -37,7 +37,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
-  import headerForm from '../../_plugins/_headerForm'
+  import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -227,7 +227,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
-      headerForm,
+      formBody,
       searchBar
     }
   }

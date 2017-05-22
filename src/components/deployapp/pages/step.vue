@@ -114,7 +114,6 @@
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index"
-                          :read-info="applyData.header"
                           :whole="assignForm"
                           :message="applyData">
                         </form-structure>
@@ -139,12 +138,12 @@
 
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
-                  <header-form
+                  <form-body
                     v-if="!taskform.value.show.type"
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm">
-                  </header-form>
+                  </form-body>
                   <search-bar
                     v-if="taskform.value.type === 'search_bar'"
                     :hosts="assignForm.header"
@@ -193,7 +192,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
-  import headerForm from '../../_plugins/_headerForm'
+  import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -624,7 +623,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
-      headerForm,
+      formBody,
       searchBar
     }
   }

@@ -116,7 +116,7 @@
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index"
-                          :read-info="applyData.header">
+                          :message="applyData">
                         </form-structure>
                         <!-- 设备选择 -->
                         <search-bar
@@ -139,11 +139,11 @@
 
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
-                  <header-form
+                  <form-body
                     v-if="!taskform.value.show"
                     :item="assignForm.header"
                     :form-item="taskform">
-                  </header-form>
+                  </form-body>
                   <div v-if="taskform.value.show">
                     <div v-if="taskform.value.show.type==='form_header'">
                       <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
@@ -185,7 +185,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
-  import headerForm from '../../_plugins/_headerForm'
+  import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -591,7 +591,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
-      headerForm,
+      formBody,
       searchBar
     }
   }
