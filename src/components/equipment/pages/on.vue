@@ -7,11 +7,11 @@
           <el-form label-position="left" ref="assignForm" :model="assignForm" :inline="true">
             <div v-for="task in taskFormData.header">
               <div v-for="taskform in task.value">
-                <header-form
+                <form-body
                   v-if="!taskform.value.show.type"
                   :item="assignForm.header"
                   :form-item="taskform">
-                </header-form>
+                </form-body>
                 <div v-if="taskform.value.show.type">
                   <search-bar
                     v-if="taskform.value.show.value === deviceType"
@@ -39,7 +39,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
-  import headerForm from '../../_plugins/_headerForm'
+  import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -252,7 +252,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
-      headerForm,
+      formBody,
       searchBar
     }
   }

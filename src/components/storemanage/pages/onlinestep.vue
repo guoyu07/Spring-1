@@ -13,7 +13,7 @@
                   <!-- {{taskformheader.name}} -->
                   <span v-for="valueheader in taskformheader.value">
                     <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.value.show">
+                    <div v-if="valueheader.value.show.type">
                       <!-- 判断 show.type 这里只判断了一种情况-->
                       <div v-if="valueheader.value.show.type==='form_header'">
                         <!-- 表单信息显示 -->
@@ -65,7 +65,7 @@
               <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview" class="margin-bottom">机柜预览图</el-button>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- body 信息显示 -->
                 <div v-for="task in form">
@@ -117,7 +117,6 @@
                           :form-data="taskFormData.attr_list"
                           :item="assignForm.body[index]"
                           :index="index"
-                          :read-info="applyData.header"
                           :whole="assignForm"
                           :message="applyData">
                         </form-structure>
@@ -142,13 +141,14 @@
 
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
-                  <header-form
-                    v-if="!taskform.value.show"
+                  <form-body
+                    v-if="!taskform.value.show.type"
                     :item="assignForm.header"
                     :form-item="taskform"
-                    :whole="assignForm">
-                  </header-form>
-                  <div v-if="taskform.value.show">
+                    :whole="assignForm"
+                    :header="true">
+                  </form-body>
+                  <div v-if="taskform.value.show.type">
                     <div v-if="taskform.value.show.type==='form_header'">
                       <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
                         <search-bar
@@ -217,7 +217,7 @@
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import formStructure from '../../_plugins/_formStructure'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
-  import headerForm from '../../_plugins/_headerForm'
+  import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
 
   export default {
@@ -493,7 +493,7 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.value.show) {
+            if (item.value.show.type) {
               // show.type 有四种类型
               if (item.value.show.type === 'form_header') {
                 if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
@@ -688,7 +688,7 @@
       formStructureDisplay,
       formStructure,
       headerFormStructure,
-      headerForm,
+      formBody,
       searchBar
     }
   }

@@ -1,7 +1,8 @@
 <template>
       <!-- 新建应用时，是一个字符串，非选取的对象 -->
   <el-form-item
-    :label="formItem.name">
+    :label="formItem.name"
+    v-if="formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'">
     <!-- {{typeof item[formItem.id]}} -->
     <template v-if="item[formItem.id]">
       <span v-if="formItem.value.type === 'dict'">

@@ -282,19 +282,21 @@ Vue.prototype.filterDate = value => {
   return `${date.getFullYear()}-${cv(date.getMonth() + 1)}-${cv(date.getDate())}`
 }
 
-Vue.prototype.showFormItem = (taskform, postForm, messageData, index) => {
-  if (!taskform.value.show.type) {
+Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, currentTask, index) => {
+  if (!(taskform.value.show && taskform.value.show.type)) {
     return true
   } else {
     let compareVariable
     if (taskform.value.show.type === 'form_header') {
-      compareVariable = postForm.header
+      if (historyTask && (historyTask !== currentTask)) {
+        compareVariable = messageData.header
+      } else {
+        compareVariable = postForm.header
+      }
     } else if (taskform.value.show.type === 'message_header') {
       compareVariable = messageData.header
     } else if (taskform.value.show.type === 'message_body') {
       compareVariable = messageData.body[index]
-    } else {
-      Vue.prototype.$message.warning('显示条件的比较变量设置有误')
     }
     if (taskform.value.show.op === 'eq') {
       if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path) === taskform.value.show.value) {
@@ -304,9 +306,31 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, index) => {
       if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path) !== taskform.value.show.value) {
         return true
       }
-    } else {
-      Vue.prototype.$message.warning('显示条件的判断条件设置有误')
     }
+  }
+}
+
+Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index) => {
+  if (taskFormData.show && taskFormData.show.type) {
+    let compareVariable
+    if (taskFormData.show.type === 'form_header') {
+      compareVariable = postForm.header
+    } else if (taskFormData.show.type === 'message_header') {
+      compareVariable = messageData.header
+    } else if (taskFormData.show.type === 'message_body') {
+      compareVariable = messageData.body[index]
+    }
+    if (taskFormData.show.op === 'eq') {
+      if (Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path) === taskFormData.show.value) {
+        return true
+      }
+    } else if (taskFormData.show.op === 'neq') {
+      if (Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path) !== taskFormData.show.value) {
+        return true
+      }
+    }
+  } else {
+    return true
   }
 }
 
@@ -346,7 +370,7 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
       })
     }
   } else {
-    messageData.map((body, index) => {
+    messageData.body.map((body, index) => {
       labelArr[index] = 'body' + (index + 1)
     })
   }
