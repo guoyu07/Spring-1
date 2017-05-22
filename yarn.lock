@@ -4204,6 +4204,10 @@ sort-keys@^1.0.0:
   dependencies:
     is-plain-obj "^1.0.0"
 
+sortablejs@^1.5.1:
+  version "1.5.1"
+  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.5.1.tgz#efae13b84c677f3b3d3f4f8e46c7e05fc6acb525"
+
 source-list-map@^0.1.4, source-list-map@~0.1.7:
   version "0.1.8"
   resolved "https://registry.yarnpkg.com/source-list-map/-/source-list-map-0.1.8.tgz#c550b2ab5427f6b3f21f5afead88c4f5587b2106"
@@ -4658,6 +4662,12 @@ vue@^1.0.16:
 vue@^2.0.0, vue@^2.1.0:
   version "2.2.2"
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.2.2.tgz#17ed34028a6ab4de855738a1d7beabdf409ee23f"
+
+vuedraggable@^2.11.0:
+  version "2.11.0"
+  resolved "https://registry.yarnpkg.com/vuedraggable/-/vuedraggable-2.11.0.tgz#8e46eeaa8085ec496a5a7183a03d1f69670f60af"
+  dependencies:
+    sortablejs "^1.5.1"
 
 vuex@^2.0.0:
   version "2.2.1"

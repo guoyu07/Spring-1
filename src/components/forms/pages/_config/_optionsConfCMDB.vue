@@ -35,19 +35,19 @@
 
 <template>
   <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose" top="10%">
-    <el-radio-group v-model="optionType">
+    <!-- <el-radio-group v-model="optionType">
       <el-radio label="dynamic">动态</el-radio>
       <el-radio label="static">静态</el-radio>
     </el-radio-group>
-    <hr>
+    <hr> -->
 
-    <div class="conf-cmdb-contain" v-if="optionType === 'static'">
+    <!-- <div class="conf-cmdb-contain" v-if="optionType === 'static'">
       <el-collapse>
         <el-collapse-item v-for="(obj, index) of dialogProps.value.regex" :title="'字典' + index">
           <el-row>
             <el-form label-width="80px">
               <el-form-item v-for="(value, key) in obj" :label="key">
-                <!-- <span>{{value}}</span> -->
+                <span>{{value}}</span>
                 <el-input size="small" v-model="obj[key]"></el-input>
               </el-form-item>
             </el-form>
@@ -58,9 +58,9 @@
         <el-button type="success" :plain="true" size="small" icon="plus" @click="onAddDict">添加字典对象</el-button>
         <el-button type="info" :plain="true" size="small" icon="plus" @click="onAddField">添加键值对</el-button>
       </el-row>
-    </div>
+    </div> -->
 
-    <div class="conf-cmdb-contain" v-if="optionType === 'dynamic' && dialogProps.value.source">
+    <div class="conf-cmdb-contain">
       <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
         <el-form-item label="URL (请求地址)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>

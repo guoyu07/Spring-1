@@ -44,18 +44,18 @@
     }
   }
 
-  .attachment-uploader {
-    .el-upload-list {
-      display: flex;
-      justify-content: flex-start;
-      flex-wrap: wrap;
-    }
+  // .attachment-uploader {
+  //   .el-upload-list {
+  //     display: flex;
+  //     justify-content: flex-start;
+  //     flex-wrap: wrap;
+  //   }
 
-    .el-upload-list__item {
-      width: 48%;
-      margin-right: 1%;
-    }
-  }
+  //   .el-upload-list__item {
+  //     width: 48%;
+  //     margin-right: 1%;
+  //   }
+  // }
 
   .activity-list {
     padding-left: 0;
@@ -73,7 +73,7 @@
     }
   }
 
-  .change-table {
+  .activity-table {
     margin-top: 4px;
 
     td, th {
@@ -81,20 +81,113 @@
       font-size: 13px;
     }
   }
+
+  .comment-detail {
+    padding: 6px 8px;
+    background-color: #f9fafc;
+    margin-top: 4px;
+
+    p {
+      margin: 0;
+    }
+  }
+
+  .tooltip-link {
+    color: @primary;
+  }
+
+  .gallery {
+    display: flex;
+    justify-content: flex-start;
+
+    &__picture {
+      display: flex;
+      justify-content: center;
+      flex-direction: column;
+      align-items: center;
+      width: 150px;
+      margin-right: 12px;
+    }
+
+    &__thumb {
+      width: 150px;
+      height: 120px;
+      position: relative;
+      background: #f6f6f6;
+      border-radius: 8px;
+      border: 2px solid #e5e5e5;
+    }
+
+    &__desc {
+      width: 100%;
+      height: 100%;
+      padding: 18px 0;
+      display: flex;
+      justify-content: space-around;
+      flex-direction: column;
+      font-size: 13px;
+      z-index: @flying;
+      position: relative;
+      align-items: center;
+      text-align: center;
+      background-color: rgba(33,150,243,.8);
+      color: #fff;
+      font-weight: bold;
+      transition: opacity .3s ease;
+      opacity: 0;
+
+      &:hover {
+        opacity: 1;
+      }
+
+      span {
+        max-width: 130px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      a {
+        color: inherit;
+        padding: 4px 6px;
+
+        &:hover {
+          border: 1px solid;
+          border-radius: 4px;
+          padding-top: 3px;
+        }
+      }
+    }
+
+    img {
+      height: 100px;
+      display: block;
+      margin: 0 auto;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+    }
+  }
 </style>
 
 <template>
   <div class="event">
     <h3>{{event.name}}</h3>
-    <el-row type="flex" justify="end" class="btn-row">
-      <el-button-group>
-        <el-button size="small" v-if="['open', 'pending'].includes(event.status)"><i class="el-icon-fa-play"></i> 开始</el-button>
-        <el-button size="small" v-if="['open', 'progress'].includes(event.status)"><i class="el-icon-fa-check"></i> 完成</el-button>
-        <el-button size="small" v-if="['open', 'progress'].includes(event.status)"><i class="el-icon-fa-pause"></i> 延缓</el-button>
-        <el-button size="small" v-if="event.status ==='completed'"><i class="el-icon-fa-refresh"></i> 重新处理</el-button>
-        <el-button size="small" v-if="['open', 'progress', 'pending'].includes(event.status)"><i class="el-icon-fa-close"></i> 取消工单</el-button>
-        <el-button size="small" v-if="['completed', 'canceled'].includes(event.status)"><i class="el-icon-fa-close"></i> 关闭工单</el-button>
-      </el-button-group>
+    <el-row :gutter="24" type="flex" justify="end" class="btn-row">
+      <el-col :span="16" :xs="24">
+        <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button>
+      </el-col>
+      <el-col :span="8" :xs="24">
+        <el-button-group>
+          <el-button size="small" v-if="['待处理', '延缓中'].includes(eventData.name)"><i class="el-icon-fa-play"></i> 开始</el-button>
+          <el-button size="small" v-if="['待处理', '处理中'].includes(eventData.name)"><i class="el-icon-fa-check"></i> 完成</el-button>
+          <el-button size="small" v-if="['待处理', '处理中'].includes(eventData.name)"><i class="el-icon-fa-pause"></i> 延缓</el-button>
+          <el-button size="small" v-if="eventData.name ==='已完成'"><i class="el-icon-fa-refresh"></i> 重新处理</el-button>
+          <el-button size="small" v-if="['待处理', '处理中', '延缓中'].includes(eventData.name)"><i class="el-icon-fa-close"></i> 取消工单</el-button>
+          <el-button size="small" v-if="['已完成', '已取消'].includes(eventData.name)"><i class="el-icon-fa-close"></i> 关闭工单</el-button>
+        </el-button-group>
+      </el-col>
     </el-row>
 
     <el-row :gutter="24">
@@ -106,48 +199,35 @@
           <div class="detail-block__content">
             <el-form label-position="right" label-width="100px" :inline="true" class="form-display-info">
               <el-form-item label="类型">
-                <span>{{event.type}}</span>
+                <span>事件</span>
               </el-form-item>
               <el-form-item label="状态">
                 <template>
-                  <el-tag v-if="event.status ==='open'" type="success">待处理</el-tag>
-                  <el-tag v-if="event.status ==='progress'" type="warning">处理中</el-tag>
-                  <el-tag v-if="event.status ==='pending'" type="warning">延缓中</el-tag>
-                  <el-tag v-if="event.status ==='completed'" type="primary">已完成</el-tag>
-                  <el-tag v-if="event.status ==='canceled'" type="danger">已取消</el-tag>
-                  <el-tag v-if="event.status ==='closed'" type="gray">已关闭</el-tag>
+                  <el-tag v-if="eventData.name ==='待处理'" type="success">待处理</el-tag>
+                  <el-tag v-if="eventData.name ==='处理中'" type="warning">处理中</el-tag>
+                  <el-tag v-if="eventData.name ==='延缓中'" type="warning">延缓中</el-tag>
+                  <el-tag v-if="eventData.name ==='已完成'" type="primary">已完成</el-tag>
+                  <el-tag v-if="eventData.name ==='已取消'" type="danger">已取消</el-tag>
+                  <el-tag v-if="eventData.name ==='已关闭'" type="gray">已关闭</el-tag>
                 </template>
               </el-form-item>
-              <el-form-item label="优先度">
+              <el-form-item label="优先度" v-if="eventData.variables.message[0].form.header.priority">
                 <template>
-                  <span v-if="event.priority === 'high'"><i class="el-icon-fa-long-arrow-up text-error"></i> 高</span>
-                  <span v-if="event.priority === 'medium'"><i class="el-icon-fa-long-arrow-up text-warning"></i> 中</span>
-                  <span v-if="event.priority === 'low'"><i class="el-icon-fa-long-arrow-down text-success"></i> 低</span>
+                  <span v-if="eventData.variables.message[0].form.header.priority === '高'"><i class="el-icon-fa-long-arrow-up text-error"></i> 高</span>
+                  <span v-if="eventData.variables.message[0].form.header.priority === '正常'"><i class="el-icon-fa-minus text-success"></i> 正常</span>
+                  <span v-if="eventData.variables.message[0].form.header.priority === '低'"><i class="el-icon-fa-long-arrow-down text-warning"></i> 低</span>
                 </template>
               </el-form-item>
-              <el-form-item label="分类">
-                <span v-for="comp in event.components">{{comp}}</span>
+              <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
+                <span v-for="comp in eventData.variables.message[0].form.header.components">{{comp}}</span>
               </el-form-item>
-              <el-form-item label="标签">
-                <el-tag type="gray" v-for="label in event.labels">{{label}}</el-tag>
+              <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.label">
+                <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label}}</el-tag>
+              </el-form-item>
+              <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
+                <span>{{eventData.variables.message[0].form.header.issue}}</span>
               </el-form-item>
             </el-form>
-          </div>
-        </div>
-
-        <div class="detail-block">
-          <div class="detail-block__heading">
-            <h4>附件</h4>
-          </div>
-          <div class="detail-block__content">
-            <el-upload
-              class="attachment-uploader"
-              action="https://jsonplaceholder.typicode.com/posts/"
-              :file-list="event.attachments"
-              list-type="picture">
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip"><i class="el-icon-information"></i> 文件大小不超过 5MB</div>
-            </el-upload>
           </div>
         </div>
 
@@ -156,7 +236,7 @@
             <h4>活动</h4>
           </div>
           <div class="detail-block__content">
-            <el-tabs v-model="activeTab" type="card">
+            <el-tabs v-model="activeTab" type="border-card">
               <el-tab-pane label="全部" name="first">
                 <ul class="activity-list">
                   <li>
@@ -168,7 +248,7 @@
                     <el-tooltip content="用户详情" placement="top">
                       <a href="">Weimi</a>
                     </el-tooltip> 作出变更（昨天）
-                    <el-table class="change-table" :data="changeData">
+                    <el-table class="activity-table" :data="changeData">
                       <el-table-column
                         prop="field"
                         label="字段"></el-table-column>
@@ -183,11 +263,72 @@
                   </li>
                 </ul>
               </el-tab-pane>
-              <el-tab-pane label="评论" name="second"></el-tab-pane>
+              <el-tab-pane label="评论" name="second">
+                <ul class="activity-list">
+                  <li v-for="comment in comments">
+                    <el-tooltip placement="top">
+                      <div slot="content">
+                        <p><b>Email</b>: {{comment.from_user.email || '无'}}</p>
+                        <p><b>ID</b>: {{comment.from_user.userId}}</p>
+                      </div>
+                      <a href="#" class="tooltip-link">{{comment.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
+                    </el-tooltip>
+                    <span>添加了评论 - {{comment.ctime}}</span>
+                    <div class="comment-detail" v-html="comment.text"></div>
+                  </li>
+                </ul>
+              </el-tab-pane>
               <el-tab-pane label="日志" name="third"></el-tab-pane>
-              <el-tab-pane label="历史" name="fourth"></el-tab-pane>
+              <el-tab-pane label="历史" name="fourth">
+                <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5>
+                <el-collapse>
+                  <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+                    <el-form label-position="left" label-width="90px" inline class="expanded-form">
+                      <el-form-item v-if="task.task_key" label="任务 Key：">
+                        <code>{{task.task_key}}</code>
+                      </el-form-item>
+                      <el-form-item v-if="task.operator" label="操作者：">
+                        <span>{{task.operator.name}}</span>
+                      </el-form-item>
+                      <el-form-item v-if="task.time" label="处理时间：">
+                        <span>{{task.time}}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-tab-pane>
               <el-tab-pane label="活动" name="fifth"></el-tab-pane>
             </el-tabs>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <div class="detail-block__heading">
+            <h4>附件</h4>
+          </div>
+          <div class="detail-block__content">
+            <!-- <el-upload
+              class="attachment-uploader"
+              action="/api/upload_file/"
+              :file-list="eventData.variables.message[0].form.header.attachments"
+              list-type="picture"
+              :with-credentials="true"
+              :on-success="onUpload"
+              multiple>
+              <el-button size="small" type="primary">点击上传</el-button>
+              <div slot="tip" class="el-upload__tip"><i class="el-icon-information"></i> 文件大小不超过 5MB</div>
+            </el-upload> -->
+            <div class="gallery">
+              <div class="gallery__picture" v-for="pic in eventData.variables.message[0].form.header.attachments">
+                <div class="gallery__thumb">
+                  <img :src="'/api/download_file/' + pic.file_name" :alt="pic.desc">
+                  <div class="gallery__desc">
+                    <span>{{pic.desc}}</span>
+                    <a :href="'/api/download_file/' + pic.file_name"><i class="el-icon-fa-download"></i></a>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
 
@@ -200,7 +341,7 @@
                           :options="editor.options">
             </quill-editor>
             <el-row type="flex" justify="end" style="margin-top: 12px">
-              <el-button type="info" size="small" :disabled="!editor.content">发布评论</el-button>
+              <el-button type="info" size="small" :disabled="!editor.content" @click="onPostComment">发布评论</el-button>
             </el-row>
           </div>
         </div>
@@ -232,10 +373,26 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-              <el-form-item label="被指派者"><span>{{event.assignee}}</span></el-form-item>
-              <el-form-item label="发起者"><span>{{event.reporter}}</span></el-form-item>
-              <el-form-item label="受邀参与者"><span v-for="person in event.requestParticipants">{{person}} </span></el-form-item>
-              <el-form-item label="追踪者"><span v-for="person in event.watchers">{{person}} </span></el-form-item>
+              <el-form-item label="被指派者">
+                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee">
+                  <div slot="content">
+                    <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.email}}</p>
+                    <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.userId}}</p>
+                  </div>
+                  <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.code}} <i class="el-icon-fa-user-circle"></i></a>
+                </el-tooltip>
+              </el-form-item>
+              <el-form-item label="通知人">
+                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.reporter">
+                  <div slot="content">
+                    <p><b>Email</b>: {{eventData.variables.message[0].form.header.reporter.email || '无'}}</p>
+                    <p><b>ID</b>: {{eventData.variables.message[0].form.header.reporter.userId}}</p>
+                  </div>
+                  <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.reporter.code}} <i class="el-icon-fa-user-circle"></i></a>
+                </el-tooltip>
+              </el-form-item>
+              <el-form-item label="受邀参与者"><span v-for="person in eventData.variables.message[0].form.header.requestParticipants">{{person}} </span></el-form-item>
+              <el-form-item label="追踪者"><span v-for="person in eventData.variables.message[0].form.header.watchers">{{person}} </span></el-form-item>
             </el-form>
           </div>
         </div>
@@ -254,16 +411,20 @@
         </div>
       </el-col>
     </el-row>
+    <event-conf :event-data="eventData.variables.message[0].form.header" :pid="eventData.pid" :visible="eventConfVisible" :is-editing="true"></event-conf>
   </div>
 </template>
 
 <script>
   import { quillEditor } from 'vue-quill-editor'
+  import eventConf from './_config/_eventConf.vue'
 
   export default {
     data () {
       return {
         activeTab: 'first',
+        eventData: {},
+        eventConfVisible: false,
         event: {
           name: '事件名',
           type: '事故',
@@ -280,6 +441,7 @@
           updated: '2017-05-08',
           resolved: '2017-05-09'
         },
+        comments: [],
         changeData: [{
           field: '优先度',
           oldValue: '高',
@@ -290,7 +452,7 @@
           newValue: ''
         }],
         editor: {
-          content: '<p>Comment here...</p>',
+          content: '',
           options: {
             modules: {
               toolbar: [
@@ -309,8 +471,79 @@
       }
     },
 
+    computed: {
+      taskId () {
+        return this.$route.params.tkey
+      }
+    },
+
+    created () {
+      this.getEventData()
+    },
+
+    methods: {
+      getEventData () {
+        let postData = {
+          action: 'runtime/task',
+          method: 'GET',
+          data: { taskId: this.taskId }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.eventData = res.data.data
+            // Object.assign(this.eventData, res.data.data)
+            // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
+            this.getComments()
+          }
+        })
+      },
+
+      getComments () {
+        let postData = {
+          action: 'get/comments',
+          method: 'POST',
+          data: { pid: this.eventData.pid }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.comments = res.data.data.list
+          }
+        })
+      },
+
+      onUpload (res, file, fileList) {
+        console.log(res)
+        console.log(file)
+        console.log(fileList)
+      },
+
+      onShowEditConf () {
+        this.eventConfVisible = true
+      },
+
+      onPostComment () {
+        let postData = {
+          action: 'add/comment',
+          method: 'POST',
+          data: {
+            pid: this.eventData.pid,
+            text: this.editor.content
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('评论成功！')
+            this.editor.content = ''
+            this.getComments()
+            this.activeTab = 'second'
+          }
+        })
+      }
+    },
+
     components: {
-      quillEditor
+      quillEditor,
+      eventConf
     }
   }
 </script>

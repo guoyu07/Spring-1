@@ -21,6 +21,12 @@
 
 <template>
   <div class="form-config">
+    <!-- <draggable v-model="configData" @start="drag=true" @end="drag=false">
+      <div v-for="itemConf in configData">
+        {{itemConf.name}}
+      </div>
+    </draggable> -->
+
     <el-collapse v-if="configData.length">
       <el-collapse-item v-for="itemConf of configData" :title="itemConf.name + ' - ' + itemConf.value.type">
         <el-row>
@@ -166,6 +172,7 @@
 </template>
 
 <script>
+// import draggable from 'vuedraggable'
 import optionsConf from './_optionsConf' // 配置下拉选项（静态）的表单
 import optionsConfCmdb from './_optionsConfCMDB' // 配置下拉选项（动态）的表单
 import tableConf from './_tableConf' // 配置表格
@@ -292,6 +299,7 @@ export default {
     }
   },
   components: {
+    // draggable,
     optionsConf,
     optionsConfCmdb,
     tableConf,

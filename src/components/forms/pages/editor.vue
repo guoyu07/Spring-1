@@ -198,6 +198,7 @@
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
+              <el-button @click="onResetShowCondition">重置</el-button>
               <el-button type="primary" icon="check" @click="showConditionVisible = false">OK</el-button>
             </div>
           </el-dialog>
@@ -379,6 +380,17 @@ export default {
       }
       this.editBody = body // body 传给当前正编辑的临时变量
       this.showConditionVisible = true
+    },
+    // 重置显示条件
+    onResetShowCondition () {
+      this.editBody.name = ''
+      this.$set(this.editBody, 'show', {
+        type: '',
+        id: '',
+        key_path: '',
+        op: '',
+        value: ''
+      })
     }
   },
   components: {

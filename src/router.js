@@ -93,10 +93,10 @@ const routes = [{
     path: '/event-hub',
     component: require('./components/eventHub/index'),
     children: [{
-      path: '/event-hub/list',
+      path: '',
       component: require('./components/eventHub/pages/list.vue')
     }, {
-      path: '/event-hub/event',
+      path: '/event-hub/event/:tkey',
       component: require('./components/eventHub/pages/event.vue')
     }]
   }, {

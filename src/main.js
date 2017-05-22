@@ -93,7 +93,7 @@ const parseData = obj => {
   // qs.stringify(obj)
   const action = encodeURIComponent(obj.action)
   const result = `action=${action}&method=${obj.method}&data=`
-  return result + encodeURI(JSON.stringify(obj.data))
+  return result + encodeURIComponent(JSON.stringify(obj.data))
 }
 
 Vue.prototype.parseData = parseData
