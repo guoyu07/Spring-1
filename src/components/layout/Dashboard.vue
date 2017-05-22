@@ -89,33 +89,11 @@
     data () {
       return {
         entries: [{
-          category: '仓库流程',
-          children: [{
-            icon: 'fa-sign-in',
-            title: '入库',
-            path: '/storemanage/instock'
-          }, {
-            icon: 'fa-sign-out',
-            title: '出库',
-            path: '/storemanage/outstock'
-          }]
-        }, {
-          category: '设备流程',
+          category: '流程',
           children: [{
             icon: 'fa-upload',
-            title: '设备上架',
-            path: '/equipment/on'
-          }]
-        }, {
-          category: '系统流程',
-          children: [{
-            icon: 'fa-envelope-open-o',
-            title: '服务器申请',
-            path: '/system/apply'
-          }, {
-            icon: 'star-on',
-            title: '上线',
-            path: '/system/applylist'
+            title: '上架流程',
+            path: '/guosen/on'
           }]
         }, {
           category: '工单管理',

@@ -18,39 +18,58 @@
             v-loading.body="loading"
             stripe
             border>
-            <el-table-column label="事件摘要">
-              <template scope="scope">
-                <span>{{scope.row.variables.message[0].form.header.summary}}</span>
+            <el-table-column
+              label="事件摘要"
+              inline-template
+              :context="_self">
+              <template>
+                <span>{{row.variables.message[0].form.header.summary}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="优先级" width="80px">
-              <template scope="scope">
+            <el-table-column
+              label="优先级"
+              width="80px"
+              inline-template
+              :context="_self">
+              <template>
                 <span>
-                  <i v-if="scope.row.variables.message[0].form.header.priority === '高'" class="el-icon-fa-long-arrow-up text-error"></i>
-                  <i v-if="scope.row.variables.message[0].form.header.priority === '正常'" class="el-icon-fa-minus text-success"></i>
-                  <i v-if="scope.row.variables.message[0].form.header.priority === '低'" class="el-icon-fa-long-arrow-down text-warning"></i>
-                  {{scope.row.variables.message[0].form.header.priority}}
+                  <i v-if="row.variables.message[0].form.header.priority === '高'" class="el-icon-fa-long-arrow-up text-error"></i>
+                  <i v-if="row.variables.message[0].form.header.priority === '正常'" class="el-icon-fa-minus text-success"></i>
+                  <i v-if="row.variables.message[0].form.header.priority === '低'" class="el-icon-fa-long-arrow-down text-warning"></i>
+                  {{row.variables.message[0].form.header.priority}}
                 </span>
               </template>
             </el-table-column>
-            <el-table-column label="标签">
-              <template scope="scope">
-                <el-tag type="primary" v-for="label in scope.row.variables.message[0].form.header.labels">{{label}}</el-tag>
+            <el-table-column
+              label="标签"
+              inline-template
+              :context="_self">
+              <template>
+                <el-tag type="primary" v-for="label in row.variables.message[0].form.header.labels">{{label}}</el-tag>
               </template>
             </el-table-column>
-            <el-table-column label="被指派者">
-              <template scope="scope">
-                <span>{{scope.row.variables.message[0].form.header.assignee ? scope.row.variables.message[0].form.header.assignee.code : '无'}}</span>
+            <el-table-column
+              label="被指派者"
+              inline-template
+              :context="_self">
+              <template>
+                <span>{{row.variables.message[0].form.header.assignee ? row.variables.message[0].form.header.assignee.code : '无'}}</span>
               </template>
             </el-table-column>
-            <el-table-column label="创建时间">
-              <template scope="scope">
-                <small>{{scope.row.createTime | convertTime}}</small>
+            <el-table-column
+              label="创建时间"
+              inline-template
+              :context="_self">
+              <template>
+                <small>{{row.createTime | convertTime}}</small>
               </template>
             </el-table-column>
-            <el-table-column label="操作">
-              <template scope="scope">
-                <router-link :to="{ path: `/event-hub/event/${scope.row.id}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-more"></i> 详情</router-link>
+            <el-table-column
+              label="操作"
+              inline-template
+              :context="_self">
+              <template>
+                <router-link :to="{ path: `/event-hub/event/${row.id}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-more"></i> 详情</router-link>
               </template>
             </el-table-column>
           </el-table>

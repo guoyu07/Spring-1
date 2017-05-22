@@ -21,14 +21,14 @@
 
 <template>
   <div class="form-config">
-    <!-- <draggable v-model="configData" @start="drag=true" @end="drag=false">
-      <div v-for="itemConf in configData">
+    <draggable v-model="configData2" @start="drag=true" @end="drag=false">
+      <div v-for="itemConf in configData2">
         {{itemConf.name}}
       </div>
-    </draggable> -->
+    </draggable>
 
-    <el-collapse v-if="configData.length">
-      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name + ' - ' + itemConf.value.type">
+    <el-collapse v-if="configData2.length">
+      <el-collapse-item v-for="itemConf of configData2" :title="itemConf.name + ' - ' + itemConf.value.type">
         <el-row>
           <el-col :span="22" :offset="1">
             <el-form label-position="left" :inline="true">
@@ -156,7 +156,7 @@
           </el-col>
         </el-row>
         <el-row type="flex" justify="end">
-          <el-button size="small" type="danger" icon="delete" @click="onDeleteField(configData, itemConf)">删除字段</el-button>
+          <el-button size="small" type="danger" icon="delete" @click="onDeleteField(configData2, itemConf)">删除字段</el-button>
         </el-row>
       </el-collapse-item>
     </el-collapse>
@@ -167,12 +167,12 @@
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset !== {}">配置预设集</el-button>
     </el-row>
-    <preset-conf :selected-preset="selectedPreset" :current-fields="configData"></preset-conf>
+    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2"></preset-conf>
   </div>
 </template>
 
 <script>
-// import draggable from 'vuedraggable'
+import draggable from 'vuedraggable'
 import optionsConf from './_optionsConf' // 配置下拉选项（静态）的表单
 import optionsConfCmdb from './_optionsConfCMDB' // 配置下拉选项（动态）的表单
 import tableConf from './_tableConf' // 配置表格
@@ -185,13 +185,27 @@ export default {
     configData: Array,
     presets: Array
   },
+
   data () {
     return {
+      configData2: this.configData, // 副本，结合 watch 实现 props 双向数据流
       selectedPreset: {},
       needDefault: false,
       countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
     }
   },
+
+  watch: {
+    configData (val) {
+      this.configData2 = val  // 父组件修改组件 props 不会同步到 data 副本上
+    },
+
+    configData2 (val) {
+      console.log('emitted!')
+      this.$emit('on-config-change', val) // 组件内对副本的变更向外部发送事件
+    }
+  },
+
   methods: {
     // 导入预设集
     importPreset (preset, currentFields) {
@@ -258,7 +272,7 @@ export default {
     // 添加一个字段
     onAddField () {
       console.log(this)
-      this.configData.push({
+      this.configData2.push({
         id: '',
         name: '',
         category: '', // 分组
@@ -299,7 +313,7 @@ export default {
     }
   },
   components: {
-    // draggable,
+    draggable,
     optionsConf,
     optionsConfCmdb,
     tableConf,

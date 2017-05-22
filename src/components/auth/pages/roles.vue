@@ -19,19 +19,19 @@
             @expand="isCheckable = false">
             <el-table-column
               type="expand">
-              <template scope="scope">
+              <template scope="props">
                 <div class="btn-area clear">
-                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="scope.row.users.length"><i class="el-icon-fa-users"></i> 属于{{scope.row.role}}角色的用户 ({{scope.row.users.length}})：</h5>
-                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="!scope.row.users.length"><i class="el-icon-warning"></i> 暂无属于{{scope.row.name}}角色的用户！</h5>
+                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="props.row.users.length"><i class="el-icon-fa-users"></i> 属于{{props.row.role}}角色的用户 ({{props.row.users.length}})：</h5>
+                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="!props.row.users.length"><i class="el-icon-warning"></i> 暂无属于{{props.row.name}}角色的用户！</h5>
                   <el-button :disabled="!isQualified" v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
-                  <el-tooltip content="移除用户" placement="right" class="fr" v-if="scope.row.users.length">
+                  <el-tooltip content="移除用户" placement="right" class="fr" v-if="props.row.users.length">
                     <el-button
                       :disabled="!isQualified"
                       icon="minus"
                       type="danger"
                       size="small"
                       :class="{ empty: !isCheckable }"
-                      @click="onDeleteUser(scope.row.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
+                      @click="onDeleteUser(props.row.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
                   </el-tooltip>
                   <el-tooltip content="加入用户" placement="left" class="fr">
                     <el-button
@@ -39,12 +39,12 @@
                       icon="plus"
                       type="success"
                       size="small"
-                      @click="onAddUser(scope.row.key, scope.row.users)">
+                      @click="onAddUser(props.row.key, props.row.users)">
                     </el-button>
                   </el-tooltip>
                 </div>
                 <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                  <el-checkbox v-for="user in scope.row.users" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
+                  <el-checkbox v-for="user in props.row.users" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
                 </el-checkbox-group>
               </template>
             </el-table-column>
@@ -53,10 +53,12 @@
               label="角色名称"></el-table-column>
             <el-table-column
               label="操作"
-              width="240">
-              <template scope="scope">
-                <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editRoleData.visible = true; editRoleData.role = scope.row"></el-button>
-                <el-button :disabled="!isQualified" type="danger" size="small" icon="delete" @click="onDeleteRole(scope.row)"></el-button>
+              width="240"
+              inline-template
+              :context="_self">
+              <template>
+                <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editRoleData.visible = true; editRoleData.role = row"></el-button>
+                <el-button :disabled="!isQualified" type="danger" size="small" icon="delete" @click="onDeleteRole(row)"></el-button>
               </template>
             </el-table-column>
           </el-table>
