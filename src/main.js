@@ -140,7 +140,7 @@ Vue.prototype.getLimitQuantity = (data, applyData) => {
 
 Vue.prototype.setDataType = (original, goalData, _this) => {
   if (original.value.type === 'arr' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
-    _this.$set(goalData, original.id, [])
+    _this.$set(goalData, original.id, null)
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     _this.$set(goalData, original.id, undefined)
   } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
@@ -152,7 +152,7 @@ Vue.prototype.setDataType = (original, goalData, _this) => {
 
 Vue.prototype.setNewDataType = (original, goalData) => {
   if (original.value.type === 'arr' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
-    goalData[original.id] = []
+    goalData[original.id] = null
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
   } else if (original.value.type === 'dict' || original.value.type === 'dicts') {

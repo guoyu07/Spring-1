@@ -562,9 +562,11 @@
         //   })
         // }
         // console.log(data)
-        for (const id in data.header) {
-          if (!data.header[id]) {
-            delete data.header[id] // 删除头部空值 TODO：删除 body 的空值
+        for (const headerid in data.header) {
+          // console.log(headerid, data.header[headerid], !data.header[headerid])
+          if (!data.header[headerid]) {
+            // console.log(headerid)
+            delete data.header[headerid] // 删除头部空值 TODO：删除 body 的空值
           }
         }
         const postData = {
