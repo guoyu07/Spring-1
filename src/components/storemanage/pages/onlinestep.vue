@@ -105,13 +105,38 @@
                 </div>
 
                 <!-- body 表单填写 -->
-                <div v-if="taskForm.body.body_list.length !== 0">
+                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
-                    <!-- <div v-if="taskFormData.show "> -->
-                      <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
+                      <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                        <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                          <h5>{{formBlock.name}}</h5>
+                          <span v-for="formItem in formBlock.value">
+                            <form-body
+                              :item="assignForm.body[index]"
+                              :form-item="formItem"
+                              :whole="whole"
+                              :index="index"
+                              :message="applyData">
+                            </form-body>
+                            <search-bar
+                              v-if="formItem.value.type==='search_bar'"
+                              :index="index"
+                              :hosts="assignForm.body[index]"
+                              :attr-list="formItem"
+                              :limit="getLimitQuantity(formItem, data)"
+                              @on-hosts-change="onHostsChange">
+                            </search-bar>
+                            <div v-if="formItem.value.type==='table'">
+                                table
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <!-- <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                  <div v-for="taskFormData in taskForm.body.body_list">
                       <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
-                        <!-- 表单填写 -->
-                        <!-- :read-info="applyData.header" 只读信息不该只有 applyData.header 应该根据只读信息的来源type来决定，read-info 属性可以去掉，用 message 顶替 -->
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
@@ -120,7 +145,6 @@
                           :whole="assignForm"
                           :message="applyData">
                         </form-structure>
-                        <!-- 设备选择 -->
                         <search-bar
                           v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
                           :index="index"
@@ -130,10 +154,8 @@
                           @on-hosts-change="onHostsChange">
                         </search-bar>
                       </div>
-                    <!-- </div> -->
-                    <!-- <div v-if="!taskFormData.show">000</div> -->
                   </div>
-                </div>
+                </div> -->
               </el-tab-pane>
             </el-tabs>
             <!-- header 表单填写 -->
@@ -367,7 +389,7 @@
           this.applyData.body.forEach((item, k) => {
             let newData = {}
             this.taskForm.body.body_list.forEach(body => {
-              if (body.show) {
+              if (body.show.type) {
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
@@ -562,9 +584,11 @@
         //   })
         // }
         // console.log(data)
-        for (const id in data.header) {
-          if (!data.header[id]) {
-            delete data.header[id] // 删除头部空值 TODO：删除 body 的空值
+        for (const headerid in data.header) {
+          // console.log(headerid, data.header[headerid], !data.header[headerid])
+          if (!data.header[headerid]) {
+            // console.log(headerid)
+            delete data.header[headerid] // 删除头部空值 TODO：删除 body 的空值
           }
         }
         const postData = {

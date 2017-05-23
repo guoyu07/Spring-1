@@ -96,6 +96,7 @@
               }
             })
           })
+          console.log(this.applyForm.header)
           this.form.body.body_list.length && this.form.body.body_list[0].attr_list.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.applyForm.body[0], this)
@@ -165,6 +166,11 @@
                     }
                   }
                 } else {
+                  for (const headerid in this.applyForm.header) {
+                    if (!this.applyForm.header[headerid]) {
+                      delete this.applyForm.header[headerid] // 删除头部空值 TODO：删除 body 的空值
+                    }
+                  }
                   postData = {
                     action: 'runtime/process/instances',
                     method: 'POST',

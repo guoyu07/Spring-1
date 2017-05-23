@@ -179,7 +179,11 @@
           // console.log(res)
           this.deviceList = res.data.data.list
           if (!this.editInfo.object_id) {
-            this.deviceType = this.deviceList[0].object_id
+            if (this.deviceList.length) {
+              this.deviceType = this.deviceList[0].object_id
+            } else {
+              this.deviceType = null
+            }
           } else {
             this.deviceType = this.editInfo.object_id
           }

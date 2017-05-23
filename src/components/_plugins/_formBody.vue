@@ -75,7 +75,7 @@
         v-else
         v-model="item[formItem.id]"
         :disabled="formItem.readonly">
-        <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="formItem.id">{{option.name}}</el-checkbox>
+        <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="option">{{option}}</el-checkbox>
       </el-checkbox-group>
     </template>
 

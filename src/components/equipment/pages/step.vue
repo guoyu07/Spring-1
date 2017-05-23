@@ -103,24 +103,6 @@
                             </div>
                           </span>
                         </div>
-                        <!-- 表单填写 -->
-                        <!-- <form-structure
-                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
-                          :form-data="taskFormData.attr_list"
-                          :item="assignForm.body[index]"
-                          :index="index"
-                          :whole="assignForm"
-                          :message="applyData">
-                        </form-structure> -->
-                        <!-- 设备选择 -->
-                        <!-- <search-bar
-                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
-                          :index="index"
-                          :hosts="assignForm.body[index]"
-                          :attr-list="taskFormData.attr_list[0].value[0]"
-                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar> -->
                       </div>
                   </div>
                 </div>

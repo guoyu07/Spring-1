@@ -173,28 +173,23 @@
         this.onSearchDevices()
       },
       onAddtoOff () {
-        for (const selection of this.selectedDevices) {
-          // console.log(this.hostList)
-          if (!this.hostList.includes(selection)) {
-            // if (this.selectedDevices.length > this.limit) {
-            //   this.$message.warning(`设备选择最多${this.limit}个！`)
-            //   return false
-            // } else {
-            if (this.hostList.length >= this.limit) {
-              this.$message.warning(`设备选择最多${this.limit}个！`)
-            } else {
-              this.hostList = [...this.hostList, selection]
+        if (this.selectedDevices.length) {
+          for (const selection of this.selectedDevices) {
+            if (!this.hostList.includes(selection)) {
+              if (this.hostList.length >= this.limit) {
+                this.$message.warning(`设备选择最多${this.limit}个！`)
+              } else {
+                this.hostList = [...this.hostList, selection]
+              }
             }
-            // }
           }
-          //  else {
-          //   this.$message.warning(`列表中已存在该条数据`)
-          //   return false
-          // }
+        } else {
+          this.$message.warning('请选择数据')
         }
       },
       handleSelectionChange (val) {
         this.selectedDevices = val
+        console.log(this.selectedDevices, val)
       },
       onRemove (row) {
         const index = this.hostList.indexOf(row)
