@@ -167,9 +167,7 @@
                   }
                 } else {
                   for (const headerid in this.applyForm.header) {
-                    // console.log(headerid, this.applyForm[headerid], !this.applyForm[headerid])
                     if (!this.applyForm.header[headerid]) {
-                      // console.log(headerid)
                       delete this.applyForm.header[headerid] // 删除头部空值 TODO：删除 body 的空值
                     }
                   }
