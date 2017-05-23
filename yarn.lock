@@ -1605,9 +1605,9 @@ electron-to-chromium@^1.2.7:
   version "1.3.11"
   resolved "https://registry.yarnpkg.com/electron-to-chromium/-/electron-to-chromium-1.3.11.tgz#744761df1d67b492b322ce9aa0aba5393260eb61"
 
-element-ui@~1.1.3:
-  version "1.1.6"
-  resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-1.1.6.tgz#f3b19394857886a0f9b5be20bbd0959711b10251"
+element-ui@1.2.9:
+  version "1.2.9"
+  resolved "https://registry.yarnpkg.com/element-ui/-/element-ui-1.2.9.tgz#ce7332dbbde73f239a72b7ca517cf83b1bf7f1fb"
   dependencies:
     async-validator "^1.6.6"
     babel-helper-vue-jsx-merge-props "^2.0.0"
@@ -4727,9 +4727,9 @@ vue-style-loader@^1.0.0:
   dependencies:
     loader-utils "^0.2.7"
 
-vue-template-compiler@^2.0.4, vue-template-compiler@~2.1.0:
-  version "2.1.10"
-  resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.1.10.tgz#cb89643adc395e97435585522e43d0a9b1913257"
+vue-template-compiler@2.2.6, vue-template-compiler@^2.0.4:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/vue-template-compiler/-/vue-template-compiler-2.2.6.tgz#2e2928daf0cd0feca9dfc35a9729adeae173ec68"
   dependencies:
     de-indent "^1.0.2"
     he "^1.1.0"
@@ -4745,15 +4745,15 @@ vue2-dropzone@^2.0.0:
     dropzone "^4.3.0"
     vue "^2.0.0"
 
+vue@2.2.6, vue@^2.0.0:
+  version "2.2.6"
+  resolved "https://registry.yarnpkg.com/vue/-/vue-2.2.6.tgz#451714b394dd6d4eae7b773c40c2034a59621aed"
+
 vue@^1.0.16:
   version "1.0.28"
   resolved "https://registry.yarnpkg.com/vue/-/vue-1.0.28.tgz#ed2ff07b200bde15c87a90ef8727ceea7d38567d"
   dependencies:
     envify "^3.4.0"
-
-vue@^2.0.0, vue@~2.1.0:
-  version "2.1.10"
-  resolved "https://registry.yarnpkg.com/vue/-/vue-2.1.10.tgz#c9235ca48c7925137be5807832ac4e3ac180427b"
 
 vuedraggable@^2.11.0:
   version "2.11.0"

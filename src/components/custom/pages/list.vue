@@ -37,7 +37,7 @@
               inline-template
               :context="_self">
               <template>
-                <el-button type="info" size="small" :plain="true" @click="$router.replace(`/custom/bpmn/${row.pkey}`)" icon="fa-cogs">自定义</el-button>
+                <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
                 <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
               </template>
             </el-table-column>

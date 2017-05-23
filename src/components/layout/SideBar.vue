@@ -100,22 +100,6 @@
     <aside class="sibebar">
       <el-menu mode="vertical" router="router">
         <div class="sidebar-title">IT 服务中心</div>
-        <el-menu-item-group title="仓库管理">
-          <!-- @click="$router.go(0)" -->
-          <el-menu-item index="/store-manage/instock"><i class="el-icon-fa-sign-in"></i>设备入库</el-menu-item>
-          <el-menu-item index="/store-manage/export_device"><i class="el-icon-fa-sign-out"></i>出库</el-menu-item>
-          <el-menu-item index="/store-manage/alter_device"><i class="el-icon-fa-edit"></i>设备变更</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="设备上架">
-          <el-menu-item index="/equipment/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
-          <!-- <el-menu-item index="/equipment/off"><i class="el-icon-fa-download"></i>下架流程</el-menu-item> -->
-        </el-menu-item-group>
-        
-        <el-menu-item-group title="系统上下线">
-          <el-menu-item index="/system/apply"><i class="el-icon-fa-envelope-open-o"></i>服务器申请</el-menu-item>
-          <el-menu-item index="/system/onlinelist"><i class="el-icon-star-on"></i>系统上线</el-menu-item>
-          <!-- <el-menu-item index="/system/offlinelist"><i class="el-icon-star-off"></i>下线流程</el-menu-item> -->
-        </el-menu-item-group>
 
         <el-menu-item-group title="国信">
           <el-menu-item index="/guosen/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
