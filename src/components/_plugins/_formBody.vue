@@ -289,7 +289,7 @@
 <style>
   .blockElement {
     width: 100%;
-    display: flex;
+    display: flex!important;
   }
   .blockElement .el-form-item__content {
     width: 50%;

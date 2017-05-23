@@ -128,12 +128,37 @@ const getPathResult = (result, path, k) => {
 
 Vue.prototype.getPathResult = getPathResult
 
-Vue.prototype.getLimitQuantity = (data, applyData) => {
-  if (data.value.count) {
-    if (data.value.count.type === 'message_body') {
-      return getPathResult(applyData, data.value.count.key_path)
+Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
+  if (formItem.limit.type) {
+    // if (data.value.count.type === 'message_body') {
+    //   return getPathResult(applyData, data.value.count.key_path)
+    // } else {
+    //   return 5 // 默认限制选5台设备
+    // }
+    let keyData
+    let max
+    if (formItem.limit.type === 'message_body') {
+      keyData = getPathResult(messageData.body[index], formItem.limit.key_path)
+    } else if (formItem.limit.type === 'message_header') {
+      keyData = getPathResult(messageData.header, formItem.limit.key_path)
+    } else if (formItem.limit.type === 'static') {
+      keyData = formItem.limit.min
+      max = formItem.limit.max
+    } else if (formItem.limit.type === 'form_body') {
+      keyData = getPathResult(postForm.body[index], formItem.limit.key_path) // postForm.body[this.index] 就是 this.item
+    } else if (formItem.limit.type === 'form_header') {
+      keyData = getPathResult(postForm.header, formItem.limit.key_path)
     } else {
-      return 5 // 默认限制选5台设备
+      keyData = 5
+    }
+    if (Array.isArray(keyData)) {
+      return {min: keyData.length, max: max}
+    } else if (typeof keyData === 'number') {
+      return {min: keyData, max: max}
+    } else if (typeof keyData === 'string') {
+      if (typeof +keyData === 'number') {
+        return {min: +keyData, max: max}
+      }
     }
   }
 }

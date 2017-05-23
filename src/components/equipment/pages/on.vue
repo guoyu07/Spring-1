@@ -17,7 +17,7 @@
                     v-if="taskform.value.show.value === deviceType"
                     :hosts="assignForm.header"
                     :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, data)"
+                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                 </div>

@@ -16,7 +16,7 @@
                   v-if="showFormItem(taskform, assignForm, applyData)"
                   :hosts="assignForm.header"
                   :attr-list="taskform"
-                  :limit="getLimitQuantity(taskform, data)"
+                  :limit="getLimitQuantity(taskform, assignForm, applyData)"
                   @on-hosts-change="onHostsChange">
                 </search-bar>
               </span>

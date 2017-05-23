@@ -123,7 +123,7 @@
                               :index="index"
                               :hosts="assignForm.body[index]"
                               :attr-list="formItem"
-                              :limit="getLimitQuantity(formItem, data)"
+                              :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
                               @on-hosts-change="onHostsChange">
                             </search-bar>
                             <div v-if="formItem.value.type==='table'">
@@ -177,7 +177,7 @@
                           v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
                           :hosts="assignForm.header"
                           :attr-list="taskform"
-                          :limit="getLimitQuantity(taskform, data)"
+                          :limit="getLimitQuantity(taskform, assignForm, applyData)"
                           @on-hosts-change="onHostsChange">
                         </search-bar>
                       </div>
