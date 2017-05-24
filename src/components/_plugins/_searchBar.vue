@@ -82,7 +82,7 @@
       index: { type: Number }, // body 的 index
       hosts: { type: Object }, // 选取设备的id
       attrList: { type: Object }, // search_bar 源数据
-      limit: { type: Number } // 设备数量选择限制
+      limit: { type: Object } // 设备数量选择限制
     },
 
     data () {
@@ -173,14 +173,33 @@
         this.onSearchDevices()
       },
       onAddtoOff () {
+        const value = this.selectedDevices
         if (this.selectedDevices.length) {
           for (const selection of this.selectedDevices) {
             if (!this.hostList.includes(selection)) {
-              if (this.hostList.length >= this.limit) {
-                this.$message.warning(`设备选择最多${this.limit}个！`)
-              } else {
-                this.hostList = [...this.hostList, selection]
+              if (this.limit.max) { // static时，有一个范围值
+                if (value.length < this.limit.min) {
+                  this.$message.error(`至少需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`)
+                  return false
+                } else if (value.length > this.limit.max) {
+                  this.$message.error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`)
+                  return false
+                }
+              } else { // 除static外，其他都是一个固定的数值，不准多不准少
+                if (value.length < this.limit.min) {
+                  this.$message.error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`)
+                  return false
+                } else if (value.length > this.limit.min) {
+                  this.$message.error(`只需要${this.limit.min}个${this.mainInfo.name},请删除${value.length - this.limit.min}个`)
+                  return false
+                }
               }
+              this.hostList = [...this.hostList, selection]
+              // if (this.hostList.length >= this.limit) {
+              //   this.$message.warning(`设备选择最多${this.limit}个！`)
+              // } else {
+              //   this.hostList = [...this.hostList, selection]
+              // }
             }
           }
         } else {

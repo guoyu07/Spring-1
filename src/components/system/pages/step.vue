@@ -96,46 +96,33 @@
                 </div>
 
                 <!-- body 表单填写 -->
-                <div v-if="taskForm.body">
+                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
-                    <div v-if="taskFormData.show && taskFormData.show.type === 'message_body'"> <!-- type来源 为 message_body 意味着就是(data, index) in applyData.body 的 data -->
-                      <div v-if="taskFormData.show ? (getPathResult(data, taskFormData.show.key_path) === taskFormData.show.value) : true">
-                        <!-- 表单填写 -->
-                        <form-structure
-                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
-                          :form-data="taskFormData.attr_list"
-                          :item="assignForm.body[index]"
-                          :index="index">
-                        </form-structure>
-                        <!-- 设备选择 -->
-                        <search-bar
-                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
-                          :index="index"
-                          :hosts="assignForm.body[index]"
-                          :attr-list="taskFormData.attr_list[0].value[0]"
-                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar>
+                      <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                        <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                          <h5>{{formBlock.name}}</h5>
+                          <span v-for="formItem in formBlock.value">
+                            <form-body
+                              :item="assignForm.body[index]"
+                              :form-item="formItem"
+                              :whole="whole"
+                              :index="index"
+                              :message="applyData">
+                            </form-body>
+                            <search-bar
+                              v-if="formItem.value.type==='search_bar'"
+                              :index="index"
+                              :hosts="assignForm.body[index]"
+                              :attr-list="formItem"
+                              :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                              @on-hosts-change="onHostsChange">
+                            </search-bar>
+                            <div v-if="formItem.value.type==='table'">
+                                table
+                            </div>
+                          </span>
+                        </div>
                       </div>
-                      <div v-else-if="!taskFormData.show">
-                        <!-- 表单填写 -->
-                        <form-structure
-                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
-                          :form-data="taskFormData.attr_list"
-                          :item="assignForm.body[index]"
-                          :index="index">
-                        </form-structure>
-                        <!-- 设备选择 -->
-                        <search-bar
-                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
-                          :index="index"
-                          :hosts="assignForm.body[index]"
-                          :attr-list="taskFormData.attr_list[0].value[0]"
-                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar>
-                      </div>
-                    </div>
                   </div>
                 </div>
               </el-tab-pane>

@@ -80,7 +80,35 @@
                 <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
                       <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
-                        <!-- 表单填写 -->
+                        <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                          <h5>{{formBlock.name}}</h5>
+                          <span v-for="formItem in formBlock.value">
+                            <form-body
+                              :item="assignForm.body[index]"
+                              :form-item="formItem"
+                              :whole="whole"
+                              :index="index"
+                              :message="applyData">
+                            </form-body>
+                            <search-bar
+                              v-if="formItem.value.type==='search_bar'"
+                              :index="index"
+                              :hosts="assignForm.body[index]"
+                              :attr-list="formItem"
+                              :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                              @on-hosts-change="onHostsChange">
+                            </search-bar>
+                            <div v-if="formItem.value.type==='table'">
+                                table
+                            </div>
+                          </span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
+                <!-- <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                  <div v-for="taskFormData in taskForm.body.body_list">
+                      <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
                         <form-structure
                           v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
                           :form-data="taskFormData.attr_list"
@@ -89,7 +117,6 @@
                           :whole="assignForm"
                           :message="applyData">
                         </form-structure>
-                        <!-- 设备选择 -->
                         <search-bar
                           v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
                           :index="index"
@@ -99,10 +126,8 @@
                           @on-hosts-change="onHostsChange">
                         </search-bar>
                       </div>
-                    <!-- </div> -->
-                    <!-- <div v-if="!taskFormData.show">000</div> -->
                   </div>
-                </div>
+                </div> -->
               </el-tab-pane>
             </el-tabs>
             <!-- header 表单填写 -->
@@ -123,7 +148,7 @@
                           v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
                           :hosts="assignForm.header"
                           :attr-list="taskform"
-                          :limit="getLimitQuantity(taskform, data)"
+                          :limit="getLimitQuantity(taskform, assignForm, applyData, index)"
                           @on-hosts-change="onHostsChange">
                         </search-bar>
                       </div>
