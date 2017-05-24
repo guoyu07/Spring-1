@@ -123,7 +123,7 @@
           </el-row>
           <el-row class="form-block">
             <h4>Header 配置</h4>
-            <form-conf :config-data="formConfig.form.form.header" :presets="presets"></form-conf>
+            <form-conf :config-data="formConfig.form.form.header" :presets="presets" @on-config-change="onHeaderConfigChange"></form-conf>
           </el-row>
           <el-row class="form-block">
             <h4>Body 配置 ({{formConfig.form.form.body.body_list.length}})</h4>
@@ -160,7 +160,7 @@
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
               <h5>Body #{{index + 1}}</h5>
               <el-card>
-                <form-conf :config-data="body.attr_list" :presets="presets"></form-conf>
+                <form-conf :config-data="body.attr_list" :presets="presets" @on-config-change="onBodyConfigChange(index)"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -198,6 +198,7 @@
               </el-form-item>
             </el-form>
             <div slot="footer" class="dialog-footer">
+              <el-button @click="onResetShowCondition">重置</el-button>
               <el-button type="primary" icon="check" @click="showConditionVisible = false">OK</el-button>
             </div>
           </el-dialog>
@@ -256,8 +257,6 @@ export default {
         this.$set(this.formConfig.form.form.body.count, 'type', 'static')
         this.formConfig.form.form.body.body_list = [this.formConfig.form.form.body.body_list]
       }
-      // 拿到 actions 的 name
-      this.checkedActions = this.formConfig.form.action.map(item => item.type)
     } else {
       this.$router.go(-1)
     }
@@ -294,6 +293,8 @@ export default {
       if (this.formConfig.form.action.find(_ => _.type === 'auto')) {
         this.actions.find(_ => _.type === 'auto').name = this.formConfig.form.action.find(_ => _.type === 'auto').name
       }
+      // 拿到 actions 的 name
+      this.checkedActions = this.formConfig.form.action.map(item => item.type)
     },
     // 选择功能按钮 action
     actionChange (arr) {
@@ -379,6 +380,26 @@ export default {
       }
       this.editBody = body // body 传给当前正编辑的临时变量
       this.showConditionVisible = true
+    },
+    // 重置显示条件
+    onResetShowCondition () {
+      this.editBody.name = ''
+      this.$set(this.editBody, 'show', {
+        type: '',
+        id: '',
+        key_path: '',
+        op: '',
+        value: ''
+      })
+    },
+    // 监听子组件 props 副本改变事件
+    onHeaderConfigChange (val) {
+      console.log('received!!!')
+      this.formConfig.form.form.header = val
+    },
+    onBodyConfigChange (val, index) {
+      console.log(val)
+      console.log(index)
     }
   },
   components: {

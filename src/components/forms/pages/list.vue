@@ -27,9 +27,11 @@
               prop="tname"></el-table-column>
             <el-table-column
               label="操作"
-              width="240">
-              <template scope="scope">
-                <el-button size="small" @click="onEdit(scope.row)" icon="fa-cogs">自定义</el-button>
+              width="240"
+              inline-template
+              :context="_self">
+              <template>
+                <el-button size="small" @click="onEdit(row)" icon="fa-cogs">自定义</el-button>
               </template>
             </el-table-column>
           </el-table>

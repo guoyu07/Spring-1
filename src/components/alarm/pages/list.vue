@@ -142,7 +142,7 @@
                 <el-form-item v-if="task.operator" label="操作者：">
                   <span>{{task.operator.name}}</span>
                 </el-form-item>
-                <el-form-item v-if="task.time" label="时间：">
+                <el-form-item v-if="task.time" label="处理时间：">
                   <span>{{task.time}}</span>
                 </el-form-item>
               </el-form>

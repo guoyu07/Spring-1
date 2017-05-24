@@ -28,10 +28,12 @@
               label="邮箱"></el-table-column>
             <el-table-column
               label="操作"
-              width="200">
-              <template scope="scope">
-                <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = scope.row"></el-button>
-                <el-button :disabled="!isQualified" type="danger" size="small" icon="delete" @click="onDeleteUser(scope.row)"></el-button>
+              width="200"
+              inline-template
+              :context="_self">
+              <template>
+                <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
+                <el-button :disabled="!isQualified" type="danger" size="small" icon="delete" @click="onDeleteUser(row)"></el-button>
               </template>
             </el-table-column>
           </el-table>

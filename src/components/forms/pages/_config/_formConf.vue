@@ -6,7 +6,7 @@
     }
     .el-collapse {
       margin-bottom: 10px;
-      .el-row {
+      .el-form-item {
         margin-bottom: 8px;
       }
     }
@@ -21,136 +21,137 @@
 
 <template>
   <div class="form-config">
-    <el-collapse v-if="configData.length">
-      <el-collapse-item v-for="itemConf of configData" :title="itemConf.name + ' - ' + itemConf.value.type">
+    <!-- <draggable v-model="configData2" @start="drag=true" @end="drag=false">
+      <div v-for="itemConf in configData2">
+        {{itemConf.name}}
+      </div>
+    </draggable> -->
+
+    <el-collapse v-if="configData2.length">
+      <el-collapse-item v-for="itemConf of configData2" :title="itemConf.name + ' - ' + itemConf.value.type">
         <el-row>
           <el-col :span="22" :offset="1">
             <el-form label-position="left" :inline="true">
-              <el-row>
-                <el-form-item style="width: 100%">
-                  <el-checkbox v-model="itemConf.required">必填</el-checkbox>
-                  <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
-                  <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
-                  <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
-                  <el-checkbox v-if="itemConf.value.type === 'dict' || itemConf.value.type === 'dicts' || itemConf.value.type === 'search_bar'" v-model="itemConf.cmdb_need_check">是否检查／占用资源</el-checkbox>
-                  <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'" v-model="itemConf.isAlias">
-                    <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
-                    <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
-                    <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
-                  </el-checkbox>
-                </el-form-item>
-              </el-row>
-              <el-row>
-                <el-form-item label="默认值" v-if="itemConf.value.type !== 'table'">
-                  <el-popover placement="right" trigger="click">
-                    <default-conf :dialog-props="itemConf"></default-conf>
-                    <el-button size="small" slot="reference">配置默认值</el-button>
-                  </el-popover>
-                  <el-tooltip placement="top" v-if="itemConf.default.type">
-                    <div slot="content">
-                      <p><b>默认值来源：</b>{{itemConf.default.type}}</p>
-                      <p v-if="itemConf.default.type === 'static'"><b>静态值：</b>{{itemConf.default.value}}</p>
-                      <p v-if="itemConf.default.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.default.id}}</p>
-                      <p v-if="itemConf.default.type !== 'static'"><b>属性路径：</b>{{itemConf.default.key_path}}</p>
-                    </div>
-                    <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
-                  </el-tooltip>
-                </el-form-item>
-                <el-form-item label="监听字段">
-                  <el-input v-model="itemConf.watch" placeholder="字段 ID" class="code-input" size="small"></el-input>
-                </el-form-item>
-              </el-row>
-              <el-row>
-                <el-form-item label="属性名称">
-                  <el-input size="small" v-model="itemConf.name" placeholder="属性 Label"></el-input>
-                </el-form-item>
-                <el-form-item label="属性 ID">
-                  <el-input size="small" class="code-input" v-model="itemConf.id"></el-input>
-                </el-form-item>
-              </el-row>
-              <el-row>
-                <el-form-item label="占位描述">
-                  <el-input size="small" v-model="itemConf.placeholder" placeholder="控件的 placeholder"></el-input>
-                </el-form-item>
-                <el-form-item label="额外描述">
-                  <el-input size="small" v-model="itemConf.description" placeholder="控件的外部描述"></el-input>
-                </el-form-item>
-              </el-row>
-              <el-row>
-                <el-form-item label="分组组名">
-                  <el-input size="small" v-model="itemConf.category"></el-input>
-                </el-form-item>
-                <el-form-item label="字段类型">
-                  <el-select size="small" v-model="itemConf.value.type">
-                    <el-option label="字符串" value="str"></el-option>
-                    <el-option label="数字" value="int"></el-option>
-                    <el-option label="数组" value="arr"></el-option>
-                    <el-option label="日期" value="date"></el-option>
-                    <el-option label="时间" value="datetime"></el-option>
-                    <el-option label="下拉单选" value="enum"></el-option>
-                    <el-option label="下拉多选" value="enums"></el-option>
-                    <el-option label="下拉单选（API）" value="dict"></el-option>
-                    <el-option label="下拉多选（API）" value="dicts"></el-option>
-                    <el-option label="搜索条件" value="search_bar"></el-option>
-                    <el-option label="表格" value="table"></el-option>
-                  </el-select>
-                  <!--静态选项-->
-                  <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
-                    placement="right" trigger="click" @show="showMultiConf(itemConf)">
-                    <options-conf :conf-arr="itemConf.value.regex"></options-conf>
-                    <el-button size="small" slot="reference">配置选项</el-button>
-                  </el-popover>
-                  <!--动态选项（cmdb）-->
-                  <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
-                    <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
-                    <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
-                  </template>
-                  <!--表格-->
-                  <template v-if="itemConf.value.type === 'table'">
-                    <el-button size="small" @click="showTableConf(itemConf)">配置表格</el-button>
-                    <table-conf :dialog-props="itemConf"></table-conf>
-                  </template>
-                  <!-- 搜索元件 -->
-                  <template v-if="itemConf.value.type === 'search_bar'">
-                    <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
-                    <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
-                  </template>
-                </el-form-item>
-              </el-row>
-              <el-row>
-                <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
-                  <el-popover placement="right" trigger="click">
-                    <limit-conf :dialog-props="itemConf"></limit-conf>
-                    <el-button size="small" slot="reference">配置个数</el-button>
-                  </el-popover>
-                  <el-tooltip placement="top" v-if="itemConf.limit.type">
-                    <div slot="content">
-                      <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
-                      <p v-if="itemConf.limit.type === 'static'"><b>最大值：</b>{{itemConf.limit.max}}</p>
-                      <p v-if="itemConf.limit.type === 'static'"><b>最小值：</b>{{itemConf.limit.min}}</p>
-                      <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
-                      <p v-if="itemConf.limit.type !== 'static'"><b>属性路径：</b>{{itemConf.limit.key_path}}</p>
-                    </div>
-                    <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
-                  </el-tooltip>
-                </el-form-item>
-                <el-form-item label="数据规则" v-if="['arr', 'str'].includes(itemConf.value.type)">
-                  <el-select
-                    v-model="itemConf.value.regex"
-                    multiple
-                    filterable
-                    allow-create
-                    placeholder="一个或多个正则表达式"
-                    class="code-input"
-                    size="small"></el-select>
-                  <!-- <el-input v-model="itemConf.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input> -->
-                </el-form-item>
-              </el-row>
+              <el-form-item style="width: 100%">
+                <el-checkbox v-model="itemConf.required">必填</el-checkbox>
+                <el-checkbox v-model="itemConf.unique">唯一</el-checkbox>
+                <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
+                <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
+                <el-checkbox v-if="itemConf.value.type === 'dict' || itemConf.value.type === 'dicts' || itemConf.value.type === 'search_bar'" v-model="itemConf.cmdb_need_check">是否检查／占用资源</el-checkbox>
+                <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'" v-model="itemConf.isAlias">
+                  <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
+                  <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
+                  <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
+                </el-checkbox>
+              </el-form-item>
+              <el-form-item label="默认值" v-if="itemConf.value.type !== 'table'">
+                <el-popover placement="right" trigger="click">
+                  <default-conf :dialog-props="itemConf"></default-conf>
+                  <el-button size="small" slot="reference">配置默认值</el-button>
+                </el-popover>
+                <el-tooltip placement="top" v-if="itemConf.default.type">
+                  <div slot="content">
+                    <p><b>默认值来源：</b>{{itemConf.default.type}}</p>
+                    <p v-if="itemConf.default.type === 'static'"><b>静态值：</b>{{itemConf.default.value}}</p>
+                    <p v-if="itemConf.default.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.default.id}}</p>
+                    <p v-if="itemConf.default.type !== 'static'"><b>属性路径：</b>{{itemConf.default.key_path}}</p>
+                  </div>
+                  <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+                </el-tooltip>
+              </el-form-item>
+              <el-form-item label="监听字段">
+                <el-input v-model="itemConf.watch" placeholder="字段 ID" class="code-input" size="small"></el-input>
+              </el-form-item>
+              <el-form-item label="属性名称">
+                <el-input size="small" v-model="itemConf.name" placeholder="属性 Label"></el-input>
+              </el-form-item>
+              <el-form-item label="属性 ID">
+                <el-input size="small" class="code-input" v-model="itemConf.id"></el-input>
+              </el-form-item>
+              <el-form-item label="占位描述">
+                <el-input size="small" v-model="itemConf.placeholder" placeholder="控件的 placeholder"></el-input>
+              </el-form-item>
+              <el-form-item label="额外描述">
+                <el-input size="small" v-model="itemConf.description" placeholder="控件的外部描述"></el-input>
+              </el-form-item>
+              <el-form-item label="分组组名">
+                <el-input size="small" v-model="itemConf.category"></el-input>
+              </el-form-item>
+              <el-form-item label="字段类型">
+                <el-select size="small" v-model="itemConf.value.type">
+                  <el-option label="字符串" value="str"></el-option>
+                  <el-option label="数字" value="int"></el-option>
+                  <el-option label="数组" value="arr"></el-option>
+                  <el-option label="日期" value="date"></el-option>
+                  <el-option label="时间" value="datetime"></el-option>
+                  <el-option label="下拉单选" value="enum"></el-option>
+                  <el-option label="下拉多选" value="enums"></el-option>
+                  <el-option label="下拉单选（API）" value="dict"></el-option>
+                  <el-option label="下拉多选（API）" value="dicts"></el-option>
+                  <el-option label="搜索条件" value="search_bar"></el-option>
+                  <el-option label="表格" value="table"></el-option>
+                </el-select>
+                <!--静态选项-->
+                <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
+                  placement="right" trigger="click" @show="showMultiConf(itemConf)">
+                  <options-conf :conf-arr="itemConf.value.regex"></options-conf>
+                  <el-button size="small" slot="reference">配置选项</el-button>
+                </el-popover>
+                <!--动态选项（cmdb）-->
+                <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
+                  <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
+                  <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+                </template>
+                <!--表格-->
+                <template v-if="itemConf.value.type === 'table'">
+                  <el-button size="small" @click="showTableConf(itemConf)">配置表格</el-button>
+                  <table-conf :dialog-props="itemConf"></table-conf>
+                </template>
+                <!-- 搜索元件 -->
+                <template v-if="itemConf.value.type === 'search_bar'">
+                  <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
+                  <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+                </template>
+              </el-form-item>
+              <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
+                <el-popover placement="right" trigger="click">
+                  <limit-conf :dialog-props="itemConf"></limit-conf>
+                  <el-button size="small" slot="reference">配置个数</el-button>
+                </el-popover>
+                <el-tooltip placement="top" v-if="itemConf.limit.type">
+                  <div slot="content">
+                    <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
+                    <p v-if="itemConf.limit.type === 'static'"><b>最大值：</b>{{itemConf.limit.max}}</p>
+                    <p v-if="itemConf.limit.type === 'static'"><b>最小值：</b>{{itemConf.limit.min}}</p>
+                    <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
+                    <p v-if="itemConf.limit.type !== 'static'"><b>属性路径：</b>{{itemConf.limit.key_path}}</p>
+                  </div>
+                  <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
+                </el-tooltip>
+              </el-form-item>
+              <el-form-item label="数据规则" v-if="['arr', 'str'].includes(itemConf.value.type)">
+                <el-select
+                  v-model="itemConf.value.regex"
+                  multiple
+                  filterable
+                  allow-create
+                  placeholder="一个或多个正则表达式"
+                  class="code-input"
+                  size="small"></el-select>
+                <!-- <el-input v-model="itemConf.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input> -->
+              </el-form-item>
+              <!-- <el-form-item label="显示条件">
+                <el-popover placement="top" trigger="click">
+                  <show-conf :dialog-props="itemConf"></show-conf>
+                  <el-button size="small" slot="reference">配置显示条件</el-button>
+                </el-popover>
+              </el-form-item> -->
             </el-form>
           </el-col>
         </el-row>
         <el-row type="flex" justify="end">
-          <el-button size="small" type="danger" icon="delete" @click="onDeleteField(configData, itemConf)">删除字段</el-button>
+          <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(itemConf)">显示条件</el-button>
+          <el-button size="small" type="danger" icon="delete" @click="onDeleteField(configData2, itemConf)">删除字段</el-button>
         </el-row>
       </el-collapse-item>
     </el-collapse>
@@ -161,11 +162,43 @@
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset !== {}">配置预设集</el-button>
     </el-row>
-    <preset-conf :selected-preset="selectedPreset" :current-fields="configData"></preset-conf>
+    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2"></preset-conf>
+
+    <el-dialog title="字段显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
+      <el-form label-width="100px">
+        <el-form-item label="比较变量">
+          <el-select v-model="editItem.show.type">
+            <el-option label="form_header" value="form_header"></el-option>
+            <el-option label="message_header" value="message_header"></el-option>
+            <el-option label="message_body" value="message_body"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="流程节点 ID" v-if="editItem.show.type !== 'form_header'">
+          <el-input v-model="editItem.show.id"></el-input>
+        </el-form-item>
+        <el-form-item label="属性路径">
+          <el-input class="code-input" v-model="editItem.show.key_path"></el-input>
+        </el-form-item>
+        <br>
+        <el-form-item label="判断条件" style="width: auto">
+          <el-select v-model="editItem.show.op">
+            <el-option label="等于" value="eq"></el-option>
+            <el-option label="不等于" value="neq"></el-option>
+            <el-option label="包含" value="reg"></el-option>
+          </el-select>
+          <el-input class="code-input" v-model="editItem.show.value"></el-input>
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <!-- <el-button @click="onResetShowCondition">重置</el-button> -->
+        <el-button type="primary" icon="check" @click="showConditionVisible = false">OK</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script>
+// import draggable from 'vuedraggable'
 import optionsConf from './_optionsConf' // 配置下拉选项（静态）的表单
 import optionsConfCmdb from './_optionsConfCMDB' // 配置下拉选项（动态）的表单
 import tableConf from './_tableConf' // 配置表格
@@ -178,13 +211,29 @@ export default {
     configData: Array,
     presets: Array
   },
+
   data () {
     return {
+      configData2: this.configData, // 副本，结合 watch 实现 props 双向数据流
       selectedPreset: {},
       needDefault: false,
-      countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
+      countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ],
+      editBody: null,
+      showConditionVisible: false
     }
   },
+
+  watch: {
+    configData (val) {
+      this.configData2 = val  // 父组件修改组件 props 不会同步到 data 副本上
+    },
+
+    configData2 (val) {
+      console.log('emitted!')
+      this.$emit('on-config-change', val) // 组件内对副本的变更向外部发送事件
+    }
+  },
+
   methods: {
     // 导入预设集
     importPreset (preset, currentFields) {
@@ -251,7 +300,7 @@ export default {
     // 添加一个字段
     onAddField () {
       console.log(this)
-      this.configData.push({
+      this.configData2.push({
         id: '',
         name: '',
         category: '', // 分组
@@ -281,6 +330,27 @@ export default {
       })
       // this.activatedItem.push('新字段')
     },
+    // 显示条件
+    showCondition (item) {
+      if (item.show) {
+        //
+      } else {
+        this.$set(item, 'show', {
+          type: '',
+          id: '',
+          key_path: '',
+          op: '',
+          value: ''
+        })
+      }
+      this.editItem = item
+      this.showConditionVisible = true
+    },
+    // 重置显示条件
+    onResetShowCondition () {
+      delete this.editItem['show']
+      this.showConditionVisible = false
+    },
     // 删除一个字段 （删除操作 可以封装为全局方法）
     onDeleteField (arr, item) {
       this.$confirm('确定要删除这个字段吗？', '提示', {
@@ -292,6 +362,7 @@ export default {
     }
   },
   components: {
+    // draggable,
     optionsConf,
     optionsConfCmdb,
     tableConf,

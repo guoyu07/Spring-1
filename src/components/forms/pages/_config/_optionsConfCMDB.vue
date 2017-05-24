@@ -35,19 +35,19 @@
 
 <template>
   <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose" top="10%">
-    <el-radio-group v-model="optionType">
+    <!-- <el-radio-group v-model="optionType">
       <el-radio label="dynamic">动态</el-radio>
       <el-radio label="static">静态</el-radio>
     </el-radio-group>
-    <hr>
+    <hr> -->
 
-    <div class="conf-cmdb-contain" v-if="optionType === 'static'">
+    <!-- <div class="conf-cmdb-contain" v-if="optionType === 'static'">
       <el-collapse>
         <el-collapse-item v-for="(obj, index) of dialogProps.value.regex" :title="'字典' + index">
           <el-row>
             <el-form label-width="80px">
               <el-form-item v-for="(value, key) in obj" :label="key">
-                <!-- <span>{{value}}</span> -->
+                <span>{{value}}</span>
                 <el-input size="small" v-model="obj[key]"></el-input>
               </el-form-item>
             </el-form>
@@ -58,9 +58,9 @@
         <el-button type="success" :plain="true" size="small" icon="plus" @click="onAddDict">添加字典对象</el-button>
         <el-button type="info" :plain="true" size="small" icon="plus" @click="onAddField">添加键值对</el-button>
       </el-row>
-    </div>
+    </div> -->
 
-    <div class="conf-cmdb-contain" v-if="optionType === 'dynamic' && dialogProps.value.source">
+    <div class="conf-cmdb-contain">
       <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
         <el-form-item label="URL (请求地址)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>
@@ -202,34 +202,6 @@
         </el-card>
       </template> -->
 
-      <template v-if="isSearchBar">
-        <h5>显示条件配置：</h5>
-        <el-card>
-          <el-form label-width="90px" :inline="true">
-            <el-form-item label="比较变量">
-              <el-select v-model="dialogProps.value.show.type">
-                <el-option label="form_header" value="form_header"></el-option>
-                <el-option label="message_header" value="message_header"></el-option>
-                <el-option label="message_body" value="message_body"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="流程节点 ID" v-if="dialogProps.value.show.type !== 'form_header'">
-              <el-input v-model="dialogProps.value.show.id"></el-input>
-            </el-form-item>
-            <el-form-item label="属性路径">
-              <el-input class="code-input" v-model="dialogProps.value.show.key_path"></el-input>
-            </el-form-item>
-            <br>
-            <el-form-item label="判断条件" style="width: auto">
-              <el-select v-model="dialogProps.value.show.op">
-                <el-option label="等于" value="eq"></el-option>
-                <el-option label="不等于" value="neq"></el-option>
-              </el-select>
-              <el-input class="code-input" v-model="dialogProps.value.show.value"></el-input>
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </template>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
