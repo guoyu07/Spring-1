@@ -202,34 +202,6 @@
         </el-card>
       </template> -->
 
-      <template v-if="isSearchBar">
-        <h5>显示条件配置：</h5>
-        <el-card>
-          <el-form label-width="90px" :inline="true">
-            <el-form-item label="比较变量">
-              <el-select v-model="dialogProps.value.show.type">
-                <el-option label="form_header" value="form_header"></el-option>
-                <el-option label="message_header" value="message_header"></el-option>
-                <el-option label="message_body" value="message_body"></el-option>
-              </el-select>
-            </el-form-item>
-            <el-form-item label="流程节点 ID" v-if="dialogProps.value.show.type !== 'form_header'">
-              <el-input v-model="dialogProps.value.show.id"></el-input>
-            </el-form-item>
-            <el-form-item label="属性路径">
-              <el-input class="code-input" v-model="dialogProps.value.show.key_path"></el-input>
-            </el-form-item>
-            <br>
-            <el-form-item label="判断条件" style="width: auto">
-              <el-select v-model="dialogProps.value.show.op">
-                <el-option label="等于" value="eq"></el-option>
-                <el-option label="不等于" value="neq"></el-option>
-              </el-select>
-              <el-input class="code-input" v-model="dialogProps.value.show.value"></el-input>
-            </el-form-item>
-          </el-form>
-        </el-card>
-      </template>
     </div>
     <div slot="footer" class="dialog-footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
