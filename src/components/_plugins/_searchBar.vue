@@ -147,7 +147,7 @@
         searchData.query = Object.assign(this.searchData, this.filterObj(this.searchKeys))
         searchData.page = this.currentPage
         searchData.page_size = this.pageSize
-        console.log(searchData)
+        // console.log(searchData)
         if (this.isEmptyObj(searchData.query)) {
           this.$message.info('搜索条件不能为空！')
           return false

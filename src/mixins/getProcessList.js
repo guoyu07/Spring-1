@@ -20,7 +20,7 @@ export default {
           this.processList = res.data.data.list
           this.loading = false
           // this.selectedProcess = this.processList[0].pkey
-          this.selectedProcess = 'import_device'
+          // this.selectedProcess = 'import_device'
           console.log('mixin working')
         }
       })

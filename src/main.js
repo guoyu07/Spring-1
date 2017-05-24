@@ -129,7 +129,8 @@ const getPathResult = (result, path, k) => {
 Vue.prototype.getPathResult = getPathResult
 
 Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
-  if (formItem.limit.type) {
+  console.log(formItem)
+  if (formItem.limit && formItem.limit.type) {
     // if (data.value.count.type === 'message_body') {
     //   return getPathResult(applyData, data.value.count.key_path)
     // } else {
@@ -331,6 +332,10 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
       if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path) !== taskform.value.show.value) {
         return true
       }
+    } else if (taskform.value.show.op === 'reg') {
+      if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path).includes(taskform.value.show.value)) {
+        return true
+      }
     }
   }
 }
@@ -351,6 +356,10 @@ Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index) => {
       }
     } else if (taskFormData.show.op === 'neq') {
       if (Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path) !== taskFormData.show.value) {
+        return true
+      }
+    } else if (taskFormData.show.op === 'reg') {
+      if (Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path).includes(taskFormData.show.value)) {
         return true
       }
     }

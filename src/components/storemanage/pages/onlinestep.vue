@@ -10,52 +10,13 @@
               <div v-if="taskheader.form.form.header.length >= 1">
                 <p class="h5">{{taskheader.tname}}</p>
                 <div v-for="taskformheader in taskheader.form.form.header">
-                  <!-- {{taskformheader.name}} -->
+                  <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
                   <span v-for="valueheader in taskformheader.value">
-                    <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.value.show.type">
-                      <!-- 判断 show.type 这里只判断了一种情况-->
-                      <div v-if="valueheader.value.show.type==='form_header'">
-                        <!-- 表单信息显示 -->
-                        <header-form-display
-                          v-if="valueheader.value.type !== 'search_bar'"
-                          :item="applyData.header"
-                          :form-item="valueheader">
-                        </header-form-display>
-                        <!-- 设备选择 -->
-                        <div v-if="valueheader.value.type === 'search_bar'">
-                          <el-table
-                            class="margin-bottom"
-                            v-if="valueheader.value.show.value === getPathResult(applyData.header, valueheader.value.show.key_path)"
-                            :data="applyData.header[valueheader.id]">
-                            <el-table-column
-                              v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                              :prop="item.id"
-                              :label="item.name">
-                            </el-table-column>
-                          </el-table>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- 无 show 条件的时候 -->
-                    <span v-else>
-                      <!-- 表单信息显示 -->
+                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
                       <header-form-display
-                        v-if="valueheader.value.type !== 'search_bar'"
                         :item="applyData.header"
                         :form-item="valueheader">
                       </header-form-display>
-                      <!-- 选择设备信息显示 -->
-                      <el-table
-                        class="margin-bottom"
-                        v-if="valueheader.value.type === 'search_bar'"
-                        :data="applyData.header[valueheader.id]">
-                        <el-table-column
-                          v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                          :prop="item.id"
-                          :label="item.name">
-                        </el-table-column>
-                      </el-table>
                     </span>
                   </span>
                 </div>
@@ -69,37 +30,18 @@
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- body 信息显示 -->
                 <div v-for="task in form">
-                  <div v-if="task.form.form.body.body_list.length > 1">
-                    <div v-for="taskform in task.form.form.body.body_list">
-                      <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
-                        <p class="h5">{{task.tname}}</p>
-                        <form-structure-display
-                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
-                          :item="data"
-                          :form-data="taskform.attr_list"
-                          :index="index">
-                        </form-structure-display>
-
-                        <el-table
-                          v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
-                          :data="data[taskform.attr_list[0].value[0].id]">
-                          <el-table-column
-                            v-for="item in taskform.attr_list[0].value[0].value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                            :prop="item.id"
-                            :label="item.name">
-                          </el-table-column>
-                        </el-table>
-
-                      </template>
-                    </div>
-                  </div>
-                  <div v-else>
-                    <!-- 这里是判断 body_list 是不是空数组 -->
-                    <div v-if="task.form.form.body.body_list[0]">
-                      <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
+                  <div v-for="taskbody in task.form.form.body.body_list">
+                    <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
                       <p class="h5">{{task.tname}}</p>
-                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
-                      <!-- </div> -->
+                      <form-structure-display
+                        :item="data"
+                        :form-data="taskbody.attr_list"
+                        :index="index"
+                        :post-form="assignForm"
+                        :message-data="applyData"
+                        :current-task="routerInfo.tkey"
+                        :history-task="task.tkey">
+                      </form-structure-display>
                     </div>
                   </div>
                 </div>
@@ -134,28 +76,6 @@
                       </div>
                   </div>
                 </div>
-                <!-- <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
-                  <div v-for="taskFormData in taskForm.body.body_list">
-                      <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
-                        <form-structure
-                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
-                          :form-data="taskFormData.attr_list"
-                          :item="assignForm.body[index]"
-                          :index="index"
-                          :whole="assignForm"
-                          :message="applyData">
-                        </form-structure>
-                        <search-bar
-                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
-                          :index="index"
-                          :hosts="assignForm.body[index]"
-                          :attr-list="taskFormData.attr_list[0].value[0]"
-                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar>
-                      </div>
-                  </div>
-                </div> -->
               </el-tab-pane>
             </el-tabs>
             <!-- header 表单填写 -->
@@ -164,25 +84,19 @@
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
-                    v-if="!taskform.value.show.type"
+                    v-if="showFormItem(taskform, assignForm, applyData)"
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
                     :header="true">
                   </form-body>
-                  <div v-if="taskform.value.show.type">
-                    <div v-if="taskform.value.show.type==='form_header'">
-                      <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
-                        <search-bar
-                          v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
-                          :hosts="assignForm.header"
-                          :attr-list="taskform"
-                          :limit="getLimitQuantity(taskform, assignForm, applyData)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar>
-                      </div>
-                    </div>
-                  </div>
+                  <search-bar
+                    v-if="showFormItem(taskform, assignForm, applyData)"
+                    :hosts="assignForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
                 </span>
               </div>
               <!-- <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure> -->
