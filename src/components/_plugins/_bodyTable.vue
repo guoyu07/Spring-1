@@ -92,9 +92,9 @@
         // console.log(formItem)
         let keyData
         if (formItem.limit.type === 'message_body') {
-          keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
+          keyData = this.getPathResult(this.messageData.body[this.index], formItem.limit.key_path)
         } else if (formItem.limit.type === 'message_header') {
-          keyData = this.getPathResult(this.message.header, formItem.limit.key_path)
+          keyData = this.getPathResult(this.messageData.header, formItem.limit.key_path)
         } else if (formItem.limit.type === 'static') {
           keyData = formItem.limit.min
           this.limitTableMax = formItem.limit.max

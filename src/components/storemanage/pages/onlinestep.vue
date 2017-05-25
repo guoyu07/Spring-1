@@ -456,10 +456,10 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.value.show.type) {
+            if (item.show.type) {
               // show.type 有四种类型
-              if (item.value.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
                     this.assignForm.header[item.id] = this.hostList
                   }
@@ -467,6 +467,18 @@
               }
             }
           })
+        })
+        for (const headerid in this.assignForm.header) {
+          if (!this.assignForm.header[headerid]) {
+            delete this.assignForm.header[headerid] // 删除头部空值
+          }
+        }
+        this.assignForm.body.map(body => {
+          for (const headerid in body) {
+            if (!body[headerid]) {
+              delete body[headerid] // 删除 body 的空值
+            }
+          }
         })
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {

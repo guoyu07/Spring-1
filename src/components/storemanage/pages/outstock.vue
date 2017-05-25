@@ -7,7 +7,7 @@
           <el-form label-position="left" ref="assignForm" :model="assignForm" :inline="true">
             <div v-for="task in taskFormData.header">
               <span v-for="taskform in task.value">
-                  <!-- v-if="!taskform.value.show.type" -->
+                  <!-- v-if="!taskform.show.type" -->
                 <form-body
                   :item="assignForm.header"
                   :form-item="taskform">
@@ -90,14 +90,14 @@
           this.taskFormData = res.data.data.form
           this.taskFormData.header.map(group => {
             group.value.map(item => {
-              // if (!item.value.show) {
+              // if (!item.show) {
               //   this.setDataType(item, this.assignForm.header, this)
               // }
               this.setDataType(item, this.assignForm.header, this)
-              if (item.value.show.type) {
+              if (item.show.type) {
                 const key = []
-                if (item.value.show.type === 'form_header') {
-                  const keyPath = item.value.show.key_path.split('.')
+                if (item.show.type === 'form_header') {
+                  const keyPath = item.show.key_path.split('.')
                   if (!key.includes(keyPath[0])) {
                     key.push(keyPath[0])
 
@@ -105,11 +105,11 @@
                       const _value = newVal && newVal[keyPath[1]] || ''
                       this.deviceType = _value
                       // this.setDataType(item, this.assignForm.header, this)
-                      // if (item.value.show.op === 'eq') {
-                      //   console.log(_value === item.value.show.value)
-                      //   return _value === item.value.show.value
+                      // if (item.show.op === 'eq') {
+                      //   console.log(_value === item.show.value)
+                      //   return _value === item.show.value
                       // } else {
-                      //   return _value !== item.value.show.value
+                      //   return _value !== item.show.value
                       // }
                     })
                   }
@@ -150,14 +150,14 @@
       onSubmit () {
         this.taskFormData.header.map(header => {
           header.value.map(item => {
-            if (item.value.show.type) {
+            if (item.show.type) {
               // show.type 有四种类型
-              if (item.value.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   this.assignForm.header[item.id] = this.hostList
                 }
               }
-              // if (item.value.show.value === this.deviceType) {
+              // if (item.show.value === this.deviceType) {
               //   // 留下所选的的设备类型的值
               //   this.assignForm.header[item.id] = this.hostList
               // }

@@ -170,13 +170,14 @@
                     this.$message('limit数据配置有误')
                   }
                 }
-                if ((this.limitNum + this.strucData.default.value) < this.optionList.length) {
+                if ((this.limitNum + +this.strucData.default.value) <= this.optionList.length) {
                   this.vmodel[this.strucData.id] = this.optionList.slice(this.strucData.default.value, this.limitNum)
-                } else if (this.limitNum < this.optionList.length) {
-                  this.$message.warning(`${this.strucData.name}的选项不够${this.limitNum + this.strucData.default.value}项`)
+                } else if (this.limitNum <= this.optionList.length) {
+                  this.$message.warning(`${this.strucData.name}的选项不够${+this.limitNum + +this.strucData.default.value}项`)
                   this.vmodel[this.strucData.id] = this.optionList.slice(0, this.limitNum)
                 } else {
-                  this.$message.warning(`${this.strucData.name}无数据`)
+                  this.vmodel[this.strucData.id] = this.optionList
+                  this.$message.warning(`${this.strucData.name}数据项不足`)
                 }
               } else {
                 if (this.strucData.default.value < this.optionList.length) {
