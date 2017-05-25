@@ -62,7 +62,7 @@
       </el-row>
     </div> -->
 
-    <div class="conf-cmdb-contain">
+    <div class="conf-cmdb-contain" v-if="dialogProps.value.source">
       <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
         <el-form-item label="URL (请求地址)">
           <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>
