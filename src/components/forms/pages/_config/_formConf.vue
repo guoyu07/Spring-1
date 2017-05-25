@@ -111,6 +111,7 @@
 <template>
   <div class="form-config">
     <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
+    <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
     <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
         <input type="checkbox" :id="`${itemConf.id} + ${index}`">
@@ -137,7 +138,7 @@
                       <default-conf :dialog-props="itemConf"></default-conf>
                       <el-button size="small" slot="reference">配置默认值</el-button>
                     </el-popover>
-                    <el-tooltip placement="top" v-if="itemConf.default.type">
+                    <el-tooltip placement="top" v-if="itemConf.default">
                       <div slot="content">
                         <p><b>默认值来源：</b>{{itemConf.default.type}}</p>
                         <p v-if="['static', 'api'].includes(itemConf.default.type)"><b>静态值/索引：</b>{{itemConf.default.value}}</p>
@@ -204,13 +205,13 @@
                     </template>
                   </el-form-item>
                   <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
-                    <el-popover placement="right" trigger="click">
+                    <el-popover placement="right" trigger="click" @show="showLimitConf(itemConf)">
                       <limit-conf :dialog-props="itemConf"></limit-conf>
                       <el-button size="small" slot="reference">配置个数</el-button>
                     </el-popover>
-                    <el-tooltip placement="top" v-if="itemConf.limit.type">
+                    <el-tooltip placement="top" v-if="itemConf.limit">
                       <div slot="content">
-                        <p><b>默认值来源：</b>{{itemConf.limit.type}}</p>
+                        <p><b>个数来源：</b>{{itemConf.limit.type}}</p>
                         <p v-if="itemConf.limit.type === 'static'"><b>最大值：</b>{{itemConf.limit.max}}</p>
                         <p v-if="itemConf.limit.type === 'static'"><b>最小值：</b>{{itemConf.limit.min}}</p>
                         <p v-if="itemConf.limit.type.includes('message_')"><b>流程节点 ID：</b>{{itemConf.limit.id}}</p>
@@ -307,7 +308,7 @@ export default {
 
   data () {
     return {
-      configData2: this.configData, // 副本，结合 watch 实现 props 双向数据流
+      configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
       selectedPreset: null,
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
@@ -392,12 +393,6 @@ export default {
             show_key: ''
           }
         })
-        this.$set(itemConf.value, 'show', {
-          type: '',
-          key_path: '',
-          op: '',
-          value: ''
-        })
       }
       itemConf.value.confVisible = true
     },
@@ -464,6 +459,21 @@ export default {
       }
       this.editItem = item
       this.showConditionVisible = true
+    },
+    // 个数限制
+    showLimitConf (item) {
+      if (item.limit) {
+        //
+      } else {
+        this.$set(item, 'limit', {
+          type: '',
+          id: '',
+          key_path: '',
+          op: '',
+          max: '',
+          min: ''
+        })
+      }
     },
     // 重置显示条件
     onResetShowCondition () {
