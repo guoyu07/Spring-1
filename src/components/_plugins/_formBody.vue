@@ -101,7 +101,8 @@
       :strucData="formItem"
       :whole="whole"
       :message="message"
-      :index="index">
+      :index="index"
+      :body-table="bodyTable">
     </need-cmdb-data>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
@@ -156,6 +157,7 @@
         if (formItem.limit.type === 'message_body') {
           keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
         } else if (formItem.limit.type === 'message_header') {
+          console.log(this.message)
           keyData = this.getPathResult(this.message.header, formItem.limit.key_path)
         } else if (formItem.limit.type === 'static') {
           keyData = formItem.limit.min
@@ -234,6 +236,7 @@
           }
         } else if ((formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') && formItem.limit && formItem.limit.type) {
           return this.arrLimitValid(formItem)
+          // return {}
         } else if (formItem.value.type === 'str' && formItem.value.regex && formItem.value.regex.length) {
           // console.log('str' + formItem.name)
           var validateRegex = (rule, value, cb) => {

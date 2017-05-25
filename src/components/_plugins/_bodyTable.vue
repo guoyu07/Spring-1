@@ -17,7 +17,7 @@
           <form-structure
             :form-data="[{name: '', value: formData.value.attr_list}]"
             :item="table"
-            :whole="postForm"
+            :whole="postForm.body[index][formData.id][tableindex]"
             :message="messageData"
             :index="index"
             :table-index="tableindex"

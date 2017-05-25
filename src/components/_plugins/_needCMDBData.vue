@@ -47,11 +47,14 @@
       whole: { type: Object },
       message: { type: Object },
       strucData: { type: Object },
-      index: { type: Number }
+      index: { type: Number },
+      bodyTable: { type: Boolean }
     },
     data () {
       return {
-        optionList: []
+        optionList: [],
+        limitNum: 0,
+        limitMaxNum: 0
       }
     },
     created () {
@@ -74,7 +77,7 @@
           }
         } else {
           // 这个是默认值
-          console.log(this.vmodel[this.strucData.id], this.strucData)
+          // console.log(this.vmodel[this.strucData.id], this.strucData)
         }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
@@ -89,12 +92,21 @@
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'form_body') {
-              console.log(this.strucData.name, para.value.key_path, this.whole.body[this.index])
-              if (this.getPathResult(this.whole && this.whole.body[this.index], para.value.key_path)) {
-                // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
+              if (this.bodyTable) {
+                // console.log(this.strucData.name, para.value.key_path, this.whole)
+                if (this.getPathResult(this.whole, para.value.key_path)) {
+                  // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
+                  params[para.id] = this.getPathResult(this.whole, para.value.key_path)
+                } else {
+                  return false // 如果没取到值就不发请求
+                }
               } else {
-                return false // 如果没取到值就不发请求
+                if (this.getPathResult(this.whole && this.whole.body[this.index], para.value.key_path)) {
+                  // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
+                  params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
+                } else {
+                  return false // 如果没取到值就不发请求
+                }
               }
             } else if (para.value.type === 'message_header') {
               if (this.getPathResult(this.message && this.message.header, para.value.key_path)) {
@@ -132,13 +144,49 @@
           // 配置默认值
           if (this.strucData.default.type) {
             if (this.strucData.default.type === 'api') {
-              if (this.strucData.default.value < this.optionList.length) {
-                this.vmodel[this.strucData.id] = this.optionList[this.strucData.default.value]
-              } else if (this.optionList[0]) {
-                this.$message.warning(`${this.strucData.name}的选项不够${this.strucData.default.value}项`)
-                this.vmodel[this.strucData.id] = this.optionList[0]
+              if (Array.isArray(this.vmodel[this.strucData.id])) {
+                let keyData
+                if (this.strucData.limit.type === 'message_body') {
+                  keyData = this.getPathResult(this.message.body[this.index], this.strucData.limit.key_path)
+                } else if (this.strucData.limit.type === 'message_header') {
+                  console.log(this.message)
+                  keyData = this.getPathResult(this.message.header, this.strucData.limit.key_path)
+                } else if (this.strucData.limit.type === 'static') {
+                  keyData = this.strucData.limit.min
+                  this.limitMaxNum = this.strucData.limit.max
+                } else if (this.strucData.limit.type === 'form_body') {
+                  keyData = this.getPathResult(this.whole.body[this.index], this.strucData.limit.key_path) // this.whole.body[this.index] 就是 this.item
+                } else if (this.strucData.limit.type === 'form_header') {
+                  keyData = this.getPathResult(this.whole.header, this.strucData.limit.key_path)
+                }
+                if (Array.isArray(keyData)) {
+                  this.limitNum = keyData.length
+                } else if (typeof keyData === 'number') {
+                  this.limitNum = keyData
+                } else if (typeof keyData === 'string') {
+                  if (typeof +keyData === 'number') {
+                    this.limitNum = +keyData
+                  } else {
+                    this.$message('limit数据配置有误')
+                  }
+                }
+                if ((this.limitNum + this.strucData.default.value) < this.optionList.length) {
+                  this.vmodel[this.strucData.id] = this.optionList.slice(this.strucData.default.value, this.limitNum)
+                } else if (this.limitNum < this.optionList.length) {
+                  this.$message.warning(`${this.strucData.name}的选项不够${this.limitNum + this.strucData.default.value}项`)
+                  this.vmodel[this.strucData.id] = this.optionList.slice(0, this.limitNum)
+                } else {
+                  this.$message.warning(`${this.strucData.name}无数据`)
+                }
               } else {
-                this.$message.warning(`${this.strucData.name}无数据`)
+                if (this.strucData.default.value < this.optionList.length) {
+                  this.vmodel[this.strucData.id] = this.optionList[this.strucData.default.value]
+                } else if (this.optionList[0]) {
+                  this.$message.warning(`${this.strucData.name}的选项不够${this.strucData.default.value}项`)
+                  this.vmodel[this.strucData.id] = this.optionList[0]
+                } else {
+                  this.$message.warning(`${this.strucData.name}无数据`)
+                }
               }
             }
           }

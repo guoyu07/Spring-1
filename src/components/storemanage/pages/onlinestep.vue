@@ -95,6 +95,7 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :message="applyData"
                     :header="true">
                   </form-body>
                   <search-bar
