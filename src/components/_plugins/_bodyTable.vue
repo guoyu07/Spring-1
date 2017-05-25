@@ -1,31 +1,34 @@
 <template>
   <div>
-    <template v-for="bodylist in formData">
+    <!-- <template v-for="bodylist in formData">
       <template v-for="value in bodylist.value">
-        <template v-if="value.value.type === 'table'">
-          <el-form-item
-            :prop="prop(value)"
-            :rules="rules(value)"
-            class="block">
-            <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
-            <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
-              <el-tab-pane
-                v-for="(table, tableindex) in item[value.id]" :label="value.name + (tableindex + 1)"
-                :closable="closableIndex(tableindex, value)">
-                <form-structure
-                  :form-data="[{name: bodylist.name, value: value.value.attr_list}]"
-                  :item="table"
-                  :index="index"
-                  :table-index="tableindex"
-                  :body-table="true"
-                  :value-id="value.id">
-                </form-structure>
-              </el-tab-pane>
-            </el-tabs>
-          </el-form-item>
+        <template v-if="value.value.type === 'table'"> -->
+    <el-form-item
+      :prop="prop(formData)"
+      :rules="rules(formData)"
+      class="block">
+      <el-button size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
+      <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
+        <el-tab-pane
+          v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
+          :closable="closableIndex(tableindex, formData)">
+          <form-structure
+            :form-data="[{name: '', value: formData.value.attr_list}]"
+            :item="table"
+            :whole="postForm"
+            :message="messageData"
+            :index="index"
+            :table-index="tableindex"
+            :body-table="true"
+            :value-id="formData.id">
+          </form-structure>
+        </el-tab-pane>
+      </el-tabs>
+    </el-form-item>
+          <!--
         </template>
       </template>
-    </template>
+    </template> -->
   </div>
 </template>
 
@@ -34,19 +37,25 @@
   export default {
     props: {
       item: { type: Object },
-      formData: { type: Array },
+      postForm: { type: Object },
+      messageData: { type: Object },
+      formData: { type: Object },
       index: { type: Number }
     },
 
     data () {
       return {
         tabsValue: '0',
-        limitTable: 0,
+        limitNum: 0,
         limitTableMax: 0
       }
     },
     created () {
+      console.log(this.formData)
+    },
 
+    watch: {
+      'limitNum': 'renderTable'
     },
 
     methods: {
@@ -55,6 +64,26 @@
           return 'body.' + this.index + '.' + value.id
         } else {
           return ''
+        }
+      },
+      renderTable () { // 这里是控制一开始的固定table个数，最少的table个数或者是固定的table个数
+        for (let i = 0; i < this.limitNum; i++) {
+          if (this.postForm.body[this.index][this.formData.id].length < this.limitNum) {
+            this.postForm.body[this.index][this.formData.id].push(this.postForm.body[this.index][this.formData.id][0])
+          }
+          // 配置默认值
+          this.formData.value.attr_list.map(list => {
+            if (list.default.type) {
+              if (list.default.type === 'message_header') {
+                // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
+                if (!Array.isArray(this.postForm.body[this.index][this.formData.id][i][list.id]) && Array.isArray(this.getPathResult(this.messageData.header, list.default.key_path))) {
+                  this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path)[i]
+                } else {
+                  this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path)
+                }
+              }
+            }
+          })
         }
       },
       tableValid (formItem) {
@@ -81,6 +110,10 @@
           } else {
             this.$message('limit数据配置有误')
           }
+        }
+        // 以下是 formItem.limit.type 未配置时，或者 keyData 本身取到的值为 0 或者 取不到 对应的值，都默认为至少有一个 table 并且可增加无限个 table
+        if (!this.limitNum) {
+          this.limitNum = 1
         }
         var validateLimit = (rule, value, cb) => {
           function isMatch (ele, i, arr) {

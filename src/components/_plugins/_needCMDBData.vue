@@ -1,14 +1,5 @@
 <template>
   <div v-if="strucData.value.source">
-    <!-- <el-select
-      v-model="vmodel[strucData.id]"
-      :multiple="strucData.value.type === 'dicts'"
-      :allow-create="strucData.value.allow_create"
-      filterable>
-      <el-option v-for="option in optionList"
-        :label="option[strucData.value.source.res.show_key]"
-        :value="option"></el-option>
-    </el-select> -->
     <template v-if="strucData.value.type === 'dict'">
       <el-select
         v-if="!strucData.isAlias"
@@ -99,28 +90,38 @@
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
-              if (this.getPathResult(this.whole && this.whole.header, para.value.key_path)) {
+              if (this.whole && this.getPathResult(this.whole.header, para.value.key_path)) {
                 // 这里要区分一下 this.whole.header 的 id 的值是对象还是数组, 数组的话，getPathResult 还有一个参数 k
                 params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'form_body') {
-              if (this.getPathResult(this.whole && this.whole.body[this.index], para.value.key_path)) {
+              if (this.whole && this.getPathResult(this.whole.body[this.index], para.value.key_path)) {
                 // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'message_header') {
-              if (this.getPathResult(this.message && this.message.header, para.value.key_path)) {
-                // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
-              } else {
-                return false // 如果没取到值就不发请求
+              console.log(this.message && this.message.header)
+              if (this.message && this.message.header) {
+                if (this.getPathResult(this.message.header, para.value.key_path)) {
+                  params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
+                } else {
+                  this.$message.warning(`取不到 message_header 的 ${para.value.key_path} 值`)
+                  return false
+                }
               }
+              // if (this.message && this.getPathResult(this.message.header, para.value.key_path)) {
+              //   // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
+              //   params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
+              //   console.log(params[para.id], para.id)
+              // } else {
+              //   return false // 如果没取到值就不发请求
+              // }
             } else if (para.value.type === 'message_body') {
-              if (this.getPathResult(this.message && this.message.body[this.index], para.value.key_path)) {
+              if (this.message && this.getPathResult(this.message.body[this.index], para.value.key_path)) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path)
               } else {
@@ -185,7 +186,7 @@
             })
           }
           // 将默认值(对象类型)放回值里面
-          // console.log(this.strucData.id)
+          // console.log(this.vmodel[this.strucData.id])
           // console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
           if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
             this.optionList.map(option => {
