@@ -15,12 +15,12 @@
           <el-option v-for="item in countConfig" :value="item"></el-option>
         </el-select>
       </el-form-item>
-      <template v-if="dialogProps.default.type === 'static'">
-        <el-form-item label="静态值">
+      <template v-if="['static', 'api'].includes(dialogProps.default.type)">
+        <el-form-item label="静态值／索引">
           <el-input size="small" v-model="dialogProps.default.value"></el-input>
         </el-form-item>
       </template>
-      <template v-if="dialogProps.default.type !== 'static'">
+      <template v-if="!['static', 'api'].includes(dialogProps.default.type)">
         <el-form-item label="属性路径">
           <el-input size="small" class="code-input" v-model="dialogProps.default.key_path"></el-input>
         </el-form-item>
@@ -47,7 +47,7 @@
 
     data () {
       return {
-        countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
+        countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'api' ]
       }
     },
 
