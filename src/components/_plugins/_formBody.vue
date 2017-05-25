@@ -120,7 +120,8 @@
       header: { type: Boolean },
       headerTable: { type: Boolean },
       bodyTable: { type: Boolean },
-      valueId: { type: String }
+      valueId: { type: String },
+      tableIndex: { type: Number }
     },
 
     data () {
