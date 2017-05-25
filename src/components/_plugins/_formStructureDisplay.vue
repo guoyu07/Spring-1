@@ -49,10 +49,37 @@
           <el-table
             v-else-if="formItem.value.type === 'table'"
             :data="item[formItem.id]">
-            <el-table-column
+            <!-- <el-table-column
               v-for="col in formItem.value.attr_list"
               :prop="col.id"
               :label="col.name">
+            </el-table-column> -->
+            <!-- <el-table-column
+              v-for="col in formItem.value.attr_list"
+              :label="col.name">
+              <template scope="scope">
+                <span v-if="scope.row.value.type === 'dict'">
+                  {{scope.row.id}}
+                </span>
+                <span v-else>{{ scope.row.id }}</span>
+              </template>
+            </el-table-column> -->
+            <el-table-column
+              v-for="col in formItem.value.attr_list"
+              :label="col.name">
+              <template scope="scope">
+                <!-- <pre>{{scope.row}}</pre> -->
+                <span v-if="col.value.type === 'FK' || col.value.type === 'dict'">
+                  <span v-if="typeof Object.assign({}, scope.row[col.id]) === 'object'">
+                    {{ Object.assign({}, Object.assign({}, scope.row[col.id]))[col.value.source.res.show_key] }}
+                  </span>
+                  <span v-else>{{ Object.assign({}, scope.row.header)[col.id] }}</span>
+                </span>
+                <span v-else-if="col.value.type === 'FKs' || col.value.type === 'dicts'">
+                  <span v-for="span in Object.assign({}, scope.row.header)[col.id]">{{span.name}}</span>
+                </span>
+                <span v-else>{{ Object.assign({}, scope.row.header)[col.id] }}</span>
+              </template>
             </el-table-column>
           </el-table>
 
