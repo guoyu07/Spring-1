@@ -160,7 +160,7 @@
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
               <h5>Body #{{index + 1}}</h5>
               <el-card>
-                <form-conf :config-data="body.attr_list" :presets="presets" @on-config-change="onBodyConfigChange(index)"></form-conf>
+                <form-conf :config-data="body.attr_list" :presets="presets" :index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -393,13 +393,16 @@ export default {
       })
     },
     // 监听子组件 props 副本改变事件
-    onHeaderConfigChange (val) {
+    onHeaderConfigChange (args) {
       console.log('received!!!')
-      this.formConfig.form.form.header = val
+      this.formConfig.form.form.header = args.val
     },
-    onBodyConfigChange (val, index) {
-      console.log(val)
-      console.log(index)
+    onBodyConfigChange (args) {
+      console.log('received!!!')
+      // console.log(this.formConfig.form.form.body.body_list)
+      // console.log(this.formConfig.form.form.body.body_list[args.index])
+      // console.log(args.val)
+      this.formConfig.form.form.body.body_list[args.index].attr_list = args.val
     }
   },
   components: {
