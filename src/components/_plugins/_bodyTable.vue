@@ -4,10 +4,12 @@
       <template v-for="value in bodylist.value">
         <template v-if="value.value.type === 'table'"> -->
     <el-form-item
+      v-if="formData.value.type === 'table'"
       :prop="prop(formData)"
       :rules="rules(formData)"
       class="block">
-      <el-button size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
+      <!-- formData.limit.type === 'static' || !formData.limit.type 这2种情况是允许增加 table 的 -->
+      <el-button v-if="formData.limit.type === 'static' || !formData.limit.type" size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
@@ -51,7 +53,7 @@
       }
     },
     created () {
-      console.log(this.formData)
+      // console.log(this.formData)
     },
 
     watch: {
@@ -87,6 +89,7 @@
         }
       },
       tableValid (formItem) {
+        // console.log(formItem)
         let keyData
         if (formItem.limit.type === 'message_body') {
           keyData = this.getPathResult(this.message.body[this.index], formItem.limit.key_path)
@@ -149,6 +152,16 @@
       },
       rules (formItem) {
         return this.tableValid(formItem)
+        // if (formItem.value.type === 'dicts') {
+        //   return this.tableValid(formItem)
+        // } else if (formItem.value.type === 'dict') {
+        //   return {
+        //     type: 'object',
+        //     required: formItem.required,
+        //     message: formItem.name + '不能为空',
+        //     trigger: 'blur, change'
+        //   }
+        // }
       },
       closableIndex (index, value) {
         if (value.limit.type === 'static') {
@@ -200,6 +213,11 @@
 <style>
   .block {
     width: 100%;
+    border-bottom: 1px dashed #ccc;
+    /*background-color: #f8f8f8;*/
+    border-radius: 10px;
+    padding: 10px;
+    margin-bottom: 15px;
   }
   .el-form-item .el-form-item {
     margin-bottom: 22px;

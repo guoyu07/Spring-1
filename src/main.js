@@ -309,31 +309,31 @@ Vue.prototype.filterDate = value => {
 }
 
 Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, currentTask, index) => {
-  if (!(taskform.value.show && taskform.value.show.type)) {
+  if (!(taskform.show && taskform.show.type)) {
     return true
   } else {
     let compareVariable
-    if (taskform.value.show.type === 'form_header') {
+    if (taskform.show.type === 'form_header') {
       if (historyTask && (historyTask !== currentTask)) {
         compareVariable = messageData.header
       } else {
         compareVariable = postForm.header
       }
-    } else if (taskform.value.show.type === 'message_header') {
+    } else if (taskform.show.type === 'message_header') {
       compareVariable = messageData.header
-    } else if (taskform.value.show.type === 'message_body') {
+    } else if (taskform.show.type === 'message_body') {
       compareVariable = messageData.body[index]
     }
-    if (taskform.value.show.op === 'eq') {
-      if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path) === taskform.value.show.value) {
+    if (taskform.show.op === 'eq') {
+      if (Vue.prototype.getPathResult(compareVariable, taskform.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) === taskform.show.value) {
         return true
       }
-    } else if (taskform.value.show.op === 'neq') {
-      if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path) !== taskform.value.show.value) {
+    } else if (taskform.show.op === 'neq') {
+      if (Vue.prototype.getPathResult(compareVariable, taskform.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) !== taskform.show.value) {
         return true
       }
-    } else if (taskform.value.show.op === 'reg') {
-      if (Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.value.show.key_path).includes(taskform.value.show.value)) {
+    } else if (taskform.show.op === 'reg') {
+      if (Vue.prototype.getPathResult(compareVariable, taskform.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path).includes(taskform.show.value)) {
         return true
       }
     }
