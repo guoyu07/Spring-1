@@ -19,7 +19,7 @@
   }
 
   .sub-title {
-    margin: 0 0 4px;
+    margin: 0 0 6px;
     text-align: right;
     font-size: 12px;
     font-weight: normal;
@@ -110,8 +110,8 @@
 
 <template>
   <div class="form-config">
-    <h5 class="sub-title"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
-    <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable">
+    <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
+    <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
         <input type="checkbox" :id="`${itemConf.id} + ${index}`">
         <label class="draggable-item__label" :for="`${itemConf.id} + ${index}`">{{`${itemConf.name} - ${itemConf.value.type}`}}</label>
@@ -186,10 +186,12 @@
                       <el-button size="small" slot="reference">配置选项</el-button>
                     </el-popover>
                     <!--动态选项（cmdb）-->
-                    <template v-if="['dict', 'dicts'].includes(itemConf.value.type)">
-                      <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
+                    <!-- <template v-if="['dict', 'dicts'].includes(itemConf.value.type)"> -->
+                    <el-popover v-if="['dict', 'dicts'].includes(itemConf.value.type)" placement="top" trigger="click" @show="showCMDBConf(itemConf)">
                       <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
-                    </template>
+                      <el-button size="small" slot="reference">配置选项</el-button>
+                    </el-popover>
+                    <!-- </template> -->
                     <!--表格-->
                     <template v-if="itemConf.value.type === 'table'">
                       <el-button size="small" @click="showTableConf(itemConf)">配置表格</el-button>
@@ -251,9 +253,9 @@
       <el-select size="small" v-model="selectedPreset" placeholder="选择预设集">
         <el-option v-for="obj in presets" :key="obj" :value="obj" :label="obj.name"></el-option>
       </el-select>
-      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset !== {}">配置预设集</el-button>
+      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">配置预设集</el-button>
     </el-row>
-    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2"></preset-conf>
+    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" v-if="selectedPreset"></preset-conf>
 
     <el-dialog title="字段显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
       <el-form label-width="100px">
@@ -306,7 +308,7 @@ export default {
   data () {
     return {
       configData2: this.configData, // 副本，结合 watch 实现 props 双向数据流
-      selectedPreset: {},
+      selectedPreset: null,
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
       editBody: null,

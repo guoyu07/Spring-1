@@ -101,7 +101,7 @@
                 <br>
               </template>
 
-              <el-form-item width="100%">
+              <el-form-item width="100%" label="额外配置">
                 <el-checkbox v-model="formConfig.form.show_progress">是否显示进度条</el-checkbox>
                 <el-checkbox v-model="formConfig.form.show_history">是否显示步骤</el-checkbox>
               </el-form-item>

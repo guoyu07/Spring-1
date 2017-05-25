@@ -1,5 +1,7 @@
 <style lang="less" scoped>
   .conf-cmdb-contain {
+    max-width: 400px;
+
     .el-row, .el-col {
       margin-bottom: 4px;
     }
@@ -34,7 +36,7 @@
 </style>
 
 <template>
-  <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible" @close="onClose" top="10%">
+  <!-- <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible"> -->
     <!-- <el-radio-group v-model="optionType">
       <el-radio label="dynamic">动态</el-radio>
       <el-radio label="static">静态</el-radio>
@@ -85,8 +87,8 @@
           </el-dropdown>
         </el-form-item>
         <el-form-item label="允许新增选项" v-if="dialogProps.value.type !== 'search_bar'">
-          <el-radio v-model="allowCreate" :label="true">是</el-radio>
-          <el-radio v-model="allowCreate" :label="false">否</el-radio>
+          <el-radio v-model="dialogProps.value.allow_create" :label="true">是</el-radio>
+          <el-radio v-model="dialogProps.value.allow_create" :label="false">否</el-radio>
         </el-form-item>
       </el-form>
 
@@ -203,10 +205,10 @@
       </template> -->
 
     </div>
-    <div slot="footer" class="dialog-footer">
+    <!-- <div slot="footer" class="dialog-footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
     </div>
-  </el-dialog>
+  </el-dialog> -->
 </template>
 
 <script>
@@ -332,13 +334,17 @@
         console.log(this.dialogProps.value.regex)
       },
       onSubmit () {
-        this.dialogProps.value.confVisible = false
+        console.log(this.dialogProps.value.confVisible)
+        this.$set(this.dialogProps.value, 'confVisible', false)
+        console.log(this.dialogProps.value.confVisible)
       },
 
       onClose () {
         if (this.dialogProps.value.type !== 'search_bar') {
           this.dialogProps.value.allow_create = this.allowCreate
         }
+        this.dialogProps.value.confVisible = false
+        console.log(this.dialogProps.value.confVisible)
       }
     }
   }
