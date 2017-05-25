@@ -8,7 +8,7 @@
 </style>
 
 <template>
-  <div class="conf-contain">
+  <div class="conf-contain" v-if="dialogProps.limit">
     <el-form label-width="100px">
       <el-form-item label="个数限制来源">
         <el-select size="small" v-model="dialogProps.limit.type">
