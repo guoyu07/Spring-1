@@ -18,6 +18,17 @@
     }
   }
 
+  .sub-title {
+    margin: 0 0 4px;
+    text-align: right;
+    font-size: 12px;
+    font-weight: normal;
+
+    i::before {
+      font-size: 12px;
+    }
+  }
+
   .draggable {
     @borderColor: #dfe6ec;
     @fontColor: #48576a;
@@ -99,6 +110,7 @@
 
 <template>
   <div class="form-config">
+    <h5 class="sub-title"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
     <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
         <input type="checkbox" :id="`${itemConf.id} + ${index}`">
@@ -271,8 +283,6 @@
         <el-button type="primary" icon="check" @click="showConditionVisible = false">OK</el-button>
       </div>
     </el-dialog>
-    Old list: {{oldList}}
-    New list: {{newList}}
   </div>
 </template>
 
@@ -300,10 +310,7 @@ export default {
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
       editBody: null,
-      showConditionVisible: false,
-      sortable: null,
-      oldList: [],
-      newList: []
+      showConditionVisible: false
     }
   },
 
