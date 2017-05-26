@@ -13,9 +13,9 @@
                   <!-- {{taskformheader.name}} -->
                   <span v-for="valueheader in taskformheader.value">
                     <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.value.show.type">
+                    <div v-if="valueheader.show.type">
                       <!-- 判断 show.type 这里只判断了一种情况-->
-                      <div v-if="valueheader.value.show.type==='form_header'">
+                      <div v-if="valueheader.show.type==='form_header'">
                         <!-- 表单信息显示 -->
                         <header-form-display
                           v-if="valueheader.value.type !== 'search_bar'"
@@ -26,7 +26,7 @@
                         <div v-if="valueheader.value.type === 'search_bar'">
                           <el-table
                             class="margin-bottom"
-                            v-if="valueheader.value.show.value === getPathResult(applyData.header, valueheader.value.show.key_path)"
+                            v-if="valueheader.show.value === getPathResult(applyData.header, valueheader.show.key_path)"
                             :data="applyData.header[valueheader.id]">
                             <el-table-column
                               v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
@@ -139,7 +139,7 @@
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
-                    v-if="!taskform.value.show.type"
+                    v-if="!taskform.show.type"
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm">
@@ -151,11 +151,11 @@
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
-                  <div v-if="taskform.value.show.type">
-                    <div v-if="taskform.value.show.type==='form_header'">
-                      <div v-if="getPathResult(assignForm.header, taskform.value.show.key_path.split('.')[0])">
+                  <div v-if="taskform.show.type">
+                    <div v-if="taskform.show.type==='form_header'">
+                      <div v-if="getPathResult(assignForm.header, taskform.show.key_path.split('.')[0])">
                         <search-bar
-                          v-if="getPathResult(assignForm.header, taskform.value.show.key_path) === taskform.value.show.value"
+                          v-if="getPathResult(assignForm.header, taskform.show.key_path) === taskform.show.value"
                           :hosts="assignForm.header"
                           :attr-list="taskform"
                           :limit="getLimitQuantity(taskform, assignForm, applyData)"
@@ -426,10 +426,10 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.value.show.type) {
+            if (item.show.type) {
               // show.type 有四种类型
-              if (item.value.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
                     this.assignForm.header[item.id] = this.hostList
                   }

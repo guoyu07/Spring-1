@@ -1,5 +1,5 @@
 <template>
-  <div v-if="strucData.value.source">
+  <div>
     <template v-if="strucData.value.type === 'dict'">
       <el-select
         v-if="!strucData.isAlias"
@@ -7,7 +7,6 @@
         :clearable="!strucData.required"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
-        :placeholder="strucData.placeholder"
         filterable>
         <el-option v-for="option in optionList"
           :label="option[strucData.value.source.res.show_key]"
@@ -20,7 +19,6 @@
         <el-radio v-for="option in optionList" :label="option">{{option[strucData.value.source.res.show_key]}}</el-radio>
       </el-radio-group>
     </template>
-
     <template v-else-if="strucData.value.type === 'dicts'">
       <el-select
         filterable
@@ -28,7 +26,6 @@
         v-model="vmodel[strucData.id]"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
-        :placeholder="strucData.placeholder"
         multiple>
         <el-option v-for="option in optionList"
           :label="option[strucData.value.source.res.show_key]"
@@ -43,7 +40,6 @@
     </template>
   </div>
 </template>
-
 <script>
   export default {
     props: {
@@ -51,27 +47,26 @@
       whole: { type: Object },
       message: { type: Object },
       strucData: { type: Object },
-      index: { type: Number }
+      index: { type: Number },
+      bodyTable: { type: Boolean }
     },
-
     data () {
       return {
-        optionList: []
+        optionList: [],
+        limitNum: 0,
+        limitMaxNum: 0
       }
     },
     created () {
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          // console.log(this.strucData.watch)
+          console.log(this.strucData.watch)
           this.renderOptions()
         })
-      } else if (this.strucData.value.source) {
-        this.renderOptions()
       } else {
-        this.$message.warning(`${this.strucData.name}的API表单配置有误`)
+        this.renderOptions()
       }
     },
-
     methods: {
       renderOptions () {
         if (!this.strucData.default.type) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
@@ -90,38 +85,38 @@
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
-              if (this.whole && this.getPathResult(this.whole.header, para.value.key_path)) {
+              if (this.getPathResult(this.whole && this.whole.header, para.value.key_path)) {
                 // 这里要区分一下 this.whole.header 的 id 的值是对象还是数组, 数组的话，getPathResult 还有一个参数 k
                 params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'form_body') {
-              if (this.whole && this.getPathResult(this.whole.body[this.index], para.value.key_path)) {
-                // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
+              if (this.bodyTable) {
+                // console.log(this.strucData.name, para.value.key_path, this.whole)
+                if (this.getPathResult(this.whole, para.value.key_path)) {
+                  // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
+                  params[para.id] = this.getPathResult(this.whole, para.value.key_path)
+                } else {
+                  return false // 如果没取到值就不发请求
+                }
+              } else {
+                if (this.getPathResult(this.whole && this.whole.body[this.index], para.value.key_path)) {
+                  // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
+                  params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
+                } else {
+                  return false // 如果没取到值就不发请求
+                }
+              }
+            } else if (para.value.type === 'message_header') {
+              if (this.getPathResult(this.message && this.message.header, para.value.key_path)) {
+                // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
+                params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
-            } else if (para.value.type === 'message_header') {
-              console.log(this.message && this.message.header)
-              if (this.message && this.message.header) {
-                if (this.getPathResult(this.message.header, para.value.key_path)) {
-                  params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
-                } else {
-                  this.$message.warning(`取不到 message_header 的 ${para.value.key_path} 值`)
-                  return false
-                }
-              }
-              // if (this.message && this.getPathResult(this.message.header, para.value.key_path)) {
-              //   // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
-              //   params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
-              //   console.log(params[para.id], para.id)
-              // } else {
-              //   return false // 如果没取到值就不发请求
-              // }
             } else if (para.value.type === 'message_body') {
-              if (this.message && this.getPathResult(this.message.body[this.index], para.value.key_path)) {
+              if (this.getPathResult(this.message && this.message.body[this.index], para.value.key_path)) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path)
               } else {
@@ -146,6 +141,56 @@
         this.http.post(this.strucData.value.source.url.substring(4), this.parseData(postHeadvData))
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+          // 配置默认值
+          if (this.strucData.default.type) {
+            if (this.strucData.default.type === 'api') {
+              if (Array.isArray(this.vmodel[this.strucData.id])) {
+                let keyData
+                if (this.strucData.limit.type === 'message_body') {
+                  keyData = this.getPathResult(this.message.body[this.index], this.strucData.limit.key_path)
+                } else if (this.strucData.limit.type === 'message_header') {
+                  console.log(this.message)
+                  keyData = this.getPathResult(this.message.header, this.strucData.limit.key_path)
+                } else if (this.strucData.limit.type === 'static') {
+                  keyData = this.strucData.limit.min
+                  this.limitMaxNum = this.strucData.limit.max
+                } else if (this.strucData.limit.type === 'form_body') {
+                  keyData = this.getPathResult(this.whole.body[this.index], this.strucData.limit.key_path) // this.whole.body[this.index] 就是 this.item
+                } else if (this.strucData.limit.type === 'form_header') {
+                  keyData = this.getPathResult(this.whole.header, this.strucData.limit.key_path)
+                }
+                if (Array.isArray(keyData)) {
+                  this.limitNum = keyData.length
+                } else if (typeof keyData === 'number') {
+                  this.limitNum = keyData
+                } else if (typeof keyData === 'string') {
+                  if (typeof +keyData === 'number') {
+                    this.limitNum = +keyData
+                  } else {
+                    this.$message('limit数据配置有误')
+                  }
+                }
+                if ((this.limitNum + +this.strucData.default.value) <= this.optionList.length) {
+                  this.vmodel[this.strucData.id] = this.optionList.slice(this.strucData.default.value, this.limitNum)
+                } else if (this.limitNum <= this.optionList.length) {
+                  this.$message.warning(`${this.strucData.name}的选项不够${+this.limitNum + +this.strucData.default.value}项`)
+                  this.vmodel[this.strucData.id] = this.optionList.slice(0, this.limitNum)
+                } else {
+                  this.vmodel[this.strucData.id] = this.optionList
+                  this.$message.warning(`${this.strucData.name}数据项不足`)
+                }
+              } else {
+                if (this.strucData.default.value < this.optionList.length) {
+                  this.vmodel[this.strucData.id] = this.optionList[this.strucData.default.value]
+                } else if (this.optionList[0]) {
+                  this.$message.warning(`${this.strucData.name}的选项不够${this.strucData.default.value}项`)
+                  this.vmodel[this.strucData.id] = this.optionList[0]
+                } else {
+                  this.$message.warning(`${this.strucData.name}无数据`)
+                }
+              }
+            }
+          }
           if (this.strucData.value.source.data.action === 'import/device/items') {
             this.vmodel[this.strucData.id] = this.optionList[0]
           } else if (this.strucData.value.source.data.action === 'export/device/items') {
@@ -180,14 +225,14 @@
                 })
               }
             }
-          } else if (this.strucData.value.source.data.action === 'idcrack/list') { // 机柜图
+          } else if (this.strucData.value.source.data.action === 'idcrack/list') {
             this.$store.dispatch('idcrack_data', {
               idcrackData: this.optionList
             })
           }
           // 将默认值(对象类型)放回值里面
-          // console.log(this.vmodel[this.strucData.id])
-          // console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
+          // console.log(this.strucData.id)
+          console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
           if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
             this.optionList.map(option => {
               if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {

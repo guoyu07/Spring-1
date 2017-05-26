@@ -13,14 +13,14 @@
                   <!-- {{taskformheader.name}} -->
                   <span v-for="valueheader in taskformheader.value">
                     <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.value.show">
+                    <div v-if="valueheader.show">
                       <!-- 判断 show.type 这里只判断了一种情况-->
-                      <div v-if="valueheader.value.show.type==='form_header'">
+                      <div v-if="valueheader.show.type==='form_header'">
                         <!-- 判断是设备选择，还是普通表单显示 TODO：需要写一下表单显示的情况 -->
                         <div v-if="valueheader.value.type === 'search_bar'">
                           <el-table
                             class="margin-bottom"
-                            v-if="valueheader.value.show.value === getPathResult(applyData.header, valueheader.value.show.key_path)"
+                            v-if="valueheader.show.value === getPathResult(applyData.header, valueheader.show.key_path)"
                             :data="applyData.header[valueheader.id]">
                             <el-table-column
                               v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"

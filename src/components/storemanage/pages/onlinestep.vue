@@ -54,14 +54,15 @@
                           <h5>{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
                             <form-body
+                              v-if="showFormItem(formItem, assignForm, applyData)"
                               :item="assignForm.body[index]"
                               :form-item="formItem"
-                              :whole="whole"
+                              :whole="assignForm"
                               :index="index"
                               :message="applyData">
                             </form-body>
                             <search-bar
-                              v-if="formItem.value.type==='search_bar'"
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
                               :index="index"
                               :hosts="assignForm.body[index]"
                               :attr-list="formItem"
@@ -69,7 +70,7 @@
                               @on-hosts-change="onHostsChange">
                             </search-bar>
                             <body-table
-                              v-if="formItem.value.type==='table'"
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
                               :form-data="formItem"
                               :item="assignForm.body[index]"
                               :post-form="assignForm"
@@ -94,21 +95,21 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :message="applyData"
                     :header="true">
                   </form-body>
                   <search-bar
-                    v-if="showFormItem(taskform, assignForm, applyData)"
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
                     :hosts="assignForm.header"
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <div v-if="taskform.value.type==='table'">
-                      table
+                      headerTable
                   </div>
                 </span>
               </div>
-              <!-- <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure> -->
             </div>
             <!-- 按钮区域 -->
             <div class="btn-area">
@@ -305,7 +306,7 @@
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                   if (value.default.type) {
                     if (value.default.type === 'message_header') {
-                      console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      // console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
                       // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
                       this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
                       console.log(this.assignForm.header[value.id])
@@ -358,12 +359,12 @@
                   })
                 }
               } else {
-                console.log(item, body)
+                // console.log(item, body)
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      console.log(newData)
+                      // console.log(newData)
                       if (value.value.type === 'table') {
                         // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
                         newData[value.id][0] = {}
@@ -438,10 +439,10 @@
       },
       handleClick (tab, event) {
         this.index = tab.index
-        console.log(this.index)
+        // console.log(this.index)
       },
       onHostsChange (val, index) {
-        console.log(val, index)
+        // console.log(val, index)
         if (index !== undefined) {
           for (const id in this.assignForm.body[index]) {
             this.assignForm.body[index][id] = val
@@ -455,10 +456,10 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.value.show.type) {
+            if (item.show.type) {
               // show.type 有四种类型
-              if (item.value.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
                     this.assignForm.header[item.id] = this.hostList
                   }
@@ -467,6 +468,18 @@
             }
           })
         })
+        for (const headerid in this.assignForm.header) {
+          if (!this.assignForm.header[headerid]) {
+            delete this.assignForm.header[headerid] // 删除头部空值
+          }
+        }
+        this.assignForm.body.map(body => {
+          for (const headerid in body) {
+            if (!body[headerid]) {
+              delete body[headerid] // 删除 body 的空值
+            }
+          }
+        })
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
@@ -474,11 +487,11 @@
           type: 'info'
         }).then(() => {
           const ref = this.$refs['assignForm'].fields.length !== 0
-          console.log(ref)
+          // console.log(ref)
           if (ref) { // 有表单的情况下，表单的自验证
             this.$refs['assignForm'].validate((valid) => {
               if (valid) {
-                console.log(this.assignForm.body)
+                // console.log(this.assignForm.body)
                 if (this.assignForm.body) {
                   for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
                     for (const item in data) {

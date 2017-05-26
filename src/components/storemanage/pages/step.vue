@@ -357,10 +357,10 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.value.show) {
+            if (item.show) {
               // show.type 有四种类型
-              if (item.value.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.value.show.key_path) === item.value.show.value) {
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
                     this.assignForm.header[item.id] = this.hostList
                   }
