@@ -101,8 +101,8 @@
       <el-menu mode="vertical" router="router">
         <div class="sidebar-title">IT 服务中心</div>
 
-        <el-menu-item-group title="国信">
-          <el-menu-item index="/guosen/on"><i class="el-icon-fa-upload"></i>上架流程</el-menu-item>
+        <el-menu-item-group title="首页">
+          <el-menu-item index="/home"><i class="el-icon-fa-dashboard"></i>运维服务目录</el-menu-item>
         </el-menu-item-group>
 
         <el-menu-item-group title="事件管理">
@@ -116,12 +116,12 @@
         <el-menu-item-group title="权限自定义">
           <el-menu-item index="/auth/users"><i class="el-icon-fa-user"></i>用户管理</el-menu-item>
           <el-menu-item index="/auth/roles"><i class="el-icon-fa-users"></i>角色管理</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="流程自定义">
-          <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>流程设计</el-menu-item>
-          <el-menu-item index="/process-admin/basics"><i class="el-icon-fa-circle-o"></i>流程基本管理</el-menu-item>
+          <el-menu-item index="/process-admin/basics"><i class="el-icon-fa-circle-o"></i>流程特权管理</el-menu-item>
           <el-menu-item index="/process-admin/steps"><i class="el-icon-fa-circle-o-notch"></i>流程环节管理</el-menu-item>
-          <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>表单配置</el-menu-item>
+        </el-menu-item-group>
+        <el-menu-item-group title="流程设计">
+          <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>自定义流程</el-menu-item>
+          <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>自定义表单</el-menu-item>
         </el-menu-item-group>
       </el-menu>
     </aside>

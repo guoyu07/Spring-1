@@ -170,6 +170,12 @@
             </el-row>
             <br>
             <el-button type="primary" size="small" icon="plus" @click="addBodyConfig">添加 Body</el-button>
+            <el-dropdown trigger="click" @command="selectClonedBody">
+              <el-button type="primary" :plain="true" size="small"><i class="el-icon-fa-clone"></i> 克隆 Body</el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item v-for="(body, index) of formConfig.form.form.body.body_list" :command="index.toString()">Body #{{index + 1}}</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-row>
           <el-dialog title="Body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
             <el-form label-width="100px">
@@ -352,6 +358,14 @@ export default {
     addBodyConfig () {
       this.formConfig.form.form.body.body_list.push({
         attr_list: []
+        // id: new Date().getUTCMilliseconds()
+      })
+    },
+    // 选择克隆 body
+    selectClonedBody (cmd) {
+      const selectedBodyIndex = Number(cmd)
+      this.formConfig.form.form.body.body_list.push({
+        attr_list: this.formConfig.form.form.body.body_list[selectedBodyIndex].attr_list
       })
     },
     // 删除 body
