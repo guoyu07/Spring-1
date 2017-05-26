@@ -95,15 +95,16 @@
       :placeholder="formItem.placeholder">
     </el-date-picker>
 
-    <need-cmdb-data
-      v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
-      :vmodel="item"
-      :strucData="formItem"
-      :whole="whole"
-      :message="message"
-      :index="index"
-      :body-table="bodyTable">
-    </need-cmdb-data>
+    <template v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'">
+      <need-cmdb-data
+        :vmodel="item"
+        :strucData="formItem"
+        :whole="whole"
+        :message="message"
+        :index="index"
+        :body-table="bodyTable">
+      </need-cmdb-data>
+    </template>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
@@ -130,6 +131,7 @@
       }
     },
     created () {
+      console.log(this.index, this.formItem.name, 'formBody')
     },
 
     methods: {

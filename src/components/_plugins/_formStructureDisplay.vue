@@ -4,7 +4,7 @@
       <!-- <h5>{{formBlock.name}}</h5> -->
       <template v-for="formItem in formBlock.value">
         <el-form-item
-          v-if="showFormItem(formItem, postForm, messageData, historyTask, currentTask, index)"
+          v-if="showFormItem(formItem, postForm, messageData, historyTask, currentTask, index) && item[formItem.id]"
           :label="formItem.name"
           :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' ? 'blockElement' : ''">
 
@@ -20,7 +20,7 @@
             </span>
           </span>
 
-          <span v-else-if="formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span>
+          <!-- <span v-else-if="formItem.value.type==='FK'"> {{ item[formItem.id]['name'] }}</span>
 
           <span v-else-if="formItem.value.type === 'FKs'">
             <span v-for="span in item[formItem.id]">
@@ -28,7 +28,7 @@
               <span v-if="spanindex === (item[formItem.id].length - 1)"></span>
               <span v-else> | </span>
             </span>
-          </span>
+          </span> -->
 
           <template v-else-if="formItem.value.type === 'arr'">
             <span class="arr-span" v-for="(span, spanindex) in item[formItem.id]">
@@ -69,14 +69,18 @@
               :label="col.name">
               <template scope="scope">
                 <!-- <pre>{{scope.row}}</pre> -->
-                <span v-if="col.value.type === 'FK' || col.value.type === 'dict'">
+                <span v-if="col.value.type === 'dict'">
                   <span v-if="typeof Object.assign({}, scope.row[col.id]) === 'object'">
                     {{ Object.assign({}, Object.assign({}, scope.row[col.id]))[col.value.source.res.show_key] }}
                   </span>
                   <span v-else>{{ Object.assign({}, scope.row.header)[col.id] }}</span>
                 </span>
-                <span v-else-if="col.value.type === 'FKs' || col.value.type === 'dicts'">
+                <span v-else-if="col.value.type === 'dicts'">
+                  <!-- dicts -->
                   <span v-for="span in Object.assign({}, scope.row.header)[col.id]">{{span.name}}</span>
+                </span>
+                <span v-else-if="col.value.type === 'enums'">
+                  <span v-for="span in Object.assign({}, scope.row.header)[col.id]">{{span}}</span>
                 </span>
                 <span v-else>{{ Object.assign({}, scope.row.header)[col.id] }}</span>
               </template>

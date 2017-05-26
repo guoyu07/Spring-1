@@ -60,10 +60,11 @@
     created () {
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          console.log(this.strucData.watch)
+          // console.log(this.strucData.watch)
           this.renderOptions()
         })
       } else {
+        // console.log(this.strucData.name, 'hello')
         this.renderOptions()
       }
     },
@@ -85,7 +86,7 @@
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
-              if (this.getPathResult(this.whole && this.whole.header, para.value.key_path)) {
+              if (this.whole && this.getPathResult(this.whole.header, para.value.key_path)) {
                 // 这里要区分一下 this.whole.header 的 id 的值是对象还是数组, 数组的话，getPathResult 还有一个参数 k
                 params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
               } else {
@@ -109,17 +110,19 @@
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.getPathResult(this.message && this.message.header, para.value.key_path)) {
+              if (this.message && this.getPathResult(this.message.header, para.value.key_path)) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'message_body') {
-              if (this.getPathResult(this.message && this.message.body[this.index], para.value.key_path)) {
+              // console.log(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))
+              if (this.message && this.getPathResult(this.message.body[this.index], para.value.key_path, 0)) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path)
+                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0)
               } else {
+                this.$message.warning(`取不到 message_body 里的 ${para.value.key_path} 值`)
                 return false // 如果没取到值就不发请求
               }
             }
@@ -226,13 +229,14 @@
               }
             }
           } else if (this.strucData.value.source.data.action === 'idcrack/list') {
-            this.$store.dispatch('idcrack_data', {
-              idcrackData: this.optionList
-            })
+            // 机柜预览图
+            // this.$store.dispatch('idcrack_data', {
+            //   idcrackData: this.optionList
+            // })
           }
           // 将默认值(对象类型)放回值里面
           // console.log(this.strucData.id)
-          console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
+          // console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
           if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
             this.optionList.map(option => {
               if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {

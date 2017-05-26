@@ -22,9 +22,6 @@
                 </div>
               </div>
             </div>
-            <div class="clear">
-              <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview" class="margin-bottom">机柜预览图</el-button>
-            </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
@@ -59,7 +56,8 @@
                               :form-item="formItem"
                               :whole="assignForm"
                               :index="index"
-                              :message="applyData">
+                              :message="applyData"
+                              keep-alive>
                             </form-body>
                             <search-bar
                               v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
@@ -82,6 +80,9 @@
                         </div>
                       </div>
                   </div>
+                </div>
+                <div class="clear">
+                  <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
                 </div>
               </el-tab-pane>
             </el-tabs>
@@ -190,14 +191,64 @@
         previewShown: false,
         idcrackData: [],
         previewPage: 1,
-        pageNum: 1
+        pageNum: 1,
+        idcrackList: [],
+        idcrackTaked: []
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
+      console.log('onlinestep')
       // this.renderForm()
       // this.renderTaskForm()
+    },
+    mounted () {
+      // 为机柜 U 位默认值而生
+      if (this.routerInfo.tkey === 'cabinet') {
+        this.http.interceptors.response.use(rs => {
+          // console.log('mounted', this.applyData.body, this.assignForm.body)
+          this.applyData && this.applyData.body.map((item, k) => {
+            if (this.assignForm.body[k] && this.assignForm.body[k].idcrack) {
+              // console.log(this.assignForm.body[k].idcrack.u_info, this.applyData.header.host_list[k].u_num)
+              let takedData = {}
+              takedData.id = this.assignForm.body[k].idcrack.instanceId
+              takedData.taked = []
+              const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
+              this.assignForm.body[k].idcrack.u_info.assetList.map(item => {
+                for (let i = 0; i < uHeight; i++) {
+                  if (i >= item.beginU && i <= item.endU) {
+                    takedData.taked.push(i)
+                  }
+                }
+              })
+              if (this.idcrackTaked.length === 0) {
+                this.idcrackTaked.push(takedData)
+              } else if (!this.idcrackTaked.some(item => { return takedData.id === item.id })) {
+                this.idcrackTaked.push(takedData)
+              }
+              for (let i = 0; i < uHeight; i++) {
+                for (const item of this.idcrackTaked) {
+                  if (item.id === takedData.id) {
+                    let uNum = i + +this.applyData.header.host_list[k].u_num
+                    if (!item.taked.includes(uNum) && !item.taked.includes((i + 1))) {
+                      this.assignForm.body[k].idcracku = i + 1
+                      // item.taked.push(this.assignForm.body[k].idcrackui+1)
+                      // for (let utaked = (i + 1); utaked <= uNum; utaked++) {
+                      //   item.taked.push(utaked)
+                      // }
+                      return false
+                    }
+                  }
+                }
+              }
+            }
+          })
+          return rs
+        }, err => {
+          console.log(err.response.data.errorMessage)
+        })
+      }
     },
     watch: {
       'idcrackData': 'idcrackIsTaked'
@@ -215,10 +266,28 @@
           }
         }
       },
-      getPreview () {
-        this.previewShown = !this.previewShown
-        this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
-        this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
+      getPreview (ipscope) {
+        const postHeadvData = {
+          action: 'idcrack/list',
+          method: 'GET',
+          data: {
+            ipscopeId: ipscope
+          }
+        }
+        this.http.post('', this.parseData(postHeadvData))
+        .then((response) => {
+          console.log(response)
+          this.idcrackList = response.data.data.list
+          this.previewShown = !this.previewShown
+          this.pageNum = Math.ceil(this.idcrackList.length / 4)
+          this.idcrackData = this.idcrackList.slice(0, 4)
+        })
+        // this.$store.dispatch('idcrack_data', {
+        //   idcrackData: this.optionList
+        // })
+        // this.previewShown = !this.previewShown
+        // this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
+        // this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
       },
       closePreview () {
         this.previewShown = !this.previewShown
@@ -226,7 +295,7 @@
       nextPreview () {
         const page = this.previewPage + 1
         if (this.previewPage !== this.pageNum) {
-          this.idcrackData = this.$store.state.idcrackData.slice((page - 1) * 4, page * 4)
+          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
           this.previewPage = page
         }
       },
@@ -234,7 +303,7 @@
       prevPreview () {
         const page = this.previewPage > 1 ? this.previewPage - 1 : 1
         if (this.previewPage !== 1) {
-          this.idcrackData = this.$store.state.idcrackData.slice((page - 1) * 4, page * 4)
+          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
           this.previewPage = page
         }
       },
@@ -383,6 +452,7 @@
                           })
                         }
                       }
+                      // 机柜 U 位数的默认值 console.log(this.assignForm.body[k].idcrack, this.applyData.header.host_list[k].u_num)
                     }
                   })
                 })
