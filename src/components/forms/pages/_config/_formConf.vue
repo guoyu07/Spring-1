@@ -16,6 +16,11 @@
       margin-left: 4px;
       color: #333;
     }
+
+    .el-popover {
+      max-height: 90vh;
+      overflow: scroll;
+    }
   }
 
   .sub-title {
@@ -188,21 +193,25 @@
                     </el-popover>
                     <!--动态选项（cmdb）-->
                     <!-- <template v-if="['dict', 'dicts'].includes(itemConf.value.type)"> -->
-                    <el-popover v-if="['dict', 'dicts'].includes(itemConf.value.type)" placement="top" trigger="click" @show="showCMDBConf(itemConf)">
+                    <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" placement="top" trigger="click" @show="showCMDBConf(itemConf)">
                       <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
                       <el-button size="small" slot="reference">配置选项</el-button>
                     </el-popover>
                     <!-- </template> -->
                     <!--表格-->
-                    <template v-if="itemConf.value.type === 'table'">
+                    <el-popover v-if="itemConf.value.type === 'table'" placement="top" trigger="click" @show="showTableConf(itemConf)">
+                      <table-conf :dialog-props="itemConf"></table-conf>
+                      <el-button size="small" slot="reference">配置表格</el-button>
+                    </el-popover>
+                    <!-- <template v-if="itemConf.value.type === 'table'">
                       <el-button size="small" @click="showTableConf(itemConf)">配置表格</el-button>
                       <table-conf :dialog-props="itemConf"></table-conf>
-                    </template>
+                    </template> -->
                     <!-- 搜索元件 -->
-                    <template v-if="itemConf.value.type === 'search_bar'">
-                      <el-button size="small" @click="showCMDBConf(itemConf)">配置选项</el-button>
+                    <!-- <el-popover v-if="itemConf.value.type === 'search_bar'" placement="top" trigger="click" @show="showCMDBConf(itemConf)" class="limited-popover">
                       <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
-                    </template>
+                      <el-button size="small" slot="reference">配置选项</el-button>
+                    </el-popover> -->
                   </el-form-item>
                   <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
                     <el-popover placement="right" trigger="click" @show="showLimitConf(itemConf)">
@@ -229,14 +238,7 @@
                       placeholder="一个或多个正则表达式"
                       class="code-input"
                       size="small"></el-select>
-                    <!-- <el-input v-model="itemConf.value.regex" placeholder="正则表达式" class="code-input" size="small"></el-input> -->
                   </el-form-item>
-                  <!-- <el-form-item label="显示条件">
-                    <el-popover placement="top" trigger="click">
-                      <show-conf :dialog-props="itemConf"></show-conf>
-                      <el-button size="small" slot="reference">配置显示条件</el-button>
-                    </el-popover>
-                  </el-form-item> -->
                 </el-form>
               </el-col>
             </el-row>

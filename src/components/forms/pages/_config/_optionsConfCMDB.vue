@@ -1,6 +1,8 @@
 <style lang="less" scoped>
   .conf-cmdb-contain {
     max-width: 400px;
+    max-height: 80vh;
+    overflow: scroll;
 
     .el-row, .el-col {
       margin-bottom: 4px;

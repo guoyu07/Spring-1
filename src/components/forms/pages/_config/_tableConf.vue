@@ -1,4 +1,7 @@
 <style scoped>
+  .conf-table-contain {
+    max-width: 400px;
+  }
   .el-form-item {
     margin-bottom: 8px;
   }
@@ -9,7 +12,8 @@
 </style>
 
 <template>
-  <el-dialog title="表格配置" v-model="dialogProps.value.confVisible" v-if="dialogProps.value.attr_list">
+  <!-- <el-dialog title="表格配置" v-model="dialogProps.value.confVisible" v-if="dialogProps.value.attr_list"> -->
+  <div class="conf-table-contain" v-if="dialogProps.value.attr_list">
     <el-collapse v-if="dialogProps.value.attr_list.length">
       <el-collapse-item v-for="attr of dialogProps.value.attr_list" :title="attr.name">
         <el-form label-position="left" :inline="true">
@@ -77,10 +81,10 @@
               <el-button size="small" slot="reference">配置选项</el-button>
             </el-popover>
             <!--动态选项（cmdb）-->
-            <template v-if="['dict', 'dicts'].includes(attr.value.type)">
-              <el-button size="small" @click="showCMDBConf(attr)">配置选项</el-button>
-              <options-conf-cmdb :dialog-props="attr"></options-conf-cmdb>
-            </template>
+            <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(attr.value.type)" placement="top" trigger="click" @show="showCMDBConf(itemConf)">
+              <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+              <el-button size="small" slot="reference">配置选项</el-button>
+            </el-popover>
           </el-form-item>
           <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(attr.value.type)">
             <el-popover placement="right" trigger="click">
@@ -150,10 +154,11 @@
         </el-form>
       </el-card>
     </template> -->
-    <div slot="footer" class="dialog-footer">
+    <!-- <div slot="footer" class="dialog-footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
-    </div>
-  </el-dialog>
+    </div> -->
+  <!-- </el-dialog> -->
+  </div>
 </template>
 
 <script>
@@ -197,17 +202,11 @@
               show_key: ''
             }
           })
-          this.$set(attr.value, 'show', {
-            type: '',
-            key_path: '',
-            op: '',
-            value: ''
-          })
         }
         attr.value.confVisible = true
-        setTimeout(() => {
-          document.getElementsByClassName('v-modal')[0].style.zIndex = '999'
-        }, 100)
+        // setTimeout(() => {
+        //   document.getElementsByClassName('v-modal')[0].style.zIndex = '999'
+        // }, 100)
       },
 
       onAddField () {
