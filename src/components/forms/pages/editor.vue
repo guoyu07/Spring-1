@@ -60,10 +60,10 @@
             <h4>基础配置</h4>
             <el-form label-width="80px" label-position="left" :inline="true">
               <el-form-item label="表单名称">
-                <el-input v-model="formConfig.tname"></el-input>
+                <el-input v-model="formConfig.tname" disabled></el-input>
               </el-form-item>
               <el-form-item label="表单 Key">
-                <el-input v-model="formConfig.tkey" class="code-input"></el-input>
+                <el-input v-model="formConfig.tkey" class="code-input" disabled></el-input>
               </el-form-item>
               <br>
               <el-form-item label="操作按钮" v-if="formConfig.tkey !== 'start'">
@@ -160,7 +160,7 @@
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
               <h5>Body #{{index + 1}}</h5>
               <el-card>
-                <form-conf :config-data="body.attr_list" :presets="presets" :index="index" @on-config-change="onBodyConfigChange"></form-conf>
+                <form-conf :config-data="body.attr_list" :presets="presets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -223,6 +223,7 @@ export default {
   data () {
     return {
       presets: [],
+      fieldsets: [],
       id: '',
       // 操作按钮
       actions: [
@@ -268,6 +269,7 @@ export default {
     }
     this.getActionDef()
     this.initActions()
+    this.initiateFieldsets()
   },
   methods: {
     // 获取预设集
@@ -301,6 +303,13 @@ export default {
       }
       // 拿到 actions 的 name
       this.checkedActions = this.formConfig.form.action.map(item => item.type)
+    },
+    initiateFieldsets () {
+      for (let body of this.formConfig.form.form.body.body_list) {
+        console.log(body)
+        this.fieldsets.push(body.attr_list)
+      }
+      console.log(this.fieldsets)
     },
     // 选择功能按钮 action
     actionChange (arr) {
@@ -413,6 +422,7 @@ export default {
     },
     onBodyConfigChange (args) {
       console.log('received!!!')
+      console.log(args.val)
       // console.log(this.formConfig.form.form.body.body_list)
       // console.log(this.formConfig.form.form.body.body_list[args.index])
       // console.log(args.val)
