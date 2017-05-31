@@ -132,22 +132,45 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="candidateData.type === 'user' ? '加入候选人' : '加入候选组（角色）'" size="tiny" v-model="candidateData.visible">
+    <el-dialog :title="candidateData.type === 'user' ? '加入候选人' : '加入候选组（角色）'" v-model="candidateData.visible" @close="candidateData.toAdd = []">
       <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{candidateData.type === 'user' ? '候选人' : '候选组'}}的{{candidateData.type === 'user' ? '用户' : '角色'}}：</h5>
-      <el-checkbox-group v-model="candidateData.toAdd">
+      <el-select v-model="candidateData.toAdd" filterable multiple placeholder="可搜索" class="fw">
+        <template v-if="candidateData.type === 'user'">
+          <el-option
+            v-for="user in userList"
+            :key="user.userId"
+            :label="`${user.code} - ${user.email}`"
+            :value="user.userId"></el-option>
+        </template>
+        <template v-if="candidateData.type === 'group'">
+          <el-option
+            v-for="role in roleList"
+            :key="role.key"
+            :label="role.name"
+            :value="role.key"></el-option>
+        </template>
+      </el-select>
+      <!-- <el-checkbox-group v-model="candidateData.toAdd">
         <el-checkbox v-if="candidateData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
         <el-checkbox v-if="candidateData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
-      </el-checkbox-group>
+      </el-checkbox-group> -->
       <span class="dialog-footer" slot="footer">
         <el-button @click="onAddCandidate(candidateData)" size="small" icon="check" type="success" :loading="candidateData.loading">确认加入</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog title="指定受指派人" size="tiny" v-model="assigneeData.visible">
+    <el-dialog title="指定受指派人" v-model="assigneeData.visible">
       <h5 class="sub-title"><i class="el-icon-information"></i> 选中欲指定为受指派人的用户：</h5>
-      <el-radio-group v-model="assigneeData.assignee">
+      <el-select v-model="assigneeData.assignee" filterable placeholder="可搜索" :disabled="assigneeData.initiator" class="fw">
+        <el-option
+          v-for="user in userList"
+          :key="user.userId"
+          :label="`${user.code} - ${user.email}`"
+          :value="user.userId"></el-option>
+      </el-select>
+      <!-- <el-radio-group v-model="assigneeData.assignee">
         <el-radio v-for="user in userList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
-      </el-radio-group>
+      </el-radio-group> -->
       <b class="sub-title" style="display: block; margin: 12px 0 6px;">或：</b>
       <el-checkbox-group v-model="assigneeData.initiator">
         <el-checkbox label="申请人">指派给申请人</el-checkbox>
