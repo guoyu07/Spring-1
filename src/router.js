@@ -39,6 +39,22 @@ const routes = [{
       component: require('./components/guosen/pages/stepInfo.vue')
     }]
   }, {
+    path: '/test',
+    component: require('./components/test/index'),
+    children: [{
+      path: '/test/start',
+      component: require('./components/test/pages/start.vue')
+    }, {
+      path: '/test/:pkey/:tkey/:id/:name',
+      component: require('./components/test/pages/step.vue')
+    }, {
+      path: '/test-info/:pkey/:tkey/:id/:name',
+      component: require('./components/test/pages/stepInfo.vue')
+    }, {
+      path: '/test-info/:pkey/:id',
+      component: require('./components/test/pages/stepInfo.vue')
+    }]
+  }, {
     path: '/store-manage',
     component: require('./components/storeManage/index'),
     children: [{

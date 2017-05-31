@@ -89,9 +89,20 @@
     </el-select>
 
     <el-date-picker
-      v-else-if="formItem.value.type === 'datetime' || formItem.value.type === 'date'"
+      v-else-if="formItem.value.type === 'datetime'"
       v-model="item[formItem.id]"
-      :type="formItem.value.type === 'datetime' ? 'datetime' : 'date'"
+      type="datetime"
+      format="yyyy-MM-dd HH:mm:ss"
+      @change="datetimeFormat"
+      :placeholder="formItem.placeholder">
+    </el-date-picker>
+
+    <el-date-picker
+      v-else-if="formItem.value.type === 'date'"
+      v-model="item[formItem.id]"
+      type="date"
+      format="yyyy-MM-dd"
+      @change="dateFormat"
       :placeholder="formItem.placeholder">
     </el-date-picker>
 
@@ -283,6 +294,12 @@
             trigger: 'blur, change'
           }
         }
+      },
+      datetimeFormat (val) {
+        this.item[this.formItem.id] = val
+      },
+      dateFormat (val) {
+        this.item[this.formItem.id] = val
       }
     },
 
