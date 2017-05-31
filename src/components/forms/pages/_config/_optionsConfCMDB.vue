@@ -8,7 +8,8 @@
       margin-bottom: 4px;
     }
     .el-form-item {
-      margin-bottom: 10px;
+      margin: 0;
+      width: 49%;
     }
     .el-input {
       width: initial;
@@ -33,6 +34,14 @@
 
     h5 {
       margin: 6px 0;
+    }
+  }
+
+  .detail-popover {
+    font-size: 12px;
+
+    .el-form-item {
+      margin-bottom: 4px;
     }
   }
 </style>
@@ -159,6 +168,26 @@
           </template>
         </el-row> -->
 
+      <h5>选择 API 预设集：</h5>
+      <el-card v-if="optionPresets.length">
+        <el-radio-group v-model="selectedOption" @change="onSelectOption">
+          <el-popover
+            placement="top"
+            trigger="hover"
+            v-for="api in optionPresets"
+            :title="api.name">
+            <el-form label-position="right" label-width="60px" class="detail-popover">
+              <el-form-item label="Action"><code>{{api.action}}</code></el-form-item>
+              <el-form-item label="Data path"><code>{{api.data_path}}</code></el-form-item>
+              <el-form-item label="Method"><code>{{api.method}}</code></el-form-item>
+              <el-form-item label="URL"><code>{{api.url}}</code></el-form-item>
+              <el-form-item label="Params"><code>{{api.params}}</code></el-form-item>
+            </el-form>
+            <el-radio slot="reference" :label="api" :key="api">{{api.name}}</el-radio>
+          </el-popover>
+        </el-radio-group>
+      </el-card>
+
       <h5>选项数据路径配置：</h5>
       <el-card>
         <el-form label-position="top" :inline="true">
@@ -216,11 +245,13 @@
 <script>
   export default {
     props: {
-      dialogProps: Object
+      dialogProps: Object,
+      optionPresets: Array
     },
     data () {
       return {
         optionType: 'dynamic',
+        selectedOption: {},
         allowCreate: this.dialogProps.value && this.dialogProps.value.allowCreate ? this.dialogProps.value.allowCreate : true,
         countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
@@ -231,6 +262,11 @@
       }
     },
     methods: {
+      onSelectOption (val) {
+        Object.assign(this.dialogProps.value.source.data, { action: val.action, method: val.method })
+        Object.assign(this.dialogProps.value.source.res, { data_path: val.data_path })
+        this.dialogProps.value.source.url = val.url
+      },
       selectParams (cmd) {
         let param = null
         switch (cmd) {

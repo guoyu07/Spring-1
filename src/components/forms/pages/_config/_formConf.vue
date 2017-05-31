@@ -195,14 +195,14 @@
                     </el-select>
                     <!--静态选项-->
                     <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
-                      placement="right" trigger="click" @show="showMultiConf(itemConf)">
+                      placement="left" trigger="click" @show="showMultiConf(itemConf)">
                       <options-conf :conf-arr="itemConf.value.regex"></options-conf>
                       <el-button size="small" slot="reference">配置选项</el-button>
                     </el-popover>
                     <!--动态选项（cmdb）-->
                     <!-- <template v-if="['dict', 'dicts'].includes(itemConf.value.type)"> -->
-                    <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" placement="top" trigger="click" @show="showCMDBConf(itemConf)">
-                      <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+                    <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" placement="left" trigger="click" @show="showCMDBConf(itemConf)">
+                      <options-conf-cmdb :dialog-props="itemConf" :option-presets="optionPresets"></options-conf-cmdb>
                       <el-button size="small" slot="reference">配置选项</el-button>
                     </el-popover>
                     <!-- </template> -->
@@ -373,6 +373,7 @@ export default {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
       selectedPreset: null,
       selectedFields: [],
+      optionPresets: [],
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
       editBody: null,
@@ -400,13 +401,14 @@ export default {
     }
   },
 
-  // mounted () {
-  //   this.oldList = this.configData2.map(v => v.id)
-  //   this.newList = this.oldList.slice()
-  //   this.$nextTick(() => {
-  //     this.setSort()
-  //   })
-  // },
+  mounted () {
+    // this.oldList = this.configData2.map(v => v.id)
+    // this.newList = this.oldList.slice()
+    // this.$nextTick(() => {
+    //   this.setSort()
+    // })
+    this.getOptionPresets()
+  },
 
   methods: {
     // 初始化可拖曳手风琴
@@ -427,6 +429,18 @@ export default {
     //     }
     //   })
     // },
+    // 获取选项预设集（for apis）
+    getOptionPresets () {
+      let postData = {
+        action: 'activiti/api/define/list',
+        method: 'GET',
+        data: {}
+      }
+      this.http.post('', this.parseData(postData)).then((res) => {
+        this.optionPresets = res.data.data.list
+        console.log(this.optionPresets)
+      })
+    },
     // 导入预设集
     importPreset (preset, currentFields) {
       for (let attr of preset) {
