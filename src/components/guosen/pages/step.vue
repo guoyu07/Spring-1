@@ -526,7 +526,7 @@
               .then((response) => {
                 if (response.status === 200) {
                   this.assignForm.body.map((body, bodyIndex) => {
-                    body.hostname = postHeadvData.data.prefix + response.data.data + '' + (bodyIndex + 1)
+                    body.hostname = postHeadvData.data.prefix + (response.data.data + bodyIndex)
                   })
                 }
               })
@@ -647,17 +647,37 @@
               }
             })
           } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            if (!this.assignForm.body.some(data => {
-              for (const item in data) {
-                return Array.isArray(data[item]) && data[item].length === 0
+            this.taskForm.body.body_list.map(bodyList => {
+              if (!bodyList.show.type) {
+                bodyList.attr_list.map(attrList => {
+                  if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
+                    attrList.value.map(value => {
+                      if (value.value.type === 'search_bar') {
+                        this.assignForm.body.map((postbody, postbodyIndex) => {
+                          if (postbody[value.id].length === 0) {
+                            this.$message.warning('未分配完！')
+                            return false
+                          }
+                        })
+                      }
+                    })
+                  } else {
+                    this.postMethod(this.routerInfo.id, this.assignForm)
+                  }
+                })
               }
-            })) {
-              this.postMethod(this.routerInfo.id, this.assignForm)
-              // console.dir(this.assignForm)
-            } else {
-              this.$message.warning('未分配完！')
-              return false
-            }
+            })
+            // if (!this.assignForm.body.some(data => {
+            //   for (const item in data) {
+            //     return Array.isArray(data[item]) && data[item].length === 0
+            //   }
+            // })) {
+            //   this.postMethod(this.routerInfo.id, this.assignForm)
+            //   // console.dir(this.assignForm)
+            // } else {
+            //   this.$message.warning('未分配完！')
+            //   return false
+            // }
           }
         }).catch(() => {
           this.$message({
@@ -675,11 +695,26 @@
         // console.log(data)
         for (const headerid in data.header) {
           // console.log(headerid, data.header[headerid], !data.header[headerid])
+          if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
+            delete data.header[headerid]
+          }
           if (!data.header[headerid]) {
             // console.log(headerid)
-            delete data.header[headerid] // 删除头部空值 TODO：删除 body 的空值
+            delete data.header[headerid] // 删除头部空值
           }
         }
+        data.body.map(body => {
+          for (const bodyid in body) {
+            // console.log(bodyid, data.header[bodyid], !data.header[bodyid])
+            if (Array.isArray(body[bodyid]) && body[bodyid].length === 0) {
+              delete body[bodyid]
+            }
+            if (!body[bodyid]) {
+              // console.log(bodyid)
+              delete body[bodyid] // 删除body空值
+            }
+          }
+        })
         const postData = {
           action: 'runtime/task/complete',
           method: 'POST',
@@ -729,17 +764,18 @@
             }
           })
         } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-          if (!this.assignForm.body.some(data => {
-            for (const item in data) {
-              return Array.isArray(data[item]) && data[item].length === 0
-            }
-          })) {
-            this.manualMethod(action)
-            // console.dir(this.assignForm)
-          } else {
-            this.$message.warning('未分配完！')
-            return false
-          }
+          console.log(this.taskform)
+          // if (!this.assignForm.body.some(data => {
+          //   for (const item in data) {
+          //     return Array.isArray(data[item]) && data[item].length === 0
+          //   }
+          // })) {
+          //   this.manualMethod(action)
+          //   // console.dir(this.assignForm)
+          // } else {
+          //   this.$message.warning('未分配完！')
+          //   return false
+          // }
         }
       },
       manualMethod (action) {
