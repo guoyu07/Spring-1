@@ -181,7 +181,7 @@
               <el-form-item label="Data path"><code>{{api.data_path}}</code></el-form-item>
               <el-form-item label="Method"><code>{{api.method}}</code></el-form-item>
               <el-form-item label="URL"><code>{{api.url}}</code></el-form-item>
-              <el-form-item label="Params"><code>{{api.params}}</code></el-form-item>
+              <!-- <el-form-item label="Params"><code>{{api.params}}</code></el-form-item> -->
             </el-form>
             <el-radio slot="reference" :label="api" :key="api">{{api.name}}</el-radio>
           </el-popover>
