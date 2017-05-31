@@ -242,6 +242,8 @@
               if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
                 this.vmodel[this.strucData.id] = option
                 return false
+              } else {
+                this.optionList.push(this.vmodel[this.strucData.id])
               }
             })
           }
