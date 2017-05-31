@@ -3,7 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
+          <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 -->
             <div v-for="taskheader in form">
@@ -290,13 +290,14 @@
       },
       renderInstanceDetail () {
         let postData = {
-          action: 'runtime/task',
+          action: 'history/process',
           method: 'GET',
           data: {
-            taskId: this.routerInfo.id
+            pid: this.routerInfo.id
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
+          console.log(res)
           const message = res.data.data.variables.message
           res.data.data.path_list.map(list => {
             list.map(path => {
@@ -311,6 +312,7 @@
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
           this.applyData.version = res.data.data.version
+          this.renderForm()
           // this.renderTaskForm()
         })
       },

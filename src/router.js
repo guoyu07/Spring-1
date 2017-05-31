@@ -34,6 +34,9 @@ const routes = [{
     }, {
       path: '/guosen-info/:pkey/:tkey/:id/:name',
       component: require('./components/guosen/pages/stepInfo.vue')
+    }, {
+      path: '/guosen-info/:pkey/:id',
+      component: require('./components/guosen/pages/stepInfo.vue')
     }]
   }, {
     path: '/store-manage',

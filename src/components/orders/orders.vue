@@ -175,8 +175,8 @@
               <el-form-item v-if="deviceViewData.device.name" label="任务名称：">
                 <span>{{deviceViewData.device.name}}</span>
               </el-form-item>
-              <el-form-item v-if="deviceViewData.device.id" label="任务 ID：">
-                <span>{{deviceViewData.device.id}}</span>
+              <el-form-item v-if="deviceViewData.device.id" label="工单号：">
+                <span>{{deviceViewData.device.pid}}</span>
               </el-form-item>
               <el-form-item v-if="deviceViewData.device.variables" label="发起者：">
                 <span>{{deviceViewData.device.variables.author}}</span>
@@ -249,13 +249,13 @@
             <router-link :to="{ path: `/guosen/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <!-- <span v-if="deviceViewData.device.pkey==='host' && filter === '已审核'">
-            <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
+          <span v-if="deviceViewData.device.pkey==='host' && filter === '已审核'">
+            <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.pid}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
           <span v-if="deviceViewData.device.pkey==='host' && filter === '已参与'">
-            <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
-          </span> -->
+            <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.pid}`}" class="el-button el-button--plain">查看</router-link>
+          </span>
 
           <!-- <span v-if="deviceViewData.device.pkey==='alter_device' && filter === '待审核'">
             <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/store-manage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>

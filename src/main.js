@@ -41,8 +41,12 @@ const setConfigs = () => {
 // this one converts TZ format to locale format
 // Vue.filter('convertTime', val => (new Date(val)).toLocaleString())
 Vue.filter('convertTime', (val) => {
-  let date = new Date(val)
-  return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  // let date = new Date(val)
+  // return `${date.getFullYear()}/${date.getMonth() + 1}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}:${date.getSeconds()}`
+  const date = new Date(val)
+  const cv = s => (s > 9 ? '' : '0') + s
+  return `${date.getFullYear()}-${cv(date.getMonth() + 1)}-${cv(date.getDate())} ` +
+    `${cv(date.getHours())}:${cv(date.getMinutes())}:${cv(date.getSeconds())}`
 })
 
 // Ajax 全局配置
