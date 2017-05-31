@@ -623,7 +623,7 @@
           type: 'info'
         }).then(() => {
           const ref = this.$refs['assignForm'].fields.length !== 0
-          // console.log(ref)
+          console.log(ref)
           if (ref) { // 有表单的情况下，表单的自验证
             this.$refs['assignForm'].validate((valid) => {
               if (valid) {
@@ -665,6 +665,20 @@
                     this.postMethod(this.routerInfo.id, this.assignForm)
                   }
                 })
+              }
+            })
+            this.taskForm.header.map(header => {
+              if (header.value.some(value => { return value.value.type === 'search_bar' })) {
+                header.value.map(value => {
+                  if (value.value.type === 'search_bar') {
+                    if (this.assignForm.header[value.id].length === 0) {
+                      this.$message.warning('未分配完！')
+                      return false
+                    }
+                  }
+                })
+              } else {
+                this.postMethod(this.routerInfo.id, this.assignForm)
               }
             })
             // if (!this.assignForm.body.some(data => {
