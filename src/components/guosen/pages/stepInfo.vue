@@ -42,78 +42,13 @@
                     </div>
                   </div>
                 </div>
-
-                <!-- body 表单填写 -->
-                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
-                  <div v-for="taskFormData in taskForm.body.body_list">
-                      <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
-                        <div class="form-block" v-for="formBlock in taskFormData.attr_list">
-                          <h5>{{formBlock.name}}</h5>
-                          <span v-for="formItem in formBlock.value">
-                            <form-body
-                              v-if="showFormItem(formItem, assignForm, applyData)"
-                              :item="assignForm.body[index]"
-                              :form-item="formItem"
-                              :whole="assignForm"
-                              :index="index"
-                              :message="applyData"
-                              keep-alive>
-                            </form-body>
-                            <search-bar
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
-                              :index="index"
-                              :hosts="assignForm.body[index]"
-                              :attr-list="formItem"
-                              :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
-                              @on-hosts-change="onHostsChange">
-                            </search-bar>
-                            <body-table
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
-                              :form-data="formItem"
-                              :item="assignForm.body[index]"
-                              :post-form="assignForm"
-                              :message-data="applyData"
-                              :index="index"
-                              :bodyTable="true">
-                            </body-table>
-                          </span>
-                        </div>
-                      </div>
-                  </div>
-                </div>
-                <div class="clear">
+                <!-- <div class="clear">
                   <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
-                </div>
+                </div> -->
               </el-tab-pane>
             </el-tabs>
-            <!-- header 表单填写 -->
-            <div v-if="taskForm.header">
-
-              <div v-for="task in taskForm.header">
-                <span v-for="taskform in task.value">
-                  <form-body
-                    v-if="showFormItem(taskform, assignForm, applyData)"
-                    :item="assignForm.header"
-                    :form-item="taskform"
-                    :whole="assignForm"
-                    :message="applyData"
-                    :header="true">
-                  </form-body>
-                  <search-bar
-                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
-                    :hosts="assignForm.header"
-                    :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
-                    @on-hosts-change="onHostsChange">
-                  </search-bar>
-                  <div v-if="taskform.value.type==='table'">
-                      headerTable
-                  </div>
-                </span>
-              </div>
-            </div>
             <!-- 按钮区域 -->
-            <div class="btn-area">
+            <!-- <div class="btn-area">
               <span v-for="action in applyData.action">
                 <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
                 <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
@@ -122,13 +57,13 @@
                 <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
-            </div>
+            </div> -->
           </el-form>
         </el-card>
       </el-col>
     </el-row>
     <!-- 机柜图预览 -->
-    <div v-if="routerInfo.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
+    <!-- <div v-if="routerInfo.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
       <h5 class="cabinet-title">
         <span>机柜预览</span>
       </h5>
@@ -154,7 +89,7 @@
           </table>
         </el-col>
       </el-row>
-    </div>
+    </div> -->
   </div>
 </template>
 <script>
@@ -353,190 +288,6 @@
           this.previewPage = page
         }
       },
-      renderTaskForm () { // 渲染表单数据
-        const renderFromData = {
-          action: 'activiti/task/form/group',
-          method: 'GET',
-          data: {
-            pkey: this.routerInfo.pkey,
-            tkey: this.routerInfo.tkey,
-            version: this.applyData.version
-          }
-        }
-        this.http.post('', this.parseData(renderFromData)).then((res) => {
-          // console.log(res)
-          this.taskForm = res.data.data.form
-          // console.log(this.applyData)
-          if (this.applyData.body.length === 0) {
-            if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
-              const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
-              if (Array.isArray(keyData)) {
-                // this.applyData.body.length = keyData.length
-                const num = keyData.length
-                for (let i = 0; i < num; i++) {
-                  this.applyData.body.push({})
-                }
-              } else if (typeof keyData === 'number') {
-                // this.applyData.body.length = keyData
-                const num = keyData
-                for (let i = 0; i < num; i++) {
-                  this.applyData.body.push({})
-                }
-              } else if (typeof keyData === 'string') {
-                if (typeof +keyData === 'number') {
-                  // this.applyData.body.length = +keyData
-                  const num = +keyData
-                  for (let i = 0; i < num; i++) {
-                    this.applyData.body.push({})
-                  }
-                } else {
-                  this.$message('数据有错')
-                }
-              }
-            }
-          }
-          // 这里是按 this.taskForm.body.count.type 复制进 this.applyData.body 里
-          // if (this.applyData.body.length !== 0) {
-          //   if (this.taskForm.body.count) {
-          //     if (this.taskForm.body.count.type === 'message_header') {
-          //       const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
-          //       this.applyData.body.forEach((body, k) => {
-          //         Object.assign(body, keyData[k])
-          //       })
-          //     }
-          //   }
-          // }
-          this.taskForm.header.forEach((header, k) => {
-            if (header) {
-              header.value.map(value => {
-                if (value.need_submit) {
-                  this.setDataType(value, this.assignForm.header, this)
-                  if (value.value.type === 'table') {
-                    this.$set(this.assignForm.header[value.id], 0, {})
-                    let data = this.assignForm.header[value.id][0]
-                    value.value.attr_list.map(item => {
-                      this.setDataType(item, data, this)
-                    })
-                  }
-                  console.log(this.assignForm.header)
-                  // 有默认值时 TODO：默认值暂时只写了 message_header 一种
-                  if (value.default.type) {
-                    if (value.default.type === 'message_header') {
-                      // console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
-                      // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
-                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                      console.log(this.assignForm.header[value.id])
-                    }
-                  }
-                }
-              })
-            }
-          })
-          // console.log(this.assignForm.header.host_type)
-          this.renderForm()
-          this.applyData.body.forEach((item, k) => {
-            let newData = {}
-            this.taskForm.body.body_list.forEach(body => {
-              if (body.show.type) {
-                const keyPath = body.show.key_path.split('.')
-                if (body.show.type === 'message_body') {
-                  if (body.show.value === item[keyPath[0]]) {
-                    console.log(item[keyPath[0]])
-                    body.attr_list.map(group => {
-                      group.value.map(item => {
-                        this.setNewDataType(item, newData)
-                      })
-                    })
-                    console.log(newData)
-                  }
-                } else if (body.show.type === 'message_header') {
-                  body.attr_list.map(group => {
-                    group.value.map(value => {
-                      if (value.need_submit) {
-                        this.setNewDataType(value, newData)
-                        // 有默认值时 TODO：默认值暂时只写了 message_header 一种
-                        if (value.default.type) {
-                          if (value.default.type === 'message_header') {
-                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                          } else if (value.default.type === 'form_body') {
-                            this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                              this.assignForm.body[k][value.id] = newVal
-                            })
-                          }
-                        }
-                      }
-                      if (!value.need_submit && value.readonly) {
-                        if (value.default.type === 'message_header') {
-                          // item === this.applyData.body
-                          item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                        }
-                      }
-                    })
-                  })
-                }
-              } else {
-                // console.log(item, body)
-                body.attr_list.map(group => {
-                  group.value.map(value => {
-                    if (value.need_submit) {
-                      this.setNewDataType(value, newData)
-                      // console.log(newData)
-                      if (value.value.type === 'table') {
-                        // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                        newData[value.id][0] = {}
-                        let data = newData[value.id][0]
-                        value.value.attr_list.map(item => {
-                          this.setNewDataType(item, data)
-                        })
-                      }
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
-                      if (value.default.type) {
-                        if (value.default.type === 'message_header') {
-                          newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                        } else if (value.default.type === 'form_body') {
-                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                            this.assignForm.body[k][value.id] = newVal
-                          })
-                        }
-                      }
-                      // 机柜 U 位数的默认值 console.log(this.assignForm.body[k].idcrack, this.applyData.header.host_list[k].u_num)
-                    }
-                  })
-                })
-              }
-            })
-            this.assignForm.body.push(newData)
-            for (const id in item) {
-              // console.log(item[id], this.assignForm.body[k][id])
-              if (this.assignForm.body[k][id] !== undefined) {
-                this.assignForm.body[k][id] = item[id]
-              }
-            }
-            // 主机名
-            if (this.routerInfo.tkey === 'confirm1') {
-              const postHeadvData = {
-                action: `hostname/minnumber`,
-                method: 'get',
-                data: {
-                  prefix: [
-                    this.applyData.header.idc.abbreviation,
-                    this.applyData.header.host_type.abbreviation,
-                    this.applyData.header.app.abbreviation
-                  ].join('') + '-' + this.applyData.header.component.abbreviation
-                }
-              }
-              this.http.post('', this.parseData(postHeadvData))
-              .then((response) => {
-                if (response.status === 200) {
-                  this.assignForm.body.map((body, bodyIndex) => {
-                    body.hostname = postHeadvData.data.prefix + (response.data.data + bodyIndex)
-                  })
-                }
-              })
-            }
-          })
-        })
-      },
       renderInstanceDetail () {
         let postData = {
           action: 'runtime/task',
@@ -560,7 +311,7 @@
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
           this.applyData.version = res.data.data.version
-          this.renderTaskForm()
+          // this.renderTaskForm()
         })
       },
       renderForm () { // 渲染表单数据
