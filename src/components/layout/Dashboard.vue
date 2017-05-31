@@ -94,6 +94,10 @@
             icon: 'fa-upload',
             title: '上架流程',
             path: '/guosen/on'
+          }, {
+            icon: 'fa-magic',
+            title: '测试流程',
+            path: '/test/start'
           }]
         }, {
           category: '工单管理',
