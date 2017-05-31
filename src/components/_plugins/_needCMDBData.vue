@@ -243,7 +243,9 @@
                 this.vmodel[this.strucData.id] = option
                 return false
               } else {
-                this.optionList.push(this.vmodel[this.strucData.id])
+                if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                  this.optionList.push(this.vmodel[this.strucData.id])
+                }
               }
             })
           }
