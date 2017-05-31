@@ -34,6 +34,14 @@
     }
   }
 
+  .detail-popover {
+    font-size: 12px;
+
+    .el-form-item {
+      margin-bottom: 4px;
+    }
+  }
+
   .draggable {
     @borderColor: #dfe6ec;
     @fontColor: #48576a;
@@ -252,6 +260,7 @@
     </draggable>
 
     <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField">添加字段</el-button>
+    <el-button type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
     <el-row style="margin-top: 12px">
       <el-select size="small" v-model="selectedPreset" placeholder="选择预设集">
         <el-option v-for="obj in presets" :key="obj" :value="obj" :label="obj.name"></el-option>
@@ -259,6 +268,56 @@
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">配置预设集</el-button>
     </el-row>
     <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" v-if="selectedPreset"></preset-conf>
+
+    <!-- 避免修改 props，不写成组件 -->
+    <el-dialog title="克隆 header 已有字段" v-model="showCloneHeaderFieldVisible" v-if="!isBody">
+      <h4>请在下面选择其他 body 的字段<small>（鼠标悬浮于属性名，可察看属性详情）</small></h4>
+      <el-checkbox-group v-model="selectedFields">
+        <el-popover
+          placement="top"
+          trigger="hover"
+          v-for="(attr, index) in configData2"
+          :title="attr.name">
+          <el-form label-position="right" label-width="60px" class="detail-popover">
+            <el-form-item label="ID"><span>{{attr.id}}</span></el-form-item>
+            <el-form-item label="只读"><code>{{attr.readonly}}</code></el-form-item>
+            <el-form-item label="必填"><code>{{attr.required}}</code></el-form-item>
+            <el-form-item label="唯一"><code>{{attr.unique}}</code></el-form-item>
+            <el-form-item label="类型"><span>{{attr.value.type}}</span></el-form-item>
+          </el-form>
+          <el-checkbox slot="reference" :label="attr" :key="attr">{{attr.name}}</el-checkbox>
+        </el-popover>
+      </el-checkbox-group>
+      <div class="dialog-footer" slot="footer">
+        <el-button @click="onConfirmClonedFields" type="primary" icon="check">OK</el-button>
+      </div>
+    </el-dialog>
+    <el-dialog :title="`克隆字段至 Body #${bodyIndex + 1}`" v-model="showCloneBodyFieldVisible" v-if="fieldsets">
+      <h4>请在下面选择其他 body 的字段<small>（鼠标悬浮于属性名，可察看属性详情）</small></h4>
+      <el-form label-position="left" label-width="80px">
+        <el-form-item v-for="(attrList, index) in fieldsets" :label="`Body #${index + 1}`">
+          <el-checkbox-group v-model="selectedFields">
+            <el-popover
+              placement="top"
+              trigger="hover"
+              v-for="attr in attrList"
+              :title="attr.name">
+              <el-form label-position="right" label-width="60px" class="detail-popover">
+                <el-form-item label="ID"><span>{{attr.id}}</span></el-form-item>
+                <el-form-item label="只读"><code>{{attr.readonly}}</code></el-form-item>
+                <el-form-item label="必填"><code>{{attr.required}}</code></el-form-item>
+                <el-form-item label="唯一"><code>{{attr.unique}}</code></el-form-item>
+                <el-form-item label="类型"><span>{{attr.value.type}}</span></el-form-item>
+              </el-form>
+              <el-checkbox slot="reference" :label="attr" :key="attr">{{attr.name}}</el-checkbox>
+            </el-popover>
+          </el-checkbox-group>
+        </el-form-item>
+      </el-form>
+      <div class="dialog-footer" slot="footer">
+        <el-button @click="onConfirmClonedFields" type="primary" icon="check">OK</el-button>
+      </div>
+    </el-dialog>
 
     <el-dialog title="字段显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
       <el-form label-width="100px">
@@ -305,17 +364,27 @@ export default {
   props: {
     configData: Array,
     presets: Array,
-    index: Number
+    fieldsets: Array,
+    bodyIndex: Number
   },
 
   data () {
     return {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
       selectedPreset: null,
+      selectedFields: [],
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
       editBody: null,
-      showConditionVisible: false
+      showConditionVisible: false,
+      showCloneHeaderFieldVisible: false,
+      showCloneBodyFieldVisible: false
+    }
+  },
+
+  computed: {
+    isBody () {
+      return !!this.bodyIndex
     }
   },
 
@@ -326,7 +395,8 @@ export default {
 
     configData2 (val) {
       console.log('emitted!')
-      this.$emit('on-config-change', { val, index: this.index }) // 组件内对副本的变更向外部发送事件
+      console.log(val)
+      this.$emit('on-config-change', { val, index: this.bodyIndex }) // 组件内对副本的变更向外部发送事件
     }
   },
 
@@ -481,6 +551,11 @@ export default {
     onResetShowCondition () {
       delete this.editItem['show']
       this.showConditionVisible = false
+    },
+    onConfirmClonedFields () {
+      this.configData2 = this.configData2.concat(this.selectedFields)
+      this.showCloneBodyFieldVisible = false
+      this.showCloneHeaderFieldVisible = false
     },
     // 删除一个字段 （删除操作 可以封装为全局方法）
     onDeleteField (arr, item) {
