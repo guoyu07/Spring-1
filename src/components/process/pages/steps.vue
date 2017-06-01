@@ -169,7 +169,7 @@
           :key="user.userId"
           :label="`${user.code} - ${user.email}`"
           :value="user.userId"
-          :disabled="currentTask.assignee.userId === user.userId"></el-option>
+          :disabled="currentTask && currentTask.assignee.userId === user.userId"></el-option>
       </el-select>
       <!-- <el-radio-group v-model="assigneeData.assignee">
         <el-radio v-for="user in userList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
@@ -195,7 +195,7 @@
 
     data () {
       return {
-        currentTask: {},
+        currentTask: null,
         candidateData: {
           visible: false,
           loading: false,
