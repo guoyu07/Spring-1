@@ -57,7 +57,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'user' })">
+                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'user' }); currentTask = task">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -85,7 +85,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'group' })">
+                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'group' }); currentTask = task">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -114,7 +114,7 @@
                               type="success"
                               :plain="task.assignee ? true : false"
                               size="small"
-                              @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey })">
+                              @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey }); currentTask = task">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -140,14 +140,16 @@
             v-for="user in userList"
             :key="user.userId"
             :label="`${user.code} - ${user.email}`"
-            :value="user.userId"></el-option>
+            :value="user.userId"
+            :disabled="currentTask.candidate_users.some(u => u.userId === user.userId)"></el-option>
         </template>
         <template v-if="candidateData.type === 'group'">
           <el-option
             v-for="role in roleList"
             :key="role.key"
             :label="role.name"
-            :value="role.key"></el-option>
+            :value="role.key"
+            :disabled="currentTask.candidate_groups.some(r => r.key === role.key)"></el-option>
         </template>
       </el-select>
       <!-- <el-checkbox-group v-model="candidateData.toAdd">
@@ -166,7 +168,8 @@
           v-for="user in userList"
           :key="user.userId"
           :label="`${user.code} - ${user.email}`"
-          :value="user.userId"></el-option>
+          :value="user.userId"
+          :disabled="currentTask.assignee.userId === user.userId"></el-option>
       </el-select>
       <!-- <el-radio-group v-model="assigneeData.assignee">
         <el-radio v-for="user in userList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
@@ -192,6 +195,7 @@
 
     data () {
       return {
+        currentTask: {},
         candidateData: {
           visible: false,
           loading: false,
