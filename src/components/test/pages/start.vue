@@ -5,17 +5,52 @@
         <el-card class="box-card">
           <h3>测试申请单</h3>
           <el-form ref="applyForm" :model="applyForm" label-width="100px" :inline="true">
-            <header-form-structure :form-data="form.header" :item="applyForm.header" :whole="applyForm"></header-form-structure>
+            <header-form-structure :form-data="taskForm.header" :item="applyForm.header" :whole="applyForm"></header-form-structure>
           </el-form>
           <br>
-          <template v-if="form.body && form.body.body_list.length">
+          <template v-if="taskForm.body && taskForm.body.body_list.length">
             <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
               增加
             </el-button>
             <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-position="top" :inline="true">
               <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
                 <el-tab-pane v-for="(item, index) in applyForm.body" :label="'body' + (index + 1)" :name="index + ''" :closable="index !== 0">
-                  <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :whole="applyForm" index="index"></form-structure>
+                  <!-- <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :whole="applyForm" index="index"></form-structure> -->
+                  <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                    <div v-for="taskFormData in taskForm.body.body_list">
+                        <div v-if="showBodyList(taskFormData, applyForm, applyData, index)">
+                          <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                            <h5>{{formBlock.name}}</h5>
+                            <span v-for="formItem in formBlock.value">
+                              <form-body
+                                v-if="showFormItem(formItem, applyForm, applyData)"
+                                :item="item"
+                                :form-item="formItem"
+                                :whole="applyForm"
+                                :index="index"
+                                keep-alive>
+                              </form-body>
+                              <search-bar
+                                v-if="showFormItem(formItem, applyForm, applyData) && formItem.value.type==='search_bar'"
+                                :index="index"
+                                :hosts="applyForm.body[index]"
+                                :attr-list="formItem"
+                                :limit="getLimitQuantity(formItem, applyForm, applyData, index)"
+                                @on-hosts-change="onHostsChange">
+                              </search-bar>
+                              <body-table
+                                v-if="showFormItem(formItem, applyForm, applyData) && formItem.value.type==='table'"
+                                :form-data="formItem"
+                                :item="applyForm.body[index]"
+                                :post-form="applyForm"
+                                :index="index"
+                                :bodyTable="true">
+                              </body-table>
+                            </span>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
                 </el-tab-pane>
               </el-tabs>
             </el-form>
@@ -31,11 +66,14 @@
 </template>
 <script>
   import formStructure from '../../_plugins/_formStructure'
+  import formBody from '../../_plugins/_formBody'
+  import searchBar from '../../_plugins/_searchBar'
+  import bodyTable from '../../_plugins/_bodyTable'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   export default {
     data () {
       return {
-        form: {},
+        taskForm: {},
         tabsValue: '0',
         tabIndex: 1,
         editInfo: {
@@ -60,14 +98,6 @@
         this.editInfo = {
           id: ''
         }
-      },
-      'applyForm.body': {
-        handler: (val, oldVal) => {
-          for (const data of val) {
-            data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
-          }
-        },
-        deep: true
       }
     },
     methods: {
@@ -82,8 +112,8 @@
         }
         // this.loading = true
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          this.form = res.data.data.form
-          this.form.header.map(group => {
+          this.taskForm = res.data.data.form
+          this.taskForm.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.applyForm.header, this)
               // 取默认值
@@ -97,19 +127,22 @@
             })
           })
           console.log(this.applyForm.header)
-          this.form.body.body_list.length && this.form.body.body_list[0].attr_list.map(group => {
-            group.value.map(item => {
-              this.setDataType(item, this.applyForm.body[0], this)
-              // 取默认值
-              if (item.default.type) {
-                if (item.default.type === 'message_header') {
-                  this.applyForm.body[0][item.id] = this.getPathResult(this.applyForm.body[0], item.default.key_path, 0)
-                } else if (item.default.type === 'static') {
-                  this.applyForm.body[0][item.id] = item.default.value
+          if (this.taskForm.body.body_list.length) {
+            this.applyForm.body[0] = {}
+            this.taskForm.body.body_list[0].attr_list.map(group => {
+              group.value.map(item => {
+                this.setDataType(item, this.applyForm.body[0], this)
+                // 取默认值
+                if (item.default.type) {
+                  if (item.default.type === 'message_header') {
+                    this.applyForm.body[0][item.id] = this.getPathResult(this.applyForm.body[0], item.default.key_path, 0)
+                  } else if (item.default.type === 'static') {
+                    this.applyForm.body[0][item.id] = item.default.value
+                  }
                 }
-              }
+              })
             })
-          })
+          }
         })
       },
       renderInstanceDetail () {
@@ -223,18 +256,18 @@
         // let newTabName = ++this.tabIndex + ''
         var that = this
         let newData = {}
-        this.form.body.body_list[0].attr_list.map(group => {
+        this.taskForm.body.body_list[0].attr_list.map(group => {
           group.value.map(item => {
             this.setNewDataType(item, newData)
           })
         })
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
-            if (that.applyForm.body.length < this.form.body.count.max) {
+            if (that.applyForm.body.length < this.taskForm.body.count.max) {
               that.applyForm.body.push(newData)
               this.tabsValue = that.applyForm.body.length - 1 + ''
             } else {
-              that.$message.warning(`最多只能增加${this.form.body.count.max}个设备！`)
+              that.$message.warning(`最多只能增加${this.taskForm.body.count.max}个设备！`)
             }
           } else {
             that.$message.warning('请填写完整当前表单')
@@ -245,7 +278,10 @@
 
     components: {
       formStructure,
-      headerFormStructure
+      headerFormStructure,
+      bodyTable,
+      searchBar,
+      formBody
     }
   }
 </script>

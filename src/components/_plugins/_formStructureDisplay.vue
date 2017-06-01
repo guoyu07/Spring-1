@@ -42,7 +42,7 @@
             <pre>{{ item[formItem.id] }}</pre>
           </span> -->
 
-          <span v-else-if="formItem.value.type === 'str' || formItem.value.type==='enum' || formItem.value.type==='int'">
+          <span v-else-if="formItem.value.type === 'str' || formItem.value.type==='enum' || formItem.value.type==='int' || formItem.value.type==='date' || formItem.value.type==='datetime'">
             {{ item[formItem.id] }}
           </span>
 
