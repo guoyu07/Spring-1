@@ -38,3 +38,17 @@ this.applyData && this.applyData.body.map((item, k) => {
     }
   }
 })
+
+// {
+//   icon: 'fa-upload',
+//   title: '上架流程',
+//   path: '/guosen/on'
+// }, {
+//   icon: 'fa-magic',
+//   title: '测试流程',
+//   path: '/test/start'
+// }, {
+//   icon: 'fa-sign-in',
+//   title: '流程通用test',
+//   path: '/procedure/start/import_device/设备入库'
+// }

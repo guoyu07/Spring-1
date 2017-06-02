@@ -10,127 +10,79 @@
               <div v-if="taskheader.form.form.header.length >= 1">
                 <p class="h5">{{taskheader.tname}}</p>
                 <div v-for="taskformheader in taskheader.form.form.header">
-                  <!-- {{taskformheader.name}} -->
+                  <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
                   <span v-for="valueheader in taskformheader.value">
-                    <!-- 有 show 条件的时候 -->
-                    <div v-if="valueheader.show">
-                      <!-- 判断 show.type 这里只判断了一种情况-->
-                      <div v-if="valueheader.show.type==='form_header'">
-                        <!-- 表单信息显示 -->
-                        <header-form-display
-                          v-if="valueheader.value.type !== 'search_bar'"
-                          :item="applyData.header"
-                          :form-item="valueheader">
-                        </header-form-display>
-                        <!-- 设备选择 -->
-                        <div v-if="valueheader.value.type === 'search_bar'">
-                          <el-table
-                            class="margin-bottom"
-                            v-if="valueheader.show.value === getPathResult(applyData.header, valueheader.show.key_path)"
-                            :data="applyData.header[valueheader.id]">
-                            <el-table-column
-                              v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                              :prop="item.id"
-                              :label="item.name">
-                            </el-table-column>
-                          </el-table>
-                        </div>
-                      </div>
-                    </div>
-                    <!-- 无 show 条件的时候 -->
-                    <span v-else>
-                      <!-- 表单信息显示 -->
+                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
                       <header-form-display
-                        v-if="valueheader.value.type !== 'search_bar'"
                         :item="applyData.header"
                         :form-item="valueheader">
                       </header-form-display>
-                      <!-- 选择设备信息显示 -->
-                      <el-table
-                        class="margin-bottom"
-                        v-if="valueheader.value.type === 'search_bar'"
-                        :data="applyData.header[valueheader.id]">
-                        <el-table-column
-                          v-for="item in valueheader.value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                          :prop="item.id"
-                          :label="item.name">
-                        </el-table-column>
-                      </el-table>
                     </span>
                   </span>
                 </div>
               </div>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body.length !== 0">
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- body 信息显示 -->
                 <div v-for="task in form">
-                  <div v-if="task.form.form.body.body_list.length > 1">
-                    <div v-for="taskform in task.form.form.body.body_list">
-                      <template v-if="taskform.show ? (getPathResult(taskform.show.type === 'form_header' ? applyData.header : applyData.body[index], taskform.show.key_path) === taskform.show.value) : true">
-                        <p class="h5">{{task.tname}}</p>
-
-                        <el-table
-                          v-if="taskform.attr_list[0].value[0].value.type === 'search_bar'"
-                          :data="data[taskform.attr_list[0].value[0].id]">
-                          <el-table-column
-                            v-for="item in taskform.attr_list[0].value[0].value.source.data.params.filter(item => {return item.value.type === 'input'})"
-                            :prop="item.id"
-                            :label="item.name">
-                          </el-table-column>
-                        </el-table>
-
-                        <!--  -->
-                        <form-structure-display
-                          v-if="taskform.attr_list[0].value[0].value.type !== 'search_bar'"
-                          :item="data"
-                          :form-data="taskform.attr_list"
-                          :index="index">
-                        </form-structure-display>
-
-                      </template>
-                    </div>
-                  </div>
-                  <!-- task.form.form.body.body_list.length === 1 -->
-                  <div v-else>
-                    <!-- 这里是判断 body_list 是不是空数组 -->
-                    <div v-if="task.form.form.body.body_list && task.form.form.body.body_list[0]">
-                      <!-- <div v-if="task.form.form.body.body_list[0].show ? (getPathResult(data, task.form.form.body.body_list[0].show.key_path) === task.form.form.body.body_list[0].show.value) : true"> -->
+                  <div v-for="taskbody in task.form.form.body.body_list">
+                    <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
                       <p class="h5">{{task.tname}}</p>
-                      <form-structure-display :item="data" :form-data="task.form.form.body.body_list[0].attr_list" :index="index"></form-structure-display>
-                      <!-- </div> -->
+                      <form-structure-display
+                        :item="data"
+                        :form-data="taskbody.attr_list"
+                        :index="index"
+                        :post-form="assignForm"
+                        :message-data="applyData"
+                        :current-task="routerInfo.tkey"
+                        :history-task="task.tkey">
+                      </form-structure-display>
                     </div>
                   </div>
                 </div>
 
                 <!-- body 表单填写 -->
-                <div v-if="taskForm.body.body_list.length !== 0">
+                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
-                    <!-- <div v-if="taskFormData.show "> -->
-                      <!-- type来源 为 message_body 意味着数据来源就是(data, index) in applyData.body 的 data -->
-                      <div v-if="taskFormData.show ? (getPathResult(taskFormData.show.type === 'message_body' ? data : (taskFormData.show.type === 'message_header' ? applyData.header : (taskFormData.show.type === 'form_header' ? this.assignForm.header : this.assignForm.body[index])), taskFormData.show.key_path) === taskFormData.show.value) : true">
-                        <!-- 表单填写 -->
-                        <form-structure
-                          v-if="taskFormData.attr_list[0].value[0].value.type!=='search_bar'"
-                          :form-data="taskFormData.attr_list"
-                          :item="assignForm.body[index]"
-                          :index="index"
-                          :message="applyData">
-                        </form-structure>
-                        <!-- 设备选择 -->
-                        <search-bar
-                          v-if="taskFormData.attr_list[0].value[0].value.type==='search_bar'"
-                          :index="index"
-                          :hosts="assignForm.body[index]"
-                          :attr-list="taskFormData.attr_list[0].value[0]"
-                          :limit="getLimitQuantity(taskFormData.attr_list[0].value[0], data)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar>
+                      <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                        <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                          <h5>{{formBlock.name}}</h5>
+                          <span v-for="formItem in formBlock.value">
+                            <form-body
+                              v-if="showFormItem(formItem, assignForm, applyData)"
+                              :item="assignForm.body[index]"
+                              :form-item="formItem"
+                              :whole="assignForm"
+                              :index="index"
+                              :message="applyData"
+                              keep-alive>
+                            </form-body>
+                            <search-bar
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
+                              :index="index"
+                              :hosts="assignForm.body[index]"
+                              :attr-list="formItem"
+                              :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                              @on-hosts-change="onHostsChange">
+                            </search-bar>
+                            <body-table
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
+                              :form-data="formItem"
+                              :item="assignForm.body[index]"
+                              :post-form="assignForm"
+                              :message-data="applyData"
+                              :index="index"
+                              :bodyTable="true">
+                            </body-table>
+                          </span>
+                        </div>
                       </div>
-                    <!-- </div> -->
-                    <!-- <div v-if="!taskFormData.show">000</div> -->
                   </div>
+                </div>
+                <div class="clear">
+                  <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
                 </div>
               </el-tab-pane>
             </el-tabs>
@@ -140,35 +92,34 @@
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
-                    v-if="!taskform.show"
+                    v-if="showFormItem(taskform, assignForm, applyData)"
                     :item="assignForm.header"
-                    :form-item="taskform">
+                    :form-item="taskform"
+                    :whole="assignForm"
+                    :message="applyData"
+                    :header="true">
                   </form-body>
-                  <div v-if="taskform.show">
-                    <div v-if="taskform.show.type==='form_header'">
-                      <div v-if="getPathResult(assignForm.header, taskform.show.key_path.split('.')[0])">
-                        <search-bar
-                          v-if="getPathResult(assignForm.header, taskform.show.key_path) === taskform.show.value"
-                          :hosts="assignForm.header"
-                          :attr-list="taskform"
-                          :limit="getLimitQuantity(taskform, assignForm, applyData)"
-                          @on-hosts-change="onHostsChange">
-                        </search-bar>
-                      </div>
-                    </div>
+                  <search-bar
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
+                    :hosts="assignForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
+                  <div v-if="taskform.value.type==='table'">
+                      headerTable
                   </div>
                 </span>
               </div>
-              <!-- <header-form-structure :form-data="taskForm.header" :item="assignForm.header"></header-form-structure> -->
             </div>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="primary" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
                 <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
                   <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
                 </el-tooltip>
-                <el-button v-else-if="action.type==='back'" :plain="true" type="danger" @click="onReject(applyData, action)" class="fr">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>
@@ -176,6 +127,34 @@
         </el-card>
       </el-col>
     </el-row>
+    <!-- 机柜图预览 -->
+    <div v-if="routerInfo.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
+      <h5 class="cabinet-title">
+        <span>机柜预览</span>
+      </h5>
+      <span class="close-btn" >
+        <el-button type="text" size="small" icon="close" @click="closePreview"></el-button>
+      </span>
+      <div class="paginate-btn clearfix">
+        <el-button type="primary" size="mini" icon="arrow-left" :disabled="previewPage === 1" class="fl" @click="prevPreview">上一页</el-button>
+        <span class="preview-indicator"><span class="current-page">{{previewPage}}</span>/<span class="total-page">{{pageNum}}</span></span>
+        <el-button type="primary" size="mini" :disabled="previewPage === pageNum || pageNum === 0" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
+      </div>
+      <el-row :gutter="10">
+        <el-col :sm="6" v-for="idcrack in idcrackData">
+          <table class="el-table__body table-condensed table-cabinet text-navy">
+            <caption>{{ idcrack.code }}</caption>
+            <tbody>
+              <tr v-for="(nindex, n) in idcrack.u_info.jgUHeight">
+                <td :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - n)) }">
+                  U{{idcrack.u_info.jgUHeight - n}}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </el-col>
+      </el-row>
+    </div>
   </div>
 </template>
 <script>
@@ -187,6 +166,7 @@
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
+  import bodyTable from '../../_plugins/_bodyTable'
 
   export default {
     data () {
@@ -207,31 +187,188 @@
         searchKeys: {},
         searchData: {},
         path_list: [],
-        hostList: []
+        hostList: [],
+        previewShown: false,
+        idcrackData: [],
+        previewPage: 1,
+        pageNum: 1,
+        idcrackList: [],
+        idcrackTaked: []
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
+      console.log('onlinestep')
       // this.renderForm()
       // this.renderTaskForm()
     },
+    mounted () {
+      // 为机柜 U 位默认值而生
+      if (this.routerInfo.tkey === 'cabinet') {
+        this.http.interceptors.response.use(rs => {
+          if (rs.config.data.includes('action=idcrack%2Flist')) {
+            this.applyData && this.applyData.body.map((item, k) => {
+              if (this.assignForm.body[k] && this.assignForm.body[k].idcrack) {
+                const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
+                // 整理出一个未被占用的 U位 列表
+                let untakedData = []
+                for (let i = 1; i <= uHeight; i++) {
+                  if (this.assignForm.body[k].idcrack.u_info.assetList.length !== 0) {
+                    if (this.assignForm.body[k].idcrack.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
+                      untakedData.push(i)
+                    }
+                  }
+                }
+                // console.log(untakedData)
+                for (let i = 1; i <= uHeight; i++) {
+                  if (this.assignForm.body[k].idcrack.u_info.assetList.length === 0) {
+                    this.assignForm.body[k].idcracku = i
+                  } else {
+                    const iend = +this.applyData.header.host_list[k].u_num + i - 1
+                    // 判断 i iend(U位末端) 都在未被占用的范围内
+                    if (untakedData.includes(i) && untakedData.includes(iend)) {
+                      // 判断是否已被当前其他表单占用
+                      let formTakedData = [] // 用于判断是否已被当前其他表单占用
+                      this.assignForm.body.map((body, bodyk) => {
+                        if (body.idcracku && body.idcrack && (body.idcrack.instanceId === this.assignForm.body[k].idcrack.instanceId)) {
+                          const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                          console.log(bodyk, body.idcracku, eU)
+                          for (let tU = body.idcracku; tU <= eU; tU++) {
+                            if (!formTakedData.includes(tU)) {
+                              formTakedData.push(tU)
+                            }
+                          }
+                        } else {
+                          formTakedData = []
+                        }
+                      })
+                      console.log(this.assignForm.body[k].idcrack.code, formTakedData)
+                      if (!formTakedData.includes(i)) {
+                        // if (!this.assignForm.body[k].idcracku) {
+                        this.assignForm.body[k].idcracku = i
+                        // }
+                        return false
+                      }
+                    }
+                  }
+                }
+                // console.log(this.assignForm.body[k].idcrack.u_info, this.applyData.header.host_list[k].u_num)
+                // let takedData = {}
+                // takedData.id = this.assignForm.body[k].idcrack.instanceId
+                // takedData.taked = []
+                // const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
+                // this.assignForm.body[k].idcrack.u_info.assetList.map(item => {
+                //   for (let i = 0; i < uHeight; i++) {
+                //     if (i >= item.beginU && i <= item.endU) {
+                //       takedData.taked.push(i)
+                //     }
+                //   }
+                // })
+                // if (this.idcrackTaked.length === 0) {
+                //   this.idcrackTaked.push(takedData)
+                // } else if (!this.idcrackTaked.some(item => { return takedData.id === item.id })) {
+                //   this.idcrackTaked.push(takedData)
+                // }
+                // console.log(k)
+                // for (let i = 0; i < uHeight; i++) {
+                //   for (const item of this.idcrackTaked) {
+                //     if (item.id === takedData.id) {
+                //       let uNum = i + +this.applyData.header.host_list[k].u_num
+                //       if (!item.taked.includes(uNum) && !item.taked.includes((i + 1))) {
+                //         this.assignForm.body[k].idcracku = i + 1
+                //         console.log(i)
+                //         // item.taked.push(this.assignForm.body[k].idcrackui+1)
+                //         for (let utaked = (i + 1); utaked <= uNum; utaked++) {
+                //           item.taked.push(utaked)
+                //         }
+                //         return false
+                //       }
+                //     }
+                //   }
+                // }
+              }
+            })
+          }
+          return rs
+        }, err => {
+          console.log(err.response.data.errorMessage)
+        })
+      }
+    },
+    watch: {
+      'idcrackData': 'idcrackIsTaked'
+    },
     methods: {
+      idcrackIsTaked () {
+        for (const item of this.idcrackData) {
+          item.isTaked = []
+          for (const ed of item.u_info.assetList) {
+            for (let i = 0; i < item.u_info.jgUHeight; i++) {
+              if (i >= ed.beginU && i <= ed.endU) {
+                item.isTaked.push(i)
+              }
+            }
+          }
+        }
+      },
+      getPreview (ipscope) {
+        const postHeadvData = {
+          action: 'idcrack/list',
+          method: 'GET',
+          data: {
+            ipscopeId: ipscope
+          }
+        }
+        this.http.post('', this.parseData(postHeadvData))
+        .then((response) => {
+          console.log(response)
+          this.idcrackList = response.data.data.list
+          this.previewShown = !this.previewShown
+          this.pageNum = Math.ceil(this.idcrackList.length / 4)
+          this.idcrackData = this.idcrackList.slice(0, 4)
+        })
+        // this.$store.dispatch('idcrack_data', {
+        //   idcrackData: this.optionList
+        // })
+        // this.previewShown = !this.previewShown
+        // this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
+        // this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
+      },
+      closePreview () {
+        this.previewShown = !this.previewShown
+      },
+      nextPreview () {
+        const page = this.previewPage + 1
+        if (this.previewPage !== this.pageNum) {
+          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
+          this.previewPage = page
+        }
+      },
+
+      prevPreview () {
+        const page = this.previewPage > 1 ? this.previewPage - 1 : 1
+        if (this.previewPage !== 1) {
+          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
+          this.previewPage = page
+        }
+      },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
             pkey: this.routerInfo.pkey,
-            tkey: this.routerInfo.tkey
+            tkey: this.routerInfo.tkey,
+            version: this.applyData.version
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.taskForm = res.data.data.form
-          console.log(this.applyData)
+          // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
-            if (this.taskForm.body.count.type === 'message_header') {
+            if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
               if (Array.isArray(keyData)) {
                 // this.applyData.body.length = keyData.length
@@ -274,21 +411,33 @@
               header.value.map(value => {
                 if (value.need_submit) {
                   this.setDataType(value, this.assignForm.header, this)
+                  if (value.value.type === 'table') {
+                    this.$set(this.assignForm.header[value.id], 0, {})
+                    let data = this.assignForm.header[value.id][0]
+                    value.value.attr_list.map(item => {
+                      this.setDataType(item, data, this)
+                    })
+                  }
+                  console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                   if (value.default.type) {
                     if (value.default.type === 'message_header') {
-                      this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      // console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
+                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                      console.log(this.assignForm.header[value.id])
                     }
                   }
                 }
               })
             }
           })
+          // console.log(this.assignForm.header.host_type)
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
             this.taskForm.body.body_list.forEach(body => {
-              if (body.show) {
+              if (body.show.type) {
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
@@ -309,6 +458,10 @@
                         if (value.default.type) {
                           if (value.default.type === 'message_header') {
                             newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          } else if (value.default.type === 'form_body') {
+                            this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              this.assignForm.body[k][value.id] = newVal
+                            })
                           }
                         }
                       }
@@ -322,17 +475,31 @@
                   })
                 }
               } else {
-                console.log(item, body)
+                // console.log(item, body)
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                      // console.log(newData)
+                      if (value.value.type === 'table') {
+                        // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                        newData[value.id][0] = {}
+                        let data = newData[value.id][0]
+                        value.value.attr_list.map(item => {
+                          this.setNewDataType(item, data)
+                        })
+                      }
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
                       if (value.default.type) {
                         if (value.default.type === 'message_header') {
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                        } else if (value.default.type === 'form_body') {
+                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                            this.assignForm.body[k][value.id] = newVal
+                          })
                         }
                       }
+                      // 机柜 U 位数的默认值 console.log(this.assignForm.body[k].idcrack, this.applyData.header.host_list[k].u_num)
                     }
                   })
                 })
@@ -344,6 +511,28 @@
               if (this.assignForm.body[k][id] !== undefined) {
                 this.assignForm.body[k][id] = item[id]
               }
+            }
+            // 主机名
+            if (this.routerInfo.tkey === 'confirm1') {
+              const postHeadvData = {
+                action: `hostname/minnumber`,
+                method: 'get',
+                data: {
+                  prefix: [
+                    this.applyData.header.idc.abbreviation,
+                    this.applyData.header.host_type.abbreviation,
+                    this.applyData.header.app.abbreviation
+                  ].join('') + '-' + this.applyData.header.component.abbreviation
+                }
+              }
+              this.http.post('', this.parseData(postHeadvData))
+              .then((response) => {
+                if (response.status === 200) {
+                  this.assignForm.body.map((body, bodyIndex) => {
+                    body.hostname = postHeadvData.data.prefix + (response.data.data + bodyIndex)
+                  })
+                }
+              })
             }
           })
         })
@@ -370,6 +559,7 @@
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
+          this.applyData.version = res.data.data.version
           this.renderTaskForm()
         })
       },
@@ -379,7 +569,8 @@
           method: 'GET',
           data: {
             pkey: this.routerInfo.pkey,
-            tkey: this.path_list
+            tkey: this.path_list,
+            version: this.applyData.version
           }
         }
         // this.loading = true
@@ -389,10 +580,10 @@
       },
       handleClick (tab, event) {
         this.index = tab.index
-        console.log(this.index)
+        // console.log(this.index)
       },
       onHostsChange (val, index) {
-        console.log(val, index)
+        // console.log(val, index)
         if (index !== undefined) {
           for (const id in this.assignForm.body[index]) {
             this.assignForm.body[index][id] = val
@@ -406,7 +597,7 @@
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
           header.value.map(item => {
-            if (item.show) {
+            if (item.show.type) {
               // show.type 有四种类型
               if (item.show.type === 'form_header') {
                 if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
@@ -418,18 +609,44 @@
             }
           })
         })
+        let postFormData = {
+          header: {},
+          body: []
+        }
+        for (const headerid in this.assignForm.header) {
+          if (Array.isArray(this.assignForm.header[headerid])) {
+            if (this.assignForm.header[headerid].length !== 0) {
+              postFormData.header[headerid] = this.assignForm.header[headerid]
+            }
+          } else if (this.assignForm.header[headerid]) {
+            postFormData.header[headerid] = this.assignForm.header[headerid]
+          }
+        }
+        this.assignForm.body.map((body, bodyIndex) => {
+          postFormData.body[bodyIndex] = {}
+          for (const bodyid in body) {
+            if (Array.isArray(body[bodyid])) {
+              if (body[bodyid].length !== 0) {
+                postFormData.body[bodyIndex][bodyid] = body[bodyid]
+              }
+            } else if (body[bodyid]) {
+              postFormData.body[bodyIndex][bodyid] = body[bodyid]
+            }
+          }
+        })
+        console.log(postFormData)
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'info'
         }).then(() => {
-          const ref = this.$refs[assignForm].fields.length !== 0
+          const ref = this.$refs['assignForm'].fields.length !== 0
           console.log(ref)
           if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs[assignForm].validate((valid) => {
+            this.$refs['assignForm'].validate((valid) => {
               if (valid) {
-                console.log(this.assignForm.body)
+                // console.log(this.assignForm.body)
                 if (this.assignForm.body) {
                   for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
                     for (const item in data) {
@@ -440,7 +657,7 @@
                     }
                   }
                 }
-                this.postMethod(this.routerInfo.id, this.assignForm)
+                this.postMethod(this.routerInfo.id, postFormData)
                 // console.dir(this.assignForm)
               } else {
                 console.log('error submit!!')
@@ -449,17 +666,51 @@
               }
             })
           } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            if (!this.assignForm.body.some(data => {
-              for (const item in data) {
-                return Array.isArray(data[item]) && data[item].length === 0
+            this.taskForm.body.body_list.map(bodyList => {
+              if (!bodyList.show.type) {
+                bodyList.attr_list.map(attrList => {
+                  if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
+                    attrList.value.map(value => {
+                      if (value.value.type === 'search_bar') {
+                        this.assignForm.body.map((postbody, postbodyIndex) => {
+                          if (postbody[value.id].length === 0) {
+                            this.$message.warning('未分配完！')
+                            return false
+                          }
+                        })
+                      }
+                    })
+                  } else {
+                    this.postMethod(this.routerInfo.id, postFormData)
+                  }
+                })
               }
-            })) {
-              this.postMethod(this.routerInfo.id, this.assignForm)
-              // console.dir(this.assignForm)
-            } else {
-              this.$message.warning('未分配完！')
-              return false
-            }
+            })
+            this.taskForm.header.map(header => {
+              if (header.value.some(value => { return value.value.type === 'search_bar' })) {
+                header.value.map(value => {
+                  if (value.value.type === 'search_bar') {
+                    if (this.assignForm.header[value.id].length === 0) {
+                      this.$message.warning('未分配完！')
+                      return false
+                    }
+                  }
+                })
+              } else {
+                this.postMethod(this.routerInfo.id, postFormData)
+              }
+            })
+            // if (!this.assignForm.body.some(data => {
+            //   for (const item in data) {
+            //     return Array.isArray(data[item]) && data[item].length === 0
+            //   }
+            // })) {
+            //   this.postMethod(this.routerInfo.id, postFormData)
+            //   // console.dir(this.assignForm)
+            // } else {
+            //   this.$message.warning('未分配完！')
+            //   return false
+            // }
           }
         }).catch(() => {
           this.$message({
@@ -469,11 +720,24 @@
         })
       },
       postMethod (id, data) {
-        if (data.body.length === 0) {
-          this.applyData.body.forEach(item => {
-            data.body.push({})
-          })
+        for (const headerid in data.header) {
+          if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
+            delete data.header[headerid]
+          }
+          if (!data.header[headerid]) {
+            delete data.header[headerid] // 删除头部空值
+          }
         }
+        data.body.map(body => {
+          for (const bodyid in body) {
+            if (Array.isArray(body[bodyid]) && body[bodyid].length === 0) {
+              delete body[bodyid]
+            }
+            if (!body[bodyid]) {
+              delete body[bodyid] // 删除body空值
+            }
+          }
+        })
         const postData = {
           action: 'runtime/task/complete',
           method: 'POST',
@@ -488,9 +752,13 @@
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
-                message: '审批成功!'
+                message: '成功!'
               })
-              this.$router.replace('/orders') // 分配成功跳转工单管理
+              if (this.routerInfo.pkey === 'easyops_monitor') {
+                this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
+              } else {
+                this.$router.replace('/orders') // 跳转工单管理
+              }
             }
           })
       },
@@ -519,17 +787,18 @@
             }
           })
         } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-          if (!this.assignForm.body.some(data => {
-            for (const item in data) {
-              return Array.isArray(data[item]) && data[item].length === 0
-            }
-          })) {
-            this.manualMethod(action)
-            // console.dir(this.assignForm)
-          } else {
-            this.$message.warning('未分配完！')
-            return false
-          }
+          console.log(this.taskform)
+          // if (!this.assignForm.body.some(data => {
+          //   for (const item in data) {
+          //     return Array.isArray(data[item]) && data[item].length === 0
+          //   }
+          // })) {
+          //   this.manualMethod(action)
+          //   // console.dir(this.assignForm)
+          // } else {
+          //   this.$message.warning('未分配完！')
+          //   return false
+          // }
         }
       },
       manualMethod (action) {
@@ -592,7 +861,8 @@
       formStructure,
       headerFormStructure,
       formBody,
-      searchBar
+      searchBar,
+      bodyTable
     }
   }
 </script>
@@ -652,5 +922,119 @@
       word-wrap: break-word;
     }
   }
+}
+.cabinet-preview {
+  position: fixed;
+  right: 0;
+  top: 0;
+  height: 99.9vh;
+  background: rgba(255, 255, 255, .9);
+  padding: 2px 8px;
+  z-index: 99999;
+  width: 26%;
+  transition: all 320ms cubic-bezier(0.175, 0.185, 0.320, 1.255) 0s;
+  transform: translateX(100%);
+  overflow-y: scroll;
+  text-align: center;
+}
+
+.cabinet-preview table caption {
+  text-align: center;
+  padding-top: 4px;
+  padding-bottom: 4px;
+}
+
+.cabinet-preview.shown {
+  transform: translateX(0);
+  box-shadow: -6px 0px 12px -6px #777;
+}
+
+.cabinet-preview .close-btn {
+  position: absolute;
+  right: 10px;
+  top: 0;
+  font-size: 12px;
+  color: rgba(0,0,0,.28);
+  cursor: pointer;
+}
+
+.cabinet-preview .close-btn:hover {
+  color: rgba(0,0,0,.56);
+}
+
+.cabinet-title {
+  margin: 8px 0;
+  font-size: 14px;
+  color: rgba(0, 0, 0, .42);
+  text-align: center;
+  overflow: hidden;
+  width: 100%;
+  position: relative;
+  letter-spacing: .42em;
+  font-weight: bold;
+}
+
+.cabinet-title span {
+  padding: 0 16px;
+  display: inline-block;
+  text-align: center;
+  position: relative;
+  z-index: 11;
+}
+
+.cabinet-preview.shown .table-cabinet {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.table-cabinet {
+  border: 1px solid rgba(82, 100, 115, 0.84);
+  border-left-width: 2px;
+  border-right-width: 2px;
+  opacity: 0;
+  transform: translateY(0);
+  transition-property: opacity, transform;
+  transition-duration: .25s;
+  transition-delay: .15s;
+  width: 100%;
+}
+
+.table-cabinet td {
+  border: 1px solid rgba(173, 194, 212, 0.84);
+  padding: 0 4px;
+  background: rgba(0,0,0,.04);
+  font-size: 10px;
+}
+
+.table-cabinet td.occupied {
+  background-color: #b5bbc8;
+  color: #fff;
+  text-shadow: 1px 1px 4px rgba(0,0,0,.3);
+  font-weight: bold;
+  background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,.3) 4px, rgba(255,255,255,.3) 8px);
+  // cursor: not-allowed;
+}
+
+.table-cabinet caption {
+  font-size: 12px;
+  height: 70px;
+  overflow: hidden;
+}
+
+.preview-container.loading {
+  opacity: .5
+}
+
+.preview-indicator {
+  color: #333;
+}
+
+.paginate-btn {
+  margin-bottom: 10px;
+}
+
+.total-page {
+  font-size: 12px;
+  color: #616161;
 }
 </style>

@@ -7,7 +7,7 @@
           <h3><i class="el-icon-fa-bomb"></i> 应用发布更新</h3>
           <el-form label-position="top" ref="postForm" :model="postForm" :inline="true">
             <header-form-structure :form-data="form.header" :item="postForm.header"></header-form-structure>
-            <header-table :form-data="form.header" :item="postForm.header" :headerTable="true"></header-table>
+            <!-- <header-table :form-data="form.header" :item="postForm.header" :headerTable="true"></header-table> -->
           <!-- </el-form>
           <el-form label-position="top" :inline="true" ref="postForm" :model="postForm"> -->
             <div v-if="form.body && form.body.body_list.length">

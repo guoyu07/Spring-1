@@ -194,19 +194,44 @@
                     }
                   }
                 } else {
+                  // for (const headerid in this.applyForm.header) {
+                  //   if (!this.applyForm.header[headerid]) {
+                  //     delete this.applyForm.header[headerid] // 删除头部空值 TODO：删除 body 的空值
+                  //   }
+                  // }
+                  let postFormData = {
+                    header: {},
+                    body: []
+                  }
                   for (const headerid in this.applyForm.header) {
-                    if (!this.applyForm.header[headerid]) {
-                      delete this.applyForm.header[headerid] // 删除头部空值 TODO：删除 body 的空值
+                    if (Array.isArray(this.applyForm.header[headerid])) {
+                      if (this.applyForm.header[headerid].length !== 0) {
+                        postFormData.header[headerid] = this.applyForm.header[headerid]
+                      }
+                    } else if (this.applyForm.header[headerid]) {
+                      postFormData.header[headerid] = this.applyForm.header[headerid]
                     }
                   }
+                  this.applyForm.body.map((body, bodyIndex) => {
+                    postFormData.body[bodyIndex] = {}
+                    for (const bodyid in body) {
+                      if (Array.isArray(body[bodyid])) {
+                        if (body[bodyid].length !== 0) {
+                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                        }
+                      } else if (body[bodyid]) {
+                        postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                      }
+                    }
+                  })
                   postData = {
                     action: 'runtime/process/instances',
                     method: 'POST',
                     data: {
                       pkey: 'test',
                       form: {
-                        'body': this.applyForm.body,
-                        'header': this.applyForm.header
+                        'body': postFormData.body,
+                        'header': postFormData.header
                       }
                     }
                   }

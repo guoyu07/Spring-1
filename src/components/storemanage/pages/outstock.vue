@@ -81,7 +81,7 @@
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
-            pkey: this.routerInfo.pkey,
+            pkey: 'export_device',
             tkey: 'start'
           }
         }

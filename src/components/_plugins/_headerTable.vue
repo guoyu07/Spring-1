@@ -1,30 +1,29 @@
 <template>
   <div>
-    <template v-for="header in formData">
-      <template v-for="value in header.value">
-        <template v-if="value.value.type === 'table'">
-          <el-form-item
-            :prop="prop(value)"
-            :rules="rules(value)"
-            class="block">
-            <el-button size="mini" @click="addTab(value)" icon="plus" class="margin-bottom">{{value.name}}</el-button>
-            <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(value.id)">
-              <el-tab-pane
-                v-for="(body, bodyindex) in item[value.id]" :label="value.name + (bodyindex + 1)"
-                :closable="closableIndex(bodyindex, value)">
-                <form-structure
-                  :form-data="[{name: header.name, value: value.value.attr_list}]"
-                  :item="body"
-                  :index="0"
-                  :header-table="true"
-                  :value-id="value.id">
-                </form-structure>
-              </el-tab-pane>
-            </el-tabs>
-          </el-form-item>
-        </template>
-      </template>
-    </template>
+    <!-- <template v-for="header in formData">
+      <template v-for="value in header.value"> -->
+    <el-form-item
+       v-if="formData.value.type === 'table'"
+      :prop="prop(formData)"
+      :rules="rules(formData)"
+      class="block">
+      <el-button size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
+      <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
+        <el-tab-pane
+          v-for="(body, bodyindex) in item[formData.id]" :label="formData.name + (bodyindex + 1)"
+          :closable="closableIndex(bodyindex, formData)">
+          <form-structure
+            :form-data="[{name: header.name, value: formData.value.attr_list}]"
+            :item="body"
+            :index="0"
+            :header-table="true"
+            :value-id="formData.id">
+          </form-structure>
+        </el-tab-pane>
+      </el-tabs>
+    </el-form-item>
+      <!-- </template>
+    </template> -->
   </div>
 </template>
 
@@ -33,7 +32,7 @@
   export default {
     props: {
       item: { type: Object },
-      formData: { type: Array }
+      formData: { type: Object }
     },
 
     data () {

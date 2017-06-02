@@ -5,9 +5,9 @@
         <el-card
           class="box-card">
           <h3><i :class="editInfo.instanceId ? 'el-icon-edit' : 'el-icon-fa-sign-in' "></i> {{ editInfo.instanceId || editInfo.taskid ? '更改信息' : '入库流程'}}</h3>
-          <el-form label-position="top" ref="instockForm" :model="instockForm" :inline="true">
+          <el-form ref="instockForm" :model="instockForm" :inline="true" label-width="100px">
             <header-form-structure :form-data="form.header" :item="instockForm.header"></header-form-structure>
-            <header-table :form-data="form.header" :item="instockForm.header" :headerTable="true"></header-table>
+            <!-- <header-table :form-data="form.header" :item="instockForm.header" :headerTable="true"></header-table> -->
           <!-- </el-form>
           <el-form label-position="top" :inline="true" ref="instockForm" :model="instockForm"> -->
             <el-button v-if="(!editInfo.instanceId) && (!editInfo.taskid)" size="small" @click="addTab(tabsValue)" icon="plus" class="margin-bottom">
@@ -16,12 +16,12 @@
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in instockForm.body" :label="form.body && form.body.body_list[bodylistIndex].name + (index + 1)" :name="index + ''" :closable="index !== 0">
                 <form-structure :form-data="form.body && form.body.body_list[bodylistIndex].attr_list" :item="item" :index="index"></form-structure>
-                <body-table
+                <!-- <body-table
                   :form-data="form.body && form.body.body_list[bodylistIndex].attr_list"
                   :item="item"
                   :index="index"
                   :bodyTable="true">
-                </body-table>
+                </body-table> -->
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -122,15 +122,6 @@
         this.form.body.body_list[newVal].attr_list.map(group => {
           group.value.map(item => {
             this.setDataType(item, this.instockForm.body[0], this)
-            // if (item.value.type === 'arr' || item.value.type === 'FKs') {
-            //   this.$set(this.instockForm.body[0], item.id, [])
-            // } else if (item.value.type === 'date' || item.value.type === 'datetime' || item.value.type === 'int') {
-            //   this.$set(this.instockForm.body[0], item.id, undefined)
-            // } else if (item.value.type === 'dict' || item.value.type === 'dicts') {
-            //   this.$set(this.instockForm.body[0], item.id, null)
-            // } else {
-            //   this.$set(this.instockForm.body[0], item.id, '')
-            // }
           })
         })
       }

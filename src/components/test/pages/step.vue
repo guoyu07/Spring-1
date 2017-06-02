@@ -595,115 +595,133 @@
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
       },
       onSubmit (assignForm) {
-        this.taskForm.header.map(header => {
-          header.value.map(item => {
-            if (item.show.type) {
-              // show.type 有四种类型
-              if (item.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
-                  if (item.value.type === 'search_bar') {
-                    this.assignForm.header[item.id] = this.hostList
-                  }
-                }
-              }
-            }
-          })
-        })
+        // this.taskForm.header.map(header => {
+        //   header.value.map(item => {
+        //     if (item.show.type) {
+        //       // show.type 有四种类型
+        //       if (item.show.type === 'form_header') {
+        //         if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
+        //           if (item.value.type === 'search_bar') {
+        //             this.assignForm.header[item.id] = this.hostList
+        //           }
+        //         }
+        //       }
+        //     }
+        //   })
+        // })
+        let postData = {
+          header: {},
+          body: []
+        }
         for (const headerid in this.assignForm.header) {
-          if (!this.assignForm.header[headerid]) {
-            delete this.assignForm.header[headerid] // 删除头部空值
+          if (this.assignForm.header[headerid]) {
+            postData.header[headerid] = this.assignForm.header[headerid]
           }
         }
-        this.assignForm.body.map(body => {
-          for (const headerid in body) {
-            if (!body[headerid]) {
-              delete body[headerid] // 删除 body 的空值
+        this.assignForm.body.map((body, bodyIndex) => {
+          postData.body[bodyIndex] = {}
+          for (const bodyid in body) {
+            if (body[bodyid]) {
+              postData.body[bodyIndex][bodyid] = body[bodyid]
             }
           }
         })
-        console.log(this.assignForm)
-        this.$confirm('确定提交?', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'info'
-        }).then(() => {
-          const ref = this.$refs['assignForm'].fields.length !== 0
-          console.log(ref)
-          if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs['assignForm'].validate((valid) => {
-              if (valid) {
-                // console.log(this.assignForm.body)
-                if (this.assignForm.body) {
-                  for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
-                    for (const item in data) {
-                      if (Array.isArray(data[item]) && data[item].length === 0) {
-                        this.$message.warning('未完成！')
-                        return false
-                      }
-                    }
-                  }
-                }
-                this.postMethod(this.routerInfo.id, this.assignForm)
-                // console.dir(this.assignForm)
-              } else {
-                console.log('error submit!!')
-                this.$message.warning('未完成！')
-                return false
-              }
-            })
-          } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            this.taskForm.body.body_list.map(bodyList => {
-              if (!bodyList.show.type) {
-                bodyList.attr_list.map(attrList => {
-                  if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
-                    attrList.value.map(value => {
-                      if (value.value.type === 'search_bar') {
-                        this.assignForm.body.map((postbody, postbodyIndex) => {
-                          if (postbody[value.id].length === 0) {
-                            this.$message.warning('未分配完！')
-                            return false
-                          }
-                        })
-                      }
-                    })
-                  } else {
-                    this.postMethod(this.routerInfo.id, this.assignForm)
-                  }
-                })
-              }
-            })
-            this.taskForm.header.map(header => {
-              if (header.value.some(value => { return value.value.type === 'search_bar' })) {
-                header.value.map(value => {
-                  if (value.value.type === 'search_bar') {
-                    if (this.assignForm.header[value.id].length === 0) {
-                      this.$message.warning('未分配完！')
-                      return false
-                    }
-                  }
-                })
-              } else {
-                this.postMethod(this.routerInfo.id, this.assignForm)
-              }
-            })
-            // if (!this.assignForm.body.some(data => {
-            //   for (const item in data) {
-            //     return Array.isArray(data[item]) && data[item].length === 0
-            //   }
-            // })) {
-            //   this.postMethod(this.routerInfo.id, this.assignForm)
-            //   // console.dir(this.assignForm)
-            // } else {
-            //   this.$message.warning('未分配完！')
-            //   return false
-            // }
-          }
-        }).catch(() => {
-          this.$message({
-            type: 'info',
-            message: '已取消审批'
-          })
-        })
+        console.log(postData)
+        // for (const headerid in this.assignForm.header) {
+        //   if (!this.assignForm.header[headerid]) {
+        //     delete this.assignForm.header[headerid] // 删除头部空值
+        //   }
+        // }
+        // this.assignForm.body.map(body => {
+        //   for (const headerid in body) {
+        //     if (!body[headerid]) {
+        //       delete body[headerid] // 删除 body 的空值
+        //     }
+        //   }
+        // })
+        // console.log(this.assignForm)
+        // this.$confirm('确定提交?', '提示', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消',
+        //   type: 'info'
+        // }).then(() => {
+        //   const ref = this.$refs['assignForm'].fields.length !== 0
+        //   console.log(ref)
+        //   if (ref) { // 有表单的情况下，表单的自验证
+        //     this.$refs['assignForm'].validate((valid) => {
+        //       if (valid) {
+        //         // console.log(this.assignForm.body)
+        //         if (this.assignForm.body) {
+        //           for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+        //             for (const item in data) {
+        //               if (Array.isArray(data[item]) && data[item].length === 0) {
+        //                 this.$message.warning('未完成！')
+        //                 return false
+        //               }
+        //             }
+        //           }
+        //         }
+        //         this.postMethod(this.routerInfo.id, postData)
+        //         // console.dir(this.assignForm)
+        //       } else {
+        //         console.log('error submit!!')
+        //         this.$message.warning('未完成！')
+        //         return false
+        //       }
+        //     })
+        //   } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+        //     this.taskForm.body.body_list.map(bodyList => {
+        //       if (!bodyList.show.type) {
+        //         bodyList.attr_list.map(attrList => {
+        //           if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
+        //             attrList.value.map(value => {
+        //               if (value.value.type === 'search_bar') {
+        //                 this.assignForm.body.map((postbody, postbodyIndex) => {
+        //                   if (postbody[value.id].length === 0) {
+        //                     this.$message.warning('未分配完！')
+        //                     return false
+        //                   }
+        //                 })
+        //               }
+        //             })
+        //           } else {
+        //             this.postMethod(this.routerInfo.id, postData)
+        //           }
+        //         })
+        //       }
+        //     })
+        //     this.taskForm.header.map(header => {
+        //       if (header.value.some(value => { return value.value.type === 'search_bar' })) {
+        //         header.value.map(value => {
+        //           if (value.value.type === 'search_bar') {
+        //             if (this.assignForm.header[value.id].length === 0) {
+        //               this.$message.warning('未分配完！')
+        //               return false
+        //             }
+        //           }
+        //         })
+        //       } else {
+        //         this.postMethod(this.routerInfo.id, postData)
+        //       }
+        //     })
+        //     // if (!this.assignForm.body.some(data => {
+        //     //   for (const item in data) {
+        //     //     return Array.isArray(data[item]) && data[item].length === 0
+        //     //   }
+        //     // })) {
+        //     //   this.postMethod(this.routerInfo.id, postData)
+        //     //   // console.dir(this.assignForm)
+        //     // } else {
+        //     //   this.$message.warning('未分配完！')
+        //     //   return false
+        //     // }
+        //   }
+        // }).catch(() => {
+        //   this.$message({
+        //     type: 'info',
+        //     message: '已取消审批'
+        //   })
+        // })
       },
       postMethod (id, data) {
         // if (data.body.length === 0) {

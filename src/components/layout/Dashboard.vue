@@ -91,13 +91,29 @@
         entries: [{
           category: '流程',
           children: [{
-            icon: 'fa-upload',
-            title: '上架流程',
-            path: '/guosen/on'
+            icon: 'fa-sign-in',
+            title: '设备入库',
+            path: '/store-manage/instock'
           }, {
-            icon: 'fa-magic',
-            title: '测试流程',
-            path: '/test/start'
+            icon: 'fa-sign-out',
+            title: '设备出库',
+            path: '/store-manage/outstock'
+          }, {
+            icon: 'fa-edit',
+            title: '设备变更',
+            path: '/store-manage/alter_device'
+          }, {
+            icon: 'fa-upload',
+            title: '设备上架',
+            path: '/equipment/on'
+          }, {
+            icon: 'fa-envelope-open-o',
+            title: '服务器申请',
+            path: '/system/apply'
+          }, {
+            icon: 'fa-star',
+            title: '系统上线',
+            path: '/system/onlinelist'
           }]
         }, {
           category: '工单管理',
