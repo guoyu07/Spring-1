@@ -234,8 +234,6 @@
         this.applyForm.body.splice(targetName, 1)
       },
       addTab (targetName) {
-        console.log('00000')
-        // let newTabName = ++this.tabIndex + ''
         var that = this
         let newData = {}
         this.form.body.body_list[0].attr_list.map(group => {
@@ -248,9 +246,6 @@
             if (that.applyForm.body.length < this.form.body.count.max) {
               that.applyForm.body.push(newData)
               this.tabsValue = that.applyForm.body.length - 1 + ''
-              // this.$watch('applyForm.body.' + this.tabsValue, newVal => {
-              //   newVal.score = (newVal.cpu * 1 + newVal.storage * 1 + newVal.hardDisk / 20) + ''
-              // }, {deep: true})
             } else {
               that.$message.warning(`最多只能增加${this.form.body.count.max}个设备！`)
             }

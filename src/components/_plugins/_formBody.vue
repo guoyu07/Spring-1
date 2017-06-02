@@ -106,23 +106,24 @@
       :placeholder="formItem.placeholder">
     </el-date-picker>
 
-    <template v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'">
-      <need-cmdb-data
-        :vmodel="item"
-        :strucData="formItem"
-        :whole="whole"
-        :message="message"
-        :index="index"
-        :body-table="bodyTable">
-      </need-cmdb-data>
-    </template>
+    <!-- <template> -->
+    <need-cmdb-data
+      v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
+      :vmodel="item"
+      :strucData="formItem"
+      :whole="whole"
+      :message="message"
+      :index="index"
+      :body-table="bodyTable">
+    </need-cmdb-data>
+    <!-- </template> -->
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 
 <script>
   import needCmdbData from './_needCMDBData'
-  import formStructure from './_formStructure'
+  // import formStructure from './_formStructure'
   export default {
     props: {
       item: { type: Object },
@@ -304,8 +305,7 @@
     },
 
     components: {
-      needCmdbData,
-      formStructure
+      needCmdbData
     }
   }
 </script>
