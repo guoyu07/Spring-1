@@ -58,7 +58,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_users, type: 'user' })">
+                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_users, type: 'user' }); currentProcess = scope.row">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -86,7 +86,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_users, type: 'user' })">
+                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_users, type: 'user' }); currentProcess = scope.row">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -116,7 +116,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_groups, type: 'group' })">
+                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_groups, type: 'group' }); currentProcess = scope.row">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -144,7 +144,7 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_groups, type: 'group' })">
+                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_groups, type: 'group' }); currentProcess = scope.row">
                             </el-button>
                           </el-tooltip>
                         </div>
@@ -165,23 +165,59 @@
       </el-col>
     </el-row>
 
-    <el-dialog :title="adminData.type === 'user' ? '加入管理员用户' : '加入管理员用户组（角色）'" size="tiny" v-model="adminData.visible">
+    <el-dialog :title="adminData.type === 'user' ? '加入管理员用户' : '加入管理员用户组（角色）'" v-model="adminData.visible" @close="adminData.toAdd = []">
       <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为管理员的{{adminData.type === 'user' ? '用户' : '用户组（角色）'}}：</h5>
-      <el-checkbox-group v-model="adminData.toAdd">
+      <el-select v-model="adminData.toAdd" filterable multiple placeholder="可搜索" class="fw">
+        <template v-if="adminData.type === 'user'">
+          <el-option
+            v-for="user in userList"
+            :key="user.userId"
+            :label="`${user.code} - ${user.email}`"
+            :value="user.userId"
+            :disabled="currentProcess && currentProcess.admin_users.some(u => u.userId === user.userId)"></el-option>
+        </template>
+        <template v-if="adminData.type === 'group'">
+          <el-option
+            v-for="role in roleList"
+            :key="role.key"
+            :label="role.name"
+            :value="role.key"
+            :disabled="currentProcess && currentProcess.admin_groups.some(r => r.key === role.key)"></el-option>
+        </template>
+      </el-select>
+      <!-- <el-checkbox-group v-model="adminData.toAdd">
         <el-checkbox v-if="adminData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
         <el-checkbox v-if="adminData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
-      </el-checkbox-group>
+      </el-checkbox-group> -->
       <span class="dialog-footer" slot="footer">
         <el-button @click="onAdd(adminData.pkey, { adminType: adminData.type, operationType: 'admin' })" size="small" icon="check" type="success" :loading="adminData.loading">确认加入</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog :title="initiatorData.type === 'user' ? '加入启动候选人用户' : '加入启动候选组（角色）'" size="tiny" v-model="initiatorData.visible">
+    <el-dialog :title="initiatorData.type === 'user' ? '加入启动候选人用户' : '加入启动候选组（角色）'" v-model="initiatorData.visible" @close="initiatorData.toAdd = []">
       <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{initiatorData.type === 'user' ? '启动候选人的用户' : '启动候选组的角色'}}：</h5>
-      <el-checkbox-group v-model="initiatorData.toAdd">
+      <el-select v-model="initiatorData.toAdd" filterable multiple placeholder="可搜索" class="fw">
+        <template v-if="initiatorData.type === 'user'">
+          <el-option
+            v-for="user in userList"
+            :key="user.userId"
+            :label="`${user.code} - ${user.email}`"
+            :value="user.userId"
+            :disabled="currentProcess && currentProcess.start_users.some(u => u.userId === user.userId)"></el-option>
+        </template>
+        <template v-if="initiatorData.type === 'group'">
+          <el-option
+            v-for="role in roleList"
+            :key="role.key"
+            :label="role.name"
+            :value="role.key"
+            :disabled="currentProcess && currentProcess.start_groups.some(r => r.key === role.key)"></el-option>
+        </template>
+      </el-select>
+      <!-- <el-checkbox-group v-model="initiatorData.toAdd">
         <el-checkbox v-if="initiatorData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
         <el-checkbox v-if="initiatorData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
-      </el-checkbox-group>
+      </el-checkbox-group> -->
       <span class="dialog-footer" slot="footer">
         <el-button @click="onAdd(initiatorData.pkey, { initiatorType: initiatorData.type, operationType: 'initiator' })" size="small" icon="check" type="success" :loading="initiatorData.loading">确认加入</el-button>
       </span>
@@ -199,6 +235,7 @@
 
     data () {
       return {
+        currentProcess: null,
         adminData: {
           loading: false,
           visible: false,
