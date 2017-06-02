@@ -12,7 +12,8 @@
       <el-col :md="24" :lg="20">
         <el-card class="box-card">
           <h3><i class="el-icon-fa-rss icon-lg"></i> 事件</h3>
-          <el-button icon="plus" @click="eventConfVisible = true" style="margin-bottom: 12px">创建事件</el-button>
+          <!-- <el-button icon="plus" @click="eventConfVisible = true" style="margin-bottom: 12px">创建事件</el-button> -->
+          <el-button icon="plus" @click="$router.replace('/procedure/start/incident/事件处理')" style="margin-bottom: 12px">创建事件</el-button>
           <el-table
             :data="incidentList"
             v-loading.body="loading"

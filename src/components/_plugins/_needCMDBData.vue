@@ -80,6 +80,15 @@
           // 这个是默认值
           // console.log(this.vmodel[this.strucData.id], this.strucData)
         }
+        if (!this.strucData.value.source) {
+          this.$message({
+            showClose: true,
+            message: `${this.strucData.name}的表单配置信息不完整`,
+            duration: 0,
+            type: 'error'
+          })
+          return false
+        }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
           for (const para of this.strucData.value.source.data.params) {
