@@ -23,6 +23,22 @@ const routes = [{
     path: '/home',
     component: require('./components/layout/Dashboard')
   }, {
+    path: '/procedure',
+    component: require('./components/procedure/index'),
+    children: [{
+      path: '/procedure/start/:pkey/:pname',
+      component: require('./components/procedure/pages/start.vue')
+    }, {
+      path: '/procedure/:pkey/:tkey/:id/:name',
+      component: require('./components/procedure/pages/step.vue')
+    }, {
+      path: '/procedure-info/:pkey/:tkey/:id/:name',
+      component: require('./components/procedure/pages/stepInfo.vue')
+    }, {
+      path: '/procedure-info/:pkey/:id',
+      component: require('./components/procedure/pages/stepInfo.vue')
+    }]
+  }, {
     path: '/guosen',
     component: require('./components/guosen/index'),
     children: [{
@@ -58,9 +74,6 @@ const routes = [{
     path: '/store-manage',
     component: require('./components/storeManage/index'),
     children: [{
-      path: '/store-manage/instock',
-      component: require('./components/storeManage/pages/instock.vue')
-    }, {
       path: '/store-manage/instock',
       component: require('./components/storeManage/pages/instock.vue')
     }, {
