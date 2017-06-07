@@ -4,7 +4,7 @@
     :prop="prop(formItem)"
     :label="formItem.name"
     :rules="rules(formItem)"
-    :class="formItem.isAlias ? 'blockElement' : ''">
+    :class="formItem.isAlias || ['file', 'files'].includes(formItem.value.type) ? 'blockElement' : ''">
     <!-- <el-input
       v-if="formItem.value.type === 'str'"
       v-model="item[formItem.id]">
@@ -41,6 +41,43 @@
       :disabled="formItem.readonly">
     </el-input-number>
 
+    <quill-editor
+      v-else-if="formItem.value.type === 'richtext'"
+      v-model="item[formItem.id]"
+      :options="editor.options">
+    </quill-editor>
+
+    <template v-else-if="['file', 'files'].includes(formItem.value.type)">
+      <template v-if="isEditing">
+        <h4 class="sub-title" style="margin: 0;"><i class="el-icon-information"></i> 已有的附件：</h4>
+        <div class="gallery" style="margin-bottom: 12px;">
+          <div class="gallery__picture" v-for="pic in item[formItem.id]">
+            <div class="gallery__thumb">
+              <img :src="'/api/download_file/' + pic.file_name" :alt="pic.desc">
+              <div class="gallery__desc">
+                <span>{{pic.desc}}</span>
+                <div>
+                  <a :href="'/api/download_file/' + pic.file_name"><i class="el-icon-fa-download"></i></a>
+                  <a @click="onRemoveUploadedFile(pic)"><i class="el-icon-fa-trash"></i></a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <dropzone
+        :id="formItem.id"
+        url="/api/upload_file/"
+        v-on:vdropzone-success="onUploadSuccess"
+        v-on:vdropzone-removed-file="onRemoveUploadingFile"
+        :accepted-file-types="formItem.value.regex.join(',')"
+        :use-font-awesome="true"
+        :max-number-of-files="formItem.value.type === 'file' ? 1 : 20"
+        :language="{ dictDefaultMessage: '将本地文件拖到此处，或点击上传' }">
+        <input type="hidden" name="token" value="xxx">
+      </dropzone>
+    </template>
+    
     <template v-else-if="formItem.value.type === 'enum'">
       <el-select
         filterable
@@ -56,7 +93,7 @@
         v-else
         v-model="item[formItem.id]"
         :disabled="formItem.readonly">
-        <el-radio  v-for="option in formItem.value.regex" :label="option"></el-radio>
+        <el-radio v-for="option in formItem.value.regex" :label="option"></el-radio>
       </el-radio-group>
     </template>
 
@@ -123,6 +160,9 @@
 <script>
   import needCmdbData from './_needCMDBData'
   import formStructure from './_formStructure'
+  import { quillEditor } from 'vue-quill-editor'
+  import Dropzone from 'vue2-dropzone'
+
   export default {
     props: {
       item: { type: Object },
@@ -134,15 +174,63 @@
       headerTable: { type: Boolean },
       bodyTable: { type: Boolean },
       valueId: { type: String },
-      tableIndex: { type: Number }
+      tableIndex: { type: Number },
+      isEditing: { type: Boolean }
     },
 
     data () {
       return {
+        editor: {
+          options: {
+            modules: {
+              toolbar: [
+                [{ 'font': [] }],
+                [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+                [{ 'color': [] }, { 'background': [] }],
+                ['bold', 'italic', 'underline', 'strike'],
+                ['blockquote', 'code-block'],
+                [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+                [{ 'align': [] }],
+                ['link', 'image']]
+            },
+            placeholder: this.formItem.placeholder,
+            theme: 'snow'
+          }
+        }
       }
     },
-    created () {
-      console.log(this.index, this.formItem.name, 'formBody')
+
+    computed: {
+      multiFiles () {
+        if (!this.isEditing) {
+          let arr = []
+          return arr
+        } else {
+          if (this.formItem.value.type === 'files') {
+            return this.item[this.formItem.id]
+          }
+        }
+      },
+
+      singleFile () {
+        if (!this.isEditing) {
+          let obj = null
+          return obj
+        } else {
+          if (this.formItem.value.type === 'file') {
+            return this.item[this.formItem.id]
+          }
+        }
+      }
+    },
+
+    mounted () {
+      console.log('this.item: ', this.item)
+      console.log('this.formItem: ', this.formItem)
+      // if (this.formItem.name === '附件') console.log(this.formItem)
+      // console.log(this.item[this.formItem.id])
+      // console.log(this.multiFiles)
+      // console.log(this.singleFile)
     },
 
     methods: {
@@ -275,13 +363,13 @@
           return {}
         } else {
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
           } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
             type = 'date'
-          } else if (formItem.value.type === 'dict') {
+          } else if (formItem.value.type === 'dict' || formItem.value.type === 'file') {
             type = 'object'
           } else {
             // console.log(formItem.value.type)
@@ -300,30 +388,94 @@
       },
       dateFormat (val) {
         this.item[this.formItem.id] = val
+      },
+      onUploadSuccess (file, res) {
+        this.multiFiles.push(JSON.parse(res).data[0])
+        console.log(this.multiFiles)
+        this.setUploaderValue()
+      },
+      onRemoveUploadingFile (file, error, xhr) {
+        // console.log(file)
+        if (this.formItem.value.type === 'files') {
+          for (let i = 0; i < this.multiFiles.length; i++) {
+            console.log(this.multiFiles[i].desc)
+            if (this.multiFiles[i].desc === file.name) {
+              this.multiFiles.splice(i, 1)
+            }
+          }
+          // this.multiFiles = this.multiFiles.filter(f => f.desc !== file.name)
+          console.log(this.multiFiles)
+        } else {
+          this.singleFile = null
+        }
+        this.setUploaderValue()
+      },
+      onRemoveUploadedFile (file) {
+        if (this.formItem.value.type === 'files') {
+          for (let i = 0; i < this.multiFiles.length; i++) {
+            console.log(this.multiFiles[i].desc)
+            if (this.multiFiles[i].desc === file.desc) {
+              this.multiFiles.splice(i, 1)
+            }
+          }
+          // this.multiFiles = this.multiFiles.filter(f => f.desc !== file.name)
+          console.log(this.multiFiles)
+        } else {
+          this.singleFile = null
+        }
+        this.setUploaderValue()
+      },
+      // 上传器无法绑定 v-model，需要手动设置其值
+      setUploaderValue () {
+        if (this.formItem.value.type === 'files') {
+          this.item[this.formItem.id] = this.multiFiles
+        }
+        if (this.formItem.value.type === 'file') {
+          this.item[this.formItem.id] = this.singleFile
+        }
       }
     },
 
     components: {
       needCmdbData,
-      formStructure
+      formStructure,
+      quillEditor,
+      Dropzone
     }
   }
 </script>
-<style>
+
+<style lang="less">
   .blockElement {
     width: 100%;
-    display: flex!important;
+    display: flex !important;
+
+    .el-form-item__content {
+      width: 50%;
+      width:-moz-calc(100% - 85px);
+      width:-webkit-calc(100% - 85px);
+      width: calc(100% - 85px);
+    }
   }
-  .blockElement .el-form-item__content {
-    width: 50%;
-    width:-moz-calc(100% - 85px);
-    width:-webkit-calc(100% - 85px);
-    width: calc(100% - 85px);
-  }
+
   .help-block {
     font-size: 12px;
     color: #666;
     margin: 0.5em 0 0;
     line-height: 1.2;
+  }
+
+  .dz-remove {
+    display: inline-block;
+    font: normal normal normal 14px/1 FontAwesome;
+    font-size: inherit;
+    text-rendering: auto;
+    -webkit-font-smoothing: antialiased;
+
+    &::before {
+      content: "\f014";
+      color: #fff;
+      font-size: 24px;
+    }
   }
 </style>

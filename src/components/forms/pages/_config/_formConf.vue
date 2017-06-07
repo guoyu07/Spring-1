@@ -186,6 +186,9 @@
                       <el-option label="数组" value="arr"></el-option>
                       <el-option label="日期" value="date"></el-option>
                       <el-option label="时间" value="datetime"></el-option>
+                      <el-option label="富文本" value="richtext"></el-option>
+                      <el-option label="单文件上传" value="file"></el-option>
+                      <el-option label="多文件上传" value="files"></el-option>
                       <el-option label="下拉单选" value="enum"></el-option>
                       <el-option label="下拉多选" value="enums"></el-option>
                       <el-option label="下拉单选（API）" value="dict"></el-option>
@@ -237,15 +240,25 @@
                       <el-button type="text"><i class="el-icon-fa-eye"></i></el-button>
                     </el-tooltip>
                   </el-form-item>
-                  <el-form-item label="数据规则" v-if="['arr', 'str'].includes(itemConf.value.type)">
+                  <el-form-item :label="['file', 'files'].includes(itemConf.value.type) ? '文件类型' : '数据规则'" v-if="['arr', 'str', 'file', 'files'].includes(itemConf.value.type)">
                     <el-select
                       v-model="itemConf.value.regex"
                       multiple
                       filterable
                       allow-create
-                      placeholder="一个或多个正则表达式"
+                      :placeholder="['file', 'files'].includes(itemConf.value.type) ? '1＋个文件扩展名／mime types' : '1＋个正则表达式'"
                       class="code-input"
-                      size="small"></el-select>
+                      size="small">
+                      <template v-if="['file', 'files'].includes(itemConf.value.type)">
+                        <el-option value="image/*" label="任何图像"></el-option>
+                        <el-option value=".jpg,.jpeg" label="JPG/JPEG"></el-option>
+                        <el-option value=".png" label="PNG"></el-option>
+                        <el-option value="application/pdf" label="PDF"></el-option>
+                        <el-option value=".doc,.docx" label="MS Word"></el-option>
+                        <el-option value=".xls,.xlsx" label="MS Excel"></el-option>
+                        <el-option value=".ppt,.pptx" label="MS PPT"></el-option>
+                      </template>
+                    </el-select>
                   </el-form-item>
                 </el-form>
               </el-col>

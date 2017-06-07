@@ -12,7 +12,7 @@
 
       h4 {
         font-size: 16px;
-        padding: 0 4px;
+        padding: 0 10px 0 6px;
         display: inline-block;
         background-color: #fff;
       }
@@ -20,6 +20,33 @@
 
     .el-tag + .el-tag {
       margin-left: 4px;
+    }
+
+    blockquote {
+      padding: 28px 25px;
+      margin: 0;
+      border-left: 5px solid @eoThemeColor;
+      background-color: @eoSideBgColor;
+      position: relative;
+
+      &::before,
+      &::after {
+        color: @eoThemeColor;
+        font-size: 40px;
+        position: absolute;
+      }
+
+      &::before {
+        top: 0;
+        left: 10px;
+        content: '\201C';
+      }
+
+      &::after {
+        bottom: 0;
+        right: 10px;
+        content: '\201D';
+      }
     }
   }
 
@@ -116,6 +143,7 @@
       background: #f6f6f6;
       border-radius: 8px;
       border: 2px solid #e5e5e5;
+      overflow: hidden;
     }
 
     &__desc {
@@ -176,7 +204,8 @@
     <h3>{{event.name}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="16" :xs="24">
-        <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button>
+        <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
+        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${event.name}/${eventData.id}/start` }" class="el-button el-button--plain el-button--small fr"><i class="el-icon-edit"></i> 编辑</router-link>
       </el-col>
       <el-col :span="8" :xs="24">
         <el-button-group>
@@ -219,15 +248,24 @@
                 </template>
               </el-form-item>
               <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
-                <span v-for="comp in eventData.variables.message[0].form.header.components">{{comp}}</span>
+                <el-tag v-for="comp in eventData.variables.message[0].form.header.components">{{comp}}</el-tag>
               </el-form-item>
-              <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.label">
+              <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
                 <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label}}</el-tag>
               </el-form-item>
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
-                <span>{{eventData.variables.message[0].form.header.issue}}</span>
+                <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
               </el-form-item>
             </el-form>
+          </div>
+        </div>
+
+        <div class="detail-block">
+          <div class="detail-block__heading">
+            <h4>描述</h4>
+          </div>
+          <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.description">
+            <blockquote v-html="eventData.variables.message[0].form.header.description"></blockquote>
           </div>
         </div>
 
@@ -240,13 +278,21 @@
               <el-tab-pane label="全部" name="first">
                 <ul class="activity-list">
                   <li>
-                    <el-tooltip content="用户详情" placement="top">
-                      <a href="">Samuel Qin[Admin]</a>
+                    <el-tooltip placement="top">
+                      <div slot="content">
+                        <p><b>Email</b>: xxx@xxx.com</p>
+                        <p><b>ID</b>: xxx</p>
+                      </div>
+                      <a href="#" class="tooltip-link">Samuel Qin <i class="el-icon-fa-user-circle"></i></a>
                     </el-tooltip> 创建了事件（昨天）
                   </li>
                   <li>
-                    <el-tooltip content="用户详情" placement="top">
-                      <a href="">Weimi</a>
+                    <el-tooltip placement="top">
+                      <div slot="content">
+                        <p><b>Email</b>: xxx@xxx.com</p>
+                        <p><b>ID</b>: xxx</p>
+                      </div>
+                      <a href="#" class="tooltip-link">Weimi <i class="el-icon-fa-user-circle"></i></a>
                     </el-tooltip> 作出变更（昨天）
                     <el-table class="activity-table" :data="changeData">
                       <el-table-column
@@ -306,7 +352,7 @@
           <div class="detail-block__heading">
             <h4>附件</h4>
           </div>
-          <div class="detail-block__content">
+          <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.attachments">
             <!-- <el-upload
               class="attachment-uploader"
               action="/api/upload_file/"

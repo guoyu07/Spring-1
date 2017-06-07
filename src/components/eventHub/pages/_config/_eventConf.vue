@@ -128,8 +128,7 @@
     props: {
       eventData: Object,
       isEditing: Boolean,
-      pid: String,
-      visible: Boolean
+      pid: String
     },
 
     data () {

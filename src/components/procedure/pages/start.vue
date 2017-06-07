@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
-          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true">
+          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="80px" :label-position="right">
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
               <div v-for="task in taskFormData.header">
@@ -14,6 +14,7 @@
                     :item="postForm.header"
                     :form-item="taskform"
                     :whole="postForm"
+                    :is-editing="isEditing"
                     :header="true">
                   </form-body>
                   <search-bar
@@ -76,7 +77,8 @@
         </el-card>
         <div class="btn-area">
           <!-- :disabled="validateForm" -->
-          <el-button type="primary" @click="onSubmit">确认</el-button>
+          <el-button type="primary" @click="onSubmit" icon="check" v-if="!isEditing">确认</el-button>
+          <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button>
           <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
         </div>
       </el-col>
@@ -96,9 +98,15 @@
           header: {},
           body: []
         },
+        existingForm: {},
         hostList: [],
         taskFormData: {},
-        validateForm: true
+        validateForm: false
+      }
+    },
+    computed: {
+      isEditing () {
+        return !!this.$route.params.tid
       }
     },
     created () {
@@ -120,16 +128,20 @@
       },
       renderForm () {
         const renderFromData = {
+          // action: 'runtime/task',
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
             pkey: this.$route.params.pkey,
             tkey: 'start'
+            // taskId: this.$route.params.tid
           }
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskFormData = res.data.data.form
+          // this.taskFormData = res.data.data.variables.message[0].form
+          console.log(this.taskFormData)
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
@@ -192,6 +204,17 @@
               })
             }
           })
+          if (this.isEditing) this.injectValues() // 是编辑
+        })
+      },
+      injectValues () {
+        const postData = {
+          action: 'runtime/task',
+          method: 'GET',
+          data: { taskId: this.$route.params.tid }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          this.postForm = res.data.data.variables.message[0].form
         })
       },
       handleClick (val) {
@@ -304,6 +327,25 @@
           })
         })
       },
+      onModify () {
+        let { pid, pkey, tkey } = this.$route.params
+        let postData = {
+          action: 'modify/form/data',
+          method: 'POST',
+          data: {
+            pid,
+            pkey,
+            tkey,
+            form: this.postForm
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('修改事件成功！')
+            this.$router.go(0)
+          }
+        })
+      },
       postMethod (data) {
         // for (const headerid in data.header) {
         //   if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
@@ -356,6 +398,7 @@
             form: postFormData
           }
         }
+        console.log(postFormData)
         this.http.post('', this.parseData(postData))
           .then((res) => {
             if (res && res.status === 200) {
