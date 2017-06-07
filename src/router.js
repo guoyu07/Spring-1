@@ -29,6 +29,9 @@ const routes = [{
       path: '/procedure/start/:pkey/:pname',
       component: require('./components/procedure/pages/start.vue')
     }, {
+      path: '/procedure/modify/:pid/:pkey/:pname/:tid/:tkey',
+      component: require('./components/procedure/pages/start.vue')
+    }, {
       path: '/procedure/:pkey/:tkey/:id/:name',
       component: require('./components/procedure/pages/step.vue')
     }, {
