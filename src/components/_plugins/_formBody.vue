@@ -143,16 +143,17 @@
       :placeholder="formItem.placeholder">
     </el-date-picker>
 
-    <template v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'">
-      <need-cmdb-data
-        :vmodel="item"
-        :strucData="formItem"
-        :whole="whole"
-        :message="message"
-        :index="index"
-        :body-table="bodyTable">
-      </need-cmdb-data>
-    </template>
+    <!-- <template> -->
+    <need-cmdb-data
+      v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
+      :vmodel="item"
+      :strucData="formItem"
+      :whole="whole"
+      :message="message"
+      :index="index"
+      :body-table="bodyTable">
+    </need-cmdb-data>
+    <!-- </template> -->
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
@@ -163,6 +164,7 @@
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
 
+  // import formStructure from './_formStructure'
   export default {
     props: {
       item: { type: Object },

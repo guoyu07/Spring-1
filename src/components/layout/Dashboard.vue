@@ -91,6 +91,14 @@
         entries: [{
           category: '流程',
           children: [{
+            icon: 'fa-upload',
+            title: '上架流程',
+            path: '/guosen/on'
+          }, {
+            icon: 'fa-magic',
+            title: '测试流程',
+            path: '/test/start'
+          }, {
             icon: 'fa-sign-in',
             title: '设备入库',
             path: '/store-manage/instock'

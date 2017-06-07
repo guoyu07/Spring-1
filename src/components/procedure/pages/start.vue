@@ -34,45 +34,50 @@
               </div>
             </div>
             <!-- body 表单填写 -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="postForm.body && postForm.body.length !== 0">
-              <el-tab-pane v-for="(data, index) in postForm.body" :label="'body' + (index+1)">
-                <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
-                  <div v-for="bodyList in taskFormData.body.body_list">
-                      <div v-if="showBodyList(bodyList, postForm, applyData, index)">
-                        <div class="form-block" v-for="formBlock in bodyList.attr_list">
-                          <h5>{{formBlock.name}}</h5>
-                          <span v-for="formItem in formBlock.value">
-                            <form-body
-                              v-if="showFormItem(formItem, postForm)"
-                              :item="postForm.body[index]"
-                              :form-item="formItem"
-                              :whole="postForm"
-                              :index="index"
-                              keep-alive>
-                            </form-body>
-                            <search-bar
-                              v-if="showFormItem(formItem, postForm, applyData) && formItem.value.type==='search_bar'"
-                              :index="index"
-                              :hosts="postForm.body[index]"
-                              :attr-list="formItem"
-                              :limit="getLimitQuantity(formItem, postForm, applyData, index)"
-                              @on-hosts-change="onHostsChange">
-                            </search-bar>
-                            <body-table
-                              v-if="showFormItem(formItem, postForm, applyData) && formItem.value.type==='table'"
-                              :form-data="formItem"
-                              :item="postForm.body[index]"
-                              :post-form="postForm"
-                              :index="index"
-                              :bodyTable="true">
-                            </body-table>
-                          </span>
+            <template v-if="postForm.body && postForm.body.length !== 0">
+              <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+                增加
+              </el-button>
+              <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
+                <el-tab-pane v-for="(data, index) in postForm.body" :label="'body' + (index+1)">
+                  <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
+                    <div v-for="bodyList in taskFormData.body.body_list">
+                        <div v-if="showBodyList(bodyList, postForm, applyData, index)">
+                          <div class="form-block" v-for="formBlock in bodyList.attr_list">
+                            <h5>{{formBlock.name}}</h5>
+                            <span v-for="formItem in formBlock.value">
+                              <form-body
+                                v-if="showFormItem(formItem, postForm)"
+                                :item="postForm.body[index]"
+                                :form-item="formItem"
+                                :whole="postForm"
+                                :index="index"
+                                keep-alive>
+                              </form-body>
+                              <search-bar
+                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
+                                :index="index"
+                                :hosts="postForm.body[index]"
+                                :attr-list="formItem"
+                                :limit="getLimitQuantity(formItem, postForm, applyData, index)"
+                                @on-hosts-change="onHostsChange">
+                              </search-bar>
+                              <body-table
+                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
+                                :form-data="formItem"
+                                :item="postForm.body[index]"
+                                :post-form="postForm"
+                                :index="index"
+                                :bodyTable="true">
+                              </body-table>
+                            </span>
+                          </div>
                         </div>
-                      </div>
+                    </div>
                   </div>
-                </div>
-              </el-tab-pane>
-            </el-tabs>
+                </el-tab-pane>
+              </el-tabs>
+            </template>
           </el-form>
         </el-card>
         <div class="btn-area">
@@ -101,7 +106,8 @@
         existingForm: {},
         hostList: [],
         taskFormData: {},
-        validateForm: false
+        validateForm: true,
+        tabsValue: '0'
       }
     },
     computed: {
@@ -160,7 +166,7 @@
               }
             })
           })
-          let newData = {}
+          // let newData = {}
           this.taskFormData.body.body_list.forEach(body => {
             if (body.show.type) {
               const keyPath = body.show.key_path.split('.')
@@ -175,25 +181,22 @@
                 })
               }
             } else {
-              // console.log(item, body)
+              this.$set(this.postForm, 'body', [{}])
               body.attr_list.map(group => {
                 group.value.map(value => {
                   if (value.need_submit) {
-                    this.setNewDataType(value, newData)
-                    // console.log(newData)
+                    this.setDataType(value, this.postForm.body[0], this)
                     if (value.value.type === 'table') {
                       // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                      newData[value.id][0] = {}
-                      let data = newData[value.id][0]
+                      this.$set(this.postForm.body[0], value.id, [])
+                      this.$set(this.postForm.body[0][value.id], 0, {})
                       value.value.attr_list.map(item => {
-                        this.setNewDataType(item, data)
+                        this.setDataType(item, this.postForm.body[0][value.id], this)
                       })
                     }
-                    // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
+                    // 有默认值时 TODO：默认值暂时只写了form_body 1种
                     if (value.default.type) {
-                      if (value.default.type === 'message_header') {
-                        newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, 0)
-                      } else if (value.default.type === 'form_body') {
+                      if (value.default.type === 'form_body') {
                         this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
                           this.postForm.body[0][value.id] = newVal
                         })
@@ -232,6 +235,43 @@
       resetForm (formName) {
         console.log(this.$refs)
         this.$refs[formName].resetFields()
+      },
+      removeTab (targetName) {
+        let tabs = this.postForm.body
+        let activeName = this.tabsValue
+        // if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          // if (index === +targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = tabs.indexOf(nextTab)
+          }
+          // }
+        })
+        // }
+        this.tabsValue = activeName + ''
+        this.postForm.body.splice(targetName, 1)
+      },
+      addTab (targetName) {
+        var that = this
+        let newData = {}
+        this.taskFormData.body.body_list[0].attr_list.map(group => {
+          group.value.map(item => {
+            this.setNewDataType(item, newData)
+          })
+        })
+        this.$refs['postForm'].validate((valid) => {
+          if (valid) {
+            if (that.postForm.body.length < this.taskFormData.body.count.max) {
+              that.postForm.body.push(newData)
+              this.tabsValue = that.postForm.body.length - 1 + ''
+            } else {
+              that.$message.warning(`最多只能增加${this.taskFormData.body.count.max}个设备！`)
+            }
+          } else {
+            that.$message.warning('请填写完整当前表单')
+          }
+        })
       },
       onSubmit () {
         this.taskFormData.header.map(header => {
