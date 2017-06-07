@@ -172,7 +172,7 @@
           action: 'runtime/process/instances',
           method: 'POST',
           data: {
-            pkey: this.routerInfo.pkey,
+            pkey: 'export_device',
             form: {
               'body': [],
               'header': this.assignForm.header
