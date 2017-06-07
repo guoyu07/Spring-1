@@ -45,9 +45,9 @@
       dialogProps: Object
     },
 
-    data () {
-      return {
-        countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'api' ]
+    computed: {
+      countConfig () {
+        return this.dialogProps.value.type === 'table' ? [ 'form_header', 'form_body', 'message_header', 'message_body' ] : [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'api' ]
       }
     },
 

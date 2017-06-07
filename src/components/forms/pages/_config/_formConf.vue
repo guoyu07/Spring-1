@@ -146,7 +146,7 @@
                       <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
                     </el-checkbox>
                   </el-form-item>
-                  <el-form-item label="默认值" v-if="itemConf.value.type !== 'table'">
+                  <el-form-item label="默认值">
                     <el-popover placement="right" trigger="click">
                       <default-conf :dialog-props="itemConf"></default-conf>
                       <el-button size="small" slot="reference">配置默认值</el-button>
