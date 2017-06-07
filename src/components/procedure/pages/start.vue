@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
-          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true">
+          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="100px">
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
               <div v-for="task in taskFormData.header">

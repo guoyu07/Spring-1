@@ -6,19 +6,21 @@
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 -->
-            <div v-for="taskheader in form">
-              <div v-if="taskheader.form.form.header.length >= 1">
-                <p class="h5">{{taskheader.tname}}</p>
-                <div v-for="taskformheader in taskheader.form.form.header">
                   <!-- {{taskformheader.name}} 这是分组名称 因为显示了步骤任务名称，不在重复显示一个分组名称-->
-                  <span v-for="valueheader in taskformheader.value">
-                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
-                      <header-form-display
-                        :item="applyData.header"
-                        :form-item="valueheader">
-                      </header-form-display>
+            <div>
+              <div v-for="taskheader in form">
+                <div v-if="taskheader.form.form.header.length >= 1">
+                  <p class="h5">{{taskheader.tname}}</p>
+                  <div v-for="taskformheader in taskheader.form.form.header">
+                    <span v-for="valueheader in taskformheader.value">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                        <header-form-display
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -26,19 +28,21 @@
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- body 信息显示 -->
-                <div v-for="task in form">
-                  <div v-for="taskbody in task.form.form.body.body_list">
-                    <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
-                      <p class="h5">{{task.tname}}</p>
-                      <form-structure-display
-                        :item="data"
-                        :form-data="taskbody.attr_list"
-                        :index="index"
-                        :post-form="assignForm"
-                        :message-data="applyData"
-                        :current-task="routerInfo.tkey"
-                        :history-task="task.tkey">
-                      </form-structure-display>
+                <div>
+                  <div v-for="task in form">
+                    <div v-for="taskbody in task.form.form.body.body_list">
+                      <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display
+                          :item="data"
+                          :form-data="taskbody.attr_list"
+                          :index="index"
+                          :post-form="assignForm"
+                          :message-data="applyData"
+                          :current-task="routerInfo.tkey"
+                          :history-task="task.tkey">
+                        </form-structure-display>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -205,99 +209,110 @@
     },
     mounted () {
       // 为机柜 U 位默认值而生
-      if (this.routerInfo.tkey === 'cabinet') {
-        this.http.interceptors.response.use(rs => {
-          if (rs.config.data.includes('action=idcrack%2Flist')) {
-            this.applyData && this.applyData.body.map((item, k) => {
-              if (this.assignForm.body[k] && this.assignForm.body[k].idcrack) {
-                const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
-                // 整理出一个未被占用的 U位 列表
-                let untakedData = []
-                for (let i = 1; i <= uHeight; i++) {
-                  if (this.assignForm.body[k].idcrack.u_info.assetList.length !== 0) {
-                    if (this.assignForm.body[k].idcrack.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
-                      untakedData.push(i)
-                    }
-                  }
-                }
-                // console.log(untakedData)
-                for (let i = 1; i <= uHeight; i++) {
-                  if (this.assignForm.body[k].idcrack.u_info.assetList.length === 0) {
-                    this.assignForm.body[k].idcracku = i
-                  } else {
-                    const iend = +this.applyData.header.host_list[k].u_num + i - 1
-                    // 判断 i iend(U位末端) 都在未被占用的范围内
-                    if (untakedData.includes(i) && untakedData.includes(iend)) {
-                      // 判断是否已被当前其他表单占用
-                      let formTakedData = [] // 用于判断是否已被当前其他表单占用
-                      this.assignForm.body.map((body, bodyk) => {
-                        if (body.idcracku && body.idcrack && (body.idcrack.instanceId === this.assignForm.body[k].idcrack.instanceId)) {
-                          const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
-                          console.log(bodyk, body.idcracku, eU)
-                          for (let tU = body.idcracku; tU <= eU; tU++) {
-                            if (!formTakedData.includes(tU)) {
-                              formTakedData.push(tU)
-                            }
-                          }
-                        } else {
-                          formTakedData = []
-                        }
-                      })
-                      console.log(this.assignForm.body[k].idcrack.code, formTakedData)
-                      if (!formTakedData.includes(i)) {
-                        // if (!this.assignForm.body[k].idcracku) {
-                        this.assignForm.body[k].idcracku = i
-                        // }
-                        return false
-                      }
-                    }
-                  }
-                }
-                // console.log(this.assignForm.body[k].idcrack.u_info, this.applyData.header.host_list[k].u_num)
-                // let takedData = {}
-                // takedData.id = this.assignForm.body[k].idcrack.instanceId
-                // takedData.taked = []
-                // const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
-                // this.assignForm.body[k].idcrack.u_info.assetList.map(item => {
-                //   for (let i = 0; i < uHeight; i++) {
-                //     if (i >= item.beginU && i <= item.endU) {
-                //       takedData.taked.push(i)
-                //     }
-                //   }
-                // })
-                // if (this.idcrackTaked.length === 0) {
-                //   this.idcrackTaked.push(takedData)
-                // } else if (!this.idcrackTaked.some(item => { return takedData.id === item.id })) {
-                //   this.idcrackTaked.push(takedData)
-                // }
-                // console.log(k)
-                // for (let i = 0; i < uHeight; i++) {
-                //   for (const item of this.idcrackTaked) {
-                //     if (item.id === takedData.id) {
-                //       let uNum = i + +this.applyData.header.host_list[k].u_num
-                //       if (!item.taked.includes(uNum) && !item.taked.includes((i + 1))) {
-                //         this.assignForm.body[k].idcracku = i + 1
-                //         console.log(i)
-                //         // item.taked.push(this.assignForm.body[k].idcrackui+1)
-                //         for (let utaked = (i + 1); utaked <= uNum; utaked++) {
-                //           item.taked.push(utaked)
-                //         }
-                //         return false
-                //       }
-                //     }
-                //   }
-                // }
-              }
-            })
-          }
-          return rs
-        }, err => {
-          console.log(err.response.data.errorMessage)
-        })
-      }
+      // if (this.routerInfo.tkey === 'cabinet') {
+      //   this.http.interceptors.response.use(rs => {
+      //     if (rs.config.data.includes('action=idcrack%2Flist')) {
+      //       this.applyData && this.applyData.body.map((item, k) => {
+      //         console.log(this.assignForm.body[k] && this.assignForm.body[k].idcrack, k)
+      //         // if (this.assignForm.body[k] && this.assignForm.body[k].idcrack) {
+      //         //   const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
+      //         //   // 整理出一个未被占用的 U位 列表
+      //         //   let untakedData = []
+      //         //   for (let i = 1; i <= uHeight; i++) {
+      //         //     if (this.assignForm.body[k].idcrack.u_info.assetList.length !== 0) {
+      //         //       if (this.assignForm.body[k].idcrack.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
+      //         //         untakedData.push(i)
+      //         //       }
+      //         //     }
+      //         //   }
+      //         //   console.log(untakedData)
+      //         //   for (let i = 1; i <= uHeight; i++) {
+      //         //     if (this.assignForm.body[k].idcrack.u_info.assetList.length === 0) {
+      //         //       console.log(k, i)
+      //         //       this.assignForm.body[k].idcracku = i
+      //         //     } else {
+      //         //       const iend = +this.applyData.header.host_list[k].u_num + i - 1
+      //         //       console.log(i, iend)
+      //         //       // 判断 i iend(U位末端) 都在未被占用的范围内
+      //         //       if (untakedData.includes(i) && untakedData.includes(iend)) {
+      //         //         // 判断是否已被当前其他表单占用
+      //         //         let formTakedData = [] // 用于判断是否已被当前其他表单占用
+      //         //         this.assignForm.body.map((body, bodyk) => {
+      //         //           if (body.idcracku && body.idcrack && (body.idcrack.instanceId === this.assignForm.body[k].idcrack.instanceId)) {
+      //         //             const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+      //         //             console.log(bodyk, body.idcracku, eU)
+      //         //             for (let tU = body.idcracku; tU <= eU; tU++) {
+      //         //               if (!formTakedData.includes(tU)) {
+      //         //                 formTakedData.push(tU)
+      //         //               }
+      //         //             }
+      //         //           }
+      //         //           //  else {
+      //         //           //   formTakedData = []
+      //         //           // }
+      //         //         })
+      //         //         console.log(this.assignForm.body[k].idcrack.code, formTakedData)
+      //         //         if (!formTakedData.includes(i)) {
+      //         //           console.log(i)
+      //         //           // if (!this.assignForm.body[k].idcracku) {
+      //         //           this.assignForm.body[k].idcracku = i
+      //         //           // }
+      //         //           return false
+      //         //         }
+      //         //       }
+      //         //     }
+      //         //   }
+      //         //   // console.log(this.assignForm.body[k].idcrack.u_info, this.applyData.header.host_list[k].u_num)
+      //         //   // let takedData = {}
+      //         //   // takedData.id = this.assignForm.body[k].idcrack.instanceId
+      //         //   // takedData.taked = []
+      //         //   // const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
+      //         //   // this.assignForm.body[k].idcrack.u_info.assetList.map(item => {
+      //         //   //   for (let i = 0; i < uHeight; i++) {
+      //         //   //     if (i >= item.beginU && i <= item.endU) {
+      //         //   //       takedData.taked.push(i)
+      //         //   //     }
+      //         //   //   }
+      //         //   // })
+      //         //   // if (this.idcrackTaked.length === 0) {
+      //         //   //   this.idcrackTaked.push(takedData)
+      //         //   // } else if (!this.idcrackTaked.some(item => { return takedData.id === item.id })) {
+      //         //   //   this.idcrackTaked.push(takedData)
+      //         //   // }
+      //         //   // console.log(k)
+      //         //   // for (let i = 0; i < uHeight; i++) {
+      //         //   //   for (const item of this.idcrackTaked) {
+      //         //   //     if (item.id === takedData.id) {
+      //         //   //       let uNum = i + +this.applyData.header.host_list[k].u_num
+      //         //   //       if (!item.taked.includes(uNum) && !item.taked.includes((i + 1))) {
+      //         //   //         this.assignForm.body[k].idcracku = i + 1
+      //         //   //         console.log(i)
+      //         //   //         // item.taked.push(this.assignForm.body[k].idcrackui+1)
+      //         //   //         for (let utaked = (i + 1); utaked <= uNum; utaked++) {
+      //         //   //           item.taked.push(utaked)
+      //         //   //         }
+      //         //   //         return false
+      //         //   //       }
+      //         //   //     }
+      //         //   //   }
+      //         //   // }
+      //         // }
+      //       })
+      //     }
+      //     return rs
+      //   }, err => {
+      //     console.log(err.response.data.errorMessage)
+      //   })
+      // }
     },
     watch: {
       'idcrackData': 'idcrackIsTaked'
+      // 'assignForm.body': {
+      //   handler: function (curVal, oldVal) {
+      //     console.dir(curVal)
+      //   },
+      //   deep: true
+      // }
     },
     methods: {
       idcrackIsTaked () {
@@ -511,6 +526,53 @@
               if (this.assignForm.body[k][id] !== undefined) {
                 this.assignForm.body[k][id] = item[id]
               }
+            }
+            // U 位默认值
+            if (this.routerInfo.tkey === 'cabinet') {
+              // console.log(this.assignForm.body[k])
+              this.$watch('assignForm.body.' + k + '.idcrack', (newVal, oldVal) => {
+                // console.log(k)
+                // console.log(newVal, oldVal, this.applyData.body)
+                const uHeight = newVal.u_info.jgUHeight
+                // 整理出一个未被占用的 U位 列表
+                let untakedData = []
+                for (let i = 1; i <= uHeight; i++) {
+                  if (newVal.u_info.assetList.length !== 0) {
+                    if (newVal.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
+                      untakedData.push(i)
+                    }
+                  }
+                }
+                // console.log(untakedData)
+                // 整理出被当前其他表单占用的 U位
+                let formTakedData = []
+                this.assignForm.body.map((body, bodyk) => {
+                  if (body.idcracku && body.idcrack && (body.idcrack.instanceId === newVal.instanceId)) {
+                    const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                    // console.log(bodyk, body.idcracku, eU)
+                    for (let tU = body.idcracku; tU <= eU; tU++) {
+                      if (!formTakedData.includes(tU)) {
+                        formTakedData.push(tU)
+                      }
+                    }
+                  }
+                })
+                // console.log(formTakedData)
+                if (formTakedData.length !== 0) {
+                  const untakedDataLenght = untakedData.length
+                  for (let i = 0; i <= untakedDataLenght; i++) {
+                    const Uend = untakedData[i] + +this.applyData.header.host_list[k].u_num - 1
+                    if (!formTakedData.includes(untakedData[i]) && !formTakedData.includes(Uend)) {
+                      this.assignForm.body[k].idcracku = untakedData[i]
+                      console.log(k, untakedData[0])
+                      return false
+                    }
+                  }
+                } else {
+                  this.assignForm.body[k].idcracku = untakedData[0]
+                  // console.log(k, untakedData[0])
+                }
+              })
             }
             // 主机名
             if (this.routerInfo.tkey === 'confirm1') {

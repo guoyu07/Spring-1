@@ -72,25 +72,25 @@ const routes = [{
     }]
   }, {
     path: '/store-manage',
-    component: require('./components/storeManage/index'),
+    component: require('./components/storemanage/index'),
     children: [{
       path: '/store-manage/instock',
-      component: require('./components/storeManage/pages/instock.vue')
+      component: require('./components/storemanage/pages/instock.vue')
     }, {
       path: '/store-manage/instock/:id',
-      component: require('./components/storeManage/pages/instock.vue')
+      component: require('./components/storemanage/pages/instock.vue')
     }, {
       path: '/store-manage/instock/edit/:taskid',
-      component: require('./components/storeManage/pages/instock.vue')
+      component: require('./components/storemanage/pages/instock.vue')
     }, {
       path: '/store-manage/outstock',
-      component: require('./components/storeManage/pages/outstock.vue')
+      component: require('./components/storemanage/pages/outstock.vue')
     }, {
       path: '/store-manage/:pkey',
-      component: require('./components/storeManage/pages/outstock.vue')
+      component: require('./components/storemanage/pages/outstock.vue')
     }, {
       path: '/store-manage/:pkey/:tkey/:id/:name',
-      component: require('./components/storeManage/pages/step.vue')
+      component: require('./components/storemanage/pages/step.vue')
     }]
   }, {
     path: '/equipment',

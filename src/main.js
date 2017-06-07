@@ -220,7 +220,7 @@ Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
     .filter(t => findTaskMsgR(arrMsg, [t]))
     .map(t => findTaskMsgR(arrMsg, [t]).form.body)
     .map(tsk => {
-      console.log(tsk)
+      // console.log(tsk)
       if (Array.isArray(tsk)) {
         !rs.body.length && tsk.forEach(t => rs.body.push({}))
         tsk.map((host, index) => Object.assign(rs.body[index], host))

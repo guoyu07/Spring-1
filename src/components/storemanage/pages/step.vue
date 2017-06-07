@@ -6,19 +6,20 @@
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 -->
-            <div v-for="taskheader in form">
-              <div v-if="taskheader.form.form.header.length >= 1">
-                <p class="h5">{{taskheader.tname}}</p>
-                <div v-for="taskformheader in taskheader.form.form.header">
-                  <!-- {{taskformheader.name}} -->
-                  <span v-for="valueheader in taskformheader.value">
-                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
-                      <header-form-display
-                        :item="applyData.header"
-                        :form-item="valueheader">
-                      </header-form-display>
+            <div>
+              <div v-for="taskheader in form">
+                <div v-if="taskheader.form.form.header.length >= 1">
+                  <p class="h5">{{taskheader.tname}}</p>
+                  <div v-for="taskformheader in taskheader.form.form.header">
+                    <span v-for="valueheader in taskformheader.value">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                        <header-form-display
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -26,12 +27,13 @@
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
-                <div v-for="task in form">
-                  <div v-for="taskbody in task.form.form.body.body_list">
-                    <!-- 这里是判断 body_list 是不是空数组 -->
-                    <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
-                      <p class="h5">{{task.tname}}</p>
-                      <form-structure-display :item="data" :form-data="taskbody.attr_list" :index="index"></form-structure-display>
+                <div>
+                  <div v-for="task in form">
+                    <div v-for="taskbody in task.form.form.body.body_list">
+                      <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display :item="data" :form-data="taskbody.attr_list" :message-data="applyData" :index="index"></form-structure-display>
+                      </div>
                     </div>
                   </div>
                 </div>
