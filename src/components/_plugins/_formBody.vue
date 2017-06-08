@@ -227,8 +227,8 @@
     },
 
     mounted () {
-      // console.log('this.item: ', this.item)
-      // console.log('this.formItem: ', this.formItem)
+      console.log('this.item: ', this.item)
+      console.log('this.formItem: ', this.formItem.name, this.formItem)
       // if (this.formItem.name === '附件') console.log(this.formItem)
       // console.log(this.item[this.formItem.id])
       // console.log(this.multiFiles)
@@ -248,7 +248,6 @@
             if (this.headerTable) {
               return 'header.' + this.valueId + '.' + this.index + '.' + formItem.id
             } else if (this.bodyTable) {
-              console.log('hello', 'body.' + this.index + '.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id)
               return 'body.' + this.index + '.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id
             }
           }
