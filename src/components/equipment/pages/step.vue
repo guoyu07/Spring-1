@@ -302,7 +302,7 @@
                           this.setNewDataType(item, data)
                         })
                       }
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 message_body 和 form_body 3种
+                      // 有默认值时
                       if (value.default && value.default.type) {
                         if (value.default.type === 'message_header') {
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
@@ -312,6 +312,10 @@
                           })
                         } else if (value.default.type === 'message_body') {
                           newData[value.id] = this.getPathResult(this.applyData.body, value.default.key_path, k)
+                        } else if (value.default.type === 'form_header') {
+                          this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                            this.assignForm.body[k][value.id] = newVal
+                          })
                         }
                       }
                     }
