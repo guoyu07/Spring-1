@@ -6,19 +6,21 @@
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 -->
-            <div v-for="taskheader in form">
-              <div v-if="taskheader.form.form.header.length >= 1">
-                <p class="h5">{{taskheader.tname}}</p>
-                <div v-for="taskformheader in taskheader.form.form.header">
-                  <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
-                  <span v-for="valueheader in taskformheader.value">
-                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
-                      <header-form-display
-                        :item="applyData.header"
-                        :form-item="valueheader">
-                      </header-form-display>
+            <div>
+              <div v-for="taskheader in form">
+                <div v-if="taskheader.form.form.header.length >= 1">
+                  <p class="h5">{{taskheader.tname}}</p>
+                  <div v-for="taskformheader in taskheader.form.form.header">
+                    <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
+                    <span v-for="valueheader in taskformheader.value">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                        <header-form-display
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -26,19 +28,21 @@
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
-                <div v-for="task in form">
-                  <div v-for="taskbody in task.form.form.body.body_list">
-                    <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
-                      <p class="h5">{{task.tname}}</p>
-                      <form-structure-display
-                        :item="data"
-                        :form-data="taskbody.attr_list"
-                        :index="index"
-                        :post-form="assignForm"
-                        :message-data="applyData"
-                        :current-task="routerInfo.tkey"
-                        :history-task="task.tkey">
-                      </form-structure-display>
+                <div>
+                  <div v-for="task in form">
+                    <div v-for="taskbody in task.form.form.body.body_list">
+                      <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display
+                          :item="data"
+                          :form-data="taskbody.attr_list"
+                          :index="index"
+                          :post-form="assignForm"
+                          :message-data="applyData"
+                          :current-task="routerInfo.tkey"
+                          :history-task="task.tkey">
+                        </form-structure-display>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -51,23 +55,31 @@
                           <h5>{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
                             <form-body
+                              v-if="showFormItem(formItem, assignForm, applyData)"
                               :item="assignForm.body[index]"
                               :form-item="formItem"
-                              :whole="whole"
+                              :whole="assignForm"
                               :index="index"
-                              :message="applyData">
+                              :message="applyData"
+                              keep-alive>
                             </form-body>
                             <search-bar
-                              v-if="formItem.value.type==='search_bar'"
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
                               :index="index"
                               :hosts="assignForm.body[index]"
                               :attr-list="formItem"
                               :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
                               @on-hosts-change="onHostsChange">
                             </search-bar>
-                            <div v-if="formItem.value.type==='table'">
-                                table
-                            </div>
+                            <body-table
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
+                              :form-data="formItem"
+                              :item="assignForm.body[index]"
+                              :post-form="assignForm"
+                              :message-data="applyData"
+                              :index="index"
+                              :bodyTable="true">
+                            </body-table>
                           </span>
                         </div>
                       </div>
@@ -121,6 +133,7 @@
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
+  import bodyTable from '../../_plugins/_bodyTable'
 
   export default {
     data () {
@@ -275,19 +288,30 @@
                   })
                 }
               } else {
-                console.log(item, body)
+                // console.log(item, body)
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
-                      if (value.default.type) {
+                      console.log(newData)
+                      if (value.value.type === 'table') {
+                        // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                        newData[value.id][0] = {}
+                        let data = newData[value.id][0]
+                        value.value.attr_list.map(item => {
+                          this.setNewDataType(item, data)
+                        })
+                      }
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 message_body 和 form_body 3种
+                      if (value.default && value.default.type) {
                         if (value.default.type === 'message_header') {
-                          newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
                         } else if (value.default.type === 'form_body') {
                           this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
                             this.assignForm.body[k][value.id] = newVal
                           })
+                        } else if (value.default.type === 'message_body') {
+                          newData[value.id] = this.getPathResult(this.applyData.body, value.default.key_path, k)
                         }
                       }
                     }
@@ -295,6 +319,7 @@
                 })
               }
             })
+            console.log(newData)
             this.assignForm.body.push(newData)
             for (const id in item) {
               // console.log(item[id], this.assignForm.body[k][id])
@@ -558,7 +583,8 @@
       formStructureDisplay,
       headerFormStructure,
       formBody,
-      searchBar
+      searchBar,
+      bodyTable
     }
   }
 </script>

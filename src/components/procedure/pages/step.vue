@@ -489,14 +489,16 @@
                           this.setNewDataType(item, data)
                         })
                       }
-                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 form_body 2种
-                      if (value.default.type) {
+                      // 有默认值时 TODO：默认值暂时只写了 message_header 和 message_body 和 form_body 3种
+                      if (value.default && value.default.type) {
                         if (value.default.type === 'message_header') {
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
                         } else if (value.default.type === 'form_body') {
                           this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
                             this.assignForm.body[k][value.id] = newVal
                           })
+                        } else if (value.default.type === 'message_body') {
+                          newData[value.id] = this.getPathResult(this.applyData.body, value.default.key_path, k)
                         }
                       }
                       // 机柜 U 位数的默认值 console.log(this.assignForm.body[k].idcrack, this.applyData.header.host_list[k].u_num)
