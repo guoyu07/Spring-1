@@ -28,8 +28,17 @@
         <span v-if="formItem.default.type === 'static'">
           {{formItem.default.value}}
         </span>
-        <span v-else>
-          {{getPathResult(readInfo, formItem.default.key_path)}}
+        <span v-else-if="formItem.default.type === 'form_header'">
+          {{ getPathResult(whole.header, formItem.default.key_path) ? getPathResult(whole.header, formItem.default.key_path) : '' }}
+        </span>
+        <span v-else-if="formItem.default.type === 'message_header'">
+          {{ getPathResult(message.header, formItem.default.key_path) ? getPathResult(message.header, formItem.default.key_path) : '' }}
+        </span>
+        <span v-else-if="formItem.default.type === 'form_body'">
+          {{ getPathResult(whole.body, formItem.default.key_path, index) ? getPathResult(whole.body, formItem.default.key_path, index) : '' }}
+        </span>
+        <span v-else-if="formItem.default.type === 'message_body'">
+          {{ getPathResult(message.body, formItem.default.key_path, index) ? getPathResult(message.body, formItem.default.key_path, index) : '' }}
         </span>
       </span>
 

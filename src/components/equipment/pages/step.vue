@@ -233,7 +233,7 @@
                   this.setDataType(value, this.assignForm.header, this)
                   console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
-                  if (value.default.type) {
+                  if (value.default && value.default.type) {
                     if (value.default.type === 'message_header') {
                       console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
                       // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))

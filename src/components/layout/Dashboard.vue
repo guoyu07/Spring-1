@@ -96,7 +96,7 @@
           </el-col>
         </template>
         <template v-for="entry in searchResult">
-          <el-col :sm="24" :md="12">
+          <el-col :sm="24">
             <h4 class="category">{{entry.category}}</h4>
             <ul class="grid">
               <li v-for="child in entry.children" class="entry" @click="onEntryClick(child.path)">
@@ -152,10 +152,6 @@
             icon: 'fa-star',
             title: '系统上线',
             path: '/system/onlinelist'
-          }, {
-            icon: 'fa-star',
-            title: '应用发布',
-            path: '/deploy-app/apps'
           }]
         }],
         searchResult: [],
@@ -208,7 +204,8 @@
               })
             }
           })
-          this.searchResult = this.searchResult.concat(this.entries)
+          // this.searchResult = this.searchResult.concat(this.entries)
+          this.searchResult = this.entries
         })
       })
       const topData = {
