@@ -14,7 +14,42 @@
           <el-form ref="applyForm" :model="applyForm" label-position="top" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
-                <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure>
+                <!-- <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure> -->
+                <div v-if="form.body && form.body.body_list.length !== 0">
+                  <div v-for="bodyList in form.body.body_list">
+                      <div v-if="showBodyList(bodyList, applyForm, applyData, index)">
+                        <div class="form-block" v-for="formBlock in bodyList.attr_list">
+                          <h5>{{formBlock.name}}</h5>
+                          <span v-for="formItem in formBlock.value">
+                            <form-body
+                              v-if="showFormItem(formItem, applyForm)"
+                              :item="applyForm.body[index]"
+                              :form-item="formItem"
+                              :whole="applyForm"
+                              :index="index"
+                              keep-alive>
+                            </form-body>
+                            <!-- <search-bar
+                              v-if="showFormItem(formItem, applyForm) && formItem.value.type==='search_bar'"
+                              :index="index"
+                              :hosts="applyForm.body[index]"
+                              :attr-list="formItem"
+                              :limit="getLimitQuantity(formItem, applyForm, applyData, index)"
+                              @on-hosts-change="onHostsChange">
+                            </search-bar>
+                            <body-table
+                              v-if="showFormItem(formItem, applyForm) && formItem.value.type==='table'"
+                              :form-data="formItem"
+                              :item="applyForm.body[index]"
+                              :post-form="applyForm"
+                              :index="index"
+                              :bodyTable="true">
+                            </body-table> -->
+                          </span>
+                        </div>
+                      </div>
+                  </div>
+                </div>
               </el-tab-pane>
             </el-tabs>
           </el-form>
@@ -28,7 +63,7 @@
   </div>
 </template>
 <script>
-  import formStructure from '../../_plugins/_formStructure'
+  import formBody from '../../_plugins/_formBody'
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   export default {
     data () {
@@ -257,7 +292,7 @@
     },
 
     components: {
-      formStructure,
+      formBody,
       headerFormStructure
     }
   }

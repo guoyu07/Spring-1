@@ -28,8 +28,17 @@
         <span v-if="formItem.default.type === 'static'">
           {{formItem.default.value}}
         </span>
-        <span v-else>
-          {{getPathResult(readInfo, formItem.default.key_path)}}
+        <span v-else-if="formItem.default.type === 'form_header'">
+          {{ getPathResult(whole.header, formItem.default.key_path) ? getPathResult(whole.header, formItem.default.key_path) : '' }}
+        </span>
+        <span v-else-if="formItem.default.type === 'message_header'">
+          {{ getPathResult(message.header, formItem.default.key_path) ? getPathResult(message.header, formItem.default.key_path) : '' }}
+        </span>
+        <span v-else-if="formItem.default.type === 'form_body'">
+          {{ getPathResult(whole.body, formItem.default.key_path, index) ? getPathResult(whole.body, formItem.default.key_path, index) : '' }}
+        </span>
+        <span v-else-if="formItem.default.type === 'message_body'">
+          {{ getPathResult(message.body, formItem.default.key_path, index) ? getPathResult(message.body, formItem.default.key_path, index) : '' }}
         </span>
       </span>
 
@@ -77,7 +86,7 @@
         <input type="hidden" name="token" value="xxx">
       </dropzone>
     </template>
-    
+
     <template v-else-if="formItem.value.type === 'enum'">
       <el-select
         filterable
@@ -228,7 +237,7 @@
 
     mounted () {
       console.log('this.item: ', this.item)
-      console.log('this.formItem: ', this.formItem)
+      console.log('this.formItem: ', this.formItem.name, this.formItem)
       // if (this.formItem.name === '附件') console.log(this.formItem)
       // console.log(this.item[this.formItem.id])
       // console.log(this.multiFiles)

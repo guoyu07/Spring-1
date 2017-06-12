@@ -164,6 +164,14 @@
                   }
                 }
               }
+              // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
+              if (item.default && item.default.type) {
+                if (item.default.type === 'form_header') {
+                  this.$watch('postForm.header.' + item.default.key_path, (newVal, oldVal) => {
+                    this.postForm.header[item.id] = newVal
+                  })
+                }
+              }
             })
           })
           // let newData = {}
@@ -194,9 +202,13 @@
                         this.setDataType(item, this.postForm.body[0][value.id], this)
                       })
                     }
-                    // 有默认值时 TODO：默认值暂时只写了form_body 1种
-                    if (value.default.type) {
+                    // 有默认值时 只有 form_body 和 form_header 2种
+                    if (value.default && value.default.type) {
                       if (value.default.type === 'form_body') {
+                        this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                          this.postForm.body[0][value.id] = newVal
+                        })
+                      } else if (value.default.type === 'form_header') {
                         this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
                           this.postForm.body[0][value.id] = newVal
                         })

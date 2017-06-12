@@ -51,7 +51,7 @@
       height: 50px;
       line-height: 50px;
       color: #fff;
-      border-bottom: none !important;      
+      border-bottom: none !important;
 
       @media screen and (max-width: 450px) {
         font-size: 12px;
@@ -102,7 +102,8 @@
         </router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a>
+        <!-- <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a> -->
+        <a href="http://192.168.210.251/">返回 EasyOps 自动化运维平台</a>
       </el-menu-item>
       <el-menu-item index="4" class="fr">
         <a @click="logout">退出</a>

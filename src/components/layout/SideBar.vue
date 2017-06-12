@@ -105,9 +105,9 @@
           <el-menu-item index="/home"><i class="el-icon-fa-dashboard"></i>运维服务目录</el-menu-item>
         </el-menu-item-group>
 
-        <el-menu-item-group title="事件管理">
+        <!-- <el-menu-item-group title="事件管理">
           <el-menu-item index="/event-hub"><i class="el-icon-fa-rss"></i>事件管理</el-menu-item>
-        </el-menu-item-group>
+        </el-menu-item-group> -->
 
         <el-menu-item-group title="工单管理">
           <el-menu-item index="/orders"><i class="el-icon-fa-calendar-o"></i>工单管理</el-menu-item>

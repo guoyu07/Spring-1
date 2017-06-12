@@ -8,13 +8,13 @@
       :prop="prop(formData)"
       :rules="rules(formData)"
       class="block">
-      <!-- formData.limit.type === 'static' || !formData.limit.type 这2种情况是允许增加 table 的 -->
-      <el-button v-if="formData.limit.type === 'static' || !formData.limit.type" size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
+      <!-- formData.limit.type === 'static' 或者 formData.limit.type存在的情况下 这2种情况是允许增加 table 的 -->
+      <el-button v-if="formData.limit.type === 'static' || formData.limit.type" size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
           :closable="closableIndex(tableindex, formData)">
-          <form-structure
+          <!-- <form-structure
             :form-data="[{name: '', value: formData.value.attr_list}]"
             :item="table"
             :whole="postForm.body[index][formData.id][tableindex]"
@@ -23,7 +23,19 @@
             :table-index="tableindex"
             :body-table="true"
             :value-id="formData.id">
-          </form-structure>
+          </form-structure> -->
+          <span v-for="formItem in formData.value.attr_list">
+            <form-body
+              :item="table"
+              :form-item="formItem"
+              :whole="postForm.body[index][formData.id][tableindex]"
+              :index="index"
+              :table-index="tableindex"
+              :body-table="true"
+              :value-id="formData.id"
+              :message="messageData">
+            </form-body>
+          </span>
         </el-tab-pane>
       </el-tabs>
     </el-form-item>
@@ -36,6 +48,7 @@
 
 <script>
   import formStructure from './_formStructure'
+  import formBody from './_formBody'
   export default {
     props: {
       item: { type: Object },
@@ -206,7 +219,8 @@
     },
 
     components: {
-      formStructure
+      formStructure,
+      formBody
     }
   }
 </script>

@@ -83,7 +83,7 @@
             </el-input>
           </el-col>
         </el-col>
-        <template v-if="!searchProcedure" v-for="top in [topList]">
+        <template v-if="!searchProcedure" v-for="top in topList">
           <el-col :sm="24">
             <h4 class="category">{{top.category}}</h4>
             <ul class="grid">
@@ -97,7 +97,7 @@
           </el-col>
         </template>
         <template v-for="entry in searchResult">
-          <el-col :sm="24" :md="12">
+          <el-col :sm="24">
             <h4 class="category">{{entry.category}}</h4>
             <ul class="grid">
               <li v-for="child in entry.children" class="entry" @click="onEntryClick(child.path)">
@@ -119,48 +119,37 @@
     data () {
       return {
         searchProcedure: '',
-        entries: [{
-          category: '流程',
-          children: [{
-            icon: 'fa-upload',
-            title: '上架流程',
-            path: '/guosen/on'
-          }, {
-            icon: 'fa-magic',
-            title: '测试流程',
-            path: '/test/start'
-          }, {
-            icon: 'fa-sign-in',
-            title: '设备入库',
-            path: '/store-manage/instock'
-          }, {
-            icon: 'fa-sign-out',
-            title: '设备出库',
-            path: '/store-manage/outstock'
-          }, {
-            icon: 'fa-edit',
-            title: '设备变更',
-            path: '/store-manage/alter_device'
-          }, {
-            icon: 'fa-upload',
-            title: '设备上架',
-            path: '/equipment/on'
-          }, {
-            icon: 'fa-envelope-open-o',
-            title: '服务器申请',
-            path: '/system/apply'
-          }, {
-            icon: 'fa-star',
-            title: '系统上线',
-            path: '/system/onlinelist'
-          }, {
-            icon: 'fa-star',
-            title: '应用发布',
-            path: '/deploy-app/apps'
-          }]
-        }],
+        entries: [],
         searchResult: [],
         topList: []
+        // {
+        //   category: '流程',
+        //   children: [{
+        //     icon: 'fa-sign-in',
+        //     title: '设备入库',
+        //     path: '/procedure/start/import_device/设备入库'
+        //   }, {
+        //     icon: 'fa-sign-out',
+        //     title: '设备出库',
+        //     path: '/procedure/start/export_device/设备出库'
+        //   }, {
+        //     icon: 'fa-edit',
+        //     title: '设备变更',
+        //     path: '/procedure/start/alter_device/设备变更'
+        //   }, {
+        //     icon: 'fa-upload',
+        //     title: '设备上架',
+        //     path: '/equipment/on'
+        //   }, {
+        //     icon: 'fa-envelope-open-o',
+        //     title: '服务器申请',
+        //     path: '/system/apply'
+        //   }, {
+        //     icon: 'fa-star',
+        //     title: '系统上线',
+        //     path: '/system/onlinelist'
+        //   }]
+        // }
         // , {
         //           category: '工单管理',
         //           children: [{
@@ -201,15 +190,30 @@
           this.entries.map(entry => {
             if (entry.category === categ.category) {
               categ.list.map(list => {
-                entry.children.push({
-                  icon: 'fa-star',
-                  title: list.pname,
-                  path: `/procedure/start/${list.pkey}/${list.pname}`
-                })
+                if (list.pkey === 'host_apply') {
+                  entry.children.push({
+                    icon: 'fa-star',
+                    title: list.pname,
+                    path: `/system/apply`
+                  })
+                } else if (list.pkey === 'systemOnline') {
+                  entry.children.push({
+                    icon: 'fa-star',
+                    title: list.pname,
+                    path: `/system/onlinelist`
+                  })
+                } else {
+                  entry.children.push({
+                    icon: 'fa-star',
+                    title: list.pname,
+                    path: `/procedure/start/${list.pkey}/${list.pname}`
+                  })
+                }
               })
             }
           })
-          this.searchResult = this.searchResult.concat(this.entries)
+          // this.searchResult = this.searchResult.concat(this.entries)
+          this.searchResult = this.entries
         })
       })
       const topData = {
@@ -222,16 +226,35 @@
       this.http.post('', this.parseData(topData))
       .then((response) => {
         const res = response.data.data.list
-        this.topList = {
+        this.topList = [{
           category: '最常使用的流程',
           children: []
-        }
+        }]
         res.map(list => {
-          this.topList.children.push({
-            icon: 'fa-star',
-            title: list.pname,
-            path: `/procedure/start/${list.pkey}/${list.pname}`
-          })
+          if (list.pkey === 'host_apply') {
+            this.topList[0].children.push({
+              icon: 'fa-star',
+              title: list.pname,
+              path: `/system/apply`
+            })
+          } else if (list.pkey === 'systemOnline') {
+            this.topList[0].children.push({
+              icon: 'fa-star',
+              title: list.pname,
+              path: `/system/onlinelist`
+            })
+          } else {
+            this.topList[0].children.push({
+              icon: 'fa-star',
+              title: list.pname,
+              path: `/procedure/start/${list.pkey}/${list.pname}`
+            })
+          }
+          // this.topList[0].children.push({
+          //   icon: 'fa-star',
+          //   title: list.pname,
+          //   path: `/procedure/start/${list.pkey}/${list.pname}`
+          // })
         })
       })
     },
