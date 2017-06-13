@@ -169,7 +169,7 @@
         </el-row> -->
 
       <h5>选择 API 预设集：</h5>
-      <el-card v-if="optionPresets.length">
+      <el-card v-if="optionPresets && optionPresets.length">
         <el-radio-group v-model="selectedOption" @change="onSelectOption">
           <el-popover
             placement="top"
