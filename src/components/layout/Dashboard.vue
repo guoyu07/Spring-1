@@ -24,6 +24,7 @@
     padding: 1.5em 0 0 1.5em;
     margin-right: 1.5em;
     color: @eoTextColor;
+    width: 100px;
 
     &__icon {
       display: flex;
@@ -48,7 +49,7 @@
 
     &__title {
       font-size: 14px;
-      line-height: 1;
+      line-height: 1.3;
       text-align: center;
       max-width: 100px;
     }
@@ -72,7 +73,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-col :sm="24" style="margin-bottom: 20px;">
-          <el-col :sm="8">
+          <el-col :md="8" :lg="4">
             <el-input
               placeholder="请搜索流程名称"
               icon="search"

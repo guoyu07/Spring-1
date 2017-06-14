@@ -39,6 +39,7 @@ THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLI
     z-index: 10;
     border-left: 1px solid #ccc;
     overflow: auto;
+    background-color: #f8f8f8;
   }
 
   .btn-area {
@@ -117,6 +118,9 @@ export default {
   },
 
   mounted () {
+    const customTranslate = {
+      translate: ['value', require('./../customTranslate/customTranslate')]
+    }
     this.$nextTick(() => {
       this.bpmnModeler = new BpmnModeler({
         container: '#bpmn-canvas',
@@ -125,7 +129,8 @@ export default {
         },
         additionalModules: [
           propertiesPanelModule,
-          propertiesProviderModule
+          propertiesProviderModule,
+          customTranslate
         ],
         moddleExtensions: {
           camunda: camundaModdleDescriptor

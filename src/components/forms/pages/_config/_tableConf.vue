@@ -81,8 +81,8 @@
               <el-button size="small" slot="reference">配置选项</el-button>
             </el-popover>
             <!--动态选项（cmdb）-->
-            <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(attr.value.type)" placement="top" trigger="click" @show="showCMDBConf(itemConf)">
-              <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
+            <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(attr.value.type)" placement="top" trigger="click" @show="showCMDBConf(attr)">
+              <options-conf-cmdb :dialog-props="attr"></options-conf-cmdb>
               <el-button size="small" slot="reference">配置选项</el-button>
             </el-popover>
           </el-form-item>
