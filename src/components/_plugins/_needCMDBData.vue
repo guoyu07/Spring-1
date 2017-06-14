@@ -203,11 +203,7 @@
               }
             }
           }
-          if (this.strucData.value.source.data.action === 'import/device/items') {
-            this.vmodel[this.strucData.id] = this.optionList[0]
-          } else if (this.strucData.value.source.data.action === 'export/device/items') {
-            this.vmodel[this.strucData.id] = this.optionList[0]
-          } else if (this.strucData.value.source.data.action === 'users/all') {
+          if (this.strucData.value.source.data.action === 'users/all') {
             if (this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                 const user = window.localStorage.userName
@@ -237,31 +233,39 @@
                 })
               }
             }
-          } else if (this.strucData.value.source.data.action === 'idcrack/list') {
-            // 机柜预览图
-            // this.$store.dispatch('idcrack_data', {
-            //   idcrackData: this.optionList
-            // })
           }
           // 将默认值(对象类型)放回值里面
-          // console.log(this.strucData.id)
-          // console.log(this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key])
-          if (this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
-            this.optionList.map(option => {
-              if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
-                this.vmodel[this.strucData.id] = option
-                return false
-              } else {
-                if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
-                  this.optionList.push(this.vmodel[this.strucData.id])
+          if (this.vmodel[this.strucData.id]) {
+            if (Array.isArray(this.vmodel[this.strucData.id])) {
+              this.vmodel[this.strucData.id].map((item, itemindex) => {
+                if (item[this.strucData.value.source.res.show_key]) {
+                  this.optionList.map(option => {
+                    if (option[this.strucData.value.source.res.show_key] === item[this.strucData.value.source.res.show_key]) {
+                      // item = option
+                      this.vmodel[this.strucData.id][itemindex] = option
+                    } else {
+                      if (!this.optionList.includes(item)) {
+                        this.optionList.push(item)
+                      }
+                    }
+                  })
                 }
+              })
+            } else {
+              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
+                this.optionList.map(option => {
+                  if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
+                    this.vmodel[this.strucData.id] = option
+                    return false
+                  } else {
+                    if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                      this.optionList.push(this.vmodel[this.strucData.id])
+                    }
+                  }
+                })
               }
-            })
+            }
           }
-          // else {
-          //   console.log(this.strucData.id)
-          //   this.optionList.push(this.vmodel[this.strucData.id])
-          // }
         })
       }
     }

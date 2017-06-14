@@ -5,7 +5,33 @@
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
           <el-form ref="applyForm" :model="applyForm" label-width="100px" :inline="true">
-            <header-form-structure :form-data="form.header" :item="applyForm.header"></header-form-structure>
+            <!-- <header-form-structure :form-data="form.header" :item="applyForm.header"></header-form-structure> -->
+            <div v-if="form.header">
+              <div v-for="task in form.header">
+                <span v-for="taskform in task.value">
+                  <form-body
+                    v-if="showFormItem(taskform, applyForm)"
+                    :item="applyForm.header"
+                    :form-item="taskform"
+                    :whole="applyForm"
+                    :header="true">
+                  </form-body>
+                  <!-- <search-bar
+                    v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
+                    :hosts="postForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, postForm)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
+                  <header-table
+                    v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                    :form-data="task"
+                    :item="postForm.header"
+                    :headerTable="true">
+                  </header-table> -->
+                </span>
+              </div>
+            </div>
           </el-form>
           <br>
           <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
@@ -64,7 +90,7 @@
 </template>
 <script>
   import formBody from '../../_plugins/_formBody'
-  import headerFormStructure from '../../_plugins/_headerFormStructure'
+  // import headerFormStructure from '../../_plugins/_headerFormStructure'
   export default {
     data () {
       return {
@@ -129,6 +155,21 @@
           this.form.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.applyForm.header, this)
+              if (item.show.type) {
+                if (item.show.type === 'form_header') {
+                  this.$watch('applyForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                    if (item.show.op === 'eq' && newVal === item.show.value) {
+                      this.setDataType(item, this.applyForm.header, this)
+                    } else if (item.show.op === 'neq' && newVal !== item.show.value) {
+                      this.setDataType(item, this.applyForm.header, this)
+                    } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+                      this.setDataType(item, this.applyForm.header, this)
+                    } else {
+                      delete this.applyForm.header[item.id]
+                    }
+                  })
+                }
+              }
             })
           })
           this.form.body.body_list[0].attr_list.map(group => {
@@ -292,8 +333,7 @@
     },
 
     components: {
-      formBody,
-      headerFormStructure
+      formBody
     }
   }
 </script>

@@ -236,8 +236,8 @@
     },
 
     mounted () {
-      console.log('this.item: ', this.item)
-      console.log('this.formItem: ', this.formItem.name, this.formItem)
+      // console.log('this.item: ', this.item)
+      // console.log('this.formItem: ', this.formItem.name, this.formItem)
       // if (this.formItem.name === '附件') console.log(this.formItem)
       // console.log(this.item[this.formItem.id])
       // console.log(this.multiFiles)
@@ -255,7 +255,7 @@
             }
           } else {
             if (this.headerTable) {
-              return 'header.' + this.valueId + '.' + this.index + '.' + formItem.id
+              return 'header.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id
             } else if (this.bodyTable) {
               return 'body.' + this.index + '.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id
             }

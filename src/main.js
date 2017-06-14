@@ -323,6 +323,17 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
       } else {
         compareVariable = postForm.header
       }
+      // Vue.prototype.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+      //   if (item.show.op === 'eq' && newVal === item.show.value) {
+      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
+      //   } else if (item.show.op === 'neq' && newVal !== item.show.value) {
+      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
+      //   } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
+      //   } else {
+      //     delete postForm.header[item.id]
+      //   }
+      // })
     } else if (taskform.show.type === 'message_header') {
       compareVariable = messageData.header
     } else if (taskform.show.type === 'message_body') {

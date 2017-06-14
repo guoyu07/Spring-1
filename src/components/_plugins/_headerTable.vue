@@ -10,29 +10,33 @@
       <el-button size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
-          v-for="(body, bodyindex) in item[formData.id]" :label="formData.name + (bodyindex + 1)"
-          :closable="closableIndex(bodyindex, formData)">
-          <form-structure
-            :form-data="[{name: header.name, value: formData.value.attr_list}]"
-            :item="body"
-            :index="0"
-            :header-table="true"
-            :value-id="formData.id">
-          </form-structure>
+          v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
+          :closable="closableIndex(tableindex, formData)">
+          <span v-for="formItem in formData.value.attr_list">
+            <form-body
+              :item="table"
+              :form-item="formItem"
+              :whole="postForm.header[formData.id][tableindex]"
+              :table-index="tableindex"
+              :header-table="true"
+              :value-id="formData.id"
+              :message="messageData">
+            </form-body>
+          </span>
         </el-tab-pane>
       </el-tabs>
     </el-form-item>
-      <!-- </template>
-    </template> -->
   </div>
 </template>
 
 <script>
-  import formStructure from './_formStructure'
+  import formBody from './_formBody'
   export default {
     props: {
       item: { type: Object },
-      formData: { type: Object }
+      formData: { type: Object },
+      postForm: { type: Object },
+      messageData: { type: Object }
     },
 
     data () {
@@ -170,7 +174,7 @@
     },
 
     components: {
-      formStructure
+      formBody
     }
   }
 </script>

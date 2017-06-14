@@ -152,16 +152,18 @@
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
               if (item.show.type) {
-                const key = []
                 if (item.show.type === 'form_header') {
-                  const keyPath = item.show.key_path.split('.')
-                  if (!key.includes(keyPath[0])) {
-                    key.push(keyPath[0])
-                    this.$watch('postForm.header.' + keyPath[0], (newVal, oldVal) => {
-                      const _value = newVal && newVal[keyPath[1]] || ''
-                      this.deviceType = _value
-                    })
-                  }
+                  this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                    if (item.show.op === 'eq' && newVal === item.show.value) {
+                      this.setDataType(item, this.postForm.header, this)
+                    } else if (item.show.op === 'neq' && newVal !== item.show.value) {
+                      this.setDataType(item, this.postForm.header, this)
+                    } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+                      this.setDataType(item, this.postForm.header, this)
+                    } else {
+                      delete this.postForm.header[item.id]
+                    }
+                  })
                 }
               }
               // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
