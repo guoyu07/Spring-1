@@ -118,6 +118,9 @@ export default {
   },
 
   mounted () {
+    const customTranslate = {
+      translate: ['value', require('./../customTranslate/customTranslate')]
+    }
     this.$nextTick(() => {
       this.bpmnModeler = new BpmnModeler({
         container: '#bpmn-canvas',
@@ -126,7 +129,8 @@ export default {
         },
         additionalModules: [
           propertiesPanelModule,
-          propertiesProviderModule
+          propertiesProviderModule,
+          customTranslate
         ],
         moddleExtensions: {
           camunda: camundaModdleDescriptor
