@@ -168,15 +168,15 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
   }
 }
 
-Vue.prototype.setDataType = (original, goalData, _this) => {
+Vue.prototype.setDataType = (original, goalData) => {
   if (original.value.type === 'arr' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
-    _this.$set(goalData, original.id, [])
+    Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
-    _this.$set(goalData, original.id, undefined)
+    Vue.prototype.$set(goalData, original.id, undefined)
   } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
-    _this.$set(goalData, original.id, null)
+    Vue.prototype.$set(goalData, original.id, null)
   } else if (original.value.type === 'str' || original.value.type === 'enum') {
-    _this.$set(goalData, original.id, '')
+    Vue.prototype.$set(goalData, original.id, '')
   }
 }
 

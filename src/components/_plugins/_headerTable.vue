@@ -17,6 +17,7 @@
               :item="table"
               :form-item="formItem"
               :whole="postForm.header[formData.id][tableindex]"
+              :wholeName="postFormName"
               :table-index="tableindex"
               :header-table="true"
               :value-id="formData.id"
@@ -36,7 +37,8 @@
       item: { type: Object },
       formData: { type: Object },
       postForm: { type: Object },
-      messageData: { type: Object }
+      messageData: { type: Object },
+      postFormName: { type: String }
     },
 
     data () {

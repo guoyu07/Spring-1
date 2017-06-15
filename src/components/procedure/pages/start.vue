@@ -151,6 +151,12 @@
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
+              if (item.value.type === 'table') {
+                // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                item.value.attr_list.map(list => {
+                  this.setDataType(list, this.postForm.header[item.id][0], this)
+                })
+              }
               if (item.show.type) {
                 if (item.show.type === 'form_header') {
                   this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
@@ -202,8 +208,10 @@
                       this.$set(this.postForm.body[0][value.id], 0, {})
                       value.value.attr_list.map(item => {
                         this.setDataType(item, this.postForm.body[0][value.id], this)
+                        // console.log(this.postForm.body[0][value.id])
                       })
                     }
+                    console.log(this.postForm.body[0][value.id])
                     // 有默认值时 只有 form_body 和 form_header 2种
                     if (value.default && value.default.type) {
                       if (value.default.type === 'form_body') {

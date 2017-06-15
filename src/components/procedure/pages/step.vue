@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
-          <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
+          <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
             <!-- 表头信息显示 -->
             <div v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
@@ -94,6 +94,7 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :wholeName="'assignForm'"
                     :message="applyData"
                     :header="true">
                   </form-body>
@@ -108,8 +109,9 @@
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
                     :form-data="taskform"
                     :item="assignForm.header"
-                    :messageData="applyDate"
-                    :postForm="assignForm">
+                    :messageData="applyData"
+                    :postForm="assignForm"
+                    :postFormName="'assignForm'">
                   </header-table>
                 </span>
               </div>
@@ -241,17 +243,17 @@
                   }
                   // console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了2种
-                  if (value.default && value.default.type) {
-                    if (value.default.type === 'message_header') {
-                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                    } else if (value.default.type === 'static') {
-                      this.assignForm.header[value.id] = value.default.value
-                    } else if (value.default.type === 'form_header') {
-                      this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                        this.assignForm.header[value.id] = newVal
-                      })
-                    }
-                  }
+                  // if (value.default && value.default.type) {
+                  //   if (value.default.type === 'message_header') {
+                  //     this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                  //   } else if (value.default.type === 'static') {
+                  //     this.assignForm.header[value.id] = value.default.value
+                  //   } else if (value.default.type === 'form_header') {
+                  //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                  //       this.assignForm.header[value.id] = newVal
+                  //     })
+                  //   }
+                  // }
                 }
               })
             }
