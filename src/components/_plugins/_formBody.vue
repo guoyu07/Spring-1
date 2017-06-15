@@ -160,7 +160,8 @@
       :whole="whole"
       :message="message"
       :index="index"
-      :body-table="bodyTable">
+      :body-table="bodyTable"
+      :header-table="headerTable">
     </need-cmdb-data>
     <!-- </template> -->
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>

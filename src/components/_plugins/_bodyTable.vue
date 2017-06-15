@@ -213,7 +213,11 @@
           this.item[value.id].push(newData)
           this.tabsValue = this.item[value.id].length - 1 + ''
         } else {
-          this.$message.warning(`最多只能增加${value.limit.max}个设备！`)
+          if (value.limit.max) {
+            this.$message.warning(`最多只能增加${value.limit.max}个${value.name}！`)
+          } else {
+            this.$message.warning(`不能再增加！`)
+          }
         }
       }
     },

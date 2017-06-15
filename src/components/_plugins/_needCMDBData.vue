@@ -48,7 +48,8 @@
       message: { type: Object },
       strucData: { type: Object },
       index: { type: Number },
-      bodyTable: { type: Boolean }
+      bodyTable: { type: Boolean },
+      headerTable: { type: Boolean }
     },
     data () {
       return {
@@ -102,8 +103,7 @@
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'form_body') {
-              if (this.bodyTable) {
-                // console.log(this.strucData.name, para.value.key_path, this.whole)
+              if (this.bodyTable || this.headerTable) {
                 if (this.getPathResult(this.whole, para.value.key_path)) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole, para.value.key_path)
