@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
-          <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
+          <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
             <!-- 表头信息显示 -->
             <div v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
@@ -42,7 +42,6 @@
                     </div>
                   </div>
                 </div>
-
                 <!-- body 表单填写 -->
                 <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                   <div v-for="taskFormData in taskForm.body.body_list">
@@ -88,7 +87,6 @@
             </el-tabs>
             <!-- header 表单填写 -->
             <div v-if="taskForm.header">
-
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
@@ -96,6 +94,7 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :wholeName="'assignForm'"
                     :message="applyData"
                     :header="true">
                   </form-body>
@@ -106,9 +105,14 @@
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
-                  <div v-if="taskform.value.type==='table'">
-                      headerTable
-                  </div>
+                  <header-table
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
+                    :form-data="taskform"
+                    :item="assignForm.header"
+                    :messageData="applyData"
+                    :postForm="assignForm"
+                    :postFormName="'assignForm'">
+                  </header-table>
                 </span>
               </div>
             </div>
@@ -127,34 +131,6 @@
         </el-card>
       </el-col>
     </el-row>
-    <!-- 机柜图预览 -->
-    <div v-if="routerInfo.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
-      <h5 class="cabinet-title">
-        <span>机柜预览</span>
-      </h5>
-      <span class="close-btn" >
-        <el-button type="text" size="small" icon="close" @click="closePreview"></el-button>
-      </span>
-      <div class="paginate-btn clearfix">
-        <el-button type="primary" size="mini" icon="arrow-left" :disabled="previewPage === 1" class="fl" @click="prevPreview">上一页</el-button>
-        <span class="preview-indicator"><span class="current-page">{{previewPage}}</span>/<span class="total-page">{{pageNum}}</span></span>
-        <el-button type="primary" size="mini" :disabled="previewPage === pageNum || pageNum === 0" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-      </div>
-      <el-row :gutter="10">
-        <el-col :sm="6" v-for="idcrack in idcrackData">
-          <table class="el-table__body table-condensed table-cabinet text-navy">
-            <caption>{{ idcrack.code }}</caption>
-            <tbody>
-              <tr v-for="(nindex, n) in idcrack.u_info.jgUHeight">
-                <td :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - n)) }">
-                  U{{idcrack.u_info.jgUHeight - n}}
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </el-col>
-      </el-row>
-    </div>
   </div>
 </template>
 <script>
@@ -167,7 +143,7 @@
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
-
+  import headerTable from '../../_plugins/_headerTable'
   export default {
     data () {
       return {
@@ -189,170 +165,17 @@
         path_list: [],
         hostList: [],
         previewShown: false,
-        idcrackData: [],
         previewPage: 1,
-        pageNum: 1,
-        idcrackList: [],
-        idcrackTaked: []
+        pageNum: 1
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
-      console.log('onlinestep')
       // this.renderForm()
       // this.renderTaskForm()
     },
-    mounted () {
-      // 为机柜 U 位默认值而生
-      if (this.routerInfo.tkey === 'cabinet') {
-        this.http.interceptors.response.use(rs => {
-          if (rs.config.data.includes('action=idcrack%2Flist')) {
-            this.applyData && this.applyData.body.map((item, k) => {
-              if (this.assignForm.body[k] && this.assignForm.body[k].idcrack) {
-                const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
-                // 整理出一个未被占用的 U位 列表
-                let untakedData = []
-                for (let i = 1; i <= uHeight; i++) {
-                  if (this.assignForm.body[k].idcrack.u_info.assetList.length !== 0) {
-                    if (this.assignForm.body[k].idcrack.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
-                      untakedData.push(i)
-                    }
-                  }
-                }
-                // console.log(untakedData)
-                for (let i = 1; i <= uHeight; i++) {
-                  if (this.assignForm.body[k].idcrack.u_info.assetList.length === 0) {
-                    this.assignForm.body[k].idcracku = i
-                  } else {
-                    const iend = +this.applyData.header.host_list[k].u_num + i - 1
-                    // 判断 i iend(U位末端) 都在未被占用的范围内
-                    if (untakedData.includes(i) && untakedData.includes(iend)) {
-                      // 判断是否已被当前其他表单占用
-                      let formTakedData = [] // 用于判断是否已被当前其他表单占用
-                      this.assignForm.body.map((body, bodyk) => {
-                        if (body.idcracku && body.idcrack && (body.idcrack.instanceId === this.assignForm.body[k].idcrack.instanceId)) {
-                          const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
-                          console.log(bodyk, body.idcracku, eU)
-                          for (let tU = body.idcracku; tU <= eU; tU++) {
-                            if (!formTakedData.includes(tU)) {
-                              formTakedData.push(tU)
-                            }
-                          }
-                        } else {
-                          formTakedData = []
-                        }
-                      })
-                      console.log(this.assignForm.body[k].idcrack.code, formTakedData)
-                      if (!formTakedData.includes(i)) {
-                        // if (!this.assignForm.body[k].idcracku) {
-                        this.assignForm.body[k].idcracku = i
-                        // }
-                        return false
-                      }
-                    }
-                  }
-                }
-                // console.log(this.assignForm.body[k].idcrack.u_info, this.applyData.header.host_list[k].u_num)
-                // let takedData = {}
-                // takedData.id = this.assignForm.body[k].idcrack.instanceId
-                // takedData.taked = []
-                // const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
-                // this.assignForm.body[k].idcrack.u_info.assetList.map(item => {
-                //   for (let i = 0; i < uHeight; i++) {
-                //     if (i >= item.beginU && i <= item.endU) {
-                //       takedData.taked.push(i)
-                //     }
-                //   }
-                // })
-                // if (this.idcrackTaked.length === 0) {
-                //   this.idcrackTaked.push(takedData)
-                // } else if (!this.idcrackTaked.some(item => { return takedData.id === item.id })) {
-                //   this.idcrackTaked.push(takedData)
-                // }
-                // console.log(k)
-                // for (let i = 0; i < uHeight; i++) {
-                //   for (const item of this.idcrackTaked) {
-                //     if (item.id === takedData.id) {
-                //       let uNum = i + +this.applyData.header.host_list[k].u_num
-                //       if (!item.taked.includes(uNum) && !item.taked.includes((i + 1))) {
-                //         this.assignForm.body[k].idcracku = i + 1
-                //         console.log(i)
-                //         // item.taked.push(this.assignForm.body[k].idcrackui+1)
-                //         for (let utaked = (i + 1); utaked <= uNum; utaked++) {
-                //           item.taked.push(utaked)
-                //         }
-                //         return false
-                //       }
-                //     }
-                //   }
-                // }
-              }
-            })
-          }
-          return rs
-        }, err => {
-          console.log(err.response.data.errorMessage)
-        })
-      }
-    },
-    watch: {
-      'idcrackData': 'idcrackIsTaked'
-    },
     methods: {
-      idcrackIsTaked () {
-        for (const item of this.idcrackData) {
-          item.isTaked = []
-          for (const ed of item.u_info.assetList) {
-            for (let i = 0; i < item.u_info.jgUHeight; i++) {
-              if (i >= ed.beginU && i <= ed.endU) {
-                item.isTaked.push(i)
-              }
-            }
-          }
-        }
-      },
-      getPreview (ipscope) {
-        const postHeadvData = {
-          action: 'idcrack/list',
-          method: 'GET',
-          data: {
-            ipscopeId: ipscope
-          }
-        }
-        this.http.post('', this.parseData(postHeadvData))
-        .then((response) => {
-          console.log(response)
-          this.idcrackList = response.data.data.list
-          this.previewShown = !this.previewShown
-          this.pageNum = Math.ceil(this.idcrackList.length / 4)
-          this.idcrackData = this.idcrackList.slice(0, 4)
-        })
-        // this.$store.dispatch('idcrack_data', {
-        //   idcrackData: this.optionList
-        // })
-        // this.previewShown = !this.previewShown
-        // this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
-        // this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
-      },
-      closePreview () {
-        this.previewShown = !this.previewShown
-      },
-      nextPreview () {
-        const page = this.previewPage + 1
-        if (this.previewPage !== this.pageNum) {
-          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
-          this.previewPage = page
-        }
-      },
-
-      prevPreview () {
-        const page = this.previewPage > 1 ? this.previewPage - 1 : 1
-        if (this.previewPage !== 1) {
-          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
-          this.previewPage = page
-        }
-      },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
@@ -420,17 +243,17 @@
                   }
                   // console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了2种
-                  if (value.default && value.default.type) {
-                    if (value.default.type === 'message_header') {
-                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                    } else if (value.default.type === 'static') {
-                      this.assignForm.header[value.id] = value.default.value
-                    } else if (value.default.type === 'form_header') {
-                      this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                        this.assignForm.header[value.id] = newVal
-                      })
-                    }
-                  }
+                  // if (value.default && value.default.type) {
+                  //   if (value.default.type === 'message_header') {
+                  //     this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                  //   } else if (value.default.type === 'static') {
+                  //     this.assignForm.header[value.id] = value.default.value
+                  //   } else if (value.default.type === 'form_header') {
+                  //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                  //       this.assignForm.header[value.id] = newVal
+                  //     })
+                  //   }
+                  // }
                 }
               })
             }
@@ -501,7 +324,7 @@
                             this.assignForm.body[k][value.id] = newVal
                           })
                         } else if (value.default.type === 'message_body') {
-                          newData[value.id] = this.getPathResult(this.applyData.body, value.default.key_path, k)
+                          newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
                         } else if (value.default.type === 'form_header') {
                           this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
                             this.assignForm.body[k][value.id] = newVal
@@ -895,7 +718,8 @@
       headerFormStructure,
       formBody,
       searchBar,
-      bodyTable
+      bodyTable,
+      headerTable
     }
   }
 </script>
@@ -915,31 +739,25 @@
     margin-right: 8px;
   }
 }
-
 .margin-bottom {
   margin-bottom: 15px;
 }
-
 .form-block {
   h5 {
     margin: 15px 0;
   }
 }
-
 .el-select {
   width: 100%;
 }
-
 .el-form--inline .el-form-item {
   min-width: 280px;
 }
-
 .h5 {
   margin: 10px 0;
   font-size: 12px;
   color: #ccc;
 }
-
 .el-table {
   table {
     width: 100%;
@@ -970,18 +788,15 @@
   overflow-y: scroll;
   text-align: center;
 }
-
 .cabinet-preview table caption {
   text-align: center;
   padding-top: 4px;
   padding-bottom: 4px;
 }
-
 .cabinet-preview.shown {
   transform: translateX(0);
   box-shadow: -6px 0px 12px -6px #777;
 }
-
 .cabinet-preview .close-btn {
   position: absolute;
   right: 10px;
@@ -990,11 +805,9 @@
   color: rgba(0,0,0,.28);
   cursor: pointer;
 }
-
 .cabinet-preview .close-btn:hover {
   color: rgba(0,0,0,.56);
 }
-
 .cabinet-title {
   margin: 8px 0;
   font-size: 14px;
@@ -1006,7 +819,6 @@
   letter-spacing: .42em;
   font-weight: bold;
 }
-
 .cabinet-title span {
   padding: 0 16px;
   display: inline-block;
@@ -1014,12 +826,10 @@
   position: relative;
   z-index: 11;
 }
-
 .cabinet-preview.shown .table-cabinet {
   opacity: 1;
   transform: translateY(0);
 }
-
 .table-cabinet {
   border: 1px solid rgba(82, 100, 115, 0.84);
   border-left-width: 2px;
@@ -1031,14 +841,12 @@
   transition-delay: .15s;
   width: 100%;
 }
-
 .table-cabinet td {
   border: 1px solid rgba(173, 194, 212, 0.84);
   padding: 0 4px;
   background: rgba(0,0,0,.04);
   font-size: 10px;
 }
-
 .table-cabinet td.occupied {
   background-color: #b5bbc8;
   color: #fff;
@@ -1047,25 +855,20 @@
   background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,.3) 4px, rgba(255,255,255,.3) 8px);
   // cursor: not-allowed;
 }
-
 .table-cabinet caption {
   font-size: 12px;
   height: 70px;
   overflow: hidden;
 }
-
 .preview-container.loading {
   opacity: .5
 }
-
 .preview-indicator {
   color: #333;
 }
-
 .paginate-btn {
   margin-bottom: 10px;
 }
-
 .total-page {
   font-size: 12px;
   color: #616161;

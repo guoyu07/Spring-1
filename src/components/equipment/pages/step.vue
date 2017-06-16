@@ -311,7 +311,7 @@
                             this.assignForm.body[k][value.id] = newVal
                           })
                         } else if (value.default.type === 'message_body') {
-                          newData[value.id] = this.getPathResult(this.applyData.body, value.default.key_path, k)
+                          newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
                         } else if (value.default.type === 'form_header') {
                           this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
                             this.assignForm.body[k][value.id] = newVal

@@ -41,21 +41,17 @@
           {{ getPathResult(message.body, formItem.default.key_path, index) ? getPathResult(message.body, formItem.default.key_path, index) : '' }}
         </span>
       </span>
-
     </span>
-
     <el-input-number
       v-else-if="formItem.value.type === 'int'"
       v-model="item[formItem.id]"
       :disabled="formItem.readonly">
     </el-input-number>
-
     <quill-editor
       v-else-if="formItem.value.type === 'richtext'"
       v-model="item[formItem.id]"
       :options="editor.options">
     </quill-editor>
-
     <template v-else-if="['file', 'files'].includes(formItem.value.type)">
       <template v-if="isEditing">
         <h4 class="sub-title" style="margin: 0;"><i class="el-icon-information"></i> 已有的附件：</h4>
@@ -86,7 +82,6 @@
         <input type="hidden" name="token" value="xxx">
       </dropzone>
     </template>
-
     <template v-else-if="formItem.value.type === 'enum'">
       <el-select
         filterable
@@ -105,7 +100,6 @@
         <el-radio v-for="option in formItem.value.regex" :label="option"></el-radio>
       </el-radio-group>
     </template>
-
     <template v-else-if="formItem.value.type === 'enums'">
       <el-select
         filterable
@@ -124,7 +118,6 @@
         <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="option">{{option}}</el-checkbox>
       </el-checkbox-group>
     </template>
-
     <el-select
       v-else-if="formItem.value.type === 'arr'"
       v-model="item[formItem.id]"
@@ -133,7 +126,6 @@
       allow-create
       :placeholder="formItem.placeholder">
     </el-select>
-
     <el-date-picker
       v-else-if="formItem.value.type === 'datetime'"
       v-model="item[formItem.id]"
@@ -142,7 +134,6 @@
       @change="datetimeFormat"
       :placeholder="formItem.placeholder">
     </el-date-picker>
-
     <el-date-picker
       v-else-if="formItem.value.type === 'date'"
       v-model="item[formItem.id]"
@@ -151,7 +142,6 @@
       @change="dateFormat"
       :placeholder="formItem.placeholder">
     </el-date-picker>
-
     <!-- <template> -->
     <need-cmdb-data
       v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
@@ -160,24 +150,24 @@
       :whole="whole"
       :message="message"
       :index="index"
-      :body-table="bodyTable">
+      :body-table="bodyTable"
+      :header-table="headerTable">
     </need-cmdb-data>
     <!-- </template> -->
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
-
 <script>
   import needCmdbData from './_needCMDBData'
   import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
-
   // import formStructure from './_formStructure'
   export default {
     props: {
       item: { type: Object },
       whole: { type: Object },
+      wholeName: { type: String },
       formItem: { type: Object },
       index: { type: Number },
       message: { type: Object },
@@ -188,7 +178,6 @@
       tableIndex: { type: Number },
       isEditing: { type: Boolean }
     },
-
     data () {
       return {
         editor: {
@@ -210,7 +199,6 @@
         }
       }
     },
-
     computed: {
       multiFiles () {
         if (!this.isEditing) {
@@ -222,7 +210,6 @@
           }
         }
       },
-
       singleFile () {
         if (!this.isEditing) {
           let obj = null
@@ -234,16 +221,41 @@
         }
       }
     },
-
     mounted () {
-      console.log('this.item: ', this.item)
-      console.log('this.formItem: ', this.formItem.name, this.formItem)
+      // console.log('this.item: ', this.item)
+      // console.log('this.formItem: ', this.formItem.name, this.formItem)
       // if (this.formItem.name === '附件') console.log(this.formItem)
       // console.log(this.item[this.formItem.id])
       // console.log(this.multiFiles)
       // console.log(this.singleFile)
+      if (this.formItem.default && this.formItem.default.type) {
+        if (this.formItem.default.type === 'message_header') {
+          this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
+        } else if (this.formItem.default.type === 'static') {
+          this.whole.header[this.formItem.id] = this.formItem.default.this.formItem
+        } else if (this.formItem.default.type === 'form_header') {
+          this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+            this.whole.header[this.formItem.id] = newVal
+          })
+        } else if (this.formItem.default.type === 'form_body') {
+          if (this.headerTable || this.bodyTable) {
+            this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
+              this.whole[this.formItem.id] = newVal
+            })
+          } else {
+            if (this.header) {
+              this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole.header[this.formItem.id] = newVal
+              })
+            } else {
+              this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole.body[this.index][this.valueId] = newVal
+              })
+            }
+          }
+        }
+      }
     },
-
     methods: {
       prop (formItem) {
         if (formItem.required) {
@@ -255,7 +267,7 @@
             }
           } else {
             if (this.headerTable) {
-              return 'header.' + this.valueId + '.' + this.index + '.' + formItem.id
+              return 'header.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id
             } else if (this.bodyTable) {
               return 'body.' + this.index + '.' + this.valueId + '.' + this.tableIndex + '.' + formItem.id
             }
@@ -446,7 +458,6 @@
         }
       }
     },
-
     components: {
       needCmdbData,
       formStructure,
@@ -455,12 +466,10 @@
     }
   }
 </script>
-
 <style lang="less">
   .blockElement {
     width: 100%;
     display: flex !important;
-
     .el-form-item__content {
       width: 50%;
       width:-moz-calc(100% - 85px);
@@ -468,21 +477,18 @@
       width: calc(100% - 85px);
     }
   }
-
   .help-block {
     font-size: 12px;
     color: #666;
     margin: 0.5em 0 0;
     line-height: 1.2;
   }
-
   .dz-remove {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;
     font-size: inherit;
     text-rendering: auto;
     -webkit-font-smoothing: antialiased;
-
     &::before {
       content: "\f014";
       color: #fff;

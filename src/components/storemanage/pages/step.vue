@@ -60,9 +60,15 @@
                               :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
                               @on-hosts-change="onHostsChange">
                             </search-bar>
-                            <div v-if="formItem.value.type==='table'">
-                                table
-                            </div>
+                            <body-table
+                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
+                              :form-data="formItem"
+                              :item="assignForm.body[index]"
+                              :post-form="assignForm"
+                              :message-data="applyData"
+                              :index="index"
+                              :bodyTable="true">
+                            </body-table>
                           </span>
                         </div>
                       </div>
@@ -117,6 +123,7 @@
   import headerFormStructure from '../../_plugins/_headerFormStructure'
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
+  import bodyTable from '../../_plugins/_bodyTable'
 
   export default {
     data () {
@@ -239,8 +246,16 @@
                   if (body.show.value === item[keyPath[0]]) {
                     console.log(item[keyPath[0]])
                     body.attr_list.map(group => {
-                      group.value.map(item => {
-                        this.setNewDataType(item, newData)
+                      group.value.map(value => {
+                        this.setNewDataType(value, newData)
+                        if (value.value.type === 'table') {
+                          // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                          newData[value.id][0] = {}
+                          let data = newData[value.id][0]
+                          value.value.attr_list.map(item => {
+                            this.setNewDataType(item, data)
+                          })
+                        }
                       })
                     })
                     console.log(newData)
@@ -250,6 +265,14 @@
                     group.value.map(value => {
                       if (value.need_submit) {
                         this.setNewDataType(value, newData)
+                        if (value.value.type === 'table') {
+                          // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                          newData[value.id][0] = {}
+                          let data = newData[value.id][0]
+                          value.value.attr_list.map(item => {
+                            this.setNewDataType(item, data)
+                          })
+                        }
                         // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                         if (value.default.type) {
                           if (value.default.type === 'message_header') {
@@ -555,7 +578,8 @@
       formStructure,
       headerFormStructure,
       formBody,
-      searchBar
+      searchBar,
+      bodyTable
     }
   }
 </script>

@@ -168,15 +168,15 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
   }
 }
 
-Vue.prototype.setDataType = (original, goalData, _this) => {
+Vue.prototype.setDataType = (original, goalData) => {
   if (original.value.type === 'arr' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
-    _this.$set(goalData, original.id, [])
+    Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
-    _this.$set(goalData, original.id, undefined)
+    Vue.prototype.$set(goalData, original.id, undefined)
   } else if (original.value.type === 'dict' || original.value.type === 'dicts') {
-    _this.$set(goalData, original.id, null)
+    Vue.prototype.$set(goalData, original.id, null)
   } else if (original.value.type === 'str' || original.value.type === 'enum') {
-    _this.$set(goalData, original.id, '')
+    Vue.prototype.$set(goalData, original.id, '')
   }
 }
 
@@ -323,6 +323,17 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
       } else {
         compareVariable = postForm.header
       }
+      // Vue.prototype.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+      //   if (item.show.op === 'eq' && newVal === item.show.value) {
+      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
+      //   } else if (item.show.op === 'neq' && newVal !== item.show.value) {
+      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
+      //   } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
+      //   } else {
+      //     delete postForm.header[item.id]
+      //   }
+      // })
     } else if (taskform.show.type === 'message_header') {
       compareVariable = messageData.header
     } else if (taskform.show.type === 'message_body') {
