@@ -28,6 +28,7 @@
       border-left: 5px solid @eoThemeColor;
       background-color: @eoSideBgColor;
       position: relative;
+      word-wrap: break-word;
 
       &::before,
       &::after {
@@ -208,14 +209,15 @@
         <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${event.name}/${eventData.id}/start` }" class="el-button el-button--plain el-button--small fr"><i class="el-icon-edit"></i> 编辑</router-link>
       </el-col>
       <el-col :span="8" :xs="24">
-        <el-button-group>
+        <!-- <el-button-group>
           <el-button size="small" v-if="['待处理', '延缓中'].includes(eventData.name)"><i class="el-icon-fa-play"></i> 开始</el-button>
           <el-button size="small" v-if="['待处理', '处理中'].includes(eventData.name)"><i class="el-icon-fa-check"></i> 完成</el-button>
           <el-button size="small" v-if="['待处理', '处理中'].includes(eventData.name)"><i class="el-icon-fa-pause"></i> 延缓</el-button>
           <el-button size="small" v-if="eventData.name ==='已完成'"><i class="el-icon-fa-refresh"></i> 重新处理</el-button>
           <el-button size="small" v-if="['待处理', '处理中', '延缓中'].includes(eventData.name)"><i class="el-icon-fa-close"></i> 取消工单</el-button>
           <el-button size="small" v-if="['已完成', '已取消'].includes(eventData.name)"><i class="el-icon-fa-close"></i> 关闭工单</el-button>
-        </el-button-group>
+        </el-button-group> -->
+        <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }" class="el-button el-button--plain el-button--small">处理</router-link>
       </el-col>
     </el-row>
 
@@ -310,6 +312,9 @@
                 </ul>
               </el-tab-pane>
               <el-tab-pane label="评论" name="second">
+                <h5 class="sub-title" v-if="!comments.length">
+                  <i class="el-icon-information"></i> 暂时没有人添加评论…
+                </h5>
                 <ul class="activity-list">
                   <li v-for="comment in comments">
                     <el-tooltip placement="top">
@@ -319,7 +324,7 @@
                       </div>
                       <a href="#" class="tooltip-link">{{comment.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
                     </el-tooltip>
-                    <span>添加了评论 - {{comment.ctime}}</span>
+                    <span>添加了评论 - <timeago :since="comment.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
                     <div class="comment-detail" v-html="comment.text"></div>
                   </li>
                 </ul>
@@ -464,6 +469,15 @@
 <script>
   import { quillEditor } from 'vue-quill-editor'
   import eventConf from './_config/_eventConf.vue'
+  import Vue from 'vue'
+  import VueTimeago from 'vue-timeago'
+
+  Vue.use(VueTimeago, {
+    locale: 'zh-CN',
+    locales: {
+      'zh-CN': require('vue-timeago/locales/zh-CN.json')
+    }
+  })
 
   export default {
     data () {
