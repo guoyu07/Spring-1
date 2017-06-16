@@ -61,6 +61,7 @@
                             <search-bar
                               v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
                               :index="index"
+                              :post-form="assignForm"
                               :hosts="assignForm.body[index]"
                               :attr-list="formItem"
                               :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
@@ -191,6 +192,7 @@
           this.taskForm = res.data.data.form
           // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
+            // TODO: 只写了两种 count.type
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
               if (Array.isArray(keyData)) {
@@ -215,6 +217,10 @@
                 } else {
                   this.$message('数据有错')
                 }
+              }
+            } else if (this.taskForm.body.count.type === 'static') {
+              for (let i = 0; i < this.taskForm.body.count.min; i++) {
+                this.applyData.body.push({})
               }
             }
           }
