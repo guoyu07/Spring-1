@@ -126,7 +126,7 @@
     // },
     methods: {
       onHostsChange (val) {
-        // console.log(val)
+        console.log(val)
         this.hostList = []
         // this.postForm.header[this.deviceType] = val
         this.hostList = val
@@ -185,9 +185,9 @@
           // let newData = {}
           this.taskFormData.body.body_list.forEach(body => {
             if (body.show.type) {
-              const keyPath = body.show.key_path.split('.')
+              // const keyPath = body.show.key_path.split('.')
               if (body.show.type === 'form_header') {
-                this.$watch('postForm.header.' + keyPath[0], (newVal, oldVal) => {
+                this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.$set(this.postForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
                   body.attr_list.map(group => {
                     group.value.map(item => {

@@ -133,7 +133,7 @@ const getPathResult = (result, path, k) => {
 Vue.prototype.getPathResult = getPathResult
 
 Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
-  console.log(formItem)
+  // console.log(formItem)
   if (formItem.limit && formItem.limit.type) {
     // if (data.value.count.type === 'message_body') {
     //   return getPathResult(applyData, data.value.count.key_path)
@@ -356,6 +356,7 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
 }
 
 Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index) => {
+  console.log(taskFormData.show)
   if (taskFormData.show && taskFormData.show.type) {
     let compareVariable
     if (taskFormData.show.type === 'form_header') {
@@ -367,6 +368,7 @@ Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index) => {
     }
     if (taskFormData.show.op === 'eq') {
       if (Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path) === taskFormData.show.value) {
+        console.log('ok')
         return true
       }
     } else if (taskFormData.show.op === 'neq') {

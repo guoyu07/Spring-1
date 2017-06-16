@@ -82,12 +82,13 @@
       index: { type: Number }, // body 的 index
       hosts: { type: Object }, // 选取设备的id
       attrList: { type: Object }, // search_bar 源数据
+      postForm: { type: Object }, // 提交的数据
       limit: { type: Object } // 设备数量选择限制
     },
 
     data () {
       return {
-        hostList: this.hosts[this.attrList.id], // ①创建 props 属性 hosts 的副本--hostList
+        hostList: [], // ①创建 props 属性 hosts 的副本--hostList   this.hosts[this.attrList.id]
         mainInfo: {},
         searchKeys: {},
         searchKeyList: [],
@@ -133,8 +134,8 @@
     },
 
     watch: {
-      'hosts' (val) {
-        this.hostList = val // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中
+      'hosts' (newVal, oldVal) {
+        this.hostList = [] // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中  val
       },
       'hostList' (val) {
         this.$emit('on-hosts-change', val, this.index) // ③组件内对 hostList 变更后向外部发送事件通知
