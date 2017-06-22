@@ -29,7 +29,7 @@
             </el-table-column>
             <el-table-column
               label="优先级"
-              width="80px"
+              width="100px"
               inline-template
               :context="_self">
               <template>
