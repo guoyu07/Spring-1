@@ -273,7 +273,7 @@
 
     methods: {
       onEntryClick (path) {
-        this.$router.replace(path)
+        this.$router.push(path)
       },
       handleSearchClick () {
         console.log(this.searchProcedure)
