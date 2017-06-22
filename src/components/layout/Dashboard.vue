@@ -202,6 +202,12 @@
                     title: list.pname,
                     path: `/system/onlinelist`
                   })
+                } else if (list.pkey === 'host') {
+                  entry.children.push({
+                    icon: 'fa-star',
+                    title: list.pname,
+                    path: `/guosen/on`
+                  })
                 } else {
                   entry.children.push({
                     icon: 'fa-star',
@@ -242,6 +248,12 @@
               icon: 'fa-star',
               title: list.pname,
               path: `/system/onlinelist`
+            })
+          } else if (list.pkey === 'host') {
+            this.topList[0].children.push({
+              icon: 'fa-star',
+              title: list.pname,
+              path: `/guosen/on`
             })
           } else {
             this.topList[0].children.push({
