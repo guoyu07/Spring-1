@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
-          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="80px" :label-position="right">
+          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="100px" :label-position="right">
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
               <div v-for="task in taskFormData.header">
@@ -465,10 +465,10 @@
           .then((res) => {
             if (res && res.status === 200) {
               this.$message({
-                type: 'success',
-                message: '成功!'
+                message: '成功!',
+                type: 'success'
               })
-              if (this.routerInfo.pkey === 'easyops_monitor') {
+              if (this.$route.params.pkey === 'easyops_monitor') {
                 this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
               } else {
                 this.$router.replace('/orders') // 跳转工单管理

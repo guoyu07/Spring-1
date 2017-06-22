@@ -355,12 +355,16 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
   }
 }
 
-Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index) => {
-  console.log(taskFormData.show)
+Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index, historyTask, currentTask) => {
   if (taskFormData.show && taskFormData.show.type) {
     let compareVariable
     if (taskFormData.show.type === 'form_header') {
-      compareVariable = postForm.header
+      // compareVariable = postForm.header
+      if (historyTask && (historyTask !== currentTask)) {
+        compareVariable = messageData.header
+      } else {
+        compareVariable = postForm.header
+      }
     } else if (taskFormData.show.type === 'message_header') {
       compareVariable = messageData.header
     } else if (taskFormData.show.type === 'message_body') {

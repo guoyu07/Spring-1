@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
-          <el-form ref="assignForm" :model="assignForm" label-width="85px" :inline="true">
+          <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 表头信息显示 -->
             <div v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
@@ -28,7 +28,7 @@
                 <!-- body 信息显示 -->
                 <div v-for="task in form">
                   <div v-for="taskbody in task.form.form.body.body_list">
-                    <div v-if="showBodyList(taskbody, assignForm, applyData, index)">
+                    <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
                       <p class="h5">{{task.tname}}</p>
                       <form-structure-display
                         :item="data"

@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
-          <el-form ref="assignForm" :model="assignForm" label-width="85px" class="advance-search-form" :inline="true">
+          <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 -->
                   <!-- {{taskformheader.name}} 这是分组名称 因为显示了步骤任务名称，不在重复显示一个分组名称-->
             <div>

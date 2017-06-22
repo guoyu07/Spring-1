@@ -376,13 +376,26 @@
           return {}
         } else if (!formItem.required) {
           return {}
+        } else if (formItem.value.type === 'datetime') {
+          var validateDatetime = (rule, value, cb) => {
+            if (!value) {
+              return cb(new Error(`请输入${formItem.name}`))
+            } else {
+              cb()
+            }
+          }
+          return {
+            validator: validateDatetime,
+            required: formItem.required,
+            trigger: 'blur'
+          }
         } else {
           let type
           if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
-          } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
+          } else if (formItem.value.type === 'date') {
             type = 'date'
           } else if (formItem.value.type === 'dict' || formItem.value.type === 'file') {
             type = 'object'
@@ -399,6 +412,9 @@
         }
       },
       datetimeFormat (val) {
+        // console.log(val)
+        // const value = new Date(val)
+        // console.log(value)
         this.item[this.formItem.id] = val
       },
       dateFormat (val) {
