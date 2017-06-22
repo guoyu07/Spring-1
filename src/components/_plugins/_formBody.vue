@@ -142,7 +142,6 @@
       @change="dateFormat"
       :placeholder="formItem.placeholder">
     </el-date-picker>
-    <!-- <template> -->
     <need-cmdb-data
       v-else-if="formItem.value.type === 'dicts' || formItem.value.type === 'dict'"
       :vmodel="item"
@@ -153,7 +152,6 @@
       :body-table="bodyTable"
       :header-table="headerTable">
     </need-cmdb-data>
-    <!-- </template> -->
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
@@ -222,39 +220,33 @@
       }
     },
     mounted () {
-      // console.log('this.item: ', this.item)
-      // console.log('this.formItem: ', this.formItem.name, this.formItem)
-      // if (this.formItem.name === '附件') console.log(this.formItem)
-      // console.log(this.item[this.formItem.id])
-      // console.log(this.multiFiles)
-      // console.log(this.singleFile)
-      if (this.formItem.default && this.formItem.default.type) {
-        if (this.formItem.default.type === 'message_header') {
-          this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
-        } else if (this.formItem.default.type === 'static') {
-          this.whole.header[this.formItem.id] = this.formItem.default.this.formItem
-        } else if (this.formItem.default.type === 'form_header') {
-          this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-            this.whole.header[this.formItem.id] = newVal
-          })
-        } else if (this.formItem.default.type === 'form_body') {
-          if (this.headerTable || this.bodyTable) {
-            this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
-              this.whole[this.formItem.id] = newVal
-            })
-          } else {
-            if (this.header) {
-              this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                this.whole.header[this.formItem.id] = newVal
-              })
-            } else {
-              this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                this.whole.body[this.index][this.valueId] = newVal
-              })
-            }
-          }
-        }
-      }
+      // if (this.formItem && this.formItem.default && this.formItem.default.type) {
+      //   if (this.formItem.default.type === 'message_header') {
+      //     this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
+      //   } else if (this.formItem.default.type === 'static') {
+      //     this.whole.header[this.formItem.id] = this.formItem.default.this.formItem
+      //   } else if (this.formItem.default.type === 'form_header') {
+      //     this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+      //       this.whole.header[this.formItem.id] = newVal
+      //     })
+      //   } else if (this.formItem.default.type === 'form_body') {
+      //     if (this.headerTable || this.bodyTable) {
+      //       this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
+      //         this.whole[this.formItem.id] = newVal
+      //       })
+      //     } else {
+      //       if (this.header) {
+      //         this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+      //           this.whole.header[this.formItem.id] = newVal
+      //         })
+      //       } else {
+      //         this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
+      //           this.whole.body[this.index][this.valueId] = newVal
+      //         })
+      //       }
+      //     }
+      //   }
+      // }
     },
     methods: {
       prop (formItem) {

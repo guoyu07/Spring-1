@@ -5,7 +5,35 @@
         <el-card class="box-card">
           <h3>上架流程申请单</h3>
           <el-form ref="applyForm" :model="applyForm" label-width="100px" :inline="true">
-            <header-form-structure :form-data="form.header" :item="applyForm.header" :whole="applyForm"></header-form-structure>
+            <!-- <header-form-structure :form-data="form.header" :item="applyForm.header" :whole="applyForm"></header-form-structure> -->
+            <!-- header 表单填写 -->
+            <div v-if="form.header">
+              <div v-for="task in form.header">
+                <span v-for="taskform in task.value">
+                  <form-body
+                    v-if="showFormItem(taskform, applyForm)"
+                    :item="applyForm.header"
+                    :form-item="taskform"
+                    :whole="applyForm"
+                    :is-editing="isEditing"
+                    :header="true">
+                  </form-body>
+                  <!-- <search-bar
+                    v-if="showFormItem(taskform, applyForm) && taskform.value.type==='search_bar'"
+                    :hosts="applyForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, applyForm)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
+                  <header-table
+                    v-if="showFormItem(taskform, applyForm) && taskform.value.type==='table'"
+                    :form-data="task"
+                    :item="applyForm.header"
+                    :headerTable="true">
+                  </header-table> -->
+                </span>
+              </div>
+            </div>
           </el-form>
           <br>
           <template v-if="form.body && form.body.body_list.length">
@@ -30,8 +58,8 @@
   </div>
 </template>
 <script>
+  import formBody from '../../_plugins/_formBody'
   import formStructure from '../../_plugins/_formStructure'
-  import headerFormStructure from '../../_plugins/_headerFormStructure'
   export default {
     data () {
       return {
@@ -166,20 +194,42 @@
                     }
                   }
                 } else {
+                  // for (const headerid in this.applyForm.header) {
+                  //   if (!this.applyForm.header[headerid]) {
+                  //     delete this.applyForm.header[headerid] // 删除头部空值 TODO：删除 body 的空值
+                  //   }
+                  // }
+                  let postFormData = {
+                    header: {},
+                    body: []
+                  }
                   for (const headerid in this.applyForm.header) {
-                    if (!this.applyForm.header[headerid]) {
-                      delete this.applyForm.header[headerid] // 删除头部空值 TODO：删除 body 的空值
+                    if (Array.isArray(this.applyForm.header[headerid])) {
+                      if (this.applyForm.header[headerid].length !== 0) {
+                        postFormData.header[headerid] = this.applyForm.header[headerid]
+                      }
+                    } else if (this.applyForm.header[headerid]) {
+                      postFormData.header[headerid] = this.applyForm.header[headerid]
                     }
                   }
+                  this.applyForm.body.map((body, bodyIndex) => {
+                    postFormData.body[bodyIndex] = {}
+                    for (const bodyid in body) {
+                      if (Array.isArray(body[bodyid])) {
+                        if (body[bodyid].length !== 0) {
+                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                        }
+                      } else if (body[bodyid]) {
+                        postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                      }
+                    }
+                  })
                   postData = {
                     action: 'runtime/process/instances',
                     method: 'POST',
                     data: {
                       pkey: 'host',
-                      form: {
-                        'body': this.applyForm.body,
-                        'header': this.applyForm.header
-                      }
+                      form: postFormData
                     }
                   }
                 }
@@ -254,7 +304,7 @@
 
     components: {
       formStructure,
-      headerFormStructure
+      formBody
     }
   }
 </script>
