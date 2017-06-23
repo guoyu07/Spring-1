@@ -19,20 +19,20 @@
       </el-input>
       <!-- 读取默认值并提交 -->
       <el-input
-        v-if="formItem.readonly && formItem.need_submit"
+        v-else-if="formItem.readonly && formItem.need_submit"
         v-model="item[formItem.id]"
         disabled>
       </el-input>
       <!-- 读取默认值不提交 -->
-      <span v-if="formItem.readonly && !formItem.need_submit">
+      <span v-else-if="formItem.readonly && !formItem.need_submit">
         <span v-if="formItem.default.type === 'static'">
           {{formItem.default.value}}
         </span>
         <span v-else-if="formItem.default.type === 'form_header'">
-          {{ getPathResult(whole.header, formItem.default.key_path) ? getPathResult(whole.header, formItem.default.key_path) : '' }}
+          {{ getPathResult(whole.header, formItem.default.key_path) ? getPathResult(whole.header, formItem.default.key_path, index) : '' }}
         </span>
         <span v-else-if="formItem.default.type === 'message_header'">
-          {{ getPathResult(message.header, formItem.default.key_path) ? getPathResult(message.header, formItem.default.key_path) : '' }}
+          {{ getPathResult(message.header, formItem.default.key_path, index) ? getPathResult(message.header, formItem.default.key_path, index) : '' }}
         </span>
         <span v-else-if="formItem.default.type === 'form_body'">
           {{ getPathResult(whole.body, formItem.default.key_path, index) ? getPathResult(whole.body, formItem.default.key_path, index) : '' }}

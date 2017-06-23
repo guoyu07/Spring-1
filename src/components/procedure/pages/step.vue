@@ -26,19 +26,21 @@
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
                 <!-- body 信息显示 -->
-                <div v-for="task in form">
-                  <div v-for="taskbody in task.form.form.body.body_list">
-                    <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
-                      <p class="h5">{{task.tname}}</p>
-                      <form-structure-display
-                        :item="data"
-                        :form-data="taskbody.attr_list"
-                        :index="index"
-                        :post-form="assignForm"
-                        :message-data="applyData"
-                        :current-task="routerInfo.tkey"
-                        :history-task="task.tkey">
-                      </form-structure-display>
+                <div>
+                  <div v-for="task in form">
+                    <div v-for="taskbody in task.form.form.body.body_list">
+                      <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
+                        <p class="h5">{{task.tname}}</p>
+                        <form-structure-display
+                          :item="data"
+                          :form-data="taskbody.attr_list"
+                          :index="index"
+                          :post-form="assignForm"
+                          :message-data="applyData"
+                          :current-task="routerInfo.tkey"
+                          :history-task="task.tkey">
+                        </form-structure-display>
+                      </div>
                     </div>
                   </div>
                 </div>
@@ -249,17 +251,17 @@
                   }
                   // console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了2种
-                  // if (value.default && value.default.type) {
-                  //   if (value.default.type === 'message_header') {
-                  //     this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                  //   } else if (value.default.type === 'static') {
-                  //     this.assignForm.header[value.id] = value.default.value
-                  //   } else if (value.default.type === 'form_header') {
-                  //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                  //       this.assignForm.header[value.id] = newVal
-                  //     })
-                  //   }
-                  // }
+                  if (value.default && value.default.type) {
+                    if (value.default.type === 'message_header') {
+                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                    } else if (value.default.type === 'static') {
+                      this.assignForm.header[value.id] = value.default.value
+                    } else if (value.default.type === 'form_header') {
+                      this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                        this.assignForm.header[value.id] = newVal
+                      })
+                    }
+                  }
                 }
               })
             }
@@ -287,7 +289,7 @@
                       if (value.need_submit) {
                         this.setNewDataType(value, newData)
                         // 有默认值时 TODO：默认值暂时只写了 message_header 一种
-                        if (value.default.type) {
+                        if (value.default && value.default.type) {
                           if (value.default.type === 'message_header') {
                             newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
                           } else if (value.default.type === 'form_body') {
@@ -297,12 +299,13 @@
                           }
                         }
                       }
-                      if (!value.need_submit && value.readonly) {
-                        if (value.default.type === 'message_header') {
-                          // item === this.applyData.body
-                          item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                        }
-                      }
+                      // 以下这段可以不用，这种只读不提交，直接在 formbody 显示就好，不需要赋值
+                      // if (!value.need_submit && value.readonly) {
+                      //   if (value.default.type === 'message_header') {
+                      //     // item === this.applyData.body
+                      //     item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                      //   }
+                      // }
                     })
                   })
                 }
