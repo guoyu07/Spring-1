@@ -71,6 +71,7 @@
         <el-card class="box-card">
           <div class="tag-container clear">
             <h3><i class="el-icon-date"></i> {{filter}}工单</h3>
+            <!-- <el-button type="primary" :plain="true" size="small" class="fr" icon="setting" style="margin-left: 8px;" @click="filterConfData.visible = true"></el-button> -->
             <el-radio-group v-model="filter" @change="onFilterChange" size="small" class="fr">
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
@@ -278,12 +279,14 @@
         </span>
       </el-dialog>
     </div>
+    <!-- <filter-conf :filter-conf-data="filterConfData"></filter-conf> -->
   </div>
 
 </template>
 
 <script>
   import assignSection from './_assignSection'
+  // import filterConf from './_filterConf'
   import progressWrap from '../_plugins/_progress'
 
   export default {
@@ -295,6 +298,9 @@
           '待审核': 'runtime/tasks/self',
           '已审核': 'history/tasks/self',
           '已参与': 'history/process/instances/self'
+        },
+        filterConfData: {
+          visible: false
         },
         loadingFiltered: false,
         filteredList: [],
@@ -418,6 +424,7 @@
 
     components: {
       assignSection,
+      // filterConf,
       progressWrap
     }
   }

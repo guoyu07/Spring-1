@@ -140,10 +140,11 @@
                     <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                     <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
                     <el-checkbox v-if="itemConf.value.type === 'dict' || itemConf.value.type === 'dicts' || itemConf.value.type === 'search_bar'" v-model="itemConf.cmdb_need_check">是否检查／占用资源</el-checkbox>
-                    <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'" v-model="itemConf.isAlias">
+                    <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums' || itemConf.value.type ==='users'" v-model="itemConf.isAlias">
                       <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
                       <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
                       <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
+                      <span v-if="itemConf.value.type === 'users'">可选分组</span>
                     </el-checkbox>
                   </el-form-item>
                   <el-form-item label="默认值">
@@ -194,6 +195,7 @@
                       <el-option label="下拉单选（API）" value="dict"></el-option>
                       <el-option label="下拉多选（API）" value="dicts"></el-option>
                       <el-option label="搜索条件" value="search_bar"></el-option>
+                      <el-option label="人员选择器" value="users"></el-option>
                       <el-option label="表格" value="table"></el-option>
                     </el-select>
                     <!--静态选项-->

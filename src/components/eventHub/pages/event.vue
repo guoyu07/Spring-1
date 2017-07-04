@@ -4,6 +4,11 @@
     margin: 18px 0 10px;
   }
 
+  .ticket-num {
+    font-size: 13px;
+    font-weight: normal;
+  }
+
   .detail-block {
     margin: 6px 0 24px;
 
@@ -202,7 +207,7 @@
 
 <template>
   <div class="event">
-    <h3>{{event.name}}</h3>
+    <h3><code class="ticket-num">{{eventData.workFlowNo}}</code><br>{{eventData.variables.message[0].form.header.summary}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="16" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
@@ -277,7 +282,7 @@
           </div>
           <div class="detail-block__content">
             <el-tabs v-model="activeTab" type="border-card">
-              <el-tab-pane label="全部" name="first">
+              <el-tab-pane label="日志" name="first">
                 <ul class="activity-list">
                   <li>
                     <el-tooltip placement="top">
@@ -329,8 +334,7 @@
                   </li>
                 </ul>
               </el-tab-pane>
-              <el-tab-pane label="日志" name="third"></el-tab-pane>
-              <el-tab-pane label="历史" name="fourth">
+              <el-tab-pane label="历史" name="third">
                 <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5>
                 <el-collapse>
                   <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
@@ -348,7 +352,6 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-tab-pane>
-              <el-tab-pane label="活动" name="fifth"></el-tab-pane>
             </el-tabs>
           </div>
         </div>
@@ -454,9 +457,9 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-              <el-form-item label="创建"><span>{{event.created}}</span></el-form-item>
-              <el-form-item label="更新"><span>{{event.updated}}</span></el-form-item>
-              <el-form-item label="完成"><span>{{event.resolved}}</span></el-form-item>
+              <el-form-item label="创建时间"><span>{{eventData.variables.message[0].time}}</span></el-form-item>
+              <el-form-item label="更新时间"><span>{{eventData.createTime | convertTime}}</span></el-form-item>
+              <el-form-item label="完成时间" v-if="eventData.task_list.some(t => t.tkey === 'closed')"><span>{{eventData.createTime | convertTime}}</span></el-form-item>
             </el-form>
           </div>
         </div>
@@ -525,6 +528,7 @@
                 [{ 'align': [] }],
                 ['link', 'image']]
             },
+            placeholder: '在此撰写评论…',
             theme: 'snow'
           }
         }

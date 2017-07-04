@@ -20,6 +20,14 @@
             stripe
             border>
             <el-table-column
+              label="单号"
+              inline-template
+              :context="_self">
+              <template>
+                <small>{{row.workFlowNo}}</small>
+              </template>  
+            </el-table-column>
+            <el-table-column
               label="事件摘要"
               inline-template
               :context="_self">
@@ -42,15 +50,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="标签"
-              inline-template
-              :context="_self">
-              <template>
-                <el-tag type="primary" v-for="label in row.variables.message[0].form.header.labels">{{label}}</el-tag>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="被指派者"
+              label="当前处理人"
               inline-template
               :context="_self">
               <template>
