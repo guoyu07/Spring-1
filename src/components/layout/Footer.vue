@@ -28,7 +28,7 @@
     <el-row>
       <el-col :span="24">
         <section class="copy">
-          <a target="_blank" href="https://www.easyops.cn/">&copy; 2017 EasyOps.</a>
+          <a target="_blank" href="https://www.easyops.cn/">&copy; 2017 EliteFlow.</a>
         </section>
       </el-col>
     </el-row>

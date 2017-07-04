@@ -97,7 +97,7 @@
         <router-link to="/">
           <!-- <b>EasyOps</b> 运维管理系统 -->
           <div class="logo-img">
-            <img src="../../assets/logo.png" alt="">
+            <img src="../../assets/logo2.png" alt="">
           </div>
         </router-link>
       </el-menu-item>
