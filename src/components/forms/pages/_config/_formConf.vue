@@ -144,7 +144,7 @@
                       <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
                       <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
                       <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
-                      <span v-if="itemConf.value.type === 'users'">可选用户组</span>
+                      <span v-if="itemConf.value.type === 'users'">可选分组</span>
                     </el-checkbox>
                   </el-form-item>
                   <el-form-item label="默认值">

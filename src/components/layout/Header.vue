@@ -101,10 +101,9 @@
           </div>
         </router-link>
       </el-menu-item>
-      <el-menu-item index="2">
-        <!-- <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a> -->
+      <!-- <el-menu-item index="2">
         <a href="http://172.24.143.143">返回 EasyOps 自动化运维平台</a>
-      </el-menu-item>
+      </el-menu-item> -->
       <el-menu-item index="4" class="fr">
         <a @click="logout">退出</a>
       </el-menu-item>
