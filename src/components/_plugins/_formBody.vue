@@ -149,6 +149,7 @@
       :whole="whole"
       :message="message"
       :index="index"
+      :table-index="tableIndex"
       :body-table="bodyTable"
       :header-table="headerTable">
     </need-cmdb-data>
@@ -376,7 +377,7 @@
           return {}
         } else if (!formItem.required) {
           return {}
-        } else if (formItem.value.type === 'datetime') {
+        } else if (formItem.value.type === 'datetime' || formItem.value.type === 'date') {
           var validateDatetime = (rule, value, cb) => {
             if (!value) {
               return cb(new Error(`请输入${formItem.name}`))
@@ -395,8 +396,6 @@
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
-          } else if (formItem.value.type === 'date') {
-            type = 'date'
           } else if (formItem.value.type === 'dict' || formItem.value.type === 'file') {
             type = 'object'
           } else {
@@ -418,6 +417,7 @@
         this.item[this.formItem.id] = val
       },
       dateFormat (val) {
+        // console.log(val, this.item[this.formItem.id])
         this.item[this.formItem.id] = val
       },
       onUploadSuccess (file, res) {

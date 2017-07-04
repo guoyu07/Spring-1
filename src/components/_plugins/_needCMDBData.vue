@@ -1,6 +1,7 @@
 <template>
   <div>
     <template v-if="strucData.value.type === 'dict'">
+      <!-- {{strucData.value.source.res.show_key.length > 1}} -->
       <el-select
         v-if="!strucData.isAlias"
         v-model="vmodel[strucData.id]"
@@ -8,9 +9,22 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable>
-        <el-option v-for="option in optionList"
-          :label="option[strucData.value.source.res.show_key]"
-          :value="option"></el-option>
+        <!-- this.strucData.value.source.res.show_key -->
+        <el-tooltip
+                    v-for="option in optionList"
+                    effect="dark"
+                    :disabled="showToolTip"
+                    :content="toolTipContent(option)"
+                    placement="right">
+          <el-option  :label="showLabel(option)"
+                      :value="option">
+          </el-option>
+        </el-tooltip>
+        <!-- <el-option v-else
+                  v-for="option in optionList"
+                  :label="showLabel(option)"
+                  :value="option">
+        </el-option> -->
       </el-select>
       <el-radio-group
         v-else
@@ -48,6 +62,7 @@
       message: { type: Object },
       strucData: { type: Object },
       index: { type: Number },
+      tableIndex: { type: Number },
       bodyTable: { type: Boolean },
       headerTable: { type: Boolean }
     },
@@ -55,10 +70,14 @@
       return {
         optionList: [],
         limitNum: 0,
-        limitMaxNum: 0
+        limitMaxNum: 0,
+        showToolTip: false
       }
     },
     created () {
+      if (this.strucData.value.source.res.show_key.length <= 1) {
+        this.showToolTip = true
+      }
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
           // console.log(this.strucData.watch)
@@ -70,6 +89,30 @@
       }
     },
     methods: {
+      showLabel (option) {
+        if (Array.isArray(this.strucData.value.source.res.show_key)) {
+          return option[this.strucData.value.source.res.show_key[0]]
+          // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
+          //   return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
+          // }, '')
+        } else {
+          // 暂时为了兼容之前的字符串，以后全都是数组
+          return option[this.strucData.value.source.res.show_key]
+        }
+      },
+      toolTipContent (option) {
+        if (Array.isArray(this.strucData.value.source.res.show_key)) {
+          return this.strucData.value.source.res.show_key.reduce((prev, cur, index) => {
+            if (index) {
+              return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
+            } else {
+              return ''
+            }
+          }, '')
+        } else {
+          return ''
+        }
+      },
       renderOptions () {
         if (!this.strucData.default.type) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
           if (this.strucData.value.type === 'dicts') {
@@ -192,10 +235,17 @@
                   this.$message.warning(`${this.strucData.name}数据项不足`)
                 }
               } else {
-                if (this.strucData.default.value < this.optionList.length) {
-                  this.vmodel[this.strucData.id] = this.optionList[this.strucData.default.value]
+                let optionIndex = 0
+                if (this.strucData.unique) { // 如果是唯一值，跟着当前 index 来走
+                  let tableIndex = 0
+                  if (this.tableIndex) tableIndex = this.tableIndex
+                  optionIndex = this.index + tableIndex
+                }
+                const selectedIndex = optionIndex + +this.strucData.default.value
+                if (selectedIndex < this.optionList.length) {
+                  this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
                 } else if (this.optionList[0]) {
-                  this.$message.warning(`${this.strucData.name}的选项不够${this.strucData.default.value}项`)
+                  this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
                   this.vmodel[this.strucData.id] = this.optionList[0]
                 } else {
                   this.$message.warning(`${this.strucData.name}无数据`)
@@ -204,6 +254,12 @@
             }
           }
           if (this.strucData.value.source.data.action === 'users/all') {
+            // let userlist = []
+            // this.optionList.map(list => {
+            //   if (userlist.some(item => { return item.label === list.groups[0].key })) {
+
+            //   }
+            // })
             if (this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                 const user = window.localStorage.userName

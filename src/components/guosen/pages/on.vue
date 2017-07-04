@@ -40,6 +40,7 @@
             <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
               增加
             </el-button>
+            <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
             <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-position="top" :inline="true">
               <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
                 <el-tab-pane v-for="(item, index) in applyForm.body" :label="'body' + (index + 1)" :name="index + ''" :closable="index !== 0">
@@ -63,6 +64,7 @@
   export default {
     data () {
       return {
+        toCopy: false,
         form: {},
         tabsValue: '0',
         tabIndex: 1,
@@ -275,15 +277,35 @@
         this.applyForm.body.splice(targetName, 1)
       },
       addTab (targetName) {
-        console.log('00000')
-        // let newTabName = ++this.tabIndex + ''
         var that = this
         let newData = {}
-        this.form.body.body_list[0].attr_list.map(group => {
-          group.value.map(item => {
-            this.setNewDataType(item, newData)
+        if (that.toCopy) {
+          // 需要复制时，这里去除唯一值
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+              bodyList.attr_list.map(group => {
+                group.value.map(item => {
+                  this.setNewDataType(item, newData)
+                  if (!item.unique) {
+                    // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
+                    newData[item.id] = this.postForm.body[this.tabsValue][item.id]
+                  }
+                })
+              })
+            }
           })
-        })
+        } else {
+          // 直接新增不复制，按原 taskFormData 重新赋对应结构的空值
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+              bodyList.attr_list.map(group => {
+                group.value.map(item => {
+                  this.setNewDataType(item, newData)
+                })
+              })
+            }
+          })
+        }
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
             if (that.applyForm.body.length < this.form.body.count.max) {

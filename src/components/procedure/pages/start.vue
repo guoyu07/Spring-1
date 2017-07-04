@@ -35,9 +35,10 @@
             </div>
             <!-- body 表单填写 -->
             <template v-if="postForm.body && postForm.body.length !== 0">
-              <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+              <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
                 增加
               </el-button>
+              <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
               <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
                 <el-tab-pane v-for="(data, index) in postForm.body" :label="'body' + (index+1)">
                   <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
@@ -99,6 +100,7 @@
   export default {
     data () {
       return {
+        toCopy: false,
         postForm: {
           header: {},
           body: []
@@ -147,7 +149,7 @@
           // console.log(res)
           this.taskFormData = res.data.data.form
           // this.taskFormData = res.data.data.variables.message[0].form
-          console.log(this.taskFormData)
+          // console.log(this.taskFormData)
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
@@ -189,10 +191,26 @@
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.$set(this.postForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
-                  body.attr_list.map(group => {
-                    group.value.map(item => {
-                      this.setDataType(item, this.postForm.body[0], this)
-                    })
+                  this.taskFormData.body.body_list.map(bodyList => {
+                    if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+                      bodyList.attr_list.map(group => {
+                        group.value.map(value => {
+                          this.setDataType(value, this.postForm.body[0], this)
+                          // 有默认值时 只有 form_body 和 form_header 2种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'form_body') {
+                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.postForm.body[0][value.id] = newVal
+                              })
+                            } else if (value.default.type === 'form_header') {
+                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.postForm.body[0][value.id] = newVal
+                              })
+                            }
+                          }
+                        })
+                      })
+                    }
                   })
                 })
               }
@@ -277,11 +295,34 @@
       addTab (targetName) {
         var that = this
         let newData = {}
-        this.taskFormData.body.body_list[0].attr_list.map(group => {
-          group.value.map(item => {
-            this.setNewDataType(item, newData)
+        if (that.toCopy) {
+          // 需要复制时，这里去除唯一值
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+              bodyList.attr_list.map(group => {
+                group.value.map(item => {
+                  this.setNewDataType(item, newData)
+                  if (!item.unique) {
+                    // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
+                    newData[item.id] = this.postForm.body[this.tabsValue][item.id]
+                  }
+                })
+              })
+            }
           })
-        })
+        } else {
+          // 直接新增不复制，按原 taskFormData 重新赋对应结构的空值
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+              bodyList.attr_list.map(group => {
+                group.value.map(item => {
+                  this.setNewDataType(item, newData)
+                })
+              })
+            }
+          })
+        }
+        // console.log(newData)
         this.$refs['postForm'].validate((valid) => {
           if (valid) {
             if (that.postForm.body.length < this.taskFormData.body.count.max) {

@@ -399,7 +399,7 @@
       </el-col>
 
       <el-col :span="8" :xs="24">
-        <div class="detail-block">
+        <div class="detail-block" v-if="false">
           <div class="detail-block__heading">
             <h4>SLAs</h4>
           </div>
@@ -424,7 +424,7 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-              <el-form-item label="被指派者">
+              <el-form-item label="当前处理人">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee">
                   <div slot="content">
                     <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.email}}</p>
@@ -455,7 +455,7 @@
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
               <el-form-item label="创建"><span>{{event.created}}</span></el-form-item>
-              <el-form-item label="发起者"><span>{{event.updated}}</span></el-form-item>
+              <el-form-item label="更新"><span>{{event.updated}}</span></el-form-item>
               <el-form-item label="完成"><span>{{event.resolved}}</span></el-form-item>
             </el-form>
           </div>
@@ -497,9 +497,9 @@
           reporter: 'Samuel Qin',
           requestParticipants: [],
           watchers: ['Jason Lam', 'Samuel Qin', 'Weimi'],
-          created: '2017-05-08',
-          updated: '2017-05-08',
-          resolved: '2017-05-09'
+          created: '2017-05-08 10:30:03',
+          updated: '2017-05-08 10:38:03',
+          resolved: '2017-05-09 11:50:09'
         },
         comments: [],
         changeData: [{
