@@ -153,7 +153,7 @@
       :body-table="bodyTable"
       :header-table="headerTable">
     </need-cmdb-data>
-    <menber-select
+    <member-select
       v-else-if="formItem.value.type === 'users'"
       :vmodel="item"
       :strucData="formItem"
@@ -163,13 +163,13 @@
       :table-index="tableIndex"
       :body-table="bodyTable"
       :header-table="headerTable">
-    </menber-select>
+    </member-select>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 <script>
   import needCmdbData from './_needCMDBData'
-  import menberSelect from './_menberSelect'
+  import memberSelect from './_memberSelect'
   import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
@@ -493,7 +493,7 @@
     },
     components: {
       needCmdbData,
-      menberSelect,
+      memberSelect,
       formStructure,
       quillEditor,
       Dropzone
