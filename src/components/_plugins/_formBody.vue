@@ -4,7 +4,7 @@
     :prop="prop(formItem)"
     :label="formItem.name"
     :rules="rules(formItem)"
-    :class="formItem.isAlias || ['file', 'files'].includes(formItem.value.type) ? 'blockElement' : ''">
+    :class="((formItem.isAlias && formItem.value.type !== 'users') || ['file', 'files'].includes(formItem.value.type)) ? 'blockElement' : ''">
     <!-- <el-input
       v-if="formItem.value.type === 'str'"
       v-model="item[formItem.id]">
@@ -153,11 +153,23 @@
       :body-table="bodyTable"
       :header-table="headerTable">
     </need-cmdb-data>
+    <menber-select
+      v-else-if="formItem.value.type === 'users'"
+      :vmodel="item"
+      :strucData="formItem"
+      :whole="whole"
+      :message="message"
+      :index="index"
+      :table-index="tableIndex"
+      :body-table="bodyTable"
+      :header-table="headerTable">
+    </menber-select>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 <script>
   import needCmdbData from './_needCMDBData'
+  import menberSelect from './_menberSelect'
   import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
@@ -390,13 +402,26 @@
             required: formItem.required,
             trigger: 'blur'
           }
+        } else if (formItem.value.type === 'users' && formItem.isAlias) {
+          var validateGroup = (rule, value, cb) => {
+            if (!value.group || !value.user) {
+              return cb(new Error(`${formItem.name}未填写`))
+            } else {
+              cb()
+            }
+          }
+          return {
+            validator: validateGroup,
+            required: formItem.required,
+            trigger: 'blur'
+          }
         } else {
           let type
           if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
-          } else if (formItem.value.type === 'dict' || formItem.value.type === 'file') {
+          } else if (formItem.value.type === 'dict' || formItem.value.type === 'file' || (formItem.value.type === 'users' && !formItem.isAlias)) {
             type = 'object'
           } else {
             // console.log(formItem.value.type)
@@ -468,6 +493,7 @@
     },
     components: {
       needCmdbData,
+      menberSelect,
       formStructure,
       quillEditor,
       Dropzone
