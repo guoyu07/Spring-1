@@ -25,7 +25,7 @@
               :context="_self">
               <template>
                 <small>{{row.workFlowNo}}</small>
-              </template>  
+              </template>
             </el-table-column>
             <el-table-column
               label="事件摘要"
