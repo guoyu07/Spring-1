@@ -9,6 +9,16 @@
     font-weight: normal;
   }
 
+  .el-button {
+    a {
+      color: inherit;
+
+      &:hover {
+        text-decoration: none;
+      }
+    }
+  }
+
   .detail-block {
     margin: 6px 0 24px;
 
@@ -214,15 +224,11 @@
         <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${event.name}/${eventData.id}/start` }" class="el-button el-button--plain el-button--small fr"><i class="el-icon-edit"></i> 编辑</router-link>
       </el-col>
       <el-col :span="8" :xs="24">
-        <!-- <el-button-group>
-          <el-button size="small" v-if="['待处理', '延缓中'].includes(eventData.name)"><i class="el-icon-fa-play"></i> 开始</el-button>
-          <el-button size="small" v-if="['待处理', '处理中'].includes(eventData.name)"><i class="el-icon-fa-check"></i> 完成</el-button>
-          <el-button size="small" v-if="['待处理', '处理中'].includes(eventData.name)"><i class="el-icon-fa-pause"></i> 延缓</el-button>
-          <el-button size="small" v-if="eventData.name ==='已完成'"><i class="el-icon-fa-refresh"></i> 重新处理</el-button>
-          <el-button size="small" v-if="['待处理', '处理中', '延缓中'].includes(eventData.name)"><i class="el-icon-fa-close"></i> 取消工单</el-button>
-          <el-button size="small" v-if="['已完成', '已取消'].includes(eventData.name)"><i class="el-icon-fa-close"></i> 关闭工单</el-button>
-        </el-button-group> -->
-        <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }" class="el-button el-button--plain el-button--small">处理</router-link>
+        <el-button-group>
+          <el-button size="small" v-for="operation in operationArray">
+            <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link>
+          </el-button>
+        </el-button-group>
       </el-col>
     </el-row>
 
@@ -255,7 +261,7 @@
                 </template>
               </el-form-item>
               <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
-                <el-tag v-for="comp in eventData.variables.message[0].form.header.components">{{comp}}</el-tag>
+                <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
               </el-form-item>
               <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
                 <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label}}</el-tag>
@@ -269,7 +275,7 @@
 
         <div class="detail-block">
           <div class="detail-block__heading">
-            <h4>描述</h4>
+            <h4>事件详情</h4>
           </div>
           <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.description">
             <blockquote v-html="eventData.variables.message[0].form.header.description"></blockquote>
@@ -282,7 +288,43 @@
           </div>
           <div class="detail-block__content">
             <el-tabs v-model="activeTab" type="border-card">
-              <el-tab-pane label="日志" name="first">
+              <el-tab-pane label="评论" name="first">
+                <h5 class="sub-title" v-if="!comments.length">
+                  <i class="el-icon-information"></i> 暂时没有人添加评论…
+                </h5>
+                <ul class="activity-list">
+                  <li v-for="comment in comments">
+                    <el-tooltip placement="top">
+                      <div slot="content">
+                        <p><b>Email</b>: {{comment.from_user.email || '无'}}</p>
+                        <p><b>ID</b>: {{comment.from_user.userId}}</p>
+                      </div>
+                      <a href="#" class="tooltip-link">{{comment.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
+                    </el-tooltip>
+                    <span>添加了评论 - <timeago :since="comment.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
+                    <div class="comment-detail" v-html="comment.text"></div>
+                  </li>
+                </ul>
+              </el-tab-pane>
+              <el-tab-pane label="历史" name="second">
+                <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5>
+                <el-collapse>
+                  <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+                    <el-form label-position="left" label-width="90px" inline class="expanded-form">
+                      <el-form-item v-if="task.task_key" label="任务 Key：">
+                        <code>{{task.task_key}}</code>
+                      </el-form-item>
+                      <el-form-item v-if="task.operator" label="操作者：">
+                        <span>{{task.operator.name}}</span>
+                      </el-form-item>
+                      <el-form-item v-if="task.time" label="处理时间：">
+                        <span>{{task.time}}</span>
+                      </el-form-item>
+                    </el-form>
+                  </el-collapse-item>
+                </el-collapse>
+              </el-tab-pane>
+              <el-tab-pane label="活动" name="third">
                 <ul class="activity-list">
                   <li>
                     <el-tooltip placement="top">
@@ -315,42 +357,6 @@
                     <!-- <p><b>优先度</b>：<i>高</i><i class="el-icon-fa-long-arrow-right"></i><i>低</i></p> -->
                   </li>
                 </ul>
-              </el-tab-pane>
-              <el-tab-pane label="评论" name="second">
-                <h5 class="sub-title" v-if="!comments.length">
-                  <i class="el-icon-information"></i> 暂时没有人添加评论…
-                </h5>
-                <ul class="activity-list">
-                  <li v-for="comment in comments">
-                    <el-tooltip placement="top">
-                      <div slot="content">
-                        <p><b>Email</b>: {{comment.from_user.email || '无'}}</p>
-                        <p><b>ID</b>: {{comment.from_user.userId}}</p>
-                      </div>
-                      <a href="#" class="tooltip-link">{{comment.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
-                    </el-tooltip>
-                    <span>添加了评论 - <timeago :since="comment.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
-                    <div class="comment-detail" v-html="comment.text"></div>
-                  </li>
-                </ul>
-              </el-tab-pane>
-              <el-tab-pane label="历史" name="third">
-                <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5>
-                <el-collapse>
-                  <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
-                    <el-form label-position="left" label-width="90px" inline class="expanded-form">
-                      <el-form-item v-if="task.task_key" label="任务 Key：">
-                        <code>{{task.task_key}}</code>
-                      </el-form-item>
-                      <el-form-item v-if="task.operator" label="操作者：">
-                        <span>{{task.operator.name}}</span>
-                      </el-form-item>
-                      <el-form-item v-if="task.time" label="处理时间：">
-                        <span>{{task.time}}</span>
-                      </el-form-item>
-                    </el-form>
-                  </el-collapse-item>
-                </el-collapse>
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -504,6 +510,7 @@
           updated: '2017-05-08 10:38:03',
           resolved: '2017-05-09 11:50:09'
         },
+        operationArray: [],
         comments: [],
         changeData: [{
           field: '优先度',
@@ -557,7 +564,25 @@
             this.eventData = res.data.data
             // Object.assign(this.eventData, res.data.data)
             // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
+            this.getOperations()
             this.getComments()
+          }
+        })
+      },
+
+      getOperations () {
+        let postData = {
+          action: 'activiti/task/form/group',
+          method: 'GET',
+          data: {
+            pkey: this.eventData.pkey,
+            tkey: this.eventData.taskDefinitionKey,
+            version: this.eventData.version
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.operationArray = res.data.data.form.header[0].value[0].value.regex
           }
         })
       },

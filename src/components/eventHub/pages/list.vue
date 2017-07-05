@@ -32,7 +32,7 @@
               inline-template
               :context="_self">
               <template>
-                <span>{{row.variables.message[0].form.header.summary}}</span>
+                <span v-if="row.variables.message.length">{{row.variables.message[0].form.header.summary}}</span>
               </template>
             </el-table-column>
             <el-table-column
@@ -41,7 +41,7 @@
               inline-template
               :context="_self">
               <template>
-                <span>
+                <span v-if="row.variables.message.length">
                   <i v-if="row.variables.message[0].form.header.priority === '高'" class="el-icon-fa-long-arrow-up text-error"></i>
                   <i v-if="row.variables.message[0].form.header.priority === '正常'" class="el-icon-fa-minus text-success"></i>
                   <i v-if="row.variables.message[0].form.header.priority === '低'" class="el-icon-fa-long-arrow-down text-warning"></i>
@@ -54,7 +54,7 @@
               inline-template
               :context="_self">
               <template>
-                <span>{{row.variables.message[0].form.header.assignee ? row.variables.message[0].form.header.assignee.code : '无'}}</span>
+                <span v-if="row.variables.message.length">{{row.variables.message[0].form.header.assignee ? row.variables.message[0].form.header.assignee.code : '无'}}</span>
               </template>
             </el-table-column>
             <el-table-column
