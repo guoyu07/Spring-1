@@ -521,40 +521,46 @@
               }
             })
           } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            this.taskForm.body.body_list.map(bodyList => {
-              if (!bodyList.show.type) {
-                bodyList.attr_list.map(attrList => {
-                  if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
-                    attrList.value.map(value => {
-                      if (value.value.type === 'search_bar') {
-                        this.assignForm.body.map((postbody, postbodyIndex) => {
-                          if (postbody[value.id].length === 0) {
-                            this.$message.warning('未分配完！')
-                            return false
-                          }
-                        })
-                      }
-                    })
-                  } else {
-                    this.postMethod(this.routerInfo.id, postFormData)
-                  }
-                })
-              }
-            })
-            this.taskForm.header.map(header => {
-              if (header.value.some(value => { return value.value.type === 'search_bar' })) {
-                header.value.map(value => {
-                  if (value.value.type === 'search_bar') {
-                    if (this.assignForm.header[value.id].length === 0) {
-                      this.$message.warning('未分配完！')
-                      return false
+            if (this.taskForm.body.body_list.length && this.taskForm.header.length) {
+              this.taskForm.body.body_list.map(bodyList => {
+                if (!bodyList.show.type) {
+                  bodyList.attr_list.map(attrList => {
+                    if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
+                      attrList.value.map(value => {
+                        if (value.value.type === 'search_bar') {
+                          this.assignForm.body.map((postbody, postbodyIndex) => {
+                            if (postbody[value.id].length === 0) {
+                              this.$message.warning('未分配完！')
+                              return false
+                            }
+                          })
+                        }
+                      })
+                    } else {
+                      this.postMethod(this.routerInfo.id, postFormData)
                     }
-                  }
-                })
-              } else {
-                this.postMethod(this.routerInfo.id, postFormData)
-              }
-            })
+                  })
+                }
+              })
+              this.taskForm.header.map(header => {
+                if (header.value.some(value => { return value.value.type === 'search_bar' })) {
+                  header.value.map(value => {
+                    if (value.value.type === 'search_bar') {
+                      if (this.assignForm.header[value.id].length === 0) {
+                        this.$message.warning('未分配完！')
+                        return false
+                      }
+                    }
+                  })
+                } else {
+                  this.postMethod(this.routerInfo.id, postFormData)
+                }
+              })
+            } else {
+              console.log('hahhahahahha')
+              this.postMethod(this.routerInfo.id, postFormData)
+            }
+
             // if (!this.assignForm.body.some(data => {
             //   for (const item in data) {
             //     return Array.isArray(data[item]) && data[item].length === 0

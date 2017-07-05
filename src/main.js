@@ -107,13 +107,16 @@ const getPathResult = (result, path, k) => {
   const _path = path.split('.')
   // console.log(_path, Array.isArray(_result[_path[0]]), k)
   if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
-    // TODO 这里可以优化
-    if (_path.length === 2) {
-      _result = _result[_path[0]][k][_path[1]]
-    } else if (_path.length === 3) {
-      _result = _result[_path[0]][k][_path[1]][_path[2]]
-    }
-    // console.log(_path, _result)
+    // 已优化
+    // if (_path.length === 2) {
+    //   _result = _result[_path[0]][k][_path[1]]
+    // } else if (_path.length === 3) {
+    //   _result = _result[_path[0]][k][_path[1]][_path[2]]
+    // }
+    _path.reduce((prev, cur, index) => {
+      return index ? (prev + _result[cur]) : (prev + _result[cur][k])
+    }, '')
+    console.log('未测试', _path, _result)
   } else {
     for (const i in _path) {
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时

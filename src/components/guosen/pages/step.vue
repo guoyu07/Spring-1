@@ -63,6 +63,7 @@
                               :message="applyData"
                               keep-alive>
                             </form-body>
+                            <span class="tips" v-if="formItem.id === 'idcracku'">顶端U位：{{assignForm.body[index].idcracku + applyData.header.host_list[index].u_num - 1}}</span>
                             <search-bar
                               v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
                               :index="index"
@@ -951,6 +952,12 @@
   }
 </script>
 <style lang="less" scoped>
+.tips {
+  display: inline-block;
+  font-size: 13px;
+  height: 30px;
+  padding-top: 9px;
+}
 .el-tag {
   font-size: 14px;
   & +.el-tag {

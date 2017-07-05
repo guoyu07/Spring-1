@@ -46,7 +46,7 @@
     @borderColor: #dfe6ec;
     @fontColor: #48576a;
     @backgroundColor: #fbfdff;
-    
+
     border: 1px solid @borderColor;
     margin-bottom: 10px;
 

@@ -17,16 +17,16 @@
                     :header="true">
                   </form-body>
                   <!-- <search-bar
-                    v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
-                    :hosts="postForm.header"
+                    v-if="showFormItem(taskform, applyForm) && taskform.value.type==='search_bar'"
+                    :hosts="applyForm.header"
                     :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, postForm)"
+                    :limit="getLimitQuantity(taskform, applyForm)"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
-                    v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                    v-if="showFormItem(taskform, applyForm) && taskform.value.type==='table'"
                     :form-data="task"
-                    :item="postForm.header"
+                    :item="applyForm.header"
                     :headerTable="true">
                   </header-table> -->
                 </span>
@@ -37,6 +37,7 @@
           <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
             增加服务器
           </el-button>
+          <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
           <el-form ref="applyForm" :model="applyForm" label-position="top" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
@@ -94,6 +95,7 @@
   export default {
     data () {
       return {
+        toCopy: false,
         form: {},
         tabsValue: '0',
         tabIndex: 1,
@@ -312,11 +314,33 @@
       addTab (targetName) {
         var that = this
         let newData = {}
-        this.form.body.body_list[0].attr_list.map(group => {
-          group.value.map(item => {
-            this.setNewDataType(item, newData)
+        if (that.toCopy) {
+          // 需要复制时，这里去除唯一值
+          this.form.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.applyForm)) {
+              bodyList.attr_list.map(group => {
+                group.value.map(item => {
+                  this.setNewDataType(item, newData)
+                  if (!item.unique) {
+                    // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
+                    newData[item.id] = this.applyForm.body[this.tabsValue][item.id]
+                  }
+                })
+              })
+            }
           })
-        })
+        } else {
+          // 直接新增不复制，按原 taskFormData 重新赋对应结构的空值
+          this.form.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.applyForm, this.applyData)) {
+              bodyList.attr_list.map(group => {
+                group.value.map(item => {
+                  this.setNewDataType(item, newData)
+                })
+              })
+            }
+          })
+        }
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
             if (that.applyForm.body.length < this.form.body.count.max) {

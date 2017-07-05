@@ -195,7 +195,14 @@
             <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.data_path"></el-input>
           </el-form-item>
           <el-form-item label="show_key (显示键名)">
-            <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.show_key"></el-input>
+            <!-- <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.show_key"></el-input> -->
+            <el-select
+              v-model="dialogProps.value.source.res.show_key"
+              multiple
+              filterable
+              allow-create
+              placeholder="请输入显示键名">
+            </el-select>
           </el-form-item>
         </el-form>
       </el-card>

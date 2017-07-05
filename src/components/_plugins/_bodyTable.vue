@@ -14,16 +14,6 @@
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
           :closable="closableIndex(tableindex, formData)">
-          <!-- <form-structure
-            :form-data="[{name: '', value: formData.value.attr_list}]"
-            :item="table"
-            :whole="postForm.body[index][formData.id][tableindex]"
-            :message="messageData"
-            :index="index"
-            :table-index="tableindex"
-            :body-table="true"
-            :value-id="formData.id">
-          </form-structure> -->
           <span v-for="formItem in formData.value.attr_list">
             <form-body
               :item="table"
