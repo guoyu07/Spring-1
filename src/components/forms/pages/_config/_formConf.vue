@@ -128,7 +128,7 @@
     <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
         <input type="checkbox" :id="`${bodyIndex}-${index}`">
-        <label class="draggable-item__label" :for="`${bodyIndex}-${index}`">{{`${itemConf.name} - ${itemConf.value.type}`}}</label>
+        <label class="draggable-item__label" :for="`${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section>
           <div class="draggable-item__inner">
             <el-row>
@@ -394,7 +394,24 @@ export default {
       editBody: null,
       showConditionVisible: false,
       showCloneHeaderFieldVisible: false,
-      showCloneBodyFieldVisible: false
+      showCloneBodyFieldVisible: false,
+      fieldTypeMap: {
+        str: '字符串',
+        int: '数字',
+        arr: '数组',
+        date: '日期',
+        datetime: '时间',
+        richtext: '富文本',
+        file: '单文件上传',
+        files: '多文件上传',
+        enum: '下拉单选',
+        enums: '下拉多选',
+        dict: '下拉单选（API）',
+        dicts: '下拉多选（API）',
+        search_bar: '搜索条件',
+        users: '人员选择器',
+        table: '表格'
+      }
     }
   },
 
