@@ -566,6 +566,7 @@
             // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
             this.getOperations()
             this.getComments()
+            this.getActivities()
           }
         })
       },
@@ -597,6 +598,17 @@
           if (res.status === 200) {
             this.comments = res.data.data.list
           }
+        })
+      },
+
+      getActivities () {
+        let postData = {
+          action: 'get/modify/form/logs',
+          method: 'POST',
+          data: { pid: this.eventData.pid }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          console.log(res.data)
         })
       },
 

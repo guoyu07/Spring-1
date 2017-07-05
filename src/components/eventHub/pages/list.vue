@@ -13,7 +13,16 @@
         <el-card class="box-card">
           <h3><i class="el-icon-fa-rss icon-lg"></i> 事件</h3>
           <!-- <el-button icon="plus" @click="eventConfVisible = true" style="margin-bottom: 12px">创建事件</el-button> -->
-          <router-link :to="{ path: '/procedure/start/incident/事件处理' }" class="el-button el-button--plain" style="margin-bottom: 12px"><i class="el-icon-plus"></i> 创建事件</router-link>
+          <el-row type="flex" justify="space-between">
+            <el-col :span="6">
+              <router-link :to="{ path: '/procedure/start/incident/事件处理' }" class="el-button el-button--plain" style="margin-bottom: 12px"><i class="el-icon-plus"></i> 创建事件</router-link>
+            </el-col>
+            <el-col :md="8" :lg="4" flex="end">
+              <el-input placeholder="模糊搜索事件" v-model="searchKey" @keyup.enter.native="getIncidentList">
+                <el-button slot="append" icon="search" @click="getIncidentList"></el-button>
+              </el-input>
+            </el-col>
+          </el-row>
           <el-table
             :data="incidentList"
             v-loading.body="loading"
@@ -113,6 +122,7 @@
           labels: []
         },
         eventConfVisible: false,
+        searchKey: '',
         pagination: {
           current: 1,
           pageSize: 10,
@@ -133,10 +143,12 @@
 
       getIncidentList () {
         let postData = {
-          action: 'runtime/incident/list',
+          action: 'incident/search',
           method: 'GET',
           data: {
-            page: this.pagination.current
+            page: this.pagination.current,
+            includeProcessVariables: 'true',
+            search_str: this.searchKey
           }
         }
         this.loading = true
