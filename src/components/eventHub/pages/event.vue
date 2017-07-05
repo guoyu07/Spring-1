@@ -260,27 +260,47 @@
                   <span v-if="eventData.variables.message[0].form.header.priority === '低'"><i class="el-icon-fa-long-arrow-down text-warning"></i> 低</span>
                 </template>
               </el-form-item>
-              <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
-                <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
-              </el-form-item>
               <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
                 <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label}}</el-tag>
               </el-form-item>
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
                 <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
               </el-form-item>
+              <el-form-item class="blockElement" label="分类" v-if="eventData.variables.message[0].form.header.components">
+                <!-- <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag> -->
+                <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
+                  <el-tab-pane v-for="(data, index) in eventData.variables.message[0].form.body" :label="eventData.variables.message[0].form.header.components">
+                    <!-- <div v-for="task in taskFormData"> -->
+                    <div v-for="taskbody in taskFormData.body.body_list">
+                      <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
+                        <!-- <p class="h5">{{task.tname}}</p> -->
+                        <form-structure-display
+                          :item="data"
+                          :form-data="taskbody.attr_list"
+                          :index="index"
+                          :post-form="{}"
+                          :message-data="eventData.variables.message[0].form"
+                          :current-task="'current'"
+                          :history-task="'history'">
+                        </form-structure-display>
+                      </div>
+                    </div>
+                    <!-- </div> -->
+                  </el-tab-pane>
+                </el-tabs>
+              </el-form-item>
             </el-form>
           </div>
         </div>
 
-        <div class="detail-block">
+        <!-- <div class="detail-block">
           <div class="detail-block__heading">
             <h4>事件详情</h4>
           </div>
           <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.description">
             <blockquote v-html="eventData.variables.message[0].form.header.description"></blockquote>
           </div>
-        </div>
+        </div> -->
 
         <div class="detail-block">
           <div class="detail-block__heading">
@@ -478,6 +498,7 @@
 <script>
   import { quillEditor } from 'vue-quill-editor'
   import eventConf from './_config/_eventConf.vue'
+  import formStructureDisplay from '../../_plugins/_formStructureDisplay.vue'
   import Vue from 'vue'
   import VueTimeago from 'vue-timeago'
 
@@ -493,6 +514,7 @@
       return {
         activeTab: 'first',
         eventData: {},
+        taskFormData: {},
         eventConfVisible: false,
         event: {
           name: '事件名',
@@ -550,9 +572,25 @@
 
     created () {
       this.getEventData()
+      this.renderTaskForm()
     },
 
     methods: {
+      renderTaskForm () { // 渲染表单数据
+        const renderFromData = {
+          action: 'activiti/task/form/group',
+          method: 'GET',
+          data: {
+            pkey: 'incident',
+            tkey: 'start',
+            version: this.eventData.version
+          }
+        }
+        this.http.post('', this.parseData(renderFromData)).then((res) => {
+          // console.log(res)
+          this.taskFormData = res.data.data.form
+        })
+      },
       getEventData () {
         let postData = {
           action: 'runtime/task',
@@ -632,7 +670,8 @@
 
     components: {
       quillEditor,
-      eventConf
+      eventConf,
+      formStructureDisplay
     }
   }
 </script>

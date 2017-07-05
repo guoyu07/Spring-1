@@ -4,7 +4,7 @@
       <!-- <h5>{{formBlock.name}}</h5> -->
       <template v-for="formItem in formBlock.value">
         <el-form-item
-          v-if="showFormItem(formItem, postForm, messageData, historyTask, currentTask, index) && item[formItem.id]"
+          v-if="(showFormItem(formItem, postForm, messageData, historyTask, currentTask, index) && item[formItem.id]) || currentTask === 'current'"
           :label="formItem.name"
           :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' ? 'blockElement' : ''">
 

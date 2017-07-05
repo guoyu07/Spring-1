@@ -35,12 +35,14 @@
             </div>
             <!-- body 表单填写 -->
             <template v-if="postForm.body && postForm.body.length !== 0">
-              <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
-                增加
-              </el-button>
-              <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
+              <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
+                <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+                  增加
+                </el-button>
+                <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
+              </div>
               <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                <el-tab-pane v-for="(data, index) in postForm.body" :label="'body' + (index+1)">
+                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]">
                   <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                     <div v-for="bodyList in taskFormData.body.body_list">
                         <div v-if="showBodyList(bodyList, postForm, applyData, index)">
@@ -109,7 +111,8 @@
         hostList: [],
         taskFormData: {},
         validateForm: true,
-        tabsValue: '0'
+        tabsValue: '0',
+        bodyLableName: []
       }
     },
     computed: {
@@ -120,13 +123,16 @@
     created () {
       this.renderForm()
     },
-    // watch: {
-    //   'postForm': {
-    //     handler: 'validateFormFunction',
-    //     deep: true
-    //   }
-    // },
+    watch: {
+      'postForm': {
+        handler: 'renderBodyLabel',
+        deep: true
+      }
+    },
     methods: {
+      renderBodyLabel (val) {
+        this.bodyLabel(this.taskFormData, val, val, this.bodyLableName)
+      },
       onHostsChange (val) {
         console.log(val)
         this.hostList = []

@@ -422,11 +422,19 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
           }
           if (bodyList.show.op === 'eq') {
             if (Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path) === bodyList.show.value) {
-              labelArr[index] = bodyList.name + (index + 1)
+              if (messageData.body.length === 1) {
+                labelArr[index] = bodyList.name
+              } else {
+                labelArr[index] = bodyList.name + (index + 1)
+              }
             }
           } else if (bodyList.show.op === 'neq') {
             if (Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path) !== bodyList.show.value) {
-              labelArr[index] = bodyList.name + (index + 1)
+              if (messageData.body.length === 1) {
+                labelArr[index] = bodyList.name
+              } else {
+                labelArr[index] = bodyList.name + (index + 1)
+              }
             }
           }
         })
