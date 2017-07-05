@@ -78,7 +78,6 @@
               placeholder="请搜索流程名称"
               icon="search"
               v-model="searchProcedure"
-              :on-icon-click="handleSearchClick"
               @change="onChangeSearch">
             </el-input>
           </el-col>
@@ -274,9 +273,6 @@
     methods: {
       onEntryClick (path) {
         this.$router.push(path)
-      },
-      handleSearchClick () {
-        console.log(this.searchProcedure)
       },
       onChangeSearch () {
         if (this.searchProcedure === '') {
