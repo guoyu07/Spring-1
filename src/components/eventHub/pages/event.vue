@@ -346,35 +346,33 @@
               </el-tab-pane>
               <el-tab-pane label="活动" name="third">
                 <ul class="activity-list">
-                  <li>
+                  <li v-for="ac in activityLogs">
                     <el-tooltip placement="top">
                       <div slot="content">
-                        <p><b>Email</b>: xxx@xxx.com</p>
-                        <p><b>ID</b>: xxx</p>
+                        <p><b>Email</b>: {{ac.from_user.email}}</p>
+                        <p><b>ID</b>: {{ac.from_user.userId}}</p>
                       </div>
-                      <a href="#" class="tooltip-link">Samuel Qin <i class="el-icon-fa-user-circle"></i></a>
-                    </el-tooltip> 创建了事件（昨天）
-                  </li>
-                  <li>
-                    <el-tooltip placement="top">
-                      <div slot="content">
-                        <p><b>Email</b>: xxx@xxx.com</p>
-                        <p><b>ID</b>: xxx</p>
-                      </div>
-                      <a href="#" class="tooltip-link">Weimi <i class="el-icon-fa-user-circle"></i></a>
-                    </el-tooltip> 作出变更（昨天）
-                    <el-table class="activity-table" :data="changeData">
+                      <a href="javascript:;" class="tooltip-link">{{ac.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
+                    </el-tooltip>
+                    <span>作出变更 - <timeago :since="ac.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
+                    <el-table class="activity-table" :data="ac.text.body[0].concat(ac.text.header)" border>
                       <el-table-column
-                        prop="field"
-                        label="字段"></el-table-column>
+                        prop="key"
+                        label="键名"
+                        width="150"></el-table-column>
                       <el-table-column
-                        prop="oldValue"
-                        label="旧值"></el-table-column>
+                        label="旧值"
+                        inline-template
+                        :context="_self">
+                        <template><code>{{String(row.old_value)}}</code></template>
+                      </el-table-column>
                       <el-table-column
-                        prop="newValue"
-                        label="新值"></el-table-column>
+                        label="新值"
+                        inline-template
+                        :context="_self">
+                        <template><code>{{String(row.new_value)}}</code></template>
+                      </el-table-column>
                     </el-table>
-                    <!-- <p><b>优先度</b>：<i>高</i><i class="el-icon-fa-long-arrow-right"></i><i>低</i></p> -->
                   </li>
                 </ul>
               </el-tab-pane>
@@ -543,6 +541,7 @@
           oldValue: 'Jason Lam',
           newValue: ''
         }],
+        activityLogs: [],
         editor: {
           content: '',
           options: {
@@ -646,7 +645,7 @@
           data: { pid: this.eventData.pid }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          console.log(res.data)
+          this.activityLogs = res.data.data.list
         })
       },
 
