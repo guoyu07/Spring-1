@@ -63,7 +63,7 @@
               inline-template
               :context="_self">
               <template>
-                <span v-if="row.variables.message.length">{{row.variables.message[0].form.header.assignee ? row.variables.message[0].form.header.assignee.code : '无'}}</span>
+                <span>{{row.assignee || '无'}}</span>
               </template>
             </el-table-column>
             <el-table-column
