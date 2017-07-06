@@ -266,7 +266,10 @@
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
                 <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
               </el-form-item>
-              <el-form-item class="blockElement" label="分类" v-if="eventData.variables.message[0].form.header.components">
+              <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
+                <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
+              </el-form-item>
+              <el-form-item class="blockElement" label-width="0px" v-if="eventData.variables.message[0].form.header.components" style="margin-top:15px;">
                 <!-- <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag> -->
                 <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
                   <el-tab-pane v-for="(data, index) in eventData.variables.message[0].form.body" :label="eventData.variables.message[0].form.header.components">
@@ -293,14 +296,14 @@
           </div>
         </div>
 
-        <!-- <div class="detail-block">
+        <div class="detail-block">
           <div class="detail-block__heading">
-            <h4>事件详情</h4>
+            <h4>描述</h4>
           </div>
           <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.description">
             <blockquote v-html="eventData.variables.message[0].form.header.description"></blockquote>
           </div>
-        </div> -->
+        </div>
 
         <div class="detail-block">
           <div class="detail-block__heading">
