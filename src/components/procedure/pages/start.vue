@@ -370,18 +370,34 @@
                 if (this.postForm.body) {
                   for (const data of this.postForm.body) { // 用 for...of 可以轻松退出循环
                     for (const item in data) {
-                      if (Array.isArray(data[item]) && data[item].length === 0) { // 需要判断这个数组是不是必填
-                        this.$message.warning('表单未填写完成！')
-                        return false
+                      if (Array.isArray(data[item]) && data[item].length === 0) {
+                        // 判断这个数组是不是必填
+                        for (const body of this.taskFormData.body.body_list) {
+                          for (const attr of body.attr_list) {
+                            for (const value of attr.value) {
+                              if (value.id === item && value.required) {
+                                this.$message.warning(`${value.name}未填写！`)
+                                return false
+                              }
+                            }
+                          }
+                        }
                       }
                     }
                   }
                 }
                 if (this.postForm.header) {
                   for (const item in this.postForm.header) {
-                    if (Array.isArray(this.postForm.header[item]) && this.postForm.header[item].length === 0) { // 需要判断这个数组是不是必填
-                      this.$message.warning('表单未填写完成！')
-                      return false
+                    if (Array.isArray(this.postForm.header[item]) && this.postForm.header[item].length === 0) {
+                      // 判断这个数组是不是必填
+                      for (const header of this.taskFormData.header) {
+                        for (const value of header.value) {
+                          if (value.id === item && value.required) {
+                            this.$message.warning(`${value.name}未填写！`)
+                            return false
+                          }
+                        }
+                      }
                     }
                   }
                 }

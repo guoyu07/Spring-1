@@ -86,7 +86,10 @@
     methods: {
       groupChange (val) {
         // console.log(val)
-        val.users.push({userId: '全部'})
+        // val.users.push({userId: '全部'}).reverse()
+        if (!val.users.some(user => { return user.userId === '全部' })) {
+          val.users.push({userId: '全部'}).reverse()
+        }
         this.vmodel[this.strucData.id].group = {}
         this.vmodel[this.strucData.id].group.name = val.name
         this.vmodel[this.strucData.id].group.key = val.key

@@ -115,7 +115,7 @@
 <style lang="less" scoped>
   .form-block {
     font-size: 0;
-    background-color: #f9f9f9;
+    background-color: rgba(247, 250, 252, .5);
     border-radius: 12px;
     h5 {
       font-size: 12px;
