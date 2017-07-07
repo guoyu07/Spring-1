@@ -217,7 +217,7 @@
           return arr
         } else {
           if (this.formItem.value.type === 'files') {
-            return this.item[this.formItem.id]
+            return this.item[this.formItem.id] || []
           }
         }
       },

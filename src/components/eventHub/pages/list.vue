@@ -63,7 +63,7 @@
               inline-template
               :context="_self">
               <template>
-                <span>{{row.assignee || '无'}}</span>
+                <span>{{row.variables.message[0].form.header.assignee ? row.variables.message[0].form.header.assignee.userId : '无'}}</span>
               </template>
             </el-table-column>
             <el-table-column
