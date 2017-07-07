@@ -225,8 +225,9 @@
       </el-col>
       <el-col :span="8" :xs="24">
         <el-button-group>
-          <el-button size="small" v-for="operation in operationArray">
-            <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link>
+          <el-button size="small" v-for="operation in operationArray" @click="showDialog(operation)">
+            {{operation}}
+            <!-- <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link> -->
           </el-button>
         </el-button-group>
       </el-col>
@@ -274,18 +275,20 @@
                 <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
                   <el-tab-pane v-for="(data, index) in eventData.variables.message[0].form.body" :label="eventData.variables.message[0].form.header.components">
                     <!-- <div v-for="task in taskFormData"> -->
-                    <div v-for="taskbody in taskFormData.body.body_list">
-                      <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
-                        <!-- <p class="h5">{{task.tname}}</p> -->
-                        <form-structure-display
-                          :item="data"
-                          :form-data="taskbody.attr_list"
-                          :index="index"
-                          :post-form="{}"
-                          :message-data="eventData.variables.message[0].form"
-                          :current-task="'current'"
-                          :history-task="'history'">
-                        </form-structure-display>
+                    <div v-if="startFormData && startFormData.body">
+                      <div v-for="taskbody in startFormData.body.body_list">
+                        <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
+                          <!-- <p class="h5">{{task.tname}}</p> -->
+                          <form-structure-display
+                            :item="data"
+                            :form-data="taskbody.attr_list"
+                            :index="index"
+                            :post-form="{}"
+                            :message-data="eventData.variables.message[0].form"
+                            :current-task="'current'"
+                            :history-task="'history'">
+                          </form-structure-display>
+                        </div>
                       </div>
                     </div>
                     <!-- </div> -->
@@ -493,6 +496,42 @@
       </el-col>
     </el-row>
     <event-conf :event-data="eventData.variables.message[0].form.header" :pid="eventData.pid" :visible="eventConfVisible" :is-editing="true"></event-conf>
+    <el-dialog :title="dialogTitle" v-model="dialogVisible">
+      <el-form ref="postForm" :model="postForm">
+        <div v-if="taskFormData.header">
+          <div v-for="task in taskFormData.header">
+            <span v-for="taskform in task.value">
+              <template v-if="taskform.id !== 'action'">
+                <form-body
+                  v-if="showFormItem(taskform, postForm)"
+                  :item="postForm.header"
+                  :form-item="taskform"
+                  :whole="postForm"
+                  :header="true">
+                </form-body>
+              </template>
+              <search-bar
+                v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
+                :hosts="postForm.header"
+                :attr-list="taskform"
+                :limit="getLimitQuantity(taskform, postForm)"
+                @on-hosts-change="onHostsChange">
+              </search-bar>
+              <header-table
+                v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                :form-data="task"
+                :item="postForm.header"
+                :headerTable="true">
+              </header-table>
+            </span>
+          </div>
+        </div>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -500,6 +539,9 @@
   import { quillEditor } from 'vue-quill-editor'
   import eventConf from './_config/_eventConf.vue'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay.vue'
+  import formBody from '../../_plugins/_formBody.vue'
+  import searchBar from '../../_plugins/_searchBar.vue'
+  import headerTable from '../../_plugins/_headerTable.vue'
   import Vue from 'vue'
   import VueTimeago from 'vue-timeago'
 
@@ -515,7 +557,7 @@
       return {
         activeTab: 'first',
         eventData: {},
-        taskFormData: {},
+        startFormData: {},
         eventConfVisible: false,
         event: {
           name: '事件名',
@@ -533,6 +575,11 @@
           updated: '2017-05-08 10:38:03',
           resolved: '2017-05-09 11:50:09'
         },
+        postForm: {
+          header: {},
+          body: []
+        },
+        taskFormData: {},
         operationArray: [],
         comments: [],
         changeData: [{
@@ -562,7 +609,9 @@
             placeholder: '在此撰写评论…',
             theme: 'snow'
           }
-        }
+        },
+        dialogVisible: false,
+        dialogTitle: ''
       }
     },
 
@@ -574,11 +623,10 @@
 
     created () {
       this.getEventData()
-      this.renderTaskForm()
     },
 
     methods: {
-      renderTaskForm () { // 渲染表单数据
+      renderStartForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
           method: 'GET',
@@ -590,7 +638,7 @@
         }
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
-          this.taskFormData = res.data.data.form
+          this.startFormData = res.data.data.form
         })
       },
       getEventData () {
@@ -604,14 +652,15 @@
             this.eventData = res.data.data
             // Object.assign(this.eventData, res.data.data)
             // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
-            this.getOperations()
+            this.getTaskFormData()
             this.getComments()
             this.getActivities()
+            this.renderStartForm()
           }
         })
       },
 
-      getOperations () {
+      getTaskFormData () {
         let postData = {
           action: 'activiti/task/form/group',
           method: 'GET',
@@ -623,7 +672,50 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.operationArray = res.data.data.form.header[0].value[0].value.regex
+            this.taskFormData = res.data.data.form
+            // 按钮
+            this.taskFormData.header.map(header => {
+              header.value.map(value => {
+                if (value.id === 'action') {
+                  this.operationArray = value.value.regex
+                }
+              })
+            })
+            // 需要提交的表单
+            this.taskFormData.header.map(group => {
+              group.value.map(item => {
+                this.setDataType(item, this.postForm.header, this)
+                if (item.value.type === 'table') {
+                  // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                  item.value.attr_list.map(list => {
+                    this.setDataType(list, this.postForm.header[item.id][0], this)
+                  })
+                }
+                if (item.show.type) {
+                  if (item.show.type === 'form_header') {
+                    this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                      if (item.show.op === 'eq' && newVal === item.show.value) {
+                        this.setDataType(item, this.postForm.header, this)
+                      } else if (item.show.op === 'neq' && newVal !== item.show.value) {
+                        this.setDataType(item, this.postForm.header, this)
+                      } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+                        this.setDataType(item, this.postForm.header, this)
+                      } else {
+                        delete this.postForm.header[item.id]
+                      }
+                    })
+                  }
+                }
+                // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
+                if (item.default && item.default.type) {
+                  if (item.default.type === 'form_header') {
+                    this.$watch('postForm.header.' + item.default.key_path, (newVal, oldVal) => {
+                      this.postForm.header[item.id] = newVal
+                    })
+                  }
+                }
+              })
+            })
           }
         })
       },
@@ -679,13 +771,22 @@
             this.activeTab = 'second'
           }
         })
+      },
+
+      showDialog (title) {
+        this.postForm.header.action = title
+        this.dialogVisible = true
+        this.dialogTitle = title
       }
     },
 
     components: {
       quillEditor,
       eventConf,
-      formStructureDisplay
+      formStructureDisplay,
+      formBody,
+      searchBar,
+      headerTable
     }
   }
 </script>
