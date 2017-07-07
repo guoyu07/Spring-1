@@ -54,7 +54,7 @@
                                 :item="postForm.body[index]"
                                 :form-item="formItem"
                                 :whole="postForm"
-                                :index="index"
+                                :index="+index"
                                 keep-alive>
                               </form-body>
                               <search-bar
@@ -263,7 +263,10 @@
           data: { taskId: this.$route.params.tid }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          this.postForm = res.data.data.variables.message[0].form
+          // console.log(this.postForm.header)
+          // this.postForm = res.data.data.variables.message[0].form
+          this.postForm.header = Object.assign({}, this.postForm.header, res.data.data.variables.message[0].form.header)
+          this.postForm.body = Object.assign({}, this.postForm.body, res.data.data.variables.message[0].form.body)
         })
       },
       handleClick (val) {

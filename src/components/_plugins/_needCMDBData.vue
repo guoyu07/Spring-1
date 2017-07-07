@@ -1,7 +1,6 @@
 <template>
   <div>
     <template v-if="strucData.value.type === 'dict'">
-      <!-- {{strucData.value.source.res.show_key.length > 1}} -->
       <el-select
         v-if="!strucData.isAlias"
         v-model="vmodel[strucData.id]"
@@ -9,22 +8,12 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable>
-        <!-- this.strucData.value.source.res.show_key -->
-        <el-tooltip
-                    v-for="option in optionList"
-                    effect="dark"
-                    :disabled="showToolTip"
-                    :content="toolTipContent(option)"
-                    placement="right">
-          <el-option  :label="showLabel(option)"
+          <el-option  v-for="option in optionList"
+                      :label="showLabel(option)"
                       :value="option">
+                      <p>{{ showLabel(option) }}</p>
+                      <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
           </el-option>
-        </el-tooltip>
-        <!-- <el-option v-else
-                  v-for="option in optionList"
-                  :label="showLabel(option)"
-                  :value="option">
-        </el-option> -->
       </el-select>
       <el-radio-group
         v-else

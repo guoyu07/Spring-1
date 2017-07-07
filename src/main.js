@@ -408,7 +408,7 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
         }
       })
     } else {
-      messageData.body.map((body, index) => {
+      messageData && messageData.body.map((body, index) => {
         taskForm.body.body_list.map(bodyList => {
           let compareVariable
           if (bodyList.show.type === 'form_header') {

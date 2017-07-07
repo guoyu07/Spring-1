@@ -225,7 +225,7 @@
       </el-col>
       <el-col :span="8" :xs="24">
         <el-button-group>
-          <el-button size="small" v-for="operation in operationArray" @click="showDialog(operation)">
+          <el-button size="small" v-for="operation in operationArray" @click="showDialog(operation)" :type="buttonType(operation)">
             {{operation}}
             <!-- <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link> -->
           </el-button>
@@ -626,6 +626,11 @@
     },
 
     methods: {
+      buttonType (oper) {
+        // if (oper === '取消工单') {
+        //   return 'danger'
+        // }
+      },
       renderStartForm () { // 渲染表单数据
         const renderFromData = {
           action: 'activiti/task/form/group',
@@ -998,7 +1003,6 @@
             form: postFormData
           }
         }
-        console.log(postFormData)
         this.http.post('', this.parseData(postData))
           .then((res) => {
             if (res && res.status === 200) {
