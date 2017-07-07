@@ -33,7 +33,7 @@
               :context="_self">
               <template>
                 <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
-                <el-button :disabled="!isQualified" :type="row.status ? 'danger' : 'success'" size="small" @click="onToggleUser(row)">{{ row.status ? '禁用' : '启用' }}</el-button>
+                <el-button :disabled="!isQualified" :type="row.status ? 'success' : 'danger'" size="small" @click="onToggleUser(row)">{{ row.status ? '启用' : '禁用' }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -157,7 +157,7 @@
       },
 
       onToggleUser ({ code, userId, status }) {
-        this.$confirm(`确定${status ? '启用' : '禁用'}用户 ${code}？`, '提示', {
+        this.$confirm(`确定${status ? '禁用' : '启用'}用户 ${code}？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
@@ -169,7 +169,7 @@
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.$message.success(`已${status ? '启用' : '禁用'}用户「${code}」！`)
+              this.$message.success(`已${status ? '禁用' : '启用'}用户「${code}」！`)
               this.getPermittedUserList()
             }
           })
