@@ -104,6 +104,7 @@
       <el-select
         filterable
         multiple
+        allow-create
         :disabled="formItem.readonly"
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]">

@@ -180,8 +180,9 @@
       </el-col>
       <el-col :span="8" :xs="24">
         <el-button-group>
-          <el-button size="small" v-for="operation in operationArray">
-            <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link>
+          <el-button size="small" v-for="operation in operationArray" @click="showDialog(operation)" :type="buttonType(operation)">
+            {{operation}}
+            <!-- <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link> -->
           </el-button>
         </el-button-group>
       </el-col>
@@ -231,23 +232,28 @@
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
                 <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
               </el-form-item>
-              <el-form-item class="blockElement" label="分类" v-if="eventData.variables.message[0].form.header.components">
+              <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
+                <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
+              </el-form-item>
+              <el-form-item class="blockElement" label-width="0px" v-if="eventData.variables.message[0].form.header.components" style="margin-top:15px;">
                 <!-- <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag> -->
                 <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
                   <el-tab-pane v-for="(data, index) in eventData.variables.message[0].form.body" :label="eventData.variables.message[0].form.header.components">
                     <!-- <div v-for="task in taskFormData"> -->
-                    <div v-for="taskbody in taskFormData.body.body_list">
-                      <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
-                        <!-- <p class="h5">{{task.tname}}</p> -->
-                        <form-structure-display
-                          :item="data"
-                          :form-data="taskbody.attr_list"
-                          :index="index"
-                          :post-form="{}"
-                          :message-data="eventData.variables.message[0].form"
-                          :current-task="'current'"
-                          :history-task="'history'">
-                        </form-structure-display>
+                    <div v-if="startFormData && startFormData.body">
+                      <div v-for="taskbody in startFormData.body.body_list">
+                        <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
+                          <!-- <p class="h5">{{task.tname}}</p> -->
+                          <form-structure-display
+                            :item="data"
+                            :form-data="taskbody.attr_list"
+                            :index="index"
+                            :post-form="{}"
+                            :message-data="eventData.variables.message[0].form"
+                            :current-task="'current'"
+                            :history-task="'history'">
+                          </form-structure-display>
+                        </div>
                       </div>
                     </div>
                     <!-- </div> -->
@@ -258,14 +264,14 @@
           </div>
         </div>
 
-        <!-- <div class="detail-block">
+        <div class="detail-block">
           <div class="detail-block__heading">
-            <h4>事件详情</h4>
+            <h4>描述</h4>
           </div>
           <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.description">
             <blockquote v-html="eventData.variables.message[0].form.header.description"></blockquote>
           </div>
-        </div> -->
+        </div>
 
         <div class="detail-block">
           <div class="detail-block__heading">
@@ -454,6 +460,42 @@
       </el-col>
     </el-row>
     <event-conf :event-data="eventData.variables.message[0].form.header" :pid="eventData.pid" :visible="eventConfVisible" :is-editing="true"></event-conf>
+    <el-dialog :title="dialogTitle" v-model="dialogVisible">
+      <el-form ref="postForm" :model="postForm">
+        <div v-if="taskFormData.header">
+          <div v-for="task in taskFormData.header">
+            <span v-for="taskform in task.value">
+              <template v-if="taskform.id !== 'action'">
+                <form-body
+                  v-if="showFormItem(taskform, postForm)"
+                  :item="postForm.header"
+                  :form-item="taskform"
+                  :whole="postForm"
+                  :header="true">
+                </form-body>
+              </template>
+              <search-bar
+                v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
+                :hosts="postForm.header"
+                :attr-list="taskform"
+                :limit="getLimitQuantity(taskform, postForm)"
+                @on-hosts-change="onHostsChange">
+              </search-bar>
+              <header-table
+                v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                :form-data="task"
+                :item="postForm.header"
+                :headerTable="true">
+              </header-table>
+            </span>
+          </div>
+        </div>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -461,6 +503,9 @@
   import { quillEditor } from 'vue-quill-editor'
   import eventConf from './_config/_eventConf.vue'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay.vue'
+  import formBody from '../../_plugins/_formBody.vue'
+  import searchBar from '../../_plugins/_searchBar.vue'
+  import headerTable from '../../_plugins/_headerTable.vue'
   import Vue from 'vue'
   import VueTimeago from 'vue-timeago'
 
@@ -476,7 +521,7 @@
       return {
         activeTab: 'first',
         eventData: {},
-        taskFormData: {},
+        startFormData: {},
         eventConfVisible: false,
         event: {
           name: '事件名',
@@ -494,6 +539,11 @@
           updated: '2017-05-08 10:38:03',
           resolved: '2017-05-09 11:50:09'
         },
+        postForm: {
+          header: {},
+          body: []
+        },
+        taskFormData: {},
         operationArray: [],
         comments: [],
         changeData: [{
@@ -529,7 +579,9 @@
         },
         fileListToShow: [],
         submitData: {},
-        acceptedFileTypes: ''
+        acceptedFileTypes: '',
+        dialogVisible: false,
+        dialogTitle: ''
       }
     },
 
@@ -545,7 +597,12 @@
     },
 
     methods: {
-      renderTaskForm () { // 渲染表单数据
+      buttonType (oper) {
+        // if (oper === '取消工单') {
+        //   return 'danger'
+        // }
+      },
+      renderStartForm () { // 渲染表单数据
         const postData = {
           action: 'activiti/task/form/group',
           method: 'GET',
@@ -556,10 +613,8 @@
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          // console.log(res)
-          this.taskFormData = res.data.data.form
-          this.acceptedFileTypes = this.taskFormData.header[0].value.find(attr => attr.id === 'attachments').value.regex.join(',')
-          console.log(this.acceptedFileTypes)
+          this.startFormData = res.data.data.form
+          this.acceptedFileTypes = this.startFormData.header[0].value.find(attr => attr.id === 'attachments').value.regex.join(',')
         })
       },
       getEventData (needRefetch = false) {
@@ -573,11 +628,13 @@
             this.eventData = res.data.data
             // Object.assign(this.eventData, res.data.data)
             // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
+
             if (needRefetch) {
               this.initializeFileList()
-              this.getOperations()
               this.getComments()
               this.getActivities()
+              this.renderStartForm()
+              this.getTaskFormData()
             }
           }
         })
@@ -595,7 +652,7 @@
         console.log(this.fileListToShow)
       },
 
-      getOperations () {
+      getTaskFormData () {
         let postData = {
           action: 'activiti/task/form/group',
           method: 'GET',
@@ -607,7 +664,135 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.operationArray = res.data.data.form.header[0].value[0].value.regex
+            this.taskFormData = res.data.data.form
+            // 按钮
+            this.taskFormData.header.map(header => {
+              header.value.map(value => {
+                if (value.id === 'action') {
+                  this.operationArray = value.value.regex
+                }
+              })
+            })
+            // 需要提交的表单
+            this.taskFormData.header.map(group => {
+              group.value.map(item => {
+                this.setDataType(item, this.postForm.header, this)
+                if (item.value.type === 'table') {
+                  // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                  item.value.attr_list.map(list => {
+                    this.setDataType(list, this.postForm.header[item.id][0], this)
+                  })
+                }
+                if (item.show.type) {
+                  if (item.show.type === 'form_header') {
+                    this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                      if (item.show.op === 'eq' && newVal === item.show.value) {
+                        this.setDataType(item, this.postForm.header, this)
+                      } else if (item.show.op === 'neq' && newVal !== item.show.value) {
+                        this.setDataType(item, this.postForm.header, this)
+                      } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+                        this.setDataType(item, this.postForm.header, this)
+                      } else {
+                        delete this.postForm.header[item.id]
+                      }
+                    })
+                  }
+                }
+                // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
+                if (item.default && item.default.type) {
+                  if (item.default.type === 'form_header') {
+                    this.$watch('postForm.header.' + item.default.key_path, (newVal, oldVal) => {
+                      this.postForm.header[item.id] = newVal
+                    })
+                  }
+                }
+              })
+            })
+            let message = {}
+            this.eventData.variables.message.map(mes => {
+              if (mes.task_key === 'start') { // 这里取 start 的原因是：历史信息继承第一步的 body =>
+                message = mes.form
+              }
+            })
+            message.body.forEach((item, k) => {
+              let newData = {}
+              this.taskFormData.body.body_list.forEach(body => {
+                if (body.show.type) {
+                  const keyPath = body.show.key_path.split('.')
+                  if (body.show.type === 'message_body') {
+                    if (body.show.value === item[keyPath[0]]) {
+                      console.log(item[keyPath[0]])
+                      body.attr_list.map(group => {
+                        group.value.map(item => {
+                          this.setNewDataType(item, newData)
+                        })
+                      })
+                      console.log(newData)
+                    }
+                  } else if (body.show.type === 'message_header') {
+                    body.attr_list.map(group => {
+                      group.value.map(value => {
+                        if (value.need_submit) {
+                          this.setNewDataType(value, newData)
+                          // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'message_header') {
+                              newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                            } else if (value.default.type === 'form_body') {
+                              this.$watch('postForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                                this.postForm.body[k][value.id] = newVal
+                              })
+                            }
+                          }
+                        }
+                      })
+                    })
+                  }
+                } else {
+                  // console.log(item, body)
+                  body.attr_list.map(group => {
+                    group.value.map(value => {
+                      if (value.need_submit) {
+                        this.setNewDataType(value, newData)
+                        // console.log(newData)
+                        if (value.value.type === 'table') {
+                          // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                          newData[value.id][0] = {}
+                          let data = newData[value.id][0]
+                          value.value.attr_list.map(item => {
+                            this.setNewDataType(item, data)
+                          })
+                        }
+                        // 有默认值时
+                        if (value.default && value.default.type) {
+                          if (value.default.type === 'message_header') {
+                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          } else if (value.default.type === 'form_body') {
+                            this.$watch('postForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              this.postForm.body[k][value.id] = newVal
+                            })
+                          } else if (value.default.type === 'message_body') {
+                            newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
+                          } else if (value.default.type === 'form_header') {
+                            this.$watch('postForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                              this.postForm.body[k][value.id] = newVal
+                            })
+                          } else if (value.default.type === 'static') {
+                            this.postForm.body[k][value.id] = value.default.value
+                          }
+                        }
+                      }
+                    })
+                  })
+                }
+              })
+              this.postForm.body.push(newData)
+              for (const id in item) {
+                if (this.postForm.body[k][id] !== undefined) {
+                  this.postForm.body[k][id] = item[id]
+                }
+              }
+            })
           }
         })
       },
@@ -717,13 +902,171 @@
             // this.activeTab = 'second'
           }
         })
+      },
+
+      showDialog (title) {
+        this.postForm.header.action = title
+        this.dialogVisible = true
+        this.dialogTitle = title
+      },
+
+      onSubmit () {
+        this.taskFormData.header.map(header => {
+          header.value.map(item => {
+            if (item.show.type) {
+              // show.type 有四种类型
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.postForm.header[item.id] = this.hostList
+                  }
+                }
+              }
+            }
+          })
+        })
+        const ref = this.$refs['postForm'].fields.length !== 0
+        if (ref) { // 有表单的情况下，表单的自验证
+          this.$refs['postForm'].validate((valid) => {
+            if (valid) {
+              console.log(this.postForm.body)
+              if (this.postForm.body) {
+                for (const data of this.postForm.body) { // 用 for...of 可以轻松退出循环
+                  for (const item in data) {
+                    if (Array.isArray(data[item]) && data[item].length === 0) {
+                      // 判断这个数组是不是必填
+                      for (const body of this.taskFormData.body.body_list) {
+                        for (const attr of body.attr_list) {
+                          for (const value of attr.value) {
+                            if (value.id === item && value.required) {
+                              this.$message.warning(`${value.name}未填写！`)
+                              return false
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              if (this.postForm.header) {
+                for (const item in this.postForm.header) {
+                  if (Array.isArray(this.postForm.header[item]) && this.postForm.header[item].length === 0) {
+                    // 判断这个数组是不是必填
+                    for (const header of this.taskFormData.header) {
+                      for (const value of header.value) {
+                        if (value.id === item && value.required) {
+                          this.$message.warning(`${value.name}未填写！`)
+                          return false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              this.postMethod(this.postForm)
+              // console.dir(this.postForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('表单未填写完成！')
+              return false
+            }
+          })
+        } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (!bodyList.show.type) {
+              bodyList.attr_list.map(attrList => {
+                if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
+                  attrList.value.map(value => {
+                    if (value.value.type === 'search_bar') {
+                      this.postForm.body.map((postbody, postbodyIndex) => {
+                        if (postbody[value.id].length === 0) {
+                          this.$message.warning(`未选择${value.name}`)
+                          return false
+                        }
+                      })
+                    }
+                  })
+                } else {
+                  this.postMethod(this.postForm)
+                }
+              })
+            }
+          })
+          this.taskFormData.header.map(header => {
+            if (header.value.some(value => { return value.value.type === 'search_bar' })) {
+              header.value.map(value => {
+                if (value.value.type === 'search_bar') {
+                  if (this.postForm.header[value.id].length === 0) {
+                    this.$message.warning(`未选择${value.name}`)
+                    return false
+                  }
+                }
+              })
+            } else {
+              this.postMethod(this.postForm)
+            }
+          })
+        }
+      },
+
+      postMethod (data) {
+        let postFormData = {
+          header: {},
+          body: []
+        }
+        for (const headerid in data.header) {
+          if (Array.isArray(data.header[headerid])) {
+            if (data.header[headerid].length !== 0) {
+              postFormData.header[headerid] = data.header[headerid]
+            }
+          } else if (data.header[headerid]) {
+            postFormData.header[headerid] = data.header[headerid]
+          }
+        }
+        data.body.map((body, bodyIndex) => {
+          postFormData.body[bodyIndex] = {}
+          for (const bodyid in body) {
+            if (Array.isArray(body[bodyid])) {
+              if (body[bodyid].length !== 0) {
+                postFormData.body[bodyIndex][bodyid] = body[bodyid]
+              }
+            } else if (body[bodyid]) {
+              postFormData.body[bodyIndex][bodyid] = body[bodyid]
+            }
+          }
+        })
+        const postData = {
+          action: 'runtime/task/complete',
+          method: 'POST',
+          data: {
+            tid: this.eventData.id,
+            form: postFormData
+          }
+        }
+        this.http.post('', this.parseData(postData))
+          .then((res) => {
+            if (res && res.status === 200) {
+              this.$message({
+                message: '成功!',
+                type: 'success'
+              })
+              this.dialogVisible = false
+              this.$router.replace('/event-hub') // 处理成功跳回 事件管理 页面
+            } else if (res && res.status === 406) {
+              this.$message.error(res.errorMessage)
+            }
+          })
       }
     },
 
     components: {
       quillEditor,
       eventConf,
-      formStructureDisplay
+      formStructureDisplay,
+      formBody,
+      searchBar,
+      headerTable
     }
   }
 </script>

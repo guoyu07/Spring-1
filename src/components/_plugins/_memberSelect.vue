@@ -40,18 +40,21 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
+        class="member"
         placeholder="请选择">
-        <el-tooltip
-          v-for="item in userList"
+        <!-- <el-tooltip
           effect="dark"
           :content="item.email"
-          placement="right">
-          <el-option
-            :key="item.code"
-            :label="item.userId"
-            :value="item">
-          </el-option>
-        </el-tooltip>
+          placement="right"> -->
+        <el-option
+          v-for="item in userList"
+          :key="item.code"
+          :label="item.userId"
+          :value="item">
+          <p>{{ item.userId }}</p>
+          <p style="color: #8492a6; font-size: 13px">{{ item.email }}</p>
+        </el-option>
+        <!-- </el-tooltip> -->
       </el-select>
       <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button>
     </div>
@@ -85,8 +88,10 @@
     },
     methods: {
       groupChange (val) {
-        // console.log(val)
-        val.users.push({userId: '全部'})
+        if (!val.users.some(user => { return user.userId === '全部' })) {
+          val.users.push({userId: '全部'})
+          val.users.reverse()
+        }
         this.vmodel[this.strucData.id].group = {}
         this.vmodel[this.strucData.id].group.name = val.name
         this.vmodel[this.strucData.id].group.key = val.key
