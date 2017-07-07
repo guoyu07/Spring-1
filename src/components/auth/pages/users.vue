@@ -33,7 +33,7 @@
               :context="_self">
               <template>
                 <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
-                <el-button :disabled="!isQualified" type="danger" size="small" icon="delete" @click="onDeleteUser(row)"></el-button>
+                <el-button :disabled="!isQualified" :type="row.status ? 'success' : 'danger'" size="small" @click="onToggleUser(row)">{{ row.status ? '启用' : '禁用' }}</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -156,11 +156,11 @@
         })
       },
 
-      onDeleteUser ({ code, userId }) {
-        this.$confirm(`此操作将移除用户「${code}」，是否继续？`, '警告', {
+      onToggleUser ({ code, userId, status }) {
+        this.$confirm(`确定${status ? '启用' : '禁用'}用户 ${code}？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
-          type: 'error'
+          type: 'warning'
         }).then(() => {
           let postData = {
             action: 'permission/users',
@@ -169,7 +169,7 @@
           }
           this.http.post('', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.$message.success(`已移除用户「${code}」！`)
+              this.$message.success(`已${status ? '启用' : '禁用'}用户「${code}」！`)
               this.getPermittedUserList()
             }
           })

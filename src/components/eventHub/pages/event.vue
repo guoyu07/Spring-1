@@ -7,6 +7,31 @@
   .ticket-num {
     font-size: 13px;
     font-weight: normal;
+
+    code {
+      color: #20a0ff;
+    }
+  }
+
+  .editable-field {
+    position: relative;
+
+    // &::after {
+    //   font: normal normal normal 14px/1 FontAwesome;
+    //   content: "\f040";
+    //   color: #20a0ff;
+    //   display: none;
+    // }
+
+    // &:hover {
+    //   &::after {
+    //     display: inline-block;
+    //   }
+    // }
+
+    &__input {
+
+    }
   }
 
   .el-button {
@@ -64,6 +89,24 @@
         content: '\201D';
       }
     }
+
+    .el-upload-list {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      &__item {
+        width: 49%;
+
+        &-status-label {
+          display: none;
+        }
+
+        a:hover {
+          text-decoration: none;
+        }
+      }
+    }
   }
 
   .sla-form {
@@ -86,19 +129,6 @@
       width: 100% !important;
     }
   }
-
-  // .attachment-uploader {
-  //   .el-upload-list {
-  //     display: flex;
-  //     justify-content: flex-start;
-  //     flex-wrap: wrap;
-  //   }
-
-  //   .el-upload-list__item {
-  //     width: 48%;
-  //     margin-right: 1%;
-  //   }
-  // }
 
   .activity-list {
     padding-left: 0;
@@ -138,86 +168,11 @@
   .tooltip-link {
     color: @primary;
   }
-
-  .gallery {
-    display: flex;
-    justify-content: flex-start;
-
-    &__picture {
-      display: flex;
-      justify-content: center;
-      flex-direction: column;
-      align-items: center;
-      width: 150px;
-      margin-right: 12px;
-    }
-
-    &__thumb {
-      width: 150px;
-      height: 120px;
-      position: relative;
-      background: #f6f6f6;
-      border-radius: 8px;
-      border: 2px solid #e5e5e5;
-      overflow: hidden;
-    }
-
-    &__desc {
-      width: 100%;
-      height: 100%;
-      padding: 18px 0;
-      display: flex;
-      justify-content: space-around;
-      flex-direction: column;
-      font-size: 13px;
-      z-index: @flying;
-      position: relative;
-      align-items: center;
-      text-align: center;
-      background-color: rgba(33,150,243,.8);
-      color: #fff;
-      font-weight: bold;
-      transition: opacity .3s ease;
-      opacity: 0;
-
-      &:hover {
-        opacity: 1;
-      }
-
-      span {
-        max-width: 130px;
-        text-overflow: ellipsis;
-        overflow: hidden;
-      }
-
-      a {
-        color: inherit;
-        padding: 4px 6px;
-
-        &:hover {
-          border: 1px solid;
-          border-radius: 4px;
-          padding-top: 3px;
-        }
-      }
-    }
-
-    img {
-      height: 100px;
-      display: block;
-      margin: 0 auto;
-      position: absolute;
-      left: 0;
-      right: 0;
-      top: 50%;
-      transform: translateY(-50%);
-    }
-  }
 </style>
 
 <template>
   <div class="event">
-    <h3><code class="ticket-num">{{eventData.workFlowNo}}</code><br>{{eventData.variables.message[0].form.header.summary}}</h3>
+    <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{eventData.variables.message[0].form.header.summary}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="16" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
@@ -256,13 +211,23 @@
               </el-form-item>
               <el-form-item label="优先度" v-if="eventData.variables.message[0].form.header.priority">
                 <template>
-                  <span v-if="eventData.variables.message[0].form.header.priority === '高'"><i class="el-icon-fa-long-arrow-up text-error"></i> 高</span>
-                  <span v-if="eventData.variables.message[0].form.header.priority === '正常'"><i class="el-icon-fa-minus text-success"></i> 正常</span>
-                  <span v-if="eventData.variables.message[0].form.header.priority === '低'"><i class="el-icon-fa-long-arrow-down text-warning"></i> 低</span>
+                  <!-- <div class="editable-field" @click="showEditable('priority')">
+                    <div v-show="!isEditing.priority"> -->
+                      <span v-if="eventData.variables.message[0].form.header.priority === '高'"><i class="el-icon-fa-long-arrow-up text-error"></i> 高</span>
+                      <span v-if="eventData.variables.message[0].form.header.priority === '正常'"><i class="el-icon-fa-minus text-success"></i> 正常</span>
+                      <span v-if="eventData.variables.message[0].form.header.priority === '低'"><i class="el-icon-fa-long-arrow-down text-warning"></i> 低</span>
+                    <!-- </div>
+
+                    <select class="editable-field__input" v-show="isEditing.priority" @blur="onEditableBlur('priority')">
+                      <option label="低" value="低"></option>
+                      <option label="正常" value="正常"></option>
+                      <option label="高" value="高"></option>
+                    </select>
+                  </div> -->
                 </template>
               </el-form-item>
               <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
-                <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label}}</el-tag>
+                <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
               </el-form-item>
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
                 <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
@@ -333,7 +298,7 @@
                 </ul>
               </el-tab-pane>
               <el-tab-pane label="历史" name="second">
-                <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5>
+                <!-- <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5> -->
                 <el-collapse>
                   <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
                     <el-form label-position="left" label-width="90px" inline class="expanded-form">
@@ -351,17 +316,22 @@
                 </el-collapse>
               </el-tab-pane>
               <el-tab-pane label="活动" name="third">
-                <ul class="activity-list">
-                  <li v-for="ac in activityLogs">
-                    <el-tooltip placement="top">
-                      <div slot="content">
-                        <p><b>Email</b>: {{ac.from_user.email}}</p>
-                        <p><b>ID</b>: {{ac.from_user.userId}}</p>
-                      </div>
-                      <a href="javascript:;" class="tooltip-link">{{ac.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
-                    </el-tooltip>
-                    <span>作出变更 - <timeago :since="ac.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
-                    <el-table class="activity-table" :data="ac.text.body[0].concat(ac.text.header)" border>
+                <h5 class="sub-title" v-if="!activityLogs.length">
+                  <i class="el-icon-information"></i> 暂时没有人作出变更…
+                </h5>
+                <el-collapse v-if="activityLogs.length">
+                  <el-collapse-item v-for="ac in activityLogs">
+                    <template slot="title">
+                      <el-tooltip placement="top">
+                        <div slot="content">
+                          <p><b>Email</b>: {{ac.from_user.email}}</p>
+                          <p><b>ID</b>: {{ac.from_user.userId}}</p>
+                        </div>
+                        <a href="javascript:;" class="tooltip-link">{{ac.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
+                      </el-tooltip>
+                      <span>作出变更 - <timeago :since="ac.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
+                    </template>
+                    <el-table class="activity-table" :data="ac.text.body[0] ? [...ac.text.header, ...ac.text.body[0]] : ac.text.header" border>
                       <el-table-column
                         prop="key"
                         label="键名"
@@ -370,17 +340,23 @@
                         label="旧值"
                         inline-template
                         :context="_self">
-                        <template><code>{{String(row.old_value)}}</code></template>
+                        <template>
+                          <code>
+                            {{JSON.stringify(row.old_value)}}
+                          </code>
+                        </template>
                       </el-table-column>
                       <el-table-column
                         label="新值"
                         inline-template
                         :context="_self">
-                        <template><code>{{String(row.new_value)}}</code></template>
+                        <template>
+                          <code>{{JSON.stringify(row.new_value)}}</code>
+                        </template>
                       </el-table-column>
                     </el-table>
-                  </li>
-                </ul>
+                  </el-collapse-item>
+                </el-collapse>
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -390,29 +366,17 @@
           <div class="detail-block__heading">
             <h4>附件</h4>
           </div>
-          <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.attachments">
-            <!-- <el-upload
-              class="attachment-uploader"
+          <div class="detail-block__content">
+            <el-upload
               action="/api/upload_file/"
-              :file-list="eventData.variables.message[0].form.header.attachments"
+              ref="upload"
+              :on-success="onUploadSuccess"
+              :on-remove="onRemoveUploaded"
               list-type="picture"
-              :with-credentials="true"
-              :on-success="onUpload"
-              multiple>
-              <el-button size="small" type="primary">点击上传</el-button>
-              <div slot="tip" class="el-upload__tip"><i class="el-icon-information"></i> 文件大小不超过 5MB</div>
-            </el-upload> -->
-            <div class="gallery">
-              <div class="gallery__picture" v-for="pic in eventData.variables.message[0].form.header.attachments">
-                <div class="gallery__thumb">
-                  <img :src="'/api/download_file/' + pic.file_name" :alt="pic.desc">
-                  <div class="gallery__desc">
-                    <span>{{pic.desc}}</span>
-                    <a :href="'/api/download_file/' + pic.file_name"><i class="el-icon-fa-download"></i></a>
-                  </div>
-                </div>
-              </div>
-            </div>
+              :file-list="fileListToShow"
+              :accept="acceptedFileTypes">
+              <el-button size="small" type="primary" icon="plus">上传</el-button>
+            </el-upload>
           </div>
         </div>
 
@@ -633,6 +597,12 @@
             theme: 'snow'
           }
         },
+        isEditing: {
+          priority: false
+        },
+        fileListToShow: [],
+        submitData: {},
+        acceptedFileTypes: '',
         dialogVisible: false,
         dialogTitle: ''
       }
@@ -645,7 +615,8 @@
     },
 
     created () {
-      this.getEventData()
+      this.getEventData(true)
+      this.renderTaskForm()
     },
 
     methods: {
@@ -655,7 +626,7 @@
         // }
       },
       renderStartForm () { // 渲染表单数据
-        const renderFromData = {
+        const postData = {
           action: 'activiti/task/form/group',
           method: 'GET',
           data: {
@@ -664,12 +635,12 @@
             version: this.eventData.version
           }
         }
-        this.http.post('', this.parseData(renderFromData)).then((res) => {
-          // console.log(res)
+        this.http.post('', this.parseData(postData)).then((res) => {
           this.startFormData = res.data.data.form
+          this.acceptedFileTypes = this.startFormData.header[0].value.find(attr => attr.id === 'attachments').value.regex.join(',')
         })
       },
-      getEventData () {
+      getEventData (needRefetch = false) {
         let postData = {
           action: 'runtime/task',
           method: 'GET',
@@ -680,12 +651,28 @@
             this.eventData = res.data.data
             // Object.assign(this.eventData, res.data.data)
             // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
-            this.getTaskFormData()
-            this.getComments()
-            this.getActivities()
-            this.renderStartForm()
+
+            if (needRefetch) {
+              this.initializeFileList()
+              this.getComments()
+              this.getActivities()
+              this.renderStartForm()
+              this.getTaskFormData()
+            }
           }
         })
+      },
+
+      initializeFileList () {
+        let { attachments } = this.eventData.variables.message[0].form.header
+        for (let att of attachments) {
+          // this.fileListToShow.push({ name: att.desc, url: `/api/download_file/${att.file_name}` })
+          if (!this.fileListToShow.find(file => file.name === att.desc)) {
+            this.fileListToShow.push({ name: att.desc, url: `/api/download_file/${att.file_name}` })
+          }
+          // this.fileListToShow = [...this.fileListToShow, { name: att.desc, url: `/api/download_file/${att.file_name}` }]
+        }
+        console.log(this.fileListToShow)
       },
 
       getTaskFormData () {
@@ -857,10 +844,64 @@
         })
       },
 
-      onUpload (res, file, fileList) {
-        console.log(res)
-        console.log(file)
-        console.log(fileList)
+      showEditable (key) {
+        this.isEditing[key] = true
+      },
+
+      onEditableBlur (key) {
+        this.isEditing[key] = false
+        console.log(this.isEditing)
+      },
+
+      onUploadSuccess (res, file, fileList) {
+        if (!this.eventData.variables.message[0].form.header.attachments || !this.eventData.variables.message[0].form.header.attachments.length) {
+          console.log('原无文件！')
+          this.submitData.attachments = [...res.data]
+        } else {
+          console.log('原固有文件！')
+          this.submitData.attachments = [...this.eventData.variables.message[0].form.header.attachments, ...res.data]
+        }
+        console.log(this.submitData.attachments)
+        this.realtimeSubmit()
+      },
+
+      onRemoveUploaded (file) {
+        this.$confirm(`确定移除该文件 ${file.name}？`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          for (let i = 0; i < this.submitData.attachments.length; i++) {
+            if (this.submitData.attachments[i].desc === file.desc) {
+              this.submitData.attachments.splice(i, 1)
+            }
+          }
+          this.realtimeSubmit()
+        }).catch(() => {
+          this.realtimeSubmit(true)
+        })
+      },
+
+      realtimeSubmit (needRefetch = false) {
+        let postData = {
+          action: 'modify/form/data',
+          method: 'POST',
+          data: {
+            pid: this.eventData.pid,
+            pkey: 'incident',
+            tkey: 'start',
+            form: {
+              header: this.submitData,
+              body: []
+            }
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已修改！')
+            this.getEventData(needRefetch)
+          }
+        })
       },
 
       onShowEditConf () {
@@ -881,7 +922,7 @@
             this.$message.success('评论成功！')
             this.editor.content = ''
             this.getComments()
-            this.activeTab = 'second'
+            // this.activeTab = 'second'
           }
         })
       },

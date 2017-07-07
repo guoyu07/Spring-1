@@ -456,7 +456,7 @@
         })
       },
       onModify () {
-        let { pid, pkey, tkey } = this.$route.params
+        let { pid, pkey, tkey, tid } = this.$route.params
         let postData = {
           action: 'modify/form/data',
           method: 'POST',
@@ -470,7 +470,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('修改事件成功！')
-            this.$router.go(0)
+            this.$router.push(`/event-hub/event/${tid}`)
           }
         })
       },
@@ -535,9 +535,11 @@
                 type: 'success'
               })
               if (this.$route.params.pkey === 'easyops_monitor') {
-                this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
+                this.$router.push('/alarm') // 告警处理成功后跳转告警事件
+              } else if (this.$route.params.pkey === 'incident') {
+                this.$router.push('/event-hub') // 跳转事件管理
               } else {
-                this.$router.replace('/orders') // 跳转工单管理
+                this.$router.push('/orders') // 跳转工单管理
               }
             } else if (res && res.status === 406) {
               this.$message.error(res.errorMessage)

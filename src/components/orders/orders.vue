@@ -146,7 +146,7 @@
               :context="_self"
               label="操作">
               <template>
-                <el-button size="small" @click="onView(row)">详情</el-button>
+                <el-button size="small" @click="onView(row)" icon="more">详情</el-button>
               </template>
             </el-table-column>
           </el-table>

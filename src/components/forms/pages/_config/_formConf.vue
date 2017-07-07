@@ -248,14 +248,14 @@
                       multiple
                       filterable
                       allow-create
-                      :placeholder="['file', 'files'].includes(itemConf.value.type) ? '1＋个文件扩展名／mime types' : '1＋个正则表达式'"
+                      :placeholder="['file', 'files'].includes(itemConf.value.type) ? '1＋个文件扩展名' : '1＋个正则表达式'"
                       class="code-input"
                       size="small">
                       <template v-if="['file', 'files'].includes(itemConf.value.type)">
-                        <el-option value="image/*" label="任何图像"></el-option>
+                        <!-- <el-option value="image/*" label="任何图像"></el-option> -->
                         <el-option value=".jpg,.jpeg" label="JPG/JPEG"></el-option>
                         <el-option value=".png" label="PNG"></el-option>
-                        <el-option value="application/pdf" label="PDF"></el-option>
+                        <el-option value=".pdf" label="PDF"></el-option>
                         <el-option value=".doc,.docx" label="MS Word"></el-option>
                         <el-option value=".xls,.xlsx" label="MS Excel"></el-option>
                         <el-option value=".ppt,.pptx" label="MS PPT"></el-option>

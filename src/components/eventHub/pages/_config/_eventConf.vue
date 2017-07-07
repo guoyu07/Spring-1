@@ -262,7 +262,7 @@
             if (this.isEditing) {
               this.$router.go(0)
             } else {
-              this.$router.replace(`/event-hub/event/${res.data.data.data[0].id}`)
+              this.$router.push(`/event-hub/event/${res.data.data.data[0].id}`)
             }
           }
         })
