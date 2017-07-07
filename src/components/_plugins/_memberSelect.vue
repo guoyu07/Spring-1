@@ -88,8 +88,8 @@
     },
     methods: {
       groupChange (val) {
-        if (!val.users.some(user => { return user.userId === '全部' })) {
-          val.users.push({userId: '全部'})
+        if (!val.users.some(user => { return user.userId === '未指定' })) {
+          val.users.push({userId: '未指定'})
           val.users.reverse()
         }
         this.vmodel[this.strucData.id].group = {}

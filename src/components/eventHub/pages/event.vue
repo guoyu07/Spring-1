@@ -457,7 +457,8 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-              <el-form-item label="当前处理人">
+               <!-- v-on:mouseenter="" -->
+              <el-form-item class="hoverEdit" label="当前处理人" v-if="!assigneeEdit">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee">
                   <div slot="content">
                     <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.email}}</p>
@@ -466,6 +467,14 @@
                   <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.code}} <i class="el-icon-fa-user-circle"></i></a>
                 </el-tooltip>
               </el-form-item>
+              <!-- <el-form-item label="当前处理人" v-if="assigneeEdit">
+                <span>
+                  <member-select
+                    :vmodel="users"
+                    :strucData="assigneeFormData">
+                  </member-select>
+                </span>
+              </el-form-item> -->
               <el-form-item label="通知人">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.reporter">
                   <div slot="content">
@@ -542,6 +551,7 @@
   import formBody from '../../_plugins/_formBody.vue'
   import searchBar from '../../_plugins/_searchBar.vue'
   import headerTable from '../../_plugins/_headerTable.vue'
+  import memberSelect from '../../_plugins/_memberSelect'
   import Vue from 'vue'
   import VueTimeago from 'vue-timeago'
 
@@ -555,6 +565,19 @@
   export default {
     data () {
       return {
+        assigneeEdit: false,
+        users: {
+          assignee: null
+        },
+        assigneeFormData: {
+          id: 'assignee',
+          isAlias: false,
+          required: false,
+          readonly: false,
+          value: {
+            allow_create: false
+          }
+        },
         activeTab: 'first',
         eventData: {},
         startFormData: {},
@@ -1025,7 +1048,8 @@
       formStructureDisplay,
       formBody,
       searchBar,
-      headerTable
+      headerTable,
+      memberSelect
     }
   }
 </script>
