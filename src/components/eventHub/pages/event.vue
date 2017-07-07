@@ -529,7 +529,7 @@
       </el-form>
       <div slot="footer" class="dialog-footer">
         <el-button @click="dialogVisible = false">取 消</el-button>
-        <el-button type="primary" @click="dialogVisible = false">确 定</el-button>
+        <el-button type="primary" @click="onSubmit">确 定</el-button>
       </div>
     </el-dialog>
   </div>
@@ -716,6 +716,91 @@
                 }
               })
             })
+            let message = {}
+            this.eventData.variables.message.map(mes => {
+              if (mes.task_key === 'start') { // 这里取 start 的原因是：历史信息继承第一步的 body =>
+                message = mes.form
+              }
+            })
+            message.body.forEach((item, k) => {
+              let newData = {}
+              this.taskFormData.body.body_list.forEach(body => {
+                if (body.show.type) {
+                  const keyPath = body.show.key_path.split('.')
+                  if (body.show.type === 'message_body') {
+                    if (body.show.value === item[keyPath[0]]) {
+                      console.log(item[keyPath[0]])
+                      body.attr_list.map(group => {
+                        group.value.map(item => {
+                          this.setNewDataType(item, newData)
+                        })
+                      })
+                      console.log(newData)
+                    }
+                  } else if (body.show.type === 'message_header') {
+                    body.attr_list.map(group => {
+                      group.value.map(value => {
+                        if (value.need_submit) {
+                          this.setNewDataType(value, newData)
+                          // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'message_header') {
+                              newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                            } else if (value.default.type === 'form_body') {
+                              this.$watch('postForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                                this.postForm.body[k][value.id] = newVal
+                              })
+                            }
+                          }
+                        }
+                      })
+                    })
+                  }
+                } else {
+                  // console.log(item, body)
+                  body.attr_list.map(group => {
+                    group.value.map(value => {
+                      if (value.need_submit) {
+                        this.setNewDataType(value, newData)
+                        // console.log(newData)
+                        if (value.value.type === 'table') {
+                          // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                          newData[value.id][0] = {}
+                          let data = newData[value.id][0]
+                          value.value.attr_list.map(item => {
+                            this.setNewDataType(item, data)
+                          })
+                        }
+                        // 有默认值时
+                        if (value.default && value.default.type) {
+                          if (value.default.type === 'message_header') {
+                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                          } else if (value.default.type === 'form_body') {
+                            this.$watch('postForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              this.postForm.body[k][value.id] = newVal
+                            })
+                          } else if (value.default.type === 'message_body') {
+                            newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
+                          } else if (value.default.type === 'form_header') {
+                            this.$watch('postForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                              this.postForm.body[k][value.id] = newVal
+                            })
+                          } else if (value.default.type === 'static') {
+                            this.postForm.body[k][value.id] = value.default.value
+                          }
+                        }
+                      }
+                    })
+                  })
+                }
+              })
+              this.postForm.body.push(newData)
+              for (const id in item) {
+                if (this.postForm.body[k][id] !== undefined) {
+                  this.postForm.body[k][id] = item[id]
+                }
+              }
+            })
           }
         })
       },
@@ -777,6 +862,156 @@
         this.postForm.header.action = title
         this.dialogVisible = true
         this.dialogTitle = title
+      },
+
+      onSubmit () {
+        this.taskFormData.header.map(header => {
+          header.value.map(item => {
+            if (item.show.type) {
+              // show.type 有四种类型
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.postForm.header[item.id] = this.hostList
+                  }
+                }
+              }
+            }
+          })
+        })
+        const ref = this.$refs['postForm'].fields.length !== 0
+        if (ref) { // 有表单的情况下，表单的自验证
+          this.$refs['postForm'].validate((valid) => {
+            if (valid) {
+              console.log(this.postForm.body)
+              if (this.postForm.body) {
+                for (const data of this.postForm.body) { // 用 for...of 可以轻松退出循环
+                  for (const item in data) {
+                    if (Array.isArray(data[item]) && data[item].length === 0) {
+                      // 判断这个数组是不是必填
+                      for (const body of this.taskFormData.body.body_list) {
+                        for (const attr of body.attr_list) {
+                          for (const value of attr.value) {
+                            if (value.id === item && value.required) {
+                              this.$message.warning(`${value.name}未填写！`)
+                              return false
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              if (this.postForm.header) {
+                for (const item in this.postForm.header) {
+                  if (Array.isArray(this.postForm.header[item]) && this.postForm.header[item].length === 0) {
+                    // 判断这个数组是不是必填
+                    for (const header of this.taskFormData.header) {
+                      for (const value of header.value) {
+                        if (value.id === item && value.required) {
+                          this.$message.warning(`${value.name}未填写！`)
+                          return false
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+              this.postMethod(this.postForm)
+              // console.dir(this.postForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('表单未填写完成！')
+              return false
+            }
+          })
+        } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (!bodyList.show.type) {
+              bodyList.attr_list.map(attrList => {
+                if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
+                  attrList.value.map(value => {
+                    if (value.value.type === 'search_bar') {
+                      this.postForm.body.map((postbody, postbodyIndex) => {
+                        if (postbody[value.id].length === 0) {
+                          this.$message.warning(`未选择${value.name}`)
+                          return false
+                        }
+                      })
+                    }
+                  })
+                } else {
+                  this.postMethod(this.postForm)
+                }
+              })
+            }
+          })
+          this.taskFormData.header.map(header => {
+            if (header.value.some(value => { return value.value.type === 'search_bar' })) {
+              header.value.map(value => {
+                if (value.value.type === 'search_bar') {
+                  if (this.postForm.header[value.id].length === 0) {
+                    this.$message.warning(`未选择${value.name}`)
+                    return false
+                  }
+                }
+              })
+            } else {
+              this.postMethod(this.postForm)
+            }
+          })
+        }
+      },
+
+      postMethod (data) {
+        let postFormData = {
+          header: {},
+          body: []
+        }
+        for (const headerid in data.header) {
+          if (Array.isArray(data.header[headerid])) {
+            if (data.header[headerid].length !== 0) {
+              postFormData.header[headerid] = data.header[headerid]
+            }
+          } else if (data.header[headerid]) {
+            postFormData.header[headerid] = data.header[headerid]
+          }
+        }
+        data.body.map((body, bodyIndex) => {
+          postFormData.body[bodyIndex] = {}
+          for (const bodyid in body) {
+            if (Array.isArray(body[bodyid])) {
+              if (body[bodyid].length !== 0) {
+                postFormData.body[bodyIndex][bodyid] = body[bodyid]
+              }
+            } else if (body[bodyid]) {
+              postFormData.body[bodyIndex][bodyid] = body[bodyid]
+            }
+          }
+        })
+        const postData = {
+          action: 'runtime/task/complete',
+          method: 'POST',
+          data: {
+            tid: this.eventData.id,
+            form: postFormData
+          }
+        }
+        console.log(postFormData)
+        this.http.post('', this.parseData(postData))
+          .then((res) => {
+            if (res && res.status === 200) {
+              this.$message({
+                message: '成功!',
+                type: 'success'
+              })
+              this.dialogVisible = false
+              this.$router.replace('/event-hub') // 处理成功跳回 事件管理 页面
+            } else if (res && res.status === 406) {
+              this.$message.error(res.errorMessage)
+            }
+          })
       }
     },
 
