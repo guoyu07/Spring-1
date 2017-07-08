@@ -2,13 +2,13 @@
   <div>
     <!-- 分组 -->
     <div v-if="strucData.isAlias">
+        <!-- @change="groupChange" -->
       <el-select
         v-model="group"
         :clearable="!strucData.required"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
-        @change="groupChange"
         placeholder="请选择">
         <el-option
           v-for="item in groupList"
@@ -75,16 +75,23 @@
     data () {
       return {
         group: null,
+        userId: '',
         userList: [],
         groupList: []
       }
     },
     created () {
       if (this.strucData.isAlias) {
+        if (this.vmodel[this.strucData.id].user.userId) {
+          this.userId = this.vmodel[this.strucData.id].user.userId
+        }
         this.renderGroupList()
       } else {
         this.renderUserList()
       }
+    },
+    watch: {
+      'group': 'groupChange'
     },
     methods: {
       groupChange (val) {
@@ -120,6 +127,24 @@
         .then((response) => {
           console.log(response)
           this.groupList = response.data.data
+          if (this.vmodel[this.strucData.id].group.key) {
+            this.groupList.map(group => {
+              if (group.key === this.vmodel[this.strucData.id].group.key) {
+                this.group = group // 这里发生了change事件 导致 user = null
+                // console.log(this.vmodel[this.strucData.id])
+                setTimeout(() => {
+                  if (this.userId) {
+                    this.group.users.map(user => {
+                      if (user.userId === this.userId) {
+                        this.vmodel[this.strucData.id].user = user
+                        console.log(this.vmodel[this.strucData.id].user)
+                      }
+                    })
+                  }
+                }, 300)
+              }
+            })
+          }
         })
       },
       renderUserList () {

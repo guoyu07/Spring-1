@@ -13,6 +13,13 @@
     }
   }
 
+  .hoverEdit .el-form-item__content:hover{
+    border: 1px solid #aebbcc;
+    border-radius: 5px;
+    line-height: 34px;
+    padding-left: 19px!important;
+  }
+
   .editable-field {
     position: relative;
 
@@ -421,24 +428,27 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-               <!-- v-on:mouseenter="" -->
-              <el-form-item class="hoverEdit" label="当前处理人" v-if="!assigneeEdit">
-                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee">
+              <el-form-item class="hoverEdit" label="当前处理人" v-if="!assigneeEdit" @mouseenter.native="onHover" @mouseleave.native="onLeave">
+                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee.user.code" :disabled="!assigneeEdit">
                   <div slot="content">
-                    <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.email}}</p>
-                    <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.userId}}</p>
+                    <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
+                    <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
                   </div>
-                  <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.code}} <i class="el-icon-fa-user-circle"></i></a>
+                  <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.code}} <i class="el-icon-fa-user-circle"></i></a>
                 </el-tooltip>
+                <a v-else href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-user-circle"></i></a>
+                <el-button size="small" icon="edit" v-show="showEditBtn" @click="assigneeEdit = true"></el-button>
               </el-form-item>
-              <!-- <el-form-item label="当前处理人" v-if="assigneeEdit">
+              <el-form-item label="当前处理人" v-if="assigneeEdit">
                 <span>
                   <member-select
                     :vmodel="users"
                     :strucData="assigneeFormData">
                   </member-select>
                 </span>
-              </el-form-item> -->
+                <el-button size="small" icon="close" @click="assigneeEdit = false;showEditBtn=false"></el-button>
+                <el-button size="small" icon="check" @click="submitAssgign"></el-button>
+              </el-form-item>
               <el-form-item label="通知人">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.reporter">
                   <div slot="content">
@@ -529,13 +539,17 @@
   export default {
     data () {
       return {
+        showEditBtn: false,
         assigneeEdit: false,
         users: {
-          assignee: null
+          assignee: {
+            group: null,
+            user: null
+          }
         },
         assigneeFormData: {
           id: 'assignee',
-          isAlias: false,
+          isAlias: true,
           required: false,
           readonly: false,
           value: {
@@ -616,10 +630,24 @@
 
     created () {
       this.getEventData(true)
-      this.renderTaskForm()
+      // this.getTaskFormData()
     },
 
     methods: {
+      onHover () {
+        console.log('hover')
+        this.showEditBtn = true
+        this.users.assignee = this.eventData.variables.message[0].form.header.assignee
+      },
+      onLeave () {
+        console.log('leave')
+        this.showEditBtn = false
+      },
+      submitAssgign () {
+        this.assigneeEdit = false
+        this.showEditBtn = false
+        console.log(this.users.assignee)
+      },
       buttonType (oper) {
         // if (oper === '取消工单') {
         //   return 'danger'
@@ -653,11 +681,12 @@
             // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
 
             if (needRefetch) {
-              this.initializeFileList()
               this.getComments()
               this.getActivities()
               this.renderStartForm()
               this.getTaskFormData()
+              this.renderStartForm()
+              this.initializeFileList()
             }
           }
         })
