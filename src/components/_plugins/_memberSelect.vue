@@ -4,28 +4,29 @@
     <div v-if="strucData.isAlias">
         <!-- @change="groupChange" -->
       <el-select
-        v-model="group"
+        v-model="member.group"
         :clearable="!strucData.required"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
         placeholder="请选择">
         <el-option
-          v-for="item in groupList"
+          v-for="item in (groupList || [])"
           :key="item.key"
           :label="item.name"
           :value="item">
         </el-option>
       </el-select>
       <el-select
-        v-model="vmodel[strucData.id].user"
+        v-model="member.user"
         :clearable="!strucData.required"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
+        @change="userChange"
         placeholder="请选择">
         <el-option
-          v-for="item in ((group && group.users) || [])"
+          v-for="item in userList"
           :key="item.code"
           :label="item.userId"
           :value="item">
@@ -74,7 +75,11 @@
     },
     data () {
       return {
-        group: null,
+        member: {
+          group: null,
+          user: null
+        },
+        memberBuffer: '',
         userId: '',
         userList: [],
         groupList: []
@@ -82,27 +87,29 @@
     },
     created () {
       if (this.strucData.isAlias) {
-        if (this.vmodel[this.strucData.id].user) {
-          this.userId = this.vmodel[this.strucData.id].user.userId
-        }
         this.renderGroupList()
+        this.renderGroupUserList()
       } else {
         this.renderUserList()
       }
     },
     watch: {
-      'group': 'groupChange'
+      'member.group': 'groupChange'
     },
     methods: {
       groupChange (val) {
-        if (!val.users.some(user => { return user.userId === '未指定' })) {
-          val.users.push({userId: '未指定'})
-          val.users.reverse()
-        }
         this.vmodel[this.strucData.id].group = {}
         this.vmodel[this.strucData.id].group.name = val.name
         this.vmodel[this.strucData.id].group.key = val.key
-        this.vmodel[this.strucData.id].user = null
+        this.member.user = null
+        this.renderGroupUserList(val.key)
+      },
+      userChange (val) {
+        if (val && val.userId === '未指定') {
+          this.vmodel[this.strucData.id].user = null
+        } else {
+          this.vmodel[this.strucData.id].user = val
+        }
       },
       assignToMe () {
         // console.log('分配给我')
@@ -125,26 +132,54 @@
         }
         this.http.post('', this.parseData(postHeadvData))
         .then((response) => {
-          console.log(response)
+          // console.log(response)
           this.groupList = response.data.data
           if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
             this.groupList.map(group => {
               if (group.key === this.vmodel[this.strucData.id].group.key) {
-                this.group = group // 这里发生了change事件 导致 user = null
+                this.member.group = group // 这里发生了change事件 导致 user = null
                 // console.log(this.vmodel[this.strucData.id])
-                setTimeout(() => {
-                  if (this.userId) {
-                    this.group.users.map(user => {
-                      if (user.userId === this.userId) {
-                        this.vmodel[this.strucData.id].user = user
-                        console.log(this.vmodel[this.strucData.id].user)
-                      }
-                    })
-                  }
-                }, 100)
+                // setTimeout(() => {
+                //   if (this.userId) {
+                //     this.group.users.map(user => {
+                //       if (user.userId === this.userId) {
+                //         this.vmodel[this.strucData.id].user = user
+                //         console.log(this.vmodel[this.strucData.id].user)
+                //       }
+                //     })
+                //   }
+                // }, 100)
               }
             })
           }
+        })
+      },
+      renderGroupUserList (key) {
+        const postHeadvData = {
+          action: 'users/with/group',
+          method: 'GET',
+          data: {
+            group_key: key
+          }
+        }
+        this.http.post('', this.parseData(postHeadvData))
+        .then((response) => {
+          // console.log(response)
+          this.userList = response.data.data
+          if (!this.userList.some(user => { return user.userId === '未指定' })) {
+            this.userList.push({userId: '未指定'})
+            this.userList.reverse()
+          }
+          setTimeout(() => {
+            if (this.vmodel[this.strucData.id].user && this.vmodel[this.strucData.id].user.userId) {
+              this.userList.map(user => {
+                if (user.userId === this.vmodel[this.strucData.id].user.userId) {
+                  this.member.user = user
+                  // console.log(this.vmodel[this.strucData.id].user)
+                }
+              })
+            }
+          }, 100)
         })
       },
       renderUserList () {

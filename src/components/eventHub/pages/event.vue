@@ -446,26 +446,29 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-              <el-form-item class="hoverEdit" label="当前处理人" v-if="!assigneeEdit" @mouseenter.native="onHover" @mouseleave.native="onLeave">
-                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.user && eventData.variables.message[0].form.header.assignee.user.code" :disabled="!assigneeEdit">
+              <el-form-item label="当前处理人" v-if="!isEditing.assignee">
+                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.user && eventData.variables.message[0].form.header.assignee.user.code" :disabled="!isEditing.assignee">
                   <div slot="content">
                     <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
                     <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
                   </div>
                   <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.userId}} <i class="el-icon-fa-user-circle"></i></a>
                 </el-tooltip>
-                <a v-else href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-user-circle"></i></a>
-                <el-button size="small" icon="edit" v-show="showEditBtn" @click="assigneeEdit = true"></el-button>
+                <a v-else href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-users"></i></a>
+                <!-- <el-button size="small" icon="edit" @click="isEditing.assignee = true"></el-button> -->
+                <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('assignee')"></i>
               </el-form-item>
-              <el-form-item label="当前处理人" v-if="assigneeEdit">
+              <el-form-item label="当前处理人" v-if="isEditing.assignee">
                 <span>
                   <member-select
-                    :vmodel="users"
+                    :vmodel="eventData.variables.message[0].form.header"
                     :strucData="assigneeFormData">
                   </member-select>
                 </span>
-                <el-button size="small" icon="close" @click="cancelSubmit"></el-button>
-                <el-button size="small" icon="check" @click="submitAssgign"></el-button>
+                <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('assignee')"></i>
+                <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('assignee')"></i>
+                <!-- <el-button size="small" icon="close" @click="cancelSubmit"></el-button>
+                <el-button size="small" icon="check" @click="submitAssgign"></el-button> -->
               </el-form-item>
               <el-form-item label="通知人">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.reporter">
@@ -632,7 +635,8 @@
         },
         isEditing: {
           priority: false,
-          labels: false
+          labels: false,
+          assignee: false
         },
         fileListToShow: [],
         submitData: {},
@@ -654,15 +658,15 @@
     },
 
     methods: {
-      onHover () {
-        console.log('hover')
-        this.showEditBtn = true
-        this.users.assignee = this.eventData.variables.message[0].form.header.assignee
-      },
-      onLeave () {
-        console.log('leave')
-        this.showEditBtn = false
-      },
+      // onHover () {
+      //   console.log('hover')
+      //   this.showEditBtn = true
+      //   this.users.assignee = this.eventData.variables.message[0].form.header.assignee
+      // },
+      // onLeave () {
+      //   console.log('leave')
+      //   this.showEditBtn = false
+      // },
       submitAssgign () {
         this.assigneeEdit = false
         this.showEditBtn = false
@@ -937,7 +941,8 @@
 
       onConfirmEdit (key) {
         this.isEditing[key] = false
-        this.submitData[key] = this.$refs[key].value
+        // this.submitData[key] = this.$refs[key].value
+        this.submitData[key] = this.eventData.variables.message[0].form.header[key]
         this.realtimeSubmit()
       },
 
