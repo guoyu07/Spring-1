@@ -16,21 +16,19 @@
   .editable-field {
     position: relative;
 
-    // &::after {
-    //   font: normal normal normal 14px/1 FontAwesome;
-    //   content: "\f040";
-    //   color: #20a0ff;
-    //   display: none;
-    // }
+    &__indicator {
+      font-size: 12px;
+      // display: none;
+    }
 
     // &:hover {
-    //   &::after {
+    //   &__indicator {
     //     display: inline-block;
     //   }
     // }
 
     &__input {
-
+      max-width: 120px;
     }
   }
 
@@ -211,23 +209,43 @@
               </el-form-item>
               <el-form-item label="优先度" v-if="eventData.variables.message[0].form.header.priority">
                 <template>
-                  <!-- <div class="editable-field" @click="showEditable('priority')">
-                    <div v-show="!isEditing.priority"> -->
+                  <div class="editable-field">
+                    <div v-show="!isEditing.priority">
                       <span v-if="eventData.variables.message[0].form.header.priority === '高'"><i class="el-icon-fa-long-arrow-up text-error"></i> 高</span>
                       <span v-if="eventData.variables.message[0].form.header.priority === '正常'"><i class="el-icon-fa-minus text-success"></i> 正常</span>
                       <span v-if="eventData.variables.message[0].form.header.priority === '低'"><i class="el-icon-fa-long-arrow-down text-warning"></i> 低</span>
-                    <!-- </div>
+                      <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('priority')"></i>
+                    </div>
 
-                    <select class="editable-field__input" v-show="isEditing.priority" @blur="onEditableBlur('priority')">
-                      <option label="低" value="低"></option>
-                      <option label="正常" value="正常"></option>
-                      <option label="高" value="高"></option>
-                    </select>
-                  </div> -->
+                    <div v-show="isEditing.priority">
+                      <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.priority" size="small" ref="priority">
+                        <el-option label="低" value="低"></el-option>
+                        <el-option label="正常" value="正常"></el-option>
+                        <el-option label="高" value="高"></el-option>
+                      </el-select>
+                      <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('priority')"></i>
+                      <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('priority')"></i>
+                    </div>
+                  </div>
                 </template>
               </el-form-item>
               <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
-                <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
+                  <div class="editable-field">
+                    <div v-show="!isEditing.labels">
+                      <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
+                      <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('labels')"></i>
+                    </div>
+
+                    <div v-show="isEditing.labels">
+                      <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.labels" size="small" ref="labels" multiple>
+                        <el-option label="低" value="低"></el-option>
+                        <el-option label="正常" value="正常"></el-option>
+                        <el-option label="高" value="高"></el-option>
+                      </el-select>
+                      <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('labels')"></i>
+                      <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('labels')"></i>
+                    </div>
+                  </div>
               </el-form-item>
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
                 <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
@@ -521,6 +539,7 @@
       return {
         activeTab: 'first',
         eventData: {},
+        eventDataBuffer: {},
         startFormData: {},
         eventConfVisible: false,
         event: {
@@ -575,7 +594,8 @@
           }
         },
         isEditing: {
-          priority: false
+          priority: false,
+          labels: false
         },
         fileListToShow: [],
         submitData: {},
@@ -626,9 +646,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.eventData = res.data.data
-            // Object.assign(this.eventData, res.data.data)
-            // this.eventData.variables.message[0].form.header.description = window.atob(this.eventData.variables.message[0].form.header.description)
-
+            this.eventDataBuffer = JSON.parse(JSON.stringify(res.data.data))  // create an immutable buffer object
             if (needRefetch) {
               this.initializeFileList()
               this.getComments()
@@ -821,13 +839,16 @@
         })
       },
 
-      showEditable (key) {
-        this.isEditing[key] = true
+      toggleEditable (key) {
+        this.isEditing[key] = !this.isEditing[key]
+        if (!this.isEditing[key]) this.eventData = this.eventDataBuffer
+        this.submitData = {}
       },
 
-      onEditableBlur (key) {
+      onConfirmEdit (key) {
         this.isEditing[key] = false
-        console.log(this.isEditing)
+        this.submitData[key] = this.$refs[key].value
+        this.realtimeSubmit()
       },
 
       onUploadSuccess (res, file, fileList) {

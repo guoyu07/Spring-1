@@ -22,13 +22,22 @@
             <el-table-column
               prop="userId"
               label="ID"
-              width="120"></el-table-column>
+              width="150"></el-table-column>
             <el-table-column
               prop="email"
               label="邮箱"></el-table-column>
             <el-table-column
+              label="所属组别"
+              inline-template
+              :context="_self">
+              <template>
+                <el-tag v-for="group in row.groups">{{group.name}}</el-tag>
+                <span v-if="!row.groups.length">无</span>
+              </template>
+            </el-table-column>
+            <el-table-column
               label="操作"
-              width="200"
+              width="180"
               inline-template
               :context="_self">
               <template>
