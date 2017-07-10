@@ -398,9 +398,10 @@ Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index, histor
 }
 
 Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
+  console.log(messageData)
   if (taskForm.body.body_list.length !== 0) {
     if (taskForm.body.body_list.length === 1) {
-      messageData.body.map((body, index) => {
+      messageData && messageData.body.map((body, index) => {
         if (taskForm.body.body_list[0].name) {
           labelArr[index] = taskForm.body.body_list[0].name + (index + 1)
         } else {
@@ -441,7 +442,7 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
       })
     }
   } else {
-    messageData.body.map((body, index) => {
+    messageData && messageData.body.map((body, index) => {
       labelArr[index] = 'body' + (index + 1)
     })
   }

@@ -82,7 +82,7 @@
     },
     created () {
       if (this.strucData.isAlias) {
-        if (this.vmodel[this.strucData.id].user.userId) {
+        if (this.vmodel[this.strucData.id].user) {
           this.userId = this.vmodel[this.strucData.id].user.userId
         }
         this.renderGroupList()
@@ -127,7 +127,7 @@
         .then((response) => {
           console.log(response)
           this.groupList = response.data.data
-          if (this.vmodel[this.strucData.id].group.key) {
+          if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
             this.groupList.map(group => {
               if (group.key === this.vmodel[this.strucData.id].group.key) {
                 this.group = group // 这里发生了change事件 导致 user = null
@@ -141,7 +141,7 @@
                       }
                     })
                   }
-                }, 300)
+                }, 100)
               }
             })
           }

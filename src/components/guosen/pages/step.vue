@@ -26,7 +26,7 @@
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
-              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
+              <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
                 <div>
                   <div v-for="task in form">
@@ -180,7 +180,7 @@
         applyData: {},
         form: {},
         taskForm: {},
-        bodylistIndex: [], // 可删
+        bodyLableName: [],
         showTaskForm: [],
         assignForm: {
           header: {},
@@ -307,7 +307,11 @@
       // }
     },
     watch: {
-      'idcrackData': 'idcrackIsTaked'
+      'idcrackData': 'idcrackIsTaked',
+      'taskForm': {
+        handler: 'renderBodyLabel',
+        deep: true
+      }
       // 'assignForm.body': {
       //   handler: function (curVal, oldVal) {
       //     console.dir(curVal)
@@ -316,6 +320,9 @@
       // }
     },
     methods: {
+      renderBodyLabel (val) {
+        this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
+      },
       idcrackIsTaked () {
         for (const item of this.idcrackData) {
           item.isTaked = []

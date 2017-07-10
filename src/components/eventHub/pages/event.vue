@@ -181,13 +181,13 @@
   <div class="event">
     <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{eventData.variables.message[0].form.header.summary}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
-      <el-col :span="16" :xs="24">
+      <el-col :span="24" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
-        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${event.name}/${eventData.id}/start` }" class="el-button el-button--plain el-button--small fr"><i class="el-icon-edit"></i> 编辑</router-link>
-      </el-col>
-      <el-col :span="8" :xs="24">
+        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${event.name}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
+      <!-- </el-col>
+      <el-col :span="8" :xs="24"> -->
         <el-button-group>
-          <el-button size="small" v-for="operation in operationArray" @click="showDialog(operation)" :type="buttonType(operation)">
+          <el-button v-for="operation in operationArray" @click="showDialog(operation)" :type="buttonType(operation)">
             {{operation}}
             <!-- <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link> -->
           </el-button>
@@ -429,14 +429,14 @@
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
               <el-form-item class="hoverEdit" label="当前处理人" v-if="!assigneeEdit" @mouseenter.native="onHover" @mouseleave.native="onLeave">
-                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee.user.code" :disabled="!assigneeEdit">
+                <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.user && eventData.variables.message[0].form.header.assignee.user.code" :disabled="!assigneeEdit">
                   <div slot="content">
                     <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
                     <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
                   </div>
-                  <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.code}} <i class="el-icon-fa-user-circle"></i></a>
+                  <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.userId}} <i class="el-icon-fa-user-circle"></i></a>
                 </el-tooltip>
-                <a v-else href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-user-circle"></i></a>
+                <a v-else href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-user-circle"></i></a>
                 <el-button size="small" icon="edit" v-show="showEditBtn" @click="assigneeEdit = true"></el-button>
               </el-form-item>
               <el-form-item label="当前处理人" v-if="assigneeEdit">
@@ -548,13 +548,13 @@
           }
         },
         assigneeFormData: {
-          id: 'assignee',
-          isAlias: true,
-          required: false,
-          readonly: false,
-          value: {
-            allow_create: false
-          }
+          // id: 'assignee',
+          // isAlias: true,
+          // required: false,
+          // readonly: false,
+          // value: {
+          //   allow_create: false
+          // }
         },
         activeTab: 'first',
         eventData: {},
@@ -647,10 +647,41 @@
         this.assigneeEdit = false
         this.showEditBtn = false
         console.log(this.users.assignee)
+
+        const postData = {
+          header: { assignee: this.users.assignee }
+        }
+        this.submitPost(postData)
+      },
+      submitPost (data) {
+        let { pid, pkey } = this.eventData
+        let { tkey } = { tkey: 'start' }
+        let postData = {
+          action: 'modify/form/data',
+          method: 'POST',
+          data: {
+            pid,
+            pkey,
+            tkey,
+            form: data
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('修改成功！')
+            // this.$router.push(`/event-hub/event/${this.eventData.id}`)
+          }
+        })
       },
       buttonType (oper) {
         // if (oper === '取消工单') {
         //   return 'danger'
+        // } else if (oper === '延后处理') {
+        //   return 'warning'
+        // } else if (oper === '已完成') {
+        //   return 'success'
+        // } else if (oper === '开始处理') {
+        //   return 'info'
         // }
       },
       renderStartForm () { // 渲染表单数据
@@ -666,6 +697,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           this.startFormData = res.data.data.form
           this.acceptedFileTypes = this.startFormData.header[0].value.find(attr => attr.id === 'attachments').value.regex.join(',')
+          this.assigneeFormData = this.startFormData.header[0].value.find(attr => attr.id === 'assignee')
         })
       },
       getEventData (needRefetch = false) {
