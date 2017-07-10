@@ -464,7 +464,7 @@
                     :strucData="assigneeFormData">
                   </member-select>
                 </span>
-                <el-button size="small" icon="close" @click="assigneeEdit = false;showEditBtn=false"></el-button>
+                <el-button size="small" icon="close" @click="cancelSubmit"></el-button>
                 <el-button size="small" icon="check" @click="submitAssgign"></el-button>
               </el-form-item>
               <el-form-item label="通知人">
@@ -672,6 +672,11 @@
           header: { assignee: this.users.assignee }
         }
         this.submitPost(postData)
+      },
+      cancelSubmit () {
+        this.assigneeEdit = false
+        this.showEditBtn = false
+        // this.users.assignee = this.eventDataBuffer.variables.message[0].form.header.assignee
       },
       submitPost (data) {
         let { pid, pkey } = this.eventData
