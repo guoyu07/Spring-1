@@ -576,7 +576,7 @@
         },
         activeTab: 'first',
         eventData: {},
-        eventDataBuffer: {},
+        eventDataBuffer: '',
         startFormData: {},
         eventConfVisible: false,
         event: {
@@ -734,7 +734,7 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.eventData = res.data.data
-            this.eventDataBuffer = JSON.parse(JSON.stringify(res.data.data))  // create an immutable buffer object
+            this.eventDataBuffer = JSON.stringify(res.data.data)  // create an immutable buffer object
             if (needRefetch) {
               this.getComments()
               this.getActivities()
@@ -930,7 +930,7 @@
 
       toggleEditable (key) {
         this.isEditing[key] = !this.isEditing[key]
-        if (!this.isEditing[key]) this.eventData = this.eventDataBuffer
+        if (!this.isEditing[key]) this.eventData = JSON.parse(this.eventDataBuffer)
         this.submitData = {}
       },
 
