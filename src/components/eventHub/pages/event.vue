@@ -676,7 +676,8 @@
       cancelSubmit () {
         this.assigneeEdit = false
         this.showEditBtn = false
-        // this.users.assignee = this.eventDataBuffer.variables.message[0].form.header.assignee
+        const eventDataBuffer = JSON.parse(this.eventDataBuffer)
+        this.users.assignee = this.eventData.variables.message[0].form.header.assignee = eventDataBuffer.variables.message[0].form.header.assignee
       },
       submitPost (data) {
         let { pid, pkey } = this.eventData
