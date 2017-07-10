@@ -140,7 +140,9 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.addUserData.visible = false
-            this.$message.success(`成功新建用户 ${code}！`)
+            this.$alert(`用户 ${code} 的密码是 ${res.data.data.pwd}。`, '新建成功！', {
+              confirmButtonText: '记住了'
+            })
             this.getPermittedUserList()
           }
         })
