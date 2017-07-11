@@ -185,7 +185,7 @@
       <!-- </el-col>
       <el-col :span="8" :xs="24"> -->
         <el-button-group>
-          <el-button v-for="operation in operationArray" @click="showDialog(operation)" :type="buttonType(operation)">
+          <el-button v-for="operation in operationArray" @click="showDialog(operation)" :icon="buttonIcon(operation)">
             {{operation}}
             <!-- <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link> -->
           </el-button>
@@ -225,11 +225,15 @@
                     </div>
 
                     <div v-show="isEditing.priority">
-                      <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.priority" size="small" ref="priority">
+                      <!-- <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.priority" size="small" ref="priority">
                         <el-option label="低" value="低"></el-option>
                         <el-option label="正常" value="正常"></el-option>
                         <el-option label="高" value="高"></el-option>
-                      </el-select>
+                      </el-select> -->
+                      <form-body
+                        :item="eventData.variables.message[0].form.header"
+                        :form-item="formData.priority">
+                      </form-body>
                       <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('priority')"></i>
                       <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('priority')"></i>
                     </div>
@@ -244,18 +248,36 @@
                     </div>
 
                     <div v-show="isEditing.labels">
-                      <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.labels" size="small" ref="labels" multiple>
+                      <!-- <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.labels" size="small" ref="labels" multiple>
                         <el-option label="低" value="低"></el-option>
                         <el-option label="正常" value="正常"></el-option>
                         <el-option label="高" value="高"></el-option>
-                      </el-select>
+                      </el-select> -->
+                      <form-body
+                        :item="eventData.variables.message[0].form.header"
+                        :form-item="formData.labels">
+                      </form-body>
                       <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('labels')"></i>
                       <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('labels')"></i>
                     </div>
                   </div>
               </el-form-item>
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
-                <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
+                  <div class="editable-field">
+                    <div v-show="!isEditing.issue">
+                      <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
+                      <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('issue')"></i>
+                    </div>
+
+                    <div v-show="isEditing.issue">
+                      <form-body
+                        :item="eventData.variables.message[0].form.header"
+                        :form-item="formData.issue">
+                      </form-body>
+                      <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('issue')"></i>
+                      <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('issue')"></i>
+                    </div>
+                  </div>
               </el-form-item>
               <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
                 <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
@@ -454,7 +476,8 @@
                   </div>
                   <a href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.userId}} <i class="el-icon-fa-user-circle"></i></a>
                 </el-tooltip>
-                <a v-else href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-users"></i></a>
+                <a v-else-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name" href="#" class="tooltip-link">{{ eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-users"></i></a>
+                <span v-else>未指定</span>
                 <!-- <el-button size="small" icon="edit" @click="isEditing.assignee = true"></el-button> -->
                 <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('assignee')"></i>
               </el-form-item>
@@ -462,7 +485,7 @@
                 <span>
                   <member-select
                     :vmodel="eventData.variables.message[0].form.header"
-                    :strucData="assigneeFormData">
+                    :strucData="formData.assignee">
                   </member-select>
                 </span>
                 <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('assignee')"></i>
@@ -558,20 +581,11 @@
   export default {
     data () {
       return {
-        users: {
-          assignee: {
-            group: null,
-            user: null
-          }
-        },
-        assigneeFormData: {
-          // id: 'assignee',
-          // isAlias: true,
-          // required: false,
-          // readonly: false,
-          // value: {
-          //   allow_create: false
-          // }
+        formData: {
+          priority: {},
+          labels: {},
+          issue: {},
+          assignee: {}
         },
         activeTab: 'first',
         eventData: {},
@@ -616,6 +630,7 @@
         isEditing: {
           priority: false,
           labels: false,
+          issue: false,
           assignee: false
         },
         fileListToShow: [],
@@ -638,16 +653,16 @@
     },
 
     methods: {
-      buttonType (oper) {
-        // if (oper === '取消工单') {
-        //   return 'danger'
-        // } else if (oper === '延后处理') {
-        //   return 'warning'
-        // } else if (oper === '已完成') {
-        //   return 'success'
-        // } else if (oper === '开始处理') {
-        //   return 'info'
-        // }
+      buttonIcon (oper) {
+        switch (oper) {
+          case '开始处理': return 'fa-play'
+          case '延后处理': return 'fa-clock-o'
+          case '已完成': return 'fa-check'
+          case '取消工单': return 'fa-ban'
+          case '重新处理': return 'fa-undo'
+          case '关闭工单': return 'fa-close'
+          default: return false
+        }
       },
       renderStartForm () { // 渲染表单数据
         const postData = {
@@ -662,7 +677,10 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           this.startFormData = res.data.data.form
           this.acceptedFileTypes = this.startFormData.header[0].value.find(attr => attr.id === 'attachments').value.regex.join(',')
-          this.assigneeFormData = this.startFormData.header[0].value.find(attr => attr.id === 'assignee')
+          this.formData.assignee = this.startFormData.header[0].value.find(attr => attr.id === 'assignee')
+          this.formData.priority = this.startFormData.header[0].value.find(attr => attr.id === 'priority')
+          this.formData.labels = this.startFormData.header[0].value.find(attr => attr.id === 'labels')
+          this.formData.issue = this.startFormData.header[0].value.find(attr => attr.id === 'issue')
         })
       },
       getEventData (needRefetch = false) {
@@ -689,6 +707,7 @@
 
       initializeFileList () {
         let { attachments } = this.eventData.variables.message[0].form.header
+        if (!attachments) return
         for (let att of attachments) {
           // this.fileListToShow.push({ name: att.desc, url: `/api/download_file/${att.file_name}` })
           if (!this.fileListToShow.find(file => file.name === att.desc)) {
@@ -919,8 +938,7 @@
             pkey: this.eventData.pkey,
             tkey: 'start',
             form: {
-              header: this.submitData,
-              body: []
+              header: this.submitData
             }
           }
         }

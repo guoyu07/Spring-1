@@ -103,7 +103,8 @@
         }
       },
       renderOptions () {
-        if (!this.strucData.default.type) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
+        // this.whole 区分是不是快速编辑 快速编辑 不传 whole, 需要原值
+        if (!this.strucData.default.type && this.whole) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
           if (this.strucData.value.type === 'dicts') {
             this.vmodel[this.strucData.id] = []
           } else {
