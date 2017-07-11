@@ -1,8 +1,9 @@
 <template>
+  <!-- 用 whole 来区分是否需要显示label formItem.name 因为快速编辑里面不传 whole ，只需要编辑当前一个表单 -->
   <el-form-item
     v-if="formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'"
     :prop="prop(formItem)"
-    :label="formItem.name"
+    :label="whole ? formItem.name : ''"
     :rules="rules(formItem)"
     :class="((formItem.isAlias && formItem.value.type !== 'users') || ['file', 'files'].includes(formItem.value.type)) ? 'blockElement' : ''">
     <!-- <el-input
