@@ -181,7 +181,7 @@
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="24" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
-        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${event.name}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
+        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${eventData.variables.message[0].form.header.summary}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
       <!-- </el-col>
       <el-col :span="8" :xs="24"> -->
         <el-button-group>
@@ -467,8 +467,6 @@
                 </span>
                 <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('assignee')"></i>
                 <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('assignee')"></i>
-                <!-- <el-button size="small" icon="close" @click="cancelSubmit"></el-button>
-                <el-button size="small" icon="check" @click="submitAssgign"></el-button> -->
               </el-form-item>
               <el-form-item label="通知人">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.reporter">
@@ -560,8 +558,6 @@
   export default {
     data () {
       return {
-        showEditBtn: false,
-        assigneeEdit: false,
         users: {
           assignee: {
             group: null,
@@ -582,22 +578,6 @@
         eventDataBuffer: '',
         startFormData: {},
         eventConfVisible: false,
-        event: {
-          name: '事件名',
-          type: '事故',
-          status: 'open',
-          priority: 'high',
-          components: ['分类 1', '分类 2'],
-          labels: ['标签 1', '标签 2'],
-          attachments: [{name: 'food.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}, {name: 'food2.jpeg', url: 'https://fuss10.elemecdn.com/3/63/4e7f3a15429bfda99bce42a18cdd1jpeg.jpeg?imageMogr2/thumbnail/360x360/format/webp/quality/100'}],
-          assignee: 'Jason Lam',
-          reporter: 'Samuel Qin',
-          requestParticipants: [],
-          watchers: ['Jason Lam', 'Samuel Qin', 'Weimi'],
-          created: '2017-05-08 10:30:03',
-          updated: '2017-05-08 10:38:03',
-          resolved: '2017-05-09 11:50:09'
-        },
         postForm: {
           header: {},
           body: []
@@ -658,51 +638,6 @@
     },
 
     methods: {
-      // onHover () {
-      //   console.log('hover')
-      //   this.showEditBtn = true
-      //   this.users.assignee = this.eventData.variables.message[0].form.header.assignee
-      // },
-      // onLeave () {
-      //   console.log('leave')
-      //   this.showEditBtn = false
-      // },
-      submitAssgign () {
-        this.assigneeEdit = false
-        this.showEditBtn = false
-        console.log(this.users.assignee)
-
-        const postData = {
-          header: { assignee: this.users.assignee }
-        }
-        this.submitPost(postData)
-      },
-      cancelSubmit () {
-        this.assigneeEdit = false
-        this.showEditBtn = false
-        const eventDataBuffer = JSON.parse(this.eventDataBuffer)
-        this.users.assignee = this.eventData.variables.message[0].form.header.assignee = eventDataBuffer.variables.message[0].form.header.assignee
-      },
-      submitPost (data) {
-        let { pid, pkey } = this.eventData
-        let { tkey } = { tkey: 'start' }
-        let postData = {
-          action: 'modify/form/data',
-          method: 'POST',
-          data: {
-            pid,
-            pkey,
-            tkey,
-            form: data
-          }
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.$message.success('修改成功！')
-            // this.$router.push(`/event-hub/event/${this.eventData.id}`)
-          }
-        })
-      },
       buttonType (oper) {
         // if (oper === '取消工单') {
         //   return 'danger'
@@ -981,7 +916,7 @@
           method: 'POST',
           data: {
             pid: this.eventData.pid,
-            pkey: 'incident',
+            pkey: this.eventData.pkey,
             tkey: 'start',
             form: {
               header: this.submitData,
