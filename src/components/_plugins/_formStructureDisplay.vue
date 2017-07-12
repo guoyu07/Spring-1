@@ -6,7 +6,7 @@
         <el-form-item
           v-if="(showFormItem(formItem, postForm, messageData, historyTask, currentTask, index) && item[formItem.id]) || currentTask === 'current'"
           :label="formItem.name"
-          :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' ? 'blockElement' : ''">
+          :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' || (formItem.isAlias && formItem.value.type !== 'users') ? 'blockElement' : ''">
 
           <span v-if="formItem.value.type === 'dict'">
             {{ item && item[formItem.id][formItem.value.source.res.show_key] }}
@@ -117,6 +117,7 @@
     font-size: 0;
     background-color: rgba(247, 250, 252, .5);
     border-radius: 12px;
+    padding: 10px;
     h5 {
       font-size: 12px;
       padding: 5px;

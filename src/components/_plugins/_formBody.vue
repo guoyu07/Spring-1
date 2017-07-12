@@ -504,6 +504,7 @@
 </script>
 <style lang="less">
   .blockElement {
+    word-break: break-all;
     width: 100%;
     display: flex !important;
     .el-form-item__content {

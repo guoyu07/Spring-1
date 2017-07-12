@@ -67,6 +67,27 @@
       if (this.strucData.value.source.res.show_key.length <= 1) {
         this.showToolTip = true
       }
+      for (const para of this.strucData.value.source.data.params) {
+        let keyPath
+        if (para.value.key_path) {
+          keyPath = para.value.key_path.split('.')
+          if (para.value.type === 'form_header') {
+            this.$watch('whole.header.' + keyPath[0], (newVal, oldVal) => {
+              this.renderOptions()
+            }, { deep: true })
+          } else if (para.value.type === 'form_body') {
+            if (this.bodyTable || this.headerTable) {
+              this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
+                this.renderOptions()
+              }, { deep: true })
+            } else {
+              this.$watch('whole.body.' + this.index + '.' + keyPath[0], (newVal, oldVal) => {
+                this.renderOptions()
+              }, { deep: true })
+            }
+          }
+        }
+      }
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
           // console.log(this.strucData.watch)
@@ -187,7 +208,7 @@
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
           // 配置默认值
-          if (this.strucData.default.type) {
+          if (this.strucData.default && this.strucData.default.type) {
             if (this.strucData.default.type === 'api') {
               if (Array.isArray(this.vmodel[this.strucData.id])) {
                 let keyData
@@ -250,7 +271,7 @@
 
             //   }
             // })
-            if (this.strucData.default.type) {
+            if (this.strucData.default && this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                 const user = window.localStorage.userName
                 this.optionList.map(option => {
@@ -298,9 +319,9 @@
                 }
               })
             } else {
-              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
+              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
-                  if (option[this.strucData.value.source.res.show_key] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key]) {
+                  if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
                     this.vmodel[this.strucData.id] = option
                     return false
                   } else {
