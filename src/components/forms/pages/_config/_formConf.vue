@@ -194,6 +194,7 @@
                       <el-option label="下拉多选" value="enums"></el-option>
                       <el-option label="下拉单选（API）" value="dict"></el-option>
                       <el-option label="下拉多选（API）" value="dicts"></el-option>
+                      <el-option label="级联菜单" value="cascade"></el-option>
                       <el-option label="搜索条件" value="search_bar"></el-option>
                       <el-option label="人员选择器" value="users"></el-option>
                       <el-option label="表格" value="table"></el-option>
@@ -211,6 +212,11 @@
                       <el-button size="small" slot="reference">配置选项</el-button>
                     </el-popover>
                     <!-- </template> -->
+                    <!-- 级联菜单 -->
+                    <el-popover v-if="itemConf.value.type === 'cascade'" placement="left" trigger="click" @show="showCascadeConf(itemConf)">
+                      <cascade-conf :conf-arr="itemConf.value.regex"></cascade-conf>
+                      <el-button size="small" slot="reference">配置数据</el-button>
+                    </el-popover>
                     <!--表格-->
                     <el-popover v-if="itemConf.value.type === 'table'" placement="top" trigger="click" @show="showTableConf(itemConf)">
                       <table-conf :dialog-props="itemConf"></table-conf>
@@ -374,6 +380,7 @@ import tableConf from './_tableConf' // 配置表格
 import defaultConf from './_defaultConf'
 import limitConf from './_limitConf'
 import presetConf from './_presetConf'
+import cascadeConf from './_cascadeConf'
 
 export default {
   props: {
@@ -408,6 +415,7 @@ export default {
         enums: '下拉多选',
         dict: '下拉单选（API）',
         dicts: '下拉多选（API）',
+        cascade: '级联菜单',
         search_bar: '搜索条件',
         users: '人员选择器',
         table: '表格'
@@ -513,6 +521,26 @@ export default {
         })
       }
       itemConf.value.confVisible = true
+    },
+    // 显示级联菜单的选项
+    showCascadeConf (itemConf) {
+      if (!itemConf.value.regex || !itemConf.value.regex.length) {
+        this.$set(itemConf.value, 'regex', [{
+          value: 'A',
+          label: 'A',
+          children: [{
+            value: 'A-a',
+            label: 'A-a'
+          }, {
+            value: 'A-b',
+            label: 'A-b',
+            children: [{
+              value: 'A-b-1',
+              label: 'A-b-1'
+            }]
+          }]
+        }])
+      }
     },
     // 表格配置
     showTableConf (itemConf) {
@@ -620,7 +648,8 @@ export default {
     tableConf,
     defaultConf,
     limitConf,
-    presetConf
+    presetConf,
+    cascadeConf
   }
 }
 </script>

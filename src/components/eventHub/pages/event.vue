@@ -470,7 +470,7 @@
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
               <el-form-item label="当前处理人" v-if="!isEditing.assignee">
                 <el-tooltip placement="top" :disabled="isEditing.assignee">
-                  <div slot="content">
+                  <div slot="content" v-if="eventData.variables.message[0].form.header.assignee.user">
                     <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
                     <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
                   </div>
