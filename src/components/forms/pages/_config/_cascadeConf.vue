@@ -56,7 +56,7 @@
                     <el-input size="small" v-model="layerC.label" @change="layerC.value = layerC.label"></el-input>
                   </el-form-item>
                   <el-form-item>
-                    <!-- <el-button size="small" type="success" icon="plus" @click="addChild(layerC)"></el-button> -->
+                    <el-button size="small" type="success" icon="plus" @click="addChild(layerC)" :disabled="true">已达层数上限</el-button>
                     <el-tooltip placement="top">
                       <div slot="content"><i class="el-icon-warning"></i> 将移除 {{layerC.label}}</div>
                       <el-button size="small" type="danger" icon="minus" @click="removeChild(layerB.children, index)"></el-button>
@@ -92,12 +92,12 @@
 
     methods: {
       addOutsideLayer () {
-        this.confArr.push({ value: '', label: 'New parent' })
+        this.confArr.push({ value: 'New parent', label: 'New parent' })
       },
 
       addChild (layer) {
         if (!layer.children) {
-          this.$set(layer, 'children', [{ value: '', label: 'New child' }])
+          this.$set(layer, 'children', [{ value: 'New child', label: 'New child' }])
         } else {
           layer.children.push({ value: '', label: 'New child' })
         }
