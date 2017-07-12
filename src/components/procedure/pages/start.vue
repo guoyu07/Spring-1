@@ -42,7 +42,7 @@
                 <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
               </div>
               <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]">
+                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :closable="index !== 0">
                   <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                     <div v-for="bodyList in taskFormData.body.body_list">
                         <div v-if="showBodyList(bodyList, postForm, applyData, index)">
@@ -85,8 +85,8 @@
         </el-card>
         <div class="btn-area">
           <!-- :disabled="validateForm" -->
-          <el-button type="primary" @click="onSubmit" icon="check" v-if="!isEditing">确认</el-button>
-          <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button>
+          <el-button type="primary" @click="onSubmit" icon="check">确认</el-button>
+          <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
           <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
         </div>
       </el-col>
@@ -263,10 +263,18 @@
           data: { taskId: this.$route.params.tid }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          // console.log(this.postForm.header)
-          // this.postForm = res.data.data.variables.message[0].form
-          this.postForm.header = Object.assign({}, this.postForm.header, res.data.data.variables.message[0].form.header)
-          this.postForm.body = Object.assign({}, this.postForm.body, res.data.data.variables.message[0].form.body)
+          const data = res.data.data.variables.message[0].form
+          this.postForm.header = Object.assign({}, this.postForm.header, data.header)
+          // this.postForm && this.postForm.body.map((body, bodyindex) => {
+          //   console.log(body)
+          //   // body = Object.assign({}, body, data.body[bodyindex])
+          // })
+          // this.postForm.body.forEach((body, index) => {
+          //   console.log(body)
+          // })
+          for (const id in this.postForm) {
+            console.log(this.postForm[id])
+          }
         })
       },
       handleClick (val) {
@@ -286,20 +294,21 @@
         this.$refs[formName].resetFields()
       },
       removeTab (targetName) {
-        let tabs = this.postForm.body
-        let activeName = this.tabsValue
-        // if (activeName === targetName) {
-        tabs.forEach((tab, index) => {
-          // if (index === +targetName) {
-          let nextTab = tabs[index + 1] || tabs[index - 1]
-          if (nextTab) {
-            activeName = tabs.indexOf(nextTab)
-          }
-          // }
-        })
-        // }
-        this.tabsValue = activeName + ''
-        this.postForm.body.splice(targetName, 1)
+        console.log(targetName)
+        // let tabs = this.postForm.body
+        // let activeName = this.tabsValue
+        // // if (activeName === targetName) {
+        // tabs.forEach((tab, index) => {
+        //   // if (index === +targetName) {
+        //   let nextTab = tabs[index + 1] || tabs[index - 1]
+        //   if (nextTab) {
+        //     activeName = tabs.indexOf(nextTab)
+        //   }
+        //   // }
+        // })
+        // // }
+        // this.tabsValue = activeName + ''
+        // this.postForm.body.splice(targetName, 1)
       },
       addTab (targetName) {
         var that = this
@@ -475,24 +484,6 @@
         })
       },
       postMethod (data) {
-        // for (const headerid in data.header) {
-        //   if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
-        //     delete data.header[headerid]
-        //   }
-        //   if (!data.header[headerid]) {
-        //     delete data.header[headerid] // 删除头部空值
-        //   }
-        // }
-        // data.body.map(body => {
-        //   for (const bodyid in body) {
-        //     if (Array.isArray(body[bodyid]) && body[bodyid].length === 0) {
-        //       delete body[bodyid]
-        //     }
-        //     if (!body[bodyid]) {
-        //       delete body[bodyid] // 删除body空值
-        //     }
-        //   }
-        // })
         let postFormData = {
           header: {},
           body: []
@@ -518,12 +509,27 @@
             }
           }
         })
-        const postData = {
-          action: 'runtime/process/instances',
-          method: 'POST',
-          data: {
-            pkey: this.$route.params.pkey,
-            form: postFormData
+        let postData
+        let { pid, pkey, tkey, tid } = this.$route.params
+        if (this.isEditing) {
+          postData = {
+            action: 'modify/form/data',
+            method: 'POST',
+            data: {
+              pid,
+              pkey,
+              tkey,
+              form: postFormData
+            }
+          }
+        } else {
+          postData = {
+            action: 'runtime/process/instances',
+            method: 'POST',
+            data: {
+              pkey: this.$route.params.pkey,
+              form: postFormData
+            }
           }
         }
         console.log(postFormData)
@@ -534,7 +540,9 @@
                 message: '成功!',
                 type: 'success'
               })
-              if (this.$route.params.pkey === 'easyops_monitor') {
+              if (this.isEditing) {
+                this.$router.push(`/event-hub/event/${tid}`)
+              } else if (this.$route.params.pkey === 'easyops_monitor') {
                 this.$router.push('/alarm') // 告警处理成功后跳转告警事件
               } else if (this.$route.params.pkey === 'incident') {
                 this.$router.push('/event-hub') // 跳转事件管理

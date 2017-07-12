@@ -470,9 +470,9 @@
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
               <el-form-item label="当前处理人" v-if="!isEditing.assignee">
                 <el-tooltip placement="top" :disabled="isEditing.assignee">
-                  <div slot="content">
-                    <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
-                    <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
+                  <div slot="content" v-if="eventData.variables.message[0].form.header.assignee.user">
+                    <p><b>Email</b>: {{ eventData.variables.message[0].form.header.assignee.user.email}}</p>
+                    <p><b>ID</b>: {{ eventData.variables.message[0].form.header.assignee.user.userId}}</p>
                   </div>
                   <a v-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.user && eventData.variables.message[0].form.header.assignee.user.code" href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.userId}} <i class="el-icon-fa-user-circle"></i></a>
                   <a v-else-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name" href="#" class="tooltip-link">{{ eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-users"></i></a>

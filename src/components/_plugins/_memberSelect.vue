@@ -98,17 +98,23 @@
     },
     methods: {
       groupChange (val) {
-        this.vmodel[this.strucData.id].group = {}
-        this.vmodel[this.strucData.id].group.name = val.name
-        this.vmodel[this.strucData.id].group.key = val.key
-        this.member.user = null
+        if (val.key) {
+          this.vmodel[this.strucData.id].group = {}
+          this.vmodel[this.strucData.id].group.name = val.name
+          this.vmodel[this.strucData.id].group.key = val.key
+          this.member.user = null
+        } else {
+          this.vmodel[this.strucData.id].group = null
+        }
         this.renderGroupUserList(val.key)
       },
       userChange (val) {
         if (val && val.userId === '未指定') {
           this.vmodel[this.strucData.id].user = null
-        } else {
+        } else if (val && val.userId) {
           this.vmodel[this.strucData.id].user = val
+        } else {
+          this.vmodel[this.strucData.id].user = null
         }
       },
       assignToMe () {
@@ -190,7 +196,7 @@
         }
         this.http.post('', this.parseData(postHeadvData))
         .then((response) => {
-          console.log(response)
+          // console.log(response)
           this.userList = response.data.data
         })
       }
