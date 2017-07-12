@@ -113,14 +113,14 @@ const getPathResult = (result, path, k) => {
   } else {
     for (const i in _path) {
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
-        if (_result[_path[i]]) { // 读取不到值时 return false
+        if (_result[_path[i]] !== undefined) { // 读取不到值时 return false
           _result = _result[_path[i]]
         } else {
-          return false
+          return undefined
         }
       } else {
         console.log('getPathResult 出错')
-        return false
+        return undefined
       }
     }
   }
@@ -166,7 +166,7 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
 }
 
 Vue.prototype.setDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     Vue.prototype.$set(goalData, original.id, undefined)
@@ -180,7 +180,7 @@ Vue.prototype.setDataType = (original, goalData) => {
 }
 
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined

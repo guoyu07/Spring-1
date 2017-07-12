@@ -166,6 +166,12 @@
       :body-table="bodyTable"
       :header-table="headerTable">
     </member-select>
+    <el-cascader
+      v-else-if="formItem.value.type === 'cascade'"
+      :options="formItem.value.regex"
+      :disabled="formItem.readonly"
+      v-model="item[formItem.id]">
+    </el-cascader>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
@@ -211,6 +217,9 @@
           }
         }
       }
+    },
+    created () {
+      console.log('formbody' + this.formItem.name)
     },
     computed: {
       multiFiles () {
@@ -419,7 +428,7 @@
           }
         } else {
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'

@@ -78,6 +78,7 @@
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
+                console.log(newVal)
                 this.renderOptions()
               }, { deep: true })
             } else {
@@ -150,7 +151,7 @@
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
-              if (this.whole && this.getPathResult(this.whole.header, para.value.key_path)) {
+              if (this.whole && this.getPathResult(this.whole.header, para.value.key_path) !== undefined) {
                 // 这里要区分一下 this.whole.header 的 id 的值是对象还是数组, 数组的话，getPathResult 还有一个参数 k
                 params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
               } else {
@@ -158,22 +159,24 @@
               }
             } else if (para.value.type === 'form_body') {
               if (this.bodyTable || this.headerTable) {
-                if (this.getPathResult(this.whole, para.value.key_path)) {
+                if (this.getPathResult(this.whole, para.value.key_path) !== undefined) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole, para.value.key_path)
                 } else {
                   return false // 如果没取到值就不发请求
                 }
               } else {
-                if (this.getPathResult(this.whole && this.whole.body[this.index], para.value.key_path)) {
+                if (this.whole && this.getPathResult(this.whole.body[this.index], para.value.key_path) !== undefined) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
+                  // console.log(this.strucData.name, params[para.id])
                 } else {
+                  console.log(para.value.key_path)
                   return false // 如果没取到值就不发请求
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.message && this.getPathResult(this.message.header, para.value.key_path)) {
+              if (this.message && this.getPathResult(this.message.header, para.value.key_path) !== undefined) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
               } else {
@@ -181,7 +184,7 @@
               }
             } else if (para.value.type === 'message_body') {
               // console.log(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))
-              if (this.message && this.getPathResult(this.message.body[this.index], para.value.key_path, 0)) {
+              if (this.message && this.getPathResult(this.message.body[this.index], para.value.key_path, 0) !== false) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0)
               } else {
@@ -191,6 +194,7 @@
             }
           }
         }
+        // console.log(this.strucData.name, params)
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
