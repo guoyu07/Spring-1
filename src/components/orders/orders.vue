@@ -39,7 +39,7 @@
     }
   }
 
-  .el-collapse {
+  .history-list {
 
     .el-form {
       font-size: 0;
@@ -207,7 +207,7 @@
              taskList: deviceViewData.device.task_list
              }"></progress-wrap>
             <h5 class="sub-title" v-if="deviceViewData.device.variables && deviceViewData.device.variables.message"><i class="el-icon-information"></i> 完整历史步骤（{{ deviceViewData.device.variables.message.length }}）</h5>
-            <el-collapse v-if="deviceViewData.device.history_list">
+            <el-collapse v-if="deviceViewData.device.history_list" class="history-list">
               <el-collapse-item v-for="(task, key) in deviceViewData.device.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
                 <el-form label-position="left" label-width="90px" inline class="expanded-form">
                   <el-form-item v-if="task.task_key" label="任务 Key：">
