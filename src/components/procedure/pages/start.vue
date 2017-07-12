@@ -112,7 +112,8 @@
         taskFormData: {},
         validateForm: true,
         tabsValue: '0',
-        bodyLableName: []
+        bodyLableName: [],
+        Editdata: {}
       }
     },
     computed: {
@@ -187,6 +188,10 @@
                     this.postForm.header[item.id] = newVal
                   })
                 }
+              }
+              // 特殊处理--分类
+              if (this.isEditing && item.id === 'components') {
+                item.readonly = true
               }
             })
           })
@@ -263,18 +268,13 @@
           data: { taskId: this.$route.params.tid }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          const data = res.data.data.variables.message[0].form
-          this.postForm.header = Object.assign({}, this.postForm.header, data.header)
-          // this.postForm && this.postForm.body.map((body, bodyindex) => {
-          //   console.log(body)
-          //   // body = Object.assign({}, body, data.body[bodyindex])
-          // })
-          // this.postForm.body.forEach((body, index) => {
-          //   console.log(body)
-          // })
-          for (const id in this.postForm) {
-            console.log(this.postForm[id])
-          }
+          this.Editdata = res.data.data.variables.message[0].form
+          this.postForm.header = Object.assign({}, this.postForm.header, this.Editdata.header)
+          setTimeout(() => {
+            this.postForm.body = this.postForm.body.map((body, bodyindex) => {
+              return Object.assign({}, body, this.Editdata.body[bodyindex])
+            })
+          }, 100)
         })
       },
       handleClick (val) {
