@@ -140,11 +140,12 @@
                     <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                     <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
                     <el-checkbox v-if="itemConf.value.type === 'dict' || itemConf.value.type === 'dicts' || itemConf.value.type === 'search_bar'" v-model="itemConf.cmdb_need_check">是否检查／占用资源</el-checkbox>
-                    <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums' || itemConf.value.type ==='users'" v-model="itemConf.isAlias">
-                      <span v-if="itemConf.value.type === 'str'">长文本（textarea）</span>
-                      <span v-if="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
-                      <span v-if="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
-                      <span v-if="itemConf.value.type === 'users'">可选分组</span>
+                    <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums' || itemConf.value.type ==='users' || itemConf.value.type ==='orders'" v-model="itemConf.isAlias">
+                      <span v-show="itemConf.value.type === 'str'">长文本（textarea）</span>
+                      <span v-show="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
+                      <span v-show="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
+                      <span v-show="itemConf.value.type === 'users'">可选分组</span>
+                      <!-- <span v-show="itemConf.value.type === 'orders'">可选分类</span> -->
                     </el-checkbox>
                   </el-form-item>
                   <el-form-item label="默认值">
@@ -197,6 +198,7 @@
                       <el-option label="级联菜单" value="cascade"></el-option>
                       <el-option label="搜索条件" value="search_bar"></el-option>
                       <el-option label="人员选择器" value="users"></el-option>
+                      <!-- <el-option label="工单选择器" value="orders"></el-option> -->
                       <el-option label="表格" value="table"></el-option>
                     </el-select>
                     <!--静态选项-->
@@ -418,6 +420,7 @@ export default {
         cascade: '级联菜单',
         search_bar: '搜索条件',
         users: '人员选择器',
+        // orders: '工单选择器',
         table: '表格'
       }
     }

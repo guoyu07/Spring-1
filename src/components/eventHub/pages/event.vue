@@ -1121,7 +1121,9 @@
                 type: 'success'
               })
               this.dialogVisible = false
-              this.$router.replace('/event-hub') // 处理成功跳回 事件管理 页面
+              this.$router.replace(`/event-hub`) // 处理成功跳回 事件管理 页面
+              // this.getEventData(true)
+              // this.$router.go(0)
             } else if (res && res.status === 406) {
               this.$message.error(res.errorMessage)
             }

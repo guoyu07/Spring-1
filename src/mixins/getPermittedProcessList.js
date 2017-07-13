@@ -3,6 +3,7 @@ export default {
   data () {
     return {
       permittedProcessList: [],
+      permittedProcessListBuffer: '',
       permittedProcessLoading: false
     }
   },
@@ -18,6 +19,10 @@ export default {
       this.http.post('', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           this.permittedProcessList = res.data.data
+          for (let i = 0; i < this.permittedProcessList.length; i++) {
+            this.$set(this.permittedProcessList[i], 'editing', false)
+          }
+          this.permittedProcessListBuffer = JSON.stringify(this.permittedProcessList)
           this.permittedProcessLoading = false
           console.log('mixin working')
         }

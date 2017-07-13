@@ -30,8 +30,23 @@
               prop="pname"
               label="流程名称"></el-table-column>
             <el-table-column
-              prop="category"
-              label="类别"></el-table-column>
+              label="类别"
+              inline-template
+              :context="_self">
+              <template>
+                <el-select
+                  v-show="row.editing"
+                  v-model="row.category"
+                  filterable
+                  allow-create>
+                  <el-option v-for="cat in categoryList" :key="cat" :label="cat" :value="cat"></el-option>
+                </el-select>
+                <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
+                <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row.editing)"></i>
+                <span v-show="!row.editing">{{row.category}}</span>
+                <i class="el-icon-edit text-info" v-show="!row.editing" @click="row.editing = true"></i>
+              </template>
+            </el-table-column>
             <el-table-column
               label="操作"
               inline-template
@@ -62,18 +77,55 @@
           visible: false,
           pkey: '',
           data: ''
-        }
+        },
+        categoryList: []
       }
     },
 
     created () {
       this.getPermittedProcessList()
+      this.getCategoryList()
     },
 
     methods: {
       onNewBpmn () {
         window.localStorage.removeItem('bpmn')
         this.$router.replace('/custom/new')
+      },
+
+      getCategoryList () {
+        let postData = {
+          action: 'process/category/list',
+          method: 'POST',
+          data: {}
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.categoryList = res.data.data.list
+          }
+        })
+      },
+
+      onEditCategory ({ pkey, category }) {
+        let postData = {
+          action: 'permission/process',
+          method: 'PUT',
+          data: {
+            category,
+            pkey
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已修改！')
+            this.getPermittedProcessList()
+          }
+        })
+      },
+
+      onCancelEdit (editing) {
+        this.permittedProcessList = JSON.parse(this.permittedProcessListBuffer)
+        editing = false
       },
 
       onEditScript (pkey) {
