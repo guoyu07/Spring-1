@@ -90,15 +90,15 @@
         this.editInfo = {
           id: ''
         }
-      },
-      'applyForm.body': {
-        handler: (val, oldVal) => {
-          for (const data of val) {
-            data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
-          }
-        },
-        deep: true
       }
+      // 'applyForm.body': {
+      //   handler: (val, oldVal) => {
+      //     for (const data of val) {
+      //       data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
+      //     }
+      //   },
+      //   deep: true
+      // }
     },
     methods: {
       renderTaskForm () { // 渲染表单数据
@@ -118,8 +118,10 @@
               this.setDataType(item, this.applyForm.header, this)
               // 取默认值
               if (item.default.type) {
-                if (item.default.type === 'message_header') {
-                  this.applyForm.header[item.id] = this.getPathResult(this.applyForm.header, item.default.key_path)
+                if (item.default.type === 'form_header') {
+                  this.$watch('applyForm.header.' + item.default.key_path, newVal => {
+                    this.applyForm.header[item.id] = newVal
+                  })
                 } else if (item.default.type === 'static') {
                   this.applyForm.header[item.id] = item.default.value
                 }

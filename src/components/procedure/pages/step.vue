@@ -29,7 +29,7 @@
                 <div>
                   <div v-for="task in form">
                     <div v-for="taskbody in task.form.form.body.body_list">
-                      <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
+                      <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
                         <p class="h5">{{task.tname}}</p>
                         <form-structure-display
                           :item="data"
@@ -52,7 +52,7 @@
                           <h5>{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
                             <form-body
-                              v-if="showFormItem(formItem, assignForm, applyData)"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
                               :item="assignForm.body[index]"
                               :form-item="formItem"
                               :whole="assignForm"
@@ -61,7 +61,7 @@
                               keep-alive>
                             </form-body>
                             <search-bar
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                               :index="index"
                               :post-form="assignForm"
                               :hosts="assignForm.body[index]"
@@ -70,7 +70,7 @@
                               @on-hosts-change="onHostsChange">
                             </search-bar>
                             <body-table
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                               :form-data="formItem"
                               :item="assignForm.body[index]"
                               :post-form="assignForm"

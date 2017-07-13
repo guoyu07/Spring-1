@@ -38,6 +38,14 @@
             </span>
           </template>
 
+          <template v-else-if="formItem.value.type === 'cascade'">
+            <span v-for="(span, spanindex) in item[formItem.id]">
+              {{ span }}
+              <span v-if="spanindex === (item[formItem.id].length - 1)"></span>
+              <span v-else> /</span>
+            </span>
+          </template>
+
           <!-- <span v-else-if="formItem.value.type === 'search_bar'">
             <pre>{{ item[formItem.id] }}</pre>
           </span> -->

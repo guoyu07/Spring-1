@@ -88,7 +88,7 @@
     created () {
       if (this.strucData.isAlias) {
         this.renderGroupList()
-        this.renderGroupUserList()
+        // this.renderGroupUserList()
       } else {
         this.renderUserList()
       }
@@ -102,11 +102,12 @@
           this.vmodel[this.strucData.id].group = {}
           this.vmodel[this.strucData.id].group.name = val.name
           this.vmodel[this.strucData.id].group.key = val.key
-          this.member.user = null
+          this.renderGroupUserList(val.key)
         } else {
           this.vmodel[this.strucData.id].group = null
+          this.userList = []
         }
-        this.renderGroupUserList(val.key)
+        this.member.user = null
       },
       userChange (val) {
         if (val && val.userId === '未指定') {

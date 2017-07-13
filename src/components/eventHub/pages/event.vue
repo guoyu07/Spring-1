@@ -4,6 +4,17 @@
     margin: 18px 0 10px;
   }
 
+  .editable-field__indicator {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    line-height: 20px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+
   .ticket-num {
     font-size: 13px;
     font-weight: normal;
@@ -217,11 +228,11 @@
               <el-form-item label="优先度" v-if="eventData.variables.message[0].form.header.priority">
                 <template>
                   <div class="editable-field">
-                    <div v-show="!isEditing.priority">
+                    <div v-show="!isEditing.priority" @click="toggleEditable('priority')">
                       <span v-if="eventData.variables.message[0].form.header.priority === '高'"><i class="el-icon-fa-long-arrow-up text-error"></i> 高</span>
                       <span v-if="eventData.variables.message[0].form.header.priority === '正常'"><i class="el-icon-fa-minus text-success"></i> 正常</span>
                       <span v-if="eventData.variables.message[0].form.header.priority === '低'"><i class="el-icon-fa-long-arrow-down text-warning"></i> 低</span>
-                      <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('priority')"></i>
+                      <i class="editable-field__indicator el-icon-edit text-info"></i>
                     </div>
 
                     <div v-show="isEditing.priority">
@@ -242,12 +253,12 @@
               </el-form-item>
               <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
                   <div class="editable-field">
-                    <div v-show="!isEditing.labels">
+                    <div v-if="!isEditing.labels" @click="toggleEditable('labels')">
                       <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
-                      <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('labels')"></i>
+                      <i class="editable-field__indicator el-icon-edit text-info"></i>
                     </div>
 
-                    <div v-show="isEditing.labels">
+                    <div v-if="isEditing.labels">
                       <!-- <el-select class="editable-field__input" v-model="eventData.variables.message[0].form.header.labels" size="small" ref="labels" multiple>
                         <el-option label="低" value="低"></el-option>
                         <el-option label="正常" value="正常"></el-option>
@@ -264,9 +275,9 @@
               </el-form-item>
               <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
                   <div class="editable-field">
-                    <div v-show="!isEditing.issue">
+                    <div v-show="!isEditing.issue" @click="toggleEditable('issue')">
                       <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
-                      <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('issue')"></i>
+                      <i class="editable-field__indicator el-icon-edit text-info"></i>
                     </div>
 
                     <div v-show="isEditing.issue">
@@ -468,28 +479,29 @@
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">
-              <el-form-item label="当前处理人" v-if="!isEditing.assignee">
-                <el-tooltip placement="top" :disabled="isEditing.assignee">
-                  <div slot="content" v-if="eventData.variables.message[0].form.header.assignee.user">
-                    <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
-                    <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
-                  </div>
-                  <a v-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.user && eventData.variables.message[0].form.header.assignee.user.code" href="#" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.userId}} <i class="el-icon-fa-user-circle"></i></a>
-                  <a v-else-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name" href="#" class="tooltip-link">{{ eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-users"></i></a>
-                  <span v-else>未指定</span>
-                </el-tooltip>
-                <!-- <el-button size="small" icon="edit" @click="isEditing.assignee = true"></el-button> -->
-                <i class="editable-field__indicator el-icon-edit text-info" @click="toggleEditable('assignee')"></i>
-              </el-form-item>
-              <el-form-item label="当前处理人" v-if="isEditing.assignee">
-                <span>
-                  <member-select
-                    :vmodel="eventData.variables.message[0].form.header"
-                    :strucData="formData.assignee">
-                  </member-select>
-                </span>
-                <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('assignee')"></i>
-                <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('assignee')"></i>
+              <el-form-item label="当前处理人">
+                <div v-if="!isEditing.assignee" @click="toggleEditable('assignee')">
+                  <el-tooltip placement="top" :disabled="isEditing.assignee">
+                    <div slot="content" v-if="eventData.variables.message[0].form.header.assignee.user">
+                      <p><b>Email</b>: {{eventData.variables.message[0].form.header.assignee.user.email}}</p>
+                      <p><b>ID</b>: {{eventData.variables.message[0].form.header.assignee.user.userId}}</p>
+                    </div>
+                    <span v-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.user && eventData.variables.message[0].form.header.assignee.user.code" class="tooltip-link">{{eventData.variables.message[0].form.header.assignee.user.userId}} <i class="el-icon-fa-user-circle"></i></span>
+                    <span v-else-if="eventData.variables.message[0].form.header.assignee && eventData.variables.message[0].form.header.assignee.group && eventData.variables.message[0].form.header.assignee.group.name" class="tooltip-link">{{ eventData.variables.message[0].form.header.assignee.group.name}} <i class="el-icon-fa-users"></i></span>
+                    <span v-else>未指定</span>
+                  </el-tooltip>
+                  <i class="editable-field__indicator el-icon-edit text-info"></i>
+                </div>
+                <div v-if="isEditing.assignee">
+                  <span>
+                    <member-select
+                      :vmodel="eventData.variables.message[0].form.header"
+                      :strucData="formData.assignee">
+                    </member-select>
+                  </span>
+                  <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('assignee')"></i>
+                  <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable('assignee')"></i>
+                </div>
               </el-form-item>
               <el-form-item label="通知人">
                 <el-tooltip placement="top" v-if="eventData.variables.message[0].form.header.reporter">

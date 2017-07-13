@@ -42,7 +42,7 @@
                 <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
               </div>
               <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :closable="index !== 0">
+                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :name="index + ''" :closable="index !== 0">
                   <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                     <div v-for="bodyList in taskFormData.body.body_list">
                         <div v-if="showBodyList(bodyList, postForm, applyData, index)">
@@ -112,7 +112,9 @@
         taskFormData: {},
         validateForm: true,
         tabsValue: '0',
-        bodyLableName: []
+        tabsIndex: 0,
+        bodyLableName: [],
+        Editdata: {}
       }
     },
     computed: {
@@ -187,6 +189,10 @@
                     this.postForm.header[item.id] = newVal
                   })
                 }
+              }
+              // 特殊处理--分类
+              if (this.isEditing && item.id === 'components') {
+                item.readonly = true
               }
             })
           })
@@ -263,18 +269,13 @@
           data: { taskId: this.$route.params.tid }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
-          const data = res.data.data.variables.message[0].form
-          this.postForm.header = Object.assign({}, this.postForm.header, data.header)
-          // this.postForm && this.postForm.body.map((body, bodyindex) => {
-          //   console.log(body)
-          //   // body = Object.assign({}, body, data.body[bodyindex])
-          // })
-          // this.postForm.body.forEach((body, index) => {
-          //   console.log(body)
-          // })
-          for (const id in this.postForm) {
-            console.log(this.postForm[id])
-          }
+          this.Editdata = res.data.data.variables.message[0].form
+          this.postForm.header = Object.assign({}, this.postForm.header, this.Editdata.header)
+          setTimeout(() => {
+            this.postForm.body = this.postForm.body.map((body, bodyindex) => {
+              return Object.assign({}, body, this.Editdata.body[bodyindex])
+            })
+          }, 100)
         })
       },
       handleClick (val) {
@@ -294,21 +295,21 @@
         this.$refs[formName].resetFields()
       },
       removeTab (targetName) {
-        console.log(targetName)
-        // let tabs = this.postForm.body
-        // let activeName = this.tabsValue
-        // // if (activeName === targetName) {
-        // tabs.forEach((tab, index) => {
-        //   // if (index === +targetName) {
-        //   let nextTab = tabs[index + 1] || tabs[index - 1]
-        //   if (nextTab) {
-        //     activeName = tabs.indexOf(nextTab)
-        //   }
-        //   // }
-        // })
-        // // }
-        // this.tabsValue = activeName + ''
-        // this.postForm.body.splice(targetName, 1)
+        // console.log(targetName)
+        let tabs = this.postForm.body
+        let activeName = this.tabsValue
+        // if (activeName === targetName) {
+        tabs.forEach((tab, index) => {
+          // if (index === +targetName) {
+          let nextTab = tabs[index + 1] || tabs[index - 1]
+          if (nextTab) {
+            activeName = tabs.indexOf(nextTab)
+          }
+          // }
+        })
+        // }
+        this.tabsValue = activeName + ''
+        this.postForm.body.splice(targetName, 1)
       },
       addTab (targetName) {
         var that = this
