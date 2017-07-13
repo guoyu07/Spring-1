@@ -236,15 +236,15 @@
             <router-link :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span> -->
 
-          <span v-else-if="deviceViewData.device.pkey==='host' && filter === '待审核'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '待审核'">
             <router-link :to="{ path: `/guosen/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="deviceViewData.device.pkey==='host' && filter === '已审核'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已审核'">
             <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.pid}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="deviceViewData.device.pkey==='host' && filter === '已参与'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已参与'">
             <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.pid}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 

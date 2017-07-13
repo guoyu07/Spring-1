@@ -55,7 +55,7 @@
                           <h5>{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
                             <form-body
-                              v-if="showFormItem(formItem, assignForm, applyData)"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
                               :item="assignForm.body[index]"
                               :form-item="formItem"
                               :whole="assignForm"
@@ -65,7 +65,7 @@
                             </form-body>
                             <span class="tips" v-if="formItem.id === 'idcracku'">顶端U位：{{assignForm.body[index].idcracku + applyData.header.host_list[index].u_num - 1}}</span>
                             <search-bar
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                               :index="index"
                               :hosts="assignForm.body[index]"
                               :attr-list="formItem"
@@ -73,7 +73,7 @@
                               @on-hosts-change="onHostsChange">
                             </search-bar>
                             <body-table
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                               :form-data="formItem"
                               :item="assignForm.body[index]"
                               :post-form="assignForm"
@@ -459,15 +459,78 @@
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
-            this.taskForm.body.body_list.forEach(body => {
+            this.taskForm.body.body_list.forEach((body, bodyIndex) => {
+              // if (this.showBodyList(body, this.assignForm, this.applyData, bodyIndex)) {
+              //   if (body.show.type === 'message_body') {
+              //     if (body.show.value === item[keyPath[0]]) {
+              //       console.log(item[keyPath[0]])
+              //       body.attr_list.map(group => {
+              //         group.value.map(value => {
+              //           // this.setNewDataType(item, newData)
+              //           if (value.need_submit) {
+              //             this.setNewDataType(value, newData)
+              //             // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+              //             if (value.default && value.default.type) {
+              //               if (value.default.type === 'message_header') {
+              //                 newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+              //               } else if (value.default.type === 'form_body') {
+              //                 this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+              //                   this.assignForm.body[k][value.id] = newVal
+              //                 })
+              //               }
+              //             }
+              //           }
+              //         })
+              //       })
+              //       console.log(newData)
+              //     }
+              //   } else if (body.show.type === 'message_header') {
+              //     body.attr_list.map(group => {
+              //       group.value.map(value => {
+              //         if (value.need_submit) {
+              //           this.setNewDataType(value, newData)
+              //           // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+              //           if (value.default.type) {
+              //             if (value.default.type === 'message_header') {
+              //               newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+              //             } else if (value.default.type === 'form_body') {
+              //               this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+              //                 this.assignForm.body[k][value.id] = newVal
+              //               })
+              //             }
+              //           }
+              //         }
+              //         if (!value.need_submit && value.readonly) {
+              //           if (value.default.type === 'message_header') {
+              //             // item === this.applyData.body
+              //             item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+              //           }
+              //         }
+              //       })
+              //     })
+              //   }
+              // }
               if (body.show.type) {
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
                     console.log(item[keyPath[0]])
                     body.attr_list.map(group => {
-                      group.value.map(item => {
-                        this.setNewDataType(item, newData)
+                      group.value.map(value => {
+                        // this.setNewDataType(item, newData)
+                        if (value.need_submit) {
+                          this.setNewDataType(value, newData)
+                          // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'message_header') {
+                              newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                            } else if (value.default.type === 'form_body') {
+                              this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                                this.assignForm.body[k][value.id] = newVal
+                              })
+                            }
+                          }
+                        }
                       })
                     })
                     console.log(newData)
@@ -584,15 +647,25 @@
             }
             // 主机名
             if (this.routerInfo.tkey === 'confirm1') {
+              let prefix
+              if (this.routerInfo.pkey === 'host') {
+                prefix = [
+                  this.applyData.header.idc.abbreviation,
+                  this.applyData.header.host_type.abbreviation,
+                  this.applyData.header.app.abbreviation
+                ].join('') + '-' + this.applyData.header.component.abbreviation
+              } else if (this.routerInfo.pkey === 'host_my') {
+                prefix = [
+                  this.applyData.body[k].idc.abbreviation,
+                  this.applyData.body[k].host_type.abbreviation,
+                  this.applyData.body[k].app.abbreviation
+                ].join('') + '-' + this.applyData.body[k].component.abbreviation
+              }
               const postHeadvData = {
                 action: `hostname/minnumber`,
                 method: 'get',
                 data: {
-                  prefix: [
-                    this.applyData.header.idc.abbreviation,
-                    this.applyData.header.host_type.abbreviation,
-                    this.applyData.header.app.abbreviation
-                  ].join('') + '-' + this.applyData.header.component.abbreviation
+                  prefix: prefix
                 }
               }
               this.http.post('', this.parseData(postHeadvData))

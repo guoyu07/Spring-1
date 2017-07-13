@@ -188,7 +188,7 @@
 
 <template>
   <div class="event">
-    <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{eventData.variables.message[0].form.header.summary}}</h3>
+    <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{ eventData.variables && eventData.variables.message[0].form.header.summary}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="24" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->

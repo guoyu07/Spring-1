@@ -143,6 +143,7 @@
           this.groupList = response.data.data
           if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
             this.groupList.map(group => {
+              console.log(group.key === this.vmodel[this.strucData.id].group.key)
               if (group.key === this.vmodel[this.strucData.id].group.key) {
                 this.member.group = group // 这里发生了change事件 导致 user = null
                 // console.log(this.vmodel[this.strucData.id])
