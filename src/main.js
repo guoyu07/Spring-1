@@ -103,9 +103,10 @@ const parseData = obj => {
 Vue.prototype.parseData = parseData
 
 const getPathResult = (result, path, k) => {
+  if (!result) console.log('找不到result')
   let _result = result
   const _path = path.split('.')
-  // console.log(_path, Array.isArray(_result[_path[0]]), k)
+  // console.log(_path, Array.isArray(_result[_path[0]]))
   if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
     _path.reduce((prev, cur, index) => {
       _result = index ? _result[cur] : _result[cur][k]
@@ -114,6 +115,7 @@ const getPathResult = (result, path, k) => {
     for (const i in _path) {
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
         if (_result[_path[i]] !== undefined) { // 读取不到值时 return false
+          // console.log(_result[_path[i]])
           _result = _result[_path[i]]
         } else {
           return undefined
@@ -324,32 +326,26 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
       } else {
         compareVariable = postForm.header
       }
-      // Vue.prototype.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-      //   if (item.show.op === 'eq' && newVal === item.show.value) {
-      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
-      //   } else if (item.show.op === 'neq' && newVal !== item.show.value) {
-      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
-      //   } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
-      //     Vue.prototype.setDataType(item, postForm.header, Vue.prototype)
-      //   } else {
-      //     delete postForm.header[item.id]
-      //   }
-      // })
     } else if (taskform.show.type === 'message_header') {
       compareVariable = messageData.header
     } else if (taskform.show.type === 'message_body') {
+      // console.log('message_body', index)
       compareVariable = messageData.body[index]
     }
+    const keyPath = taskform.show.key_path.split('.')
+    const _keyPath = keyPath[0]
+    // console.log(taskform, compareVariable)
+    // console.log(_keyPath, Vue.prototype.getPathResult(compareVariable, _keyPath))
     if (taskform.show.op === 'eq') {
-      if (Vue.prototype.getPathResult(compareVariable, taskform.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) === taskform.show.value) {
+      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) === taskform.show.value) {
         return true
       }
     } else if (taskform.show.op === 'neq') {
-      if (Vue.prototype.getPathResult(compareVariable, taskform.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) !== taskform.show.value) {
+      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) !== taskform.show.value) {
         return true
       }
     } else if (taskform.show.op === 'reg') {
-      if (Vue.prototype.getPathResult(compareVariable, taskform.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path).includes(taskform.show.value)) {
+      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path).includes(taskform.show.value)) {
         return true
       }
     }

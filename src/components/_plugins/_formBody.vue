@@ -219,7 +219,7 @@
       }
     },
     created () {
-      console.log('formbody' + this.formItem.name)
+      // console.log('formbody' + this.formItem.name)
     },
     computed: {
       multiFiles () {

@@ -24,7 +24,7 @@ module.exports = {
     proxyTable: {
         '/api': {
             // target: 'http://192.168.10.28:8000', 春秋
-            target: 'http://192.168.10.28:8000',
+            target: 'http://192.168.10.29:8000',
             changeOrigin: true,
             pathRewrite: {
               '^/api': '/api'
@@ -36,6 +36,7 @@ module.exports = {
     // (https://github.com/webpack/css-loader#sourcemaps)
     // In our experience, they generally work as expected,
     // just be aware of this issue when enabling this option.
+    productionSourceMap: true,
     cssSourceMap: false
   }
 }
