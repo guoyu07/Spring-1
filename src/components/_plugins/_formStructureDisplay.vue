@@ -39,10 +39,10 @@
           </template>
 
           <template v-else-if="formItem.value.type === 'cascade'">
-            <span class="arr-span" v-for="(span, spanindex) in item[formItem.id]">
+            <span v-for="(span, spanindex) in item[formItem.id]">
               {{ span }}
               <span v-if="spanindex === (item[formItem.id].length - 1)"></span>
-              <span v-else>/</span>
+              <span v-else> /</span>
             </span>
           </template>
 
