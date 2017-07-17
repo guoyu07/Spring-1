@@ -158,6 +158,79 @@
           this.taskFormData = res.data.data.form
           // this.taskFormData = res.data.data.variables.message[0].form
           // console.log(this.taskFormData)
+          this.taskFormData.header[0].value.push({
+            watch: '',
+            category: '',
+            value: {
+              type: 'cascaders',
+              regex: [{
+                label: '工单类1',
+                value: '1',
+                items: [{
+                  label: '分类11',
+                  value: '11',
+                  items: [{
+                    label: '分类111',
+                    value: '111',
+                    items: [{
+                      label: '分类1111',
+                      value: '1111'
+                    }, {
+                      label: '分类1112',
+                      value: '1112'
+                    }, {
+                      label: '分类1113',
+                      value: '1113'
+                    }]
+                  }, {
+                    label: '分类112',
+                    value: '112'
+                  }, {
+                    label: '分类113',
+                    value: '113'
+                  }]
+                }, {
+                  label: '分类12',
+                  value: '12'
+                }, {
+                  label: '分类13',
+                  value: '13'
+                }]
+              }, {
+                label: '工单类2',
+                value: '2',
+                items: [{
+                  label: '分类21',
+                  value: '21'
+                }, {
+                  label: '分类22',
+                  value: '22'
+                }, {
+                  label: '分类23',
+                  value: '23'
+                }]
+              }, {
+                label: '工单类3',
+                value: '3'
+              }, {
+                label: '工单类4',
+                value: '4'
+              }]
+            },
+            id: 'test',
+            default: {
+              type: ''
+            },
+            isAlias: true,
+            name: '测试新级联',
+            need_submit: true,
+            readonly: false,
+            required: true,
+            show: {
+              type: ''
+            },
+            unique: false
+          })
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)

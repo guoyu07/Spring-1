@@ -172,12 +172,24 @@
       :disabled="formItem.readonly"
       v-model="item[formItem.id]">
     </el-cascader>
+    <cascaders
+      v-else-if="formItem.value.type === 'cascaders'"
+      :vmodel="item"
+      :strucData="formItem"
+      :whole="whole"
+      :message="message"
+      :index="index"
+      :table-index="tableIndex"
+      :body-table="bodyTable"
+      :header-table="headerTable">
+    </cascaders>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 <script>
   import needCmdbData from './_needCMDBData'
   import memberSelect from './_memberSelect'
+  import cascaders from './_cascaders'
   import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
@@ -505,6 +517,7 @@
     components: {
       needCmdbData,
       memberSelect,
+      cascaders,
       formStructure,
       quillEditor,
       Dropzone
