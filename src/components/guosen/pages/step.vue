@@ -55,7 +55,7 @@
                           <h5>{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
                             <form-body
-                              v-if="showFormItem(formItem, assignForm, applyData)"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
                               :item="assignForm.body[index]"
                               :form-item="formItem"
                               :whole="assignForm"
@@ -63,9 +63,16 @@
                               :message="applyData"
                               keep-alive>
                             </form-body>
-                            <span class="tips" v-if="formItem.id === 'idcracku'">顶端U位：{{assignForm.body[index].idcracku + applyData.header.host_list[index].u_num - 1}}</span>
+                            <span class="tips" v-if="formItem.id === 'idcracku' && assignForm.body[index].idcracku">
+                              <span v-if="routerInfo.pkey === 'host'">
+                                顶端U位：{{assignForm.body[index].idcracku + applyData.header.host_list[index].u_num - 1}}
+                              </span>
+                              <span v-else-if="routerInfo.pkey === 'host_my'">
+                                顶端U位：{{assignForm.body[index].idcracku + applyData.body[index].host.u_num - 1}}
+                              </span>
+                            </span>
                             <search-bar
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='search_bar'"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                               :index="index"
                               :hosts="assignForm.body[index]"
                               :attr-list="formItem"
@@ -73,7 +80,7 @@
                               @on-hosts-change="onHostsChange">
                             </search-bar>
                             <body-table
-                              v-if="showFormItem(formItem, assignForm, applyData) && formItem.value.type==='table'"
+                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                               :form-data="formItem"
                               :item="assignForm.body[index]"
                               :post-form="assignForm"
@@ -459,15 +466,79 @@
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
-            this.taskForm.body.body_list.forEach(body => {
+            this.taskForm.body.body_list.forEach((body, bodyIndex) => {
+              // if (this.showBodyList(body, this.assignForm, this.applyData, bodyIndex)) {
+              //   if (body.show.type === 'message_body') {
+              //     if (body.show.value === item[keyPath[0]]) {
+              //       console.log(item[keyPath[0]])
+              //       body.attr_list.map(group => {
+              //         group.value.map(value => {
+              //           // this.setNewDataType(item, newData)
+              //           if (value.need_submit) {
+              //             this.setNewDataType(value, newData)
+              //             // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+              //             if (value.default && value.default.type) {
+              //               if (value.default.type === 'message_header') {
+              //                 newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+              //               } else if (value.default.type === 'form_body') {
+              //                 this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+              //                   this.assignForm.body[k][value.id] = newVal
+              //                 })
+              //               }
+              //             }
+              //           }
+              //         })
+              //       })
+              //       console.log(newData)
+              //     }
+              //   } else if (body.show.type === 'message_header') {
+              //     body.attr_list.map(group => {
+              //       group.value.map(value => {
+              //         if (value.need_submit) {
+              //           this.setNewDataType(value, newData)
+              //           // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+              //           if (value.default.type) {
+              //             if (value.default.type === 'message_header') {
+              //               newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+              //             } else if (value.default.type === 'form_body') {
+              //               this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+              //                 this.assignForm.body[k][value.id] = newVal
+              //               })
+              //             }
+              //           }
+              //         }
+              //         if (!value.need_submit && value.readonly) {
+              //           if (value.default.type === 'message_header') {
+              //             // item === this.applyData.body
+              //             item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+              //           }
+              //         }
+              //       })
+              //     })
+              //   }
+              // }
               if (body.show.type) {
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
                     console.log(item[keyPath[0]])
                     body.attr_list.map(group => {
-                      group.value.map(item => {
-                        this.setNewDataType(item, newData)
+                      group.value.map(value => {
+                        // this.setNewDataType(item, newData)
+                        if (value.need_submit) {
+                          this.setNewDataType(value, newData)
+                          // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'message_header') {
+                              newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                            } else if (value.default.type === 'form_body') {
+                              this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                                // console.log(value.name)
+                                this.assignForm.body[k][value.id] = newVal
+                              })
+                            }
+                          }
+                        }
                       })
                     })
                     console.log(newData)
@@ -483,6 +554,7 @@
                             newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
                           } else if (value.default.type === 'form_body') {
                             this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              console.log(value.name)
                               this.assignForm.body[k][value.id] = newVal
                             })
                           }
@@ -518,6 +590,7 @@
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
                         } else if (value.default.type === 'form_body') {
                           this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                            console.log(value.name)
                             this.assignForm.body[k][value.id] = newVal
                           })
                         }
@@ -539,7 +612,7 @@
             if (this.routerInfo.tkey === 'cabinet') {
               // console.log(this.assignForm.body[k])
               this.$watch('assignForm.body.' + k + '.idcrack', (newVal, oldVal) => {
-                // console.log(k)
+                // console.log(newVal)
                 // console.log(newVal, oldVal, this.applyData.body)
                 const uHeight = newVal.u_info.jgUHeight
                 // 整理出一个未被占用的 U位 列表
@@ -556,7 +629,12 @@
                 let formTakedData = []
                 this.assignForm.body.map((body, bodyk) => {
                   if (body.idcracku && body.idcrack && (body.idcrack.instanceId === newVal.instanceId)) {
-                    const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                    let eU
+                    if (this.routerInfo.pkey === 'host') {
+                      eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                    } else if (this.routerInfo.pkey === 'host_my') {
+                      eU = body.idcracku + +this.applyData.body[bodyk].host.u_num - 1
+                    }
                     // console.log(bodyk, body.idcracku, eU)
                     for (let tU = body.idcracku; tU <= eU; tU++) {
                       if (!formTakedData.includes(tU)) {
@@ -569,7 +647,12 @@
                 if (formTakedData.length !== 0) {
                   const untakedDataLenght = untakedData.length
                   for (let i = 0; i <= untakedDataLenght; i++) {
-                    const Uend = untakedData[i] + +this.applyData.header.host_list[k].u_num - 1
+                    let Uend
+                    if (this.routerInfo.pkey === 'host') {
+                      Uend = untakedData[i] + +this.applyData.header.host_list[k].u_num - 1
+                    } else if (this.routerInfo.pkey === 'host_my') {
+                      Uend = untakedData[i] + +this.applyData.body[k].host.u_num - 1
+                    }
                     if (!formTakedData.includes(untakedData[i]) && !formTakedData.includes(Uend)) {
                       this.assignForm.body[k].idcracku = untakedData[i]
                       console.log(k, untakedData[0])
@@ -584,15 +667,25 @@
             }
             // 主机名
             if (this.routerInfo.tkey === 'confirm1') {
+              let prefix
+              if (this.routerInfo.pkey === 'host') {
+                prefix = [
+                  this.applyData.header.idc.abbreviation,
+                  this.applyData.header.host_type.abbreviation,
+                  this.applyData.header.app.abbreviation
+                ].join('') + '-' + this.applyData.header.component.abbreviation
+              } else if (this.routerInfo.pkey === 'host_my') {
+                prefix = [
+                  this.applyData.body[k].idc.abbreviation,
+                  this.applyData.body[k].host_type.abbreviation,
+                  this.applyData.body[k].app.abbreviation
+                ].join('') + '-' + this.applyData.body[k].component.abbreviation
+              }
               const postHeadvData = {
                 action: `hostname/minnumber`,
                 method: 'get',
                 data: {
-                  prefix: [
-                    this.applyData.header.idc.abbreviation,
-                    this.applyData.header.host_type.abbreviation,
-                    this.applyData.header.app.abbreviation
-                  ].join('') + '-' + this.applyData.header.component.abbreviation
+                  prefix: prefix
                 }
               }
               this.http.post('', this.parseData(postHeadvData))

@@ -284,13 +284,26 @@
                 const keyPath = body.show.key_path.split('.')
                 if (body.show.type === 'message_body') {
                   if (body.show.value === item[keyPath[0]]) {
-                    console.log(item[keyPath[0]])
+                    // console.log(item[keyPath[0]])
                     body.attr_list.map(group => {
-                      group.value.map(item => {
-                        this.setNewDataType(item, newData)
+                      group.value.map(value => {
+                        // this.setNewDataType(item, newData)
+                        if (value.need_submit) {
+                          this.setNewDataType(value, newData)
+                          // 有默认值时 TODO：默认值暂时只写了 message_header 一种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'message_header') {
+                              newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                            } else if (value.default.type === 'form_body') {
+                              this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                                this.assignForm.body[k][value.id] = newVal
+                              })
+                            }
+                          }
+                        }
                       })
                     })
-                    console.log(newData)
+                    // console.log(newData)
                   }
                 } else if (body.show.type === 'message_header') {
                   body.attr_list.map(group => {
@@ -303,6 +316,7 @@
                             newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
                           } else if (value.default.type === 'form_body') {
                             this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                              console.log(newVal, k, value.id)
                               this.assignForm.body[k][value.id] = newVal
                             })
                           }
@@ -339,6 +353,7 @@
                           newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
                         } else if (value.default.type === 'form_body') {
                           this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                            console.log(newVal, k, value.id)
                             this.assignForm.body[k][value.id] = newVal
                           })
                         } else if (value.default.type === 'message_body') {
@@ -363,28 +378,6 @@
               if (this.assignForm.body[k][id] !== undefined) {
                 this.assignForm.body[k][id] = item[id]
               }
-            }
-            // 主机名
-            if (this.routerInfo.tkey === 'confirm1') {
-              const postHeadvData = {
-                action: `hostname/minnumber`,
-                method: 'get',
-                data: {
-                  prefix: [
-                    this.applyData.header.idc.abbreviation,
-                    this.applyData.header.host_type.abbreviation,
-                    this.applyData.header.app.abbreviation
-                  ].join('') + '-' + this.applyData.header.component.abbreviation
-                }
-              }
-              this.http.post('', this.parseData(postHeadvData))
-              .then((response) => {
-                if (response.status === 200) {
-                  this.assignForm.body.map((body, bodyIndex) => {
-                    body.hostname = postHeadvData.data.prefix + (response.data.data + bodyIndex)
-                  })
-                }
-              })
             }
           })
         })

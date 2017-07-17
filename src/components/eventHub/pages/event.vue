@@ -188,11 +188,11 @@
 
 <template>
   <div class="event">
-    <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{eventData.variables.message[0].form.header.summary}}</h3>
+    <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{ eventData.variables && eventData.variables.message[0].form.header.summary}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="24" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
-        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${eventData.variables.message[0].form.header.summary}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
+        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${eventData.variables && eventData.variables.message[0].form.header.summary}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
       <!-- </el-col>
       <el-col :span="8" :xs="24"> -->
         <el-button-group>
@@ -225,7 +225,7 @@
                   <el-tag v-if="eventData.name ==='已关闭'" type="gray">已关闭</el-tag>
                 </template>
               </el-form-item>
-              <el-form-item label="优先度" v-if="eventData.variables.message[0].form.header.priority">
+              <el-form-item label="优先度" v-if="eventData.variables && eventData.variables.message[0].form.header.priority">
                 <template>
                   <div class="editable-field">
                     <div v-show="!isEditing.priority" @click="toggleEditable('priority')">
@@ -251,10 +251,10 @@
                   </div>
                 </template>
               </el-form-item>
-              <el-form-item label="标签" v-if="eventData.variables.message[0].form.header.labels">
+              <el-form-item label="标签" v-if="eventData.variables && eventData.variables.message[0].form.header.labels">
                   <div class="editable-field">
                     <div v-if="!isEditing.labels" @click="toggleEditable('labels')">
-                      <el-tag type="primary" v-for="label in eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
+                      <el-tag type="primary" v-for="label in eventData.variables && eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
                       <i class="editable-field__indicator el-icon-edit text-info"></i>
                     </div>
 
@@ -265,7 +265,7 @@
                         <el-option label="高" value="高"></el-option>
                       </el-select> -->
                       <form-body
-                        :item="eventData.variables.message[0].form.header"
+                        :item="eventData.variables && eventData.variables.message[0].form.header"
                         :form-item="formData.labels">
                       </form-body>
                       <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('labels')"></i>
@@ -273,16 +273,16 @@
                     </div>
                   </div>
               </el-form-item>
-              <el-form-item label="关联工单" v-if="eventData.variables.message[0].form.header.issue">
+              <el-form-item label="关联工单" v-if="eventData.variables && eventData.variables.message[0].form.header.issue">
                   <div class="editable-field">
                     <div v-show="!isEditing.issue" @click="toggleEditable('issue')">
-                      <span>{{eventData.variables.message[0].form.header.issue.code}}</span>
+                      <span>{{eventData.variables && eventData.variables.message[0].form.header.issue.code}}</span>
                       <i class="editable-field__indicator el-icon-edit text-info"></i>
                     </div>
 
                     <div v-show="isEditing.issue">
                       <form-body
-                        :item="eventData.variables.message[0].form.header"
+                        :item="eventData.variables && eventData.variables.message[0].form.header"
                         :form-item="formData.issue">
                       </form-body>
                       <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit('issue')"></i>
@@ -290,13 +290,13 @@
                     </div>
                   </div>
               </el-form-item>
-              <el-form-item label="分类" v-if="eventData.variables.message[0].form.header.components">
-                <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
+              <el-form-item label="分类" v-if="eventData.variables && eventData.variables.message[0].form.header.components">
+                <el-tag>{{eventData.variables && eventData.variables.message[0].form.header.components}}</el-tag>
               </el-form-item>
-              <el-form-item class="blockElement" label-width="0px" v-if="eventData.variables.message[0].form.header.components" style="margin-top:15px;">
+              <el-form-item class="blockElement" label-width="0px" v-if="eventData.variables && eventData.variables.message[0].form.header.components" style="margin-top:15px;">
                 <!-- <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag> -->
-                <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
-                  <el-tab-pane v-for="(data, index) in eventData.variables.message[0].form.body" :label="eventData.variables.message[0].form.header.components">
+                <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables && eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
+                  <el-tab-pane v-for="(data, index) in eventData.variables && eventData.variables.message[0].form.body" :label="eventData.variables && eventData.variables.message[0].form.header.components">
                     <!-- <div v-for="task in taskFormData"> -->
                     <div v-if="startFormData && startFormData.body">
                       <div v-for="taskbody in startFormData.body.body_list">
@@ -326,8 +326,8 @@
           <div class="detail-block__heading">
             <h4>描述</h4>
           </div>
-          <div class="detail-block__content" v-if="eventData.variables.message[0].form.header.description">
-            <blockquote v-html="eventData.variables.message[0].form.header.description"></blockquote>
+          <div class="detail-block__content" v-if="eventData.variables && eventData.variables.message[0].form.header.description">
+            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description"></blockquote>
           </div>
         </div>
 

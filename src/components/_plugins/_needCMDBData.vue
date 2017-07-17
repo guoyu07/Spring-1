@@ -78,11 +78,12 @@
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
-                console.log(newVal)
+                // console.log(newVal)
                 this.renderOptions()
               }, { deep: true })
             } else {
               this.$watch('whole.body.' + this.index + '.' + keyPath[0], (newVal, oldVal) => {
+                // console.log(newVal)
                 this.renderOptions()
               }, { deep: true })
             }
@@ -93,7 +94,7 @@
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
           // console.log(this.strucData.watch)
           this.renderOptions()
-        })
+        }, { deep: true })
       } else {
         // console.log(this.strucData.name, 'hello')
         this.renderOptions()
@@ -148,6 +149,7 @@
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
           for (const para of this.strucData.value.source.data.params) {
+            // console.log(para.value.type)
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
@@ -166,12 +168,18 @@
                   return false // 如果没取到值就不发请求
                 }
               } else {
+                const keyPath = para.value.key_path.split('.')
+                if (keyPath.length > 1 && !this.getPathResult(this.whole.body[this.index], keyPath[0])) {
+                  // console.log('第一个就取不到了？')
+                  return false
+                }
+                // console.log(this.whole, this.index, para.value.key_path)
                 if (this.whole && this.getPathResult(this.whole.body[this.index], para.value.key_path) !== undefined) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
                   // console.log(this.strucData.name, params[para.id])
                 } else {
-                  console.log(para.value.key_path)
+                  // console.log(para.value.key_path)
                   return false // 如果没取到值就不发请求
                 }
               }
@@ -219,7 +227,7 @@
                 if (this.strucData.limit.type === 'message_body') {
                   keyData = this.getPathResult(this.message.body[this.index], this.strucData.limit.key_path)
                 } else if (this.strucData.limit.type === 'message_header') {
-                  console.log(this.message)
+                  // console.log(this.message)
                   keyData = this.getPathResult(this.message.header, this.strucData.limit.key_path)
                 } else if (this.strucData.limit.type === 'static') {
                   keyData = this.strucData.limit.min

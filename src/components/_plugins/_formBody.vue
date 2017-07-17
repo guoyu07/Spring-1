@@ -1,7 +1,7 @@
 <template>
   <!-- 用 whole 来区分是否需要显示label formItem.name 因为快速编辑里面不传 whole ，只需要编辑当前一个表单 -->
   <el-form-item
-    v-if="formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'"
+    v-if="formItem.value && formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'"
     :prop="prop(formItem)"
     :label="whole ? formItem.name : ''"
     :rules="rules(formItem)"
@@ -172,12 +172,24 @@
       :disabled="formItem.readonly"
       v-model="item[formItem.id]">
     </el-cascader>
+    <cascaders
+      v-else-if="formItem.value.type === 'cascaders'"
+      :vmodel="item"
+      :strucData="formItem"
+      :whole="whole"
+      :message="message"
+      :index="index"
+      :table-index="tableIndex"
+      :body-table="bodyTable"
+      :header-table="headerTable">
+    </cascaders>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 <script>
   import needCmdbData from './_needCMDBData'
   import memberSelect from './_memberSelect'
+  import cascaders from './_cascaders'
   import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
@@ -505,6 +517,7 @@
     components: {
       needCmdbData,
       memberSelect,
+      cascaders,
       formStructure,
       quillEditor,
       Dropzone
