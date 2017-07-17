@@ -59,7 +59,11 @@
   export default {
     props: {
       selectedPreset: Object,
-      currentFields: Array
+      currentFields: Array,
+      category: {
+        default: '',
+        type: String
+      }
     },
 
     data () {
@@ -77,6 +81,9 @@
         //   if (this.checkedPresetIds.includes(attr.id)) this.checkedAttributes.push(attr)
         // }
         // this.selectedPreset.confVisible = false
+        if (this.category) {
+          this.checkedAttributes.forEach((_) => { _.category = this.category })
+        }
         this.$parent.$options.methods.importPreset(this.checkedAttributes, this.currentFields)
         this.selectedPreset.confVisible = false
       }

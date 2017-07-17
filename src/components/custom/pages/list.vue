@@ -20,9 +20,9 @@
             show-icon
             class="mgb12">
           </el-alert>
-          <!-- <div class="btn-area clear">
+          <div class="btn-area clear">
             <el-button type="info" :plain="true" @click="onNewBpmn" icon="plus">新建流程 BPMN</el-button>
-          </div> -->
+          </div>
           <el-table
             :data="permittedProcessList"
             border>
