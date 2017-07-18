@@ -23,9 +23,12 @@
   <div class="conf-contain">
     <el-collapse>
       <el-collapse-item v-for="(layerA, index) in confArr" :title="layerA.label">
-        <el-form label-width="80px">
+        <el-form label-width="80px" :inline="true">
           <el-form-item label="Label">
-            <el-input size="small" v-model="layerA.label" @change="layerA.value = layerA.label"></el-input>
+            <el-input size="small" v-model="layerA.label"></el-input>
+          </el-form-item>
+          <el-form-item label="值">
+            <el-input size="small" v-model="layerA.value"></el-input>
           </el-form-item>
           <el-form-item>
             <el-button size="small" type="success" icon="plus" @click="addChild(layerA)"></el-button>
@@ -37,9 +40,14 @@
         </el-form>
         <el-collapse v-if="layerA.children">
           <el-collapse-item v-for="(layerB, index) in layerA.children" :title="layerB.label">
-            <el-form label-width="80px">
+            <el-form label-width="80px" :inline="true">
               <el-form-item label="Label">
-                <el-input size="small" v-model="layerB.label" @change="layerB.value = layerB.label"></el-input>
+                <el-form-item label="Label">
+                  <el-input size="small" v-model="layerB.label"></el-input>
+                </el-form-item>
+                <el-form-item label="值">
+                  <el-input size="small" v-model="layerB.value"></el-input>
+                </el-form-item>
               </el-form-item>
               <el-form-item>
                 <el-button size="small" type="success" icon="plus" @click="addChild(layerB)"></el-button>
@@ -51,9 +59,14 @@
             </el-form>
             <el-collapse v-if="layerB.children">
               <el-collapse-item v-for="(layerC, index) in layerB.children" :title="layerC.label">
-                <el-form label-width="80px">
+                <el-form label-width="80px" :inline="true">
                   <el-form-item label="Label">
-                    <el-input size="small" v-model="layerC.label" @change="layerC.value = layerC.label"></el-input>
+                    <el-form-item label="Label">
+                      <el-input size="small" v-model="layerC.label"></el-input>
+                    </el-form-item>
+                    <el-form-item label="值">
+                      <el-input size="small" v-model="layerC.value"></el-input>
+                    </el-form-item>
                   </el-form-item>
                   <el-form-item>
                     <el-button size="small" type="success" icon="plus" @click="addChild(layerC)" :disabled="true">已达层数上限</el-button>

@@ -133,7 +133,7 @@
       },
       renderGroupList () {
         const postHeadvData = {
-          action: 'groups/all',
+          action: 'groups/all/base',
           method: 'GET',
           data: {}
         }

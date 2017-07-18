@@ -78,6 +78,7 @@ export default {
 
     onEdit (row) {
       row.pkey = this.selectedProcess
+      console.log(row)
       this.$router.push({ path: '/forms/editor', query: { row } })
     }
   }

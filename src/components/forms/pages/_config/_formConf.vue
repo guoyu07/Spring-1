@@ -290,7 +290,7 @@
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">配置预设集</el-button>
     </el-row>
-    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" v-if="selectedPreset"></preset-conf>
+    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
 
     <!-- 避免修改 props，不写成组件 -->
     <el-dialog title="克隆 header 已有字段" v-model="showCloneHeaderFieldVisible" v-if="!isBody">
@@ -389,7 +389,11 @@ export default {
     configData: Array,
     presets: Array,
     fieldsets: Array,
-    bodyIndex: Number
+    bodyIndex: Number,
+    category: {
+      default: '',
+      type: String
+    }
   },
 
   data () {
@@ -566,7 +570,7 @@ export default {
       this.configData2.push({
         id: '',
         name: '新字段',
-        category: '', // 分组
+        category: this.category, // 分组
         unique: false, // 唯一
         required: true, // 必填
         need_submit: true, // 需要提交

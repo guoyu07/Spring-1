@@ -229,6 +229,9 @@ const routes = [{
       path: '/forms/editor',
       component: require('./components/forms/pages/editor.vue')
     }]
+  }, {
+    path: '/event-config',
+    component: require('./components/eventConfig/index')
   }],
   meta: {
     requiresAuth: true
