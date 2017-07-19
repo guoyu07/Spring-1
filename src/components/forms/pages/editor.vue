@@ -273,7 +273,7 @@ export default {
     } else {
       this.$router.go(-1)
     }
-    this.getActionDef()
+    if (this.formConfig.tkey !== 'start') this.getActionDef()
     this.initActions()
     this.initiateFieldsets()
   },
