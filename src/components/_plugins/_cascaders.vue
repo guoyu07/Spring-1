@@ -1,12 +1,11 @@
 <template>
   <div>
     <!-- hello cascaders -->
-    <!-- <el-cascader
-      :options="strucData.value.regex"
-      v-model="select"
-      @change="handleChange">
-    </el-cascader> -->
-    <el-select v-model="selectValue[0]" placeholder="请选择">
+    {{strucData.value.regex[0].attr}}
+    <el-select
+      v-model="selectValue[0]"
+      @change="onChange"
+      :placeholder="strucData.value.regex[0].attr">
       <el-option
         v-for="item in strucData.value.regex"
         :key="item.value"
@@ -14,14 +13,22 @@
         :value="item">
       </el-option>
     </el-select>
-    <el-select v-model="selectValue[1]" placeholder="请选择">
-      <el-option
-        v-for="item in (selectValue[0] && selectValue[0].items || [])"
-        :key="item.value"
-        :label="item.label"
-        :value="item.value">
-      </el-option>
-    </el-select>
+    <template
+      v-for="(selected, index) in selectValue"
+      v-if="selected && selected.children">
+      {{selected.children[0].attr}}
+      <el-select
+        v-model="selectValue[index + 1]"
+        @change="onChange"
+        :placeholder="selected.children[0].attr">
+        <el-option
+          v-for="item in selected.children"
+          :key="item.value"
+          :label="item.label"
+          :value="item">
+        </el-option>
+      </el-select>
+    </template>
   </div>
 </template>
 <script>
@@ -44,39 +51,22 @@
     created () {
     },
     watch: {
-      // 'member.group': 'groupChange'
+      // 'selectValue': 'groupChange'
     },
     methods: {
-      renderGroupList () {
-        const postHeadvData = {
-          action: 'groups/all',
-          method: 'GET',
-          data: {}
-        }
-        this.http.post('', this.parseData(postHeadvData))
-        .then((response) => {
-          // console.log(response)
-          this.groupList = response.data.data
-          // console.log(this.vmodel[this.strucData.id])
-          if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
-            this.groupList.map(group => {
-              console.log(group.key === this.vmodel[this.strucData.id].group.key)
-              if (group.key === this.vmodel[this.strucData.id].group.key) {
-                this.member.group = group // 这里发生了change事件 导致 user = null
-                // console.log(this.vmodel[this.strucData.id])
-                // setTimeout(() => {
-                //   if (this.userId) {
-                //     this.group.users.map(user => {
-                //       if (user.userId === this.userId) {
-                //         this.vmodel[this.strucData.id].user = user
-                //         console.log(this.vmodel[this.strucData.id].user)
-                //       }
-                //     })
-                //   }
-                // }, 100)
-              }
-            })
+      onChange (val) {
+        console.log(val)
+        if (!val) return
+        this.vmodel[this.strucData.id] = []
+        this.selectValue.map((selected, index) => {
+          if (selected.attr === val.attr) { // 用 attr 区分当前选值，所以 attr 在当前字段需唯一
+            this.selectValue.splice(index + 1, this.selectValue.length - index - 1)
           }
+          this.vmodel[this.strucData.id].push({
+            label: selected.label,
+            value: selected.value,
+            attr: selected.attr
+          })
         })
       }
     }

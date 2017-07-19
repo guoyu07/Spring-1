@@ -208,7 +208,7 @@
       <el-col :span="16" :xs="24">
         <div class="detail-block">
           <div class="detail-block__heading">
-            <h4>事件详情</h4>
+            <h4>工单信息</h4>
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="100px" :inline="true" class="form-display-info">
@@ -293,18 +293,16 @@
               <el-form-item label="分类" v-if="eventData.variables && eventData.variables.message[0].form.header.components">
                 <el-tag>{{eventData.variables && eventData.variables.message[0].form.header.components}}</el-tag>
               </el-form-item>
-              <el-form-item class="blockElement" label-width="0px" v-if="eventData.variables && eventData.variables.message[0].form.header.components" style="margin-top:15px;">
-                <!-- <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag> -->
+              <!-- <el-form-item class="blockElement" label-width="0px" v-if="eventData.variables && eventData.variables.message[0].form.header.components" style="margin-top:15px;">
+                <el-tag>{{eventData.variables.message[0].form.header.components}}</el-tag>
                 <el-tabs class="margin-bottom" type="border-card" v-if="eventData.variables && eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
                   <el-tab-pane v-for="(data, index) in eventData.variables && eventData.variables.message[0].form.body" :label="eventData.variables && eventData.variables.message[0].form.header.components">
-                    <!-- <div v-for="task in taskFormData"> -->
                     <div v-if="startFormData && startFormData.body">
                       <div v-for="taskbody in startFormData.body.body_list">
                         <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
-                          <!-- <p class="h5">{{task.tname}}</p> -->
                           <form-structure-display
                             :item="data"
-                            :form-data="taskbody.attr_list"
+                            :form-data="taskbody.attr_list.filter(cate => { return cate.name === '事件详情'})"
                             :index="index"
                             :post-form="{}"
                             :message-data="eventData.variables.message[0].form"
@@ -314,11 +312,64 @@
                         </div>
                       </div>
                     </div>
-                    <!-- </div> -->
                   </el-tab-pane>
                 </el-tabs>
-              </el-form-item>
+              </el-form-item> -->
             </el-form>
+          </div>
+        </div>
+
+        <!-- 分类的自定义模块 -->
+        <div class="margin-bottom" v-if="eventData.variables && eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
+          <div v-for="(data, index) in eventData.variables && eventData.variables.message[0].form.body">
+            <div v-if="startFormData && startFormData.body">
+              <div v-for="taskbody in startFormData.body.body_list">
+                <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
+                  <!-- .filter(cate => { return cate.name !== '事件详情'}) -->
+                  <el-form v-for="tasktask in taskbody.attr_list" :inline="true" label-width="100px">
+                    <div class="detail-block">
+                      <div class="detail-block__heading">
+                        <h4>{{tasktask.name}}</h4>
+                      </div>
+                      <div class="detail-block__content form-display-info">
+                        <form-structure-display
+                          :item="data"
+                          :form-data="[tasktask]"
+                          :index="index"
+                          :post-form="{}"
+                          :message-data="eventData.variables.message[0].form"
+                          :current-task="'current'"
+                          :history-task="'history'">
+                        </form-structure-display>
+                      </div>
+                    </div>
+                  </el-form>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 通用的自定义模块 -->
+        <div v-if="startFormData.header && startFormData.header.length > 0">
+          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name !== '通用' })">
+            <div class="detail-block">
+              <div class="detail-block__heading">
+                <h4>{{taskformheader.name}}</h4>
+              </div>
+              <el-form class="form-display-info" :inline="true" label-width="100px">
+                <div class="detail-block__content">
+                  <span v-for="valueheader in taskformheader.value">
+                    <span v-if="showFormItem(valueheader, postForm, eventData.variables.message[0].form, 'current', 'history')">
+                        <header-form-display
+                          :item="eventData.variables.message[0].form.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                    </span>
+                  </span>
+                </div>
+              </el-form>
+            </div>
           </div>
         </div>
 
@@ -543,6 +594,7 @@
   import activityTab from './_plugins/_activityTab.vue'
 
   import formStructureDisplay from '../../_plugins/_formStructureDisplay.vue'
+  import headerFormDisplay from '../../_plugins/_headerFormDisplay.vue'
   import formBody from '../../_plugins/_formBody.vue'
   import searchBar from '../../_plugins/_searchBar.vue'
   import headerTable from '../../_plugins/_headerTable.vue'
@@ -1103,6 +1155,7 @@
       eventConf,
       activityTab,
       formStructureDisplay,
+      headerFormDisplay,
       formBody,
       searchBar,
       headerTable,

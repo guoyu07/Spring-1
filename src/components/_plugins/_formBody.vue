@@ -440,7 +440,7 @@
           }
         } else {
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade' || formItem.value.type === 'cascaders') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
