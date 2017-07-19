@@ -377,9 +377,18 @@
           <div class="detail-block__heading">
             <h4>描述</h4>
           </div>
-          <div class="detail-block__content" v-if="eventData.variables && eventData.variables.message[0].form.header.description">
-            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description"></blockquote>
-            <el-button size="small" icon="edit" @click="">编辑</el-button>
+          <div class="detail-block__content">
+            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description"></blockquote>
+            <quill-editor
+              v-model="eventData.variables.message[0].form.header.description"
+              :options="editor.options"
+              v-show="isEditing.description">
+            </quill-editor>
+            <el-row type="flex" justify="end" style="margin-top: 12px;">
+              <el-button size="small" icon="edit" type="primary" @click="toggleEditable('description')" v-show="!isEditing.description">编辑</el-button>
+              <el-button size="small" icon="close" type="error" @click="toggleEditable('description')" v-show="isEditing.description">取消</el-button>
+              <el-button size="small" icon="check" type="success" @click="onConfirmEdit('description')" v-show="isEditing.description">确定</el-button>
+            </el-row>
           </div>
         </div>
 
@@ -661,7 +670,8 @@
           priority: false,
           labels: false,
           issue: false,
-          assignee: false
+          assignee: false,
+          description: false
         },
         fileListToShow: [],
         submitData: {},
