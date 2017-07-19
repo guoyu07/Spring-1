@@ -283,12 +283,12 @@
     </draggable>
 
     <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField">添加字段</el-button>
-    <el-button type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
+    <el-button v-if="!category" type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
     <el-row style="margin-top: 12px">
       <el-select size="small" v-model="selectedPreset" placeholder="选择预设集">
         <el-option v-for="obj in presets" :key="obj" :value="obj" :label="obj.name"></el-option>
       </el-select>
-      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">配置预设集</el-button>
+      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
     <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
 
@@ -390,6 +390,7 @@ export default {
     presets: Array,
     fieldsets: Array,
     bodyIndex: Number,
+    optionPresets: Array,
     category: {
       default: '',
       type: String
@@ -401,7 +402,6 @@ export default {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
       selectedPreset: null,
       selectedFields: [],
-      optionPresets: [],
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
       editBody: null,
@@ -443,18 +443,8 @@ export default {
 
     configData2 (val) {
       console.log('emitted!')
-      console.log(val)
-      this.$emit('on-config-change', { val, index: this.bodyIndex }) // 组件内对副本的变更向外部发送事件
+      this.$emit('on-config-change', { val, index: this.bodyIndex, category: this.category }) // 组件内对副本的变更向外部发送事件
     }
-  },
-
-  mounted () {
-    // this.oldList = this.configData2.map(v => v.id)
-    // this.newList = this.oldList.slice()
-    // this.$nextTick(() => {
-    //   this.setSort()
-    // })
-    this.getOptionPresets()
   },
 
   methods: {
@@ -476,18 +466,6 @@ export default {
     //     }
     //   })
     // },
-    // 获取选项预设集（for apis）
-    getOptionPresets () {
-      let postData = {
-        action: 'activiti/api/define/list',
-        method: 'GET',
-        data: {}
-      }
-      this.http.post('', this.parseData(postData)).then((res) => {
-        this.optionPresets = res.data.data.list
-        console.log(this.optionPresets)
-      })
-    },
     // 导入预设集
     importPreset (preset, currentFields) {
       for (let attr of preset) {

@@ -51,17 +51,17 @@
     </el-row>
 
     <el-dialog title="新建用户" size="tiny" v-model="addUserData.visible">
-      <el-form label-width="72px" class="advance-search-form">
-        <el-form-item label="用户名">
+      <el-form :rules="userFormRules" label-width="72px">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="addUserData.user.code"></el-input>
         </el-form-item>
-        <el-form-item label="用户 ID">
+        <el-form-item label="用户 ID" prop="userId">
           <el-input v-model="addUserData.user.userId" placeholder="请填写英文"></el-input>
         </el-form-item>
-        <el-form-item label="Email">
+        <el-form-item label="Email" prop="email">
           <el-input v-model="addUserData.user.email"></el-input>
         </el-form-item>
-        <el-form-item label="用户层级">
+        <el-form-item label="用户层级" prop="level">
           <el-input-number v-model="addUserData.user.level" :min="0" :max="2"></el-input-number>
         </el-form-item>
         <h5 class="sub-title" style="padding-left: 24px; margin-top: 0"><i class="el-icon-information"></i> 用户层级说明：<br>0：超级管理员；1：管理员；2：普通</h5>
@@ -72,20 +72,20 @@
     </el-dialog>
 
     <el-dialog title="编辑用户" size="tiny" v-model="editUserData.visible">
-      <el-form label-width="72px" class="advance-search-form">
-        <el-form-item label="用户名">
+      <el-form :rules="userFormRules" label-width="72px">
+        <el-form-item label="用户名" prop="username">
           <el-input v-model="editUserData.user.code"></el-input>
         </el-form-item>
-        <el-form-item label="用户 ID">
+        <el-form-item label="用户 ID" prop="userId">
           <el-input v-model="editUserData.user.userId" placeholder="请填写英文"></el-input>
         </el-form-item>
-        <el-form-item label="Email">
+        <el-form-item label="Email" prop="email">
           <el-input v-model="editUserData.user.email"></el-input>
         </el-form-item>
         <el-form-item label="密码">
           <el-input v-model="editUserData.user.pwd"></el-input>
         </el-form-item>
-        <el-form-item label="用户层级">
+        <el-form-item label="用户层级" prop="level">
           <el-input-number v-model="editUserData.user.level" :min="0" :max="2"></el-input-number>
         </el-form-item>
         <h5 class="sub-title" style="padding-left: 24px; margin-top: 0"><i class="el-icon-information"></i> 用户层级说明：<br>0：超级管理员；1：管理员；2：普通</h5>
@@ -112,6 +112,17 @@
         editUserData: {
           visible: false,
           user: {}
+        },
+        userFormRules: {
+          username: [
+            { required: true, message: '用户名必填', trigger: 'blur' }
+          ],
+          userId: [
+            { required: true, message: '用户 ID 必填', trigger: 'blur' }
+          ],
+          email: [
+            { required: true, message: '用户 Email 必填', trigger: 'blur' }
+          ]
         }
       }
     },

@@ -377,8 +377,18 @@
           <div class="detail-block__heading">
             <h4>描述</h4>
           </div>
-          <div class="detail-block__content" v-if="eventData.variables && eventData.variables.message[0].form.header.description">
-            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description"></blockquote>
+          <div class="detail-block__content">
+            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description"></blockquote>
+            <quill-editor
+              v-model="eventData.variables.message[0].form.header.description"
+              :options="editor.options"
+              v-show="isEditing.description">
+            </quill-editor>
+            <el-row type="flex" justify="end" style="margin-top: 12px;">
+              <el-button size="small" icon="edit" type="primary" @click="toggleEditable('description')" v-show="!isEditing.description">编辑</el-button>
+              <el-button size="small" icon="close" type="error" @click="toggleEditable('description')" v-show="isEditing.description">取消</el-button>
+              <el-button size="small" icon="check" type="success" @click="onConfirmEdit('description')" v-show="isEditing.description">确定</el-button>
+            </el-row>
           </div>
         </div>
 
@@ -388,7 +398,7 @@
           </div>
           <div class="detail-block__content">
             <el-tabs v-model="activeTab" type="border-card">
-              <el-tab-pane label="评论" name="first">
+              <el-tab-pane label="评论" name="comments">
                 <h5 class="sub-title" v-if="!comments.length">
                   <i class="el-icon-information"></i> 暂时没有人添加评论…
                 </h5>
@@ -406,7 +416,7 @@
                   </li>
                 </ul>
               </el-tab-pane>
-              <el-tab-pane label="历史" name="second">
+              <el-tab-pane label="历史" name="history">
                 <!-- <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5> -->
                 <el-collapse>
                   <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
@@ -424,48 +434,11 @@
                   </el-collapse-item>
                 </el-collapse>
               </el-tab-pane>
-              <el-tab-pane label="活动" name="third">
-                <h5 class="sub-title" v-if="!activityLogs.length">
-                  <i class="el-icon-information"></i> 暂时没有人作出变更…
-                </h5>
-                <el-collapse v-if="activityLogs.length">
-                  <el-collapse-item v-for="ac in activityLogs">
-                    <template slot="title">
-                      <el-tooltip placement="top">
-                        <div slot="content">
-                          <p><b>Email</b>: {{ac.from_user.email}}</p>
-                          <p><b>ID</b>: {{ac.from_user.userId}}</p>
-                        </div>
-                        <a href="javascript:;" class="tooltip-link">{{ac.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
-                      </el-tooltip>
-                      <span>作出变更 - <timeago :since="ac.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
-                    </template>
-                    <el-table class="activity-table" :data="ac.text.body[0] ? [...ac.text.header, ...ac.text.body[0]] : ac.text.header" border>
-                      <el-table-column
-                        prop="key"
-                        label="键名"
-                        width="150"></el-table-column>
-                      <el-table-column
-                        label="旧值"
-                        inline-template
-                        :context="_self">
-                        <template>
-                          <code>
-                            {{JSON.stringify(row.old_value)}}
-                          </code>
-                        </template>
-                      </el-table-column>
-                      <el-table-column
-                        label="新值"
-                        inline-template
-                        :context="_self">
-                        <template>
-                          <code>{{JSON.stringify(row.new_value)}}</code>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </el-collapse-item>
-                </el-collapse>
+              <el-tab-pane label="活动" name="activities">
+                <!-- 首次点击时才请求活动日志，并避免每次点击都加载 -->
+                <keep-alive>
+                  <activity-tab :pid="eventData.pid" v-if="activeTab === 'activities'"></activity-tab>
+                </keep-alive>
               </el-tab-pane>
             </el-tabs>
           </div>
@@ -625,7 +598,10 @@
 
 <script>
   import { quillEditor } from 'vue-quill-editor'
-  import eventConf from './_config/_eventConf.vue'
+
+  import eventConf from './_plugins/_eventConf.vue'
+  import activityTab from './_plugins/_activityTab.vue'
+
   import formStructureDisplay from '../../_plugins/_formStructureDisplay.vue'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay.vue'
   import formBody from '../../_plugins/_formBody.vue'
@@ -651,7 +627,7 @@
           issue: {},
           assignee: {}
         },
-        activeTab: 'first',
+        activeTab: 'comments',
         eventData: {},
         eventDataBuffer: '',
         startFormData: {},
@@ -672,7 +648,6 @@
           oldValue: 'Jason Lam',
           newValue: ''
         }],
-        activityLogs: [],
         editor: {
           content: '',
           options: {
@@ -695,7 +670,8 @@
           priority: false,
           labels: false,
           issue: false,
-          assignee: false
+          assignee: false,
+          description: false
         },
         fileListToShow: [],
         submitData: {},
@@ -759,7 +735,7 @@
             this.eventDataBuffer = JSON.stringify(res.data.data)  // create an immutable buffer object
             if (needRefetch) {
               this.getComments()
-              this.getActivities()
+              // this.getActivities()
               this.renderStartForm()
               this.getTaskFormData()
               this.renderStartForm()
@@ -937,17 +913,6 @@
           if (res.status === 200) {
             this.comments = res.data.data.list
           }
-        })
-      },
-
-      getActivities () {
-        let postData = {
-          action: 'get/modify/form/logs',
-          method: 'POST',
-          data: { pid: this.eventData.pid }
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          this.activityLogs = res.data.data.list
         })
       },
 
@@ -1198,6 +1163,7 @@
     components: {
       quillEditor,
       eventConf,
+      activityTab,
       formStructureDisplay,
       headerFormDisplay,
       formBody,
