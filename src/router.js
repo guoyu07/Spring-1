@@ -40,6 +40,12 @@ const EventPages = {
   EventConf: resolve => require(['./components/eventConfig/index'], resolve)
 }
 
+const EventHubPages = {
+  List: resolve => require(['./components/eventHub/pages/list'], resolve),
+  Event: resolve => require(['./components/eventHub/pages/event'], resolve),
+  Start: resolve => require(['./components/eventHub/pages/start'], resolve)
+}
+
 Vue.use(VueRouter)
 
 const routes = [{
@@ -162,16 +168,16 @@ const routes = [{
     component: require('./components/eventHub/index'),
     children: [{
       path: '',
-      component: require('./components/eventHub/pages/list')
+      component: EventHubPages.List
     }, {
       path: '/event-hub/event/:tkey',
-      component: require('./components/eventHub/pages/event')
+      component: EventHubPages.Event
     }, {
       path: '/event-hub/start/:pkey/:pname',
-      component: require('./components/eventHub/pages/start')
+      component: EventHubPages.Start
     }, {
       path: '/event-hub/modify/:pkey/:pname/:pid/:tid/:tkey',
-      component: require('./components/eventHub/pages/start')
+      component: EventHubPages.Start
     }]
   }, {
     path: '/system',
