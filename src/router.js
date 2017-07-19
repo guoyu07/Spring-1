@@ -149,6 +149,12 @@ const routes = [{
     }, {
       path: '/event-hub/event/:tkey',
       component: require('./components/eventHub/pages/event.vue')
+    }, {
+      path: '/event-hub/start/:pkey/:pname',
+      component: require('./components/eventHub/pages/start.vue')
+    }, {
+      path: '/event-hub/modify/:pkey/:pname/:pid/:tid/:tkey',
+      component: require('./components/eventHub/pages/start.vue')
     }]
   }, {
     path: '/system',

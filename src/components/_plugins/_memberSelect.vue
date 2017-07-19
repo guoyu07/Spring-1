@@ -141,26 +141,28 @@
         .then((response) => {
           // console.log(response)
           this.groupList = response.data.data
-          // console.log(this.vmodel[this.strucData.id])
-          if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
-            this.groupList.map(group => {
-              console.log(group.key === this.vmodel[this.strucData.id].group.key)
-              if (group.key === this.vmodel[this.strucData.id].group.key) {
-                this.member.group = group // 这里发生了change事件 导致 user = null
-                // console.log(this.vmodel[this.strucData.id])
-                // setTimeout(() => {
-                //   if (this.userId) {
-                //     this.group.users.map(user => {
-                //       if (user.userId === this.userId) {
-                //         this.vmodel[this.strucData.id].user = user
-                //         console.log(this.vmodel[this.strucData.id].user)
-                //       }
-                //     })
-                //   }
-                // }, 100)
-              }
-            })
-          }
+          setTimeout(() => {
+            // console.log(this.vmodel[this.strucData.id])
+            if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
+              this.groupList.map(group => {
+                console.log(group.key === this.vmodel[this.strucData.id].group.key)
+                if (group.key === this.vmodel[this.strucData.id].group.key) {
+                  this.member.group = group // 这里发生了change事件 导致 user = null
+                  // console.log(this.vmodel[this.strucData.id])
+                  // setTimeout(() => {
+                  //   if (this.userId) {
+                  //     this.group.users.map(user => {
+                  //       if (user.userId === this.userId) {
+                  //         this.vmodel[this.strucData.id].user = user
+                  //         console.log(this.vmodel[this.strucData.id].user)
+                  //       }
+                  //     })
+                  //   }
+                  // }, 100)
+                }
+              })
+            }
+          }, 10)
         })
       },
       renderGroupUserList (key) {

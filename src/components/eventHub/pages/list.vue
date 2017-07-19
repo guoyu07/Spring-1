@@ -15,7 +15,7 @@
           <!-- <el-button icon="plus" @click="eventConfVisible = true" style="margin-bottom: 12px">创建事件</el-button> -->
           <el-row type="flex" justify="space-between">
             <el-col :span="6">
-              <router-link :to="{ path: '/procedure/start/incident/事件处理' }" class="el-button el-button--plain" style="margin-bottom: 12px"><i class="el-icon-plus"></i> 创建事件</router-link>
+              <router-link :to="{ path: '/event-hub/start/incident/事件处理' }" class="el-button el-button--plain" style="margin-bottom: 12px"><i class="el-icon-plus"></i> 创建事件</router-link>
             </el-col>
             <el-col :md="8" :lg="4" flex="end">
               <el-input placeholder="模糊搜索事件" v-model="searchKey" @keyup.enter.native="getIncidentList">
