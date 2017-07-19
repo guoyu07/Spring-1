@@ -31,7 +31,7 @@
                 </el-row>
                 <el-row class="form-block" v-for="(module, name, index) in groupedGenericModuleMap" v-if="name !== '通用'">
                   <h4>{{name}}</h4>
-                  <form-conf :config-data="module" :presets="presetList" :body-index="index" :category="name"></form-conf>
+                  <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onGenericModuleChange"></form-conf>
                   <el-button class="button-del-mod" type="danger" size="small" icon="delete" @click="onDeleteGenericModule(name)"></el-button>
                 </el-row>
                 <el-row style="margin: 12px 0">
@@ -44,7 +44,7 @@
           <el-row>
             <el-col :sm="24" :md="20">
               <el-card class="box-card">
-                <div class="corner-ribbon"><span>自定义模块</span></div>
+                <div class="corner-ribbon"><span>事件模块</span></div>
                 <el-select
                   v-model="selectedComponent"
                   placeholder="请选择事件分类">
@@ -62,10 +62,10 @@
 
                 <el-row class="form-block" v-for="(module, name, index) in groupedCustomModuleMap">
                   <h4>{{name}}</h4>
-                  <form-conf :config-data="module" :presets="presetList" :body-index="index" :category="name"></form-conf>
+                  <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onCustomModuleChange"></form-conf>
                   <el-button class="button-del-mod" type="danger" size="small" icon="delete" @click="onDeleteCustomModule(name)"></el-button>
                 </el-row>
-                <el-button v-if="selectedComponent" type="primary" size="small" icon="plus" @click="onAddCustomModule">自定义模块</el-button>
+                <el-button v-if="selectedComponent" type="primary" size="small" icon="plus" @click="onAddCustomModule">事件模块</el-button>
               </el-card>
             </el-col>
           </el-row>
@@ -83,6 +83,7 @@
 <script>
   import formConf from './../forms/pages/_config/_formConf' // 借用表单配置的字段配置组件
   import getPresetList from './../../mixins/getPresetList'
+  import getOptionPresets from './../../mixins/getOptionPresets'
 
   import _ from '../../utils/_'
 
@@ -117,7 +118,7 @@
   }
 
   export default {
-    mixins: [getPresetList],
+    mixins: [getPresetList, getOptionPresets],
 
     data () {
       return {
@@ -193,6 +194,7 @@
     created () {
       this.getIncidentForm()
       this.getPresetList()
+      this.getOptionPresets()
     },
 
     methods: {
@@ -216,10 +218,11 @@
       },
 
       onSubmitIncidentForm (message) {
-        // console.log(this.groupedCustomModuleMap)
+        // 把 groupBy 好的数据转换回去
         if (this.currentBody) {
           this.currentBody.attr_list = _._reverseGroupBy(this.groupedCustomModuleMap, this.currentBody.attr_list)
         }
+        this.incidentFormData.form.header = _._reverseGroupBy(this.groupedGenericModuleMap, this.incidentFormData.form.header)
 
         // console.log(this.currentBody.attr_list)
         // console.log(this.submitFormData)
@@ -301,6 +304,16 @@
             this.currentBody.attr_list = this.currentBody.attr_list.filter(_ => _.category !== name)
           })
         })
+      },
+
+      onGenericModuleChange (args) {
+        console.log('received!')
+        this.groupedGenericModuleMap[args.category] = args.val
+      },
+
+      onCustomModuleChange (args) {
+        console.log('received!')
+        this.groupedCustomModuleMap[args.category] = args.val
       }
     },
 

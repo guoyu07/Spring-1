@@ -98,7 +98,7 @@
 <template>
   <div>
     <aside class="sibebar">
-      <el-menu mode="vertical" router="router">
+      <el-menu mode="vertical" router="router" :default-active="$route.path">
         <div class="sidebar-title">IT 服务中心</div>
 
         <el-menu-item-group title="首页">

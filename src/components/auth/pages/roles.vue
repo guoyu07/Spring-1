@@ -76,11 +76,11 @@
     </el-dialog>
 
     <el-dialog title="编辑角色" size="tiny" v-model="editRoleData.visible">
-      <el-form label-width="72px" class="advance-search-form">
-        <el-form-item label="角色 Key">
+      <el-form :rules="roleFormRules" label-width="100px">
+        <el-form-item label="角色 Key" prop="roleKey">
           <el-input v-model="editRoleData.role.key" placeholder="请填写英文"></el-input>
         </el-form-item>
-        <el-form-item label="角色名称">
+        <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="editRoleData.role.name" placeholder="请填写中文"></el-input>
         </el-form-item>
       </el-form>
@@ -90,11 +90,11 @@
     </el-dialog>
 
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
-      <el-form label-width="72px" class="advance-search-form">
-        <el-form-item label="角色 Key">
+      <el-form :rules="roleFormRules" label-width="100px">
+        <el-form-item label="角色 Key" prop="roleKey">
           <el-input v-model="addedRoleData.role.key" placeholder="请填写英文"></el-input>
         </el-form-item>
-        <el-form-item label="角色名称">
+        <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="addedRoleData.role.name" placeholder="请填写中文"></el-input>
         </el-form-item>
       </el-form>
@@ -134,6 +134,14 @@
           visible: false,
           loading: false,
           role: {}
+        },
+        roleFormRules: {
+          roleKey: [
+            { required: true, message: '角色 Key 必填', trigger: 'blur' }
+          ],
+          roleName: [
+            { required: true, message: '角色名称必填', trigger: 'blur' }
+          ]
         }
       }
     },
