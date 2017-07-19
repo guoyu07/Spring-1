@@ -101,7 +101,7 @@
 </template>
 
 <script>
-  import eventConf from './_config/_eventConf.vue'
+  import eventConf from './_plugins/_eventConf.vue'
 
   export default {
 
