@@ -313,38 +313,40 @@
               }
             }
           }
-          // 将默认值(对象类型)放回值里面
-          if (this.vmodel[this.strucData.id]) {
-            if (Array.isArray(this.vmodel[this.strucData.id])) {
-              this.vmodel[this.strucData.id].map((item, itemindex) => {
-                if (item[this.strucData.value.source.res.show_key]) {
+          setTimeout(() => {
+            // 将默认值(对象类型)放回值里面
+            if (this.vmodel[this.strucData.id]) {
+              if (Array.isArray(this.vmodel[this.strucData.id])) {
+                this.vmodel[this.strucData.id].map((item, itemindex) => {
+                  if (item[this.strucData.value.source.res.show_key]) {
+                    this.optionList.map(option => {
+                      if (option[this.strucData.value.source.res.show_key] === item[this.strucData.value.source.res.show_key]) {
+                        // item = option
+                        this.vmodel[this.strucData.id][itemindex] = option
+                      } else {
+                        if (!this.optionList.includes(item)) {
+                          this.optionList.push(item)
+                        }
+                      }
+                    })
+                  }
+                })
+              } else {
+                if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
                   this.optionList.map(option => {
-                    if (option[this.strucData.value.source.res.show_key] === item[this.strucData.value.source.res.show_key]) {
-                      // item = option
-                      this.vmodel[this.strucData.id][itemindex] = option
+                    if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                      this.vmodel[this.strucData.id] = option
+                      return false
                     } else {
-                      if (!this.optionList.includes(item)) {
-                        this.optionList.push(item)
+                      if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                        this.optionList.push(this.vmodel[this.strucData.id])
                       }
                     }
                   })
                 }
-              })
-            } else {
-              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                this.optionList.map(option => {
-                  if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                    this.vmodel[this.strucData.id] = option
-                    return false
-                  } else {
-                    if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
-                      this.optionList.push(this.vmodel[this.strucData.id])
-                    }
-                  }
-                })
               }
             }
-          }
+          }, 10)
         })
       }
     }

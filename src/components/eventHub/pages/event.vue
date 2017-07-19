@@ -192,7 +192,7 @@
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="24" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
-        <router-link :to="{ path: `/procedure/modify/${eventData.pid}/${eventData.pkey}/${eventData.variables && eventData.variables.message[0].form.header.summary}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
+        <router-link :to="{ path: `/event-hub/modify/${eventData.pkey}/${eventData.variables && eventData.variables.message[0].form.header.summary}/${eventData.pid}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
       <!-- </el-col>
       <el-col :span="8" :xs="24"> -->
         <el-button-group>
@@ -352,7 +352,7 @@
 
         <!-- 通用的自定义模块 -->
         <div v-if="startFormData.header && startFormData.header.length > 0">
-          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name !== '通用' })">
+          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name !== '概要' && header.name !== '工单信息' && header.name !== '人事' && header.name !== '描述' && header.name !== '附件' })">
             <div class="detail-block">
               <div class="detail-block__heading">
                 <h4>{{taskformheader.name}}</h4>
