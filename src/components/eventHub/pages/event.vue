@@ -378,7 +378,9 @@
             <h4>描述</h4>
           </div>
           <div class="detail-block__content">
-            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description"></blockquote>
+            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description">
+              <slot>meh</slot>
+            </blockquote>
             <quill-editor
               v-model="eventData.variables.message[0].form.header.description"
               :options="editor.options"

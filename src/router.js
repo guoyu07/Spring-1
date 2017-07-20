@@ -36,8 +36,8 @@ const FormPages = {
   Editor: resolve => require(['./components/forms/pages/editor'], resolve)
 }
 
-const EventPages = {
-  EventConf: resolve => require(['./components/eventConfig/index'], resolve)
+const EventConfPages = {
+  Details: resolve => require(['./components/eventConfig/pages/details'], resolve)
 }
 
 const EventHubPages = {
@@ -201,8 +201,12 @@ const routes = [{
       component: FormPages.Editor
     }]
   }, {
-    path: '/event-config',
-    component: EventPages.EventConf
+    path: '/event-config/details',
+    component: EventConfPages.Details
+    // children: [{
+    //   path: '/event-config/details',
+    //   components: EventConfPages.Details
+    // }]
   }],
   meta: {
     requiresAuth: true
