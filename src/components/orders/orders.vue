@@ -368,19 +368,21 @@
               this.deviceViewData.visible = false
               this.$message.success('已认领！')
             }
+            this.$router.push(`/procedure/${task.pkey}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+
             // this.$router.replace(``)
-            switch (task.pkey) {
-              case 'host_apply':
-                // replace 浏览器后退键没效（没有历史），push 会有
-                this.$router.replace(`/system/${task.taskDefinitionKey}/${task.id}/${task.name}`)
-                break
-              case 'equipment_on':
-                this.$router.replace(`/equipment/${task.variables.message[0].form.object_id}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
-                break
-              default:
-                console.log('default')
-                break
-            }
+            // switch (task.pkey) {
+            //   case 'host_apply':
+            //     // replace 浏览器后退键没效（没有历史），push 会有
+            //     this.$router.push(`/system/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+            //     break
+            //   case 'equipment_on':
+            //     this.$router.push(`/equipment/${task.variables.message[0].form.object_id}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+            //     break
+            //   default:
+            //     console.log('default')
+            //     break
+            // }
             this.getFilteredList()
           })
         })

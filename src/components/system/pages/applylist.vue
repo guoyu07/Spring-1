@@ -30,12 +30,11 @@
               :context="_self"
               label="操作">
               <div class="btn-block">
-                <router-link v-if="row.name==='填写申请单'" :to="{ path: `/system/apply/${row.id}`}" class="el-button el-button--primary el-button--small">填写</router-link>
+                <!-- <router-link v-if="row.name==='填写申请单'" :to="{ path: `/system/apply/${row.id}`}" class="el-button el-button--primary el-button--small">填写</router-link>
                 <span v-else v-for="action in row.action">
                   <router-link v-if="action.type==='submit'" :to="{ path: `/system/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">审批</router-link>
                   <el-button v-else-if="action.type==='back'" :plain="true" type="danger" size="small" @click="onReject(row, action)">{{action.pass===2?'驳回':'撤单'}}</el-button>
-                  <!-- action.pass===1?'驳回':'撤销' -->
-                </span>
+                </span> -->
               </div>
             </el-table-column>
           </el-table>

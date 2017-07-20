@@ -24,6 +24,32 @@
                 </div>
               </div>
             </div>
+            <!-- header 表单填写 -->
+            <div v-if="taskForm.header">
+
+              <div v-for="task in taskForm.header">
+                <span v-for="taskform in task.value">
+                  <form-body
+                    v-if="showFormItem(taskform, assignForm, applyData)"
+                    :item="assignForm.header"
+                    :form-item="taskform"
+                    :whole="assignForm"
+                    :message="applyData"
+                    :header="true">
+                  </form-body>
+                  <search-bar
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
+                    :hosts="assignForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
+                  <div v-if="taskform.value.type==='table'">
+                      headerTable
+                  </div>
+                </span>
+              </div>
+            </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
@@ -98,32 +124,6 @@
                 </div>
               </el-tab-pane>
             </el-tabs>
-            <!-- header 表单填写 -->
-            <div v-if="taskForm.header">
-
-              <div v-for="task in taskForm.header">
-                <span v-for="taskform in task.value">
-                  <form-body
-                    v-if="showFormItem(taskform, assignForm, applyData)"
-                    :item="assignForm.header"
-                    :form-item="taskform"
-                    :whole="assignForm"
-                    :message="applyData"
-                    :header="true">
-                  </form-body>
-                  <search-bar
-                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
-                    :hosts="assignForm.header"
-                    :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
-                    @on-hosts-change="onHostsChange">
-                  </search-bar>
-                  <div v-if="taskform.value.type==='table'">
-                      headerTable
-                  </div>
-                </span>
-              </div>
-            </div>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
@@ -604,28 +604,7 @@
                 })
               }
             })
-            // 判断是否为驳回信息
-            let newDataBody
-            this.taskData.variables.message.map(message => {
-              if (message.task_key === this.routerInfo.tkey) {
-                this.isEdting = true
-                this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-                // console.log(this.assignForm.header)
-                newDataBody = message.form.body.map((body, bodyindex) => {
-                  return Object.assign({}, body, newData)
-                })
-              }
-            })
-            if (this.isEdting) {
-              this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-            }
-            // console.log(newDataBody)
-            if (newDataBody) {
-              this.assignForm.body = this.assignForm.body.concat(newDataBody)
-              // console.log(this.assignForm.body)
-            } else {
-              this.assignForm.body.push(newData)
-            }
+            this.assignForm.body.push(newData)
             for (const id in item) {
               // console.log(item[id], this.assignForm.body[k][id])
               if (this.assignForm.body[k][id] !== undefined) {
@@ -722,6 +701,26 @@
               })
             }
           })
+          // 判断是否为驳回信息
+          let newDataBody
+          this.taskData.variables.message.map(message => {
+            if (message.task_key === this.routerInfo.tkey) {
+              this.isEdting = true
+              this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
+              // console.log(this.assignForm.header)
+              newDataBody = message.form.body.map((body, bodyindex) => {
+                return Object.assign({}, body, this.assignForm.body[bodyindex])
+              })
+            }
+          })
+          if (this.isEdting) {
+            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+          }
+          if (newDataBody) {
+            this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+              return Object.assign({}, body, newDataBody[bodyindex])
+            })
+          }
         })
       },
       renderInstanceDetail () {
