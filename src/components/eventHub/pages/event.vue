@@ -74,6 +74,44 @@
       }
     }
 
+    &__content {
+      position: relative;
+
+      .show-more {
+        position: absolute;
+        bottom: 40px;
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        display: block;
+        z-index: @floating;
+        background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(32,160,255,.1));
+        cursor: pointer;
+
+        &:hover {
+          background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(32,160,255,.4)) !important;
+        }
+
+        input {
+          display: none;
+        }
+
+        label {
+          color: @primary;
+          width: 100%;
+          display: block;
+        }
+
+        &.expaned {
+          label {
+            i {
+              transform: rotate(180deg);
+            }
+          }
+        }
+      }
+    }
+
     .el-tag + .el-tag {
       margin-left: 4px;
     }
@@ -85,6 +123,11 @@
       background-color: @eoSideBgColor;
       position: relative;
       word-wrap: break-word;
+      overflow: hidden;
+
+      &.shy {
+        max-height: 300px;
+      }
 
       &::before,
       &::after {
@@ -378,7 +421,13 @@
             <h4>描述</h4>
           </div>
           <div class="detail-block__content">
-            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description">
+            <div :class="{ expaned: isDescriptionExpanded, 'show-more': true }" v-show="!isEditing.description">
+              <input type="checkbox" id="check_show" @change="toggleDescriptionExpanded">
+              <label for="check_show">
+                <i class="el-icon-arrow-down"></i>
+              </label>
+            </div>
+            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description">
               <slot>meh</slot>
             </blockquote>
             <quill-editor
@@ -629,6 +678,7 @@
           issue: {},
           assignee: {}
         },
+        isDescriptionExpanded: false,
         activeTab: 'comments',
         eventData: {},
         eventDataBuffer: '',
@@ -695,6 +745,10 @@
     },
 
     methods: {
+      toggleDescriptionExpanded () {
+        this.isDescriptionExpanded = !this.isDescriptionExpanded
+        console.log(this.isDescriptionExpanded)
+      },
       buttonIcon (oper) {
         switch (oper) {
           case '开始处理': return 'fa-play'
