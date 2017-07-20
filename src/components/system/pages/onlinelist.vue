@@ -35,7 +35,7 @@
               :context="_self"
               label="操作">
               <div class="btn-block">
-                <router-link :to="{ path: `/system/online/${row.pkey}/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">查看详情</router-link>
+                <router-link :to="{ path: `/procedure/${row.pkey}/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">查看详情</router-link>
               </div>
             </el-table-column>
           </el-table>

@@ -94,44 +94,6 @@ const routes = [{
       component: require('./components/guosen/pages/stepInfo')
     }]
   }, {
-    path: '/test',
-    component: require('./components/test/index'),
-    children: [{
-      path: '/test/start',
-      component: require('./components/test/pages/start')
-    }, {
-      path: '/test/:pkey/:tkey/:id/:name',
-      component: require('./components/test/pages/step')
-    }, {
-      path: '/test-info/:pkey/:tkey/:id/:name',
-      component: require('./components/test/pages/stepInfo')
-    }, {
-      path: '/test-info/:pkey/:id',
-      component: require('./components/test/pages/stepInfo')
-    }]
-  }, {
-    path: '/store-manage',
-    component: require('./components/storemanage/index'),
-    children: [{
-      path: '/store-manage/instock',
-      component: require('./components/storemanage/pages/instock')
-    }, {
-      path: '/store-manage/instock/:id',
-      component: require('./components/storemanage/pages/instock')
-    }, {
-      path: '/store-manage/instock/edit/:taskid',
-      component: require('./components/storemanage/pages/instock')
-    }, {
-      path: '/store-manage/outstock',
-      component: require('./components/storemanage/pages/outstock')
-    }, {
-      path: '/store-manage/:pkey',
-      component: require('./components/storemanage/pages/outstock')
-    }, {
-      path: '/store-manage/:pkey/:tkey/:id/:name',
-      component: require('./components/storemanage/pages/step')
-    }]
-  }, {
     path: '/equipment',
     component: require('./components/equipment/index'),
     children: [{
@@ -149,19 +111,6 @@ const routes = [{
     }, {
       path: '/equipment/:pkey/:tkey/:id/:name', // 具体步骤操作
       component: require('./components/equipment/pages/step')
-    }]
-  }, {
-    path: '/deploy-app',
-    component: require('./components/deployapp/index'),
-    children: [{
-      path: '/deploy-app/apps',
-      component: require('./components/deployapp/pages/apps')
-    }, {
-      path: '/deploy-app/others',
-      component: require('./components/deployapp/pages/others')
-    }, {
-      path: '/deploy-app/:pkey/:tkey/:id/:name',
-      component: require('./components/deployapp/pages/step')
     }]
   }, {
     path: '/event-hub',

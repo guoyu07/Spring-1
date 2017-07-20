@@ -8,7 +8,7 @@
             <!-- 驳回信息 -->
             <p v-if="isEdting" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
-            <div v-for="taskheader in form">
+            <div class="history-block" v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
                 <p class="h5">{{taskheader.tname}}</p>
                 <div v-for="taskformheader in taskheader.form.form.header">
@@ -59,7 +59,7 @@
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
-                <div>
+                <div class="history-block">
                   <div v-for="task in form">
                     <div v-for="taskbody in task.form.form.body.body_list">
                       <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
@@ -906,5 +906,49 @@
 .total-page {
   font-size: 12px;
   color: #616161;
+}
+.history-block {
+  background-color: #fbfcfd;
+  border-radius: 6px;
+  border: 1px dashed #ccc;
+  padding: 10px;
+  position: relative;
+  // overflow: hidden;
+  .form-block {
+    background-color: none!important;
+  }
+  &:before {
+    content: '历史信息';
+    position: absolute;
+    top: -12px;
+    left: 9px;
+    width: 61px;
+    text-align: center;
+    height: 22px;
+    display: inline-block;
+    line-height: 22px;
+    font-size: 12px;
+    background: #fbfcfd;
+    color: #ccc;
+    border-radius: 3px;
+  }
+  // &:after {
+  //   content: '历史信息';
+  //   position: absolute;
+  //   top: 0;
+  //   right: 0;
+  //   width: 100px;
+  //   height: 22px;
+  //   display: block;
+  //   line-height: 22px;
+  //   text-align: center;
+  //   font-size: 12px;
+  //   color: #fff;
+  //   font-weight: bold;
+  //   background-color: #167be0;
+  //   transform: rotate(45deg);
+  //   transform-origin: 40% 210%;
+  //   box-shadow: -2px 3px 6px 0px rgba(0, 0, 0, .2)
+  // }
 }
 </style>

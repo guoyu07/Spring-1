@@ -13,7 +13,8 @@
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
-          :closable="closableIndex(tableindex, formData)">
+          :closable="item[formData.id].length > 1">
+          <!-- :closable="closableIndex(tableindex, formData)" -->
           <span v-for="formItem in formData.value.attr_list">
             <form-body
               :item="table"

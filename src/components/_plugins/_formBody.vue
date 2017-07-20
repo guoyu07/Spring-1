@@ -43,11 +43,16 @@
         </span>
       </span>
     </span>
-    <el-input-number
+    <!-- <el-input-number
       v-else-if="formItem.value.type === 'int'"
       v-model="item[formItem.id]"
       :disabled="formItem.readonly">
-    </el-input-number>
+    </el-input-number> -->
+    <el-input
+      v-else-if="formItem.value.type === 'int'"
+      v-model.number="item[formItem.id]"
+      :disabled="formItem.readonly">
+    </el-input>
     <quill-editor
       v-else-if="formItem.value.type === 'richtext'"
       v-model="item[formItem.id]"
