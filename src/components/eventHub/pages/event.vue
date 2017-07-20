@@ -716,11 +716,21 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           this.startFormData = res.data.data.form
-          this.acceptedFileTypes = this.startFormData.header[0].value.find(attr => attr.id === 'attachments').value.regex.join(',')
-          this.formData.assignee = this.startFormData.header[0].value.find(attr => attr.id === 'assignee')
-          this.formData.priority = this.startFormData.header[0].value.find(attr => attr.id === 'priority')
-          this.formData.labels = this.startFormData.header[0].value.find(attr => attr.id === 'labels')
-          this.formData.issue = this.startFormData.header[0].value.find(attr => attr.id === 'issue')
+          this.startFormData.header.map(header => {
+            header.value.map(attr => {
+              if (attr.id === 'labels') {
+                this.formData.labels = attr
+              } else if (attr.id === 'assignee') {
+                this.formData.assignee = attr
+              } else if (attr.id === 'priority') {
+                this.formData.priority = attr
+              } else if (attr.id === 'issue') {
+                this.formData.issue = attr
+              } else if (attr.id === 'attachments') {
+                this.acceptedFileTypes = attr.value.regex.join(',')
+              }
+            })
+          })
         })
       },
       getEventData (needRefetch = false) {

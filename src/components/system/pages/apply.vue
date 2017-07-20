@@ -37,10 +37,10 @@
           <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
             增加服务器
           </el-button>
-          <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
+          <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
           <el-form ref="applyForm" :model="applyForm" label-position="top" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-              <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="index !== 0">
+              <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="applyForm.body.length !== 1">
                 <!-- <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure> -->
                 <div v-if="form.body && form.body.body_list.length !== 0">
                   <div v-for="bodyList in form.body.body_list">

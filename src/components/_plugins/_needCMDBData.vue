@@ -53,7 +53,8 @@
       index: { type: Number },
       tableIndex: { type: Number },
       bodyTable: { type: Boolean },
-      headerTable: { type: Boolean }
+      headerTable: { type: Boolean },
+      isEdting: { type: Boolean }
     },
     data () {
       return {
@@ -73,17 +74,32 @@
           keyPath = para.value.key_path.split('.')
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + keyPath[0], (newVal, oldVal) => {
+              if (this.strucData.value.type === 'dicts') {
+                this.vmodel[this.strucData.id] = []
+              } else {
+                this.vmodel[this.strucData.id] = null
+              }
               this.renderOptions()
             }, { deep: true })
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
                 // console.log(newVal)
+                if (this.strucData.value.type === 'dicts') {
+                  this.vmodel[this.strucData.id] = []
+                } else {
+                  this.vmodel[this.strucData.id] = null
+                }
                 this.renderOptions()
               }, { deep: true })
             } else {
               this.$watch('whole.body.' + this.index + '.' + keyPath[0], (newVal, oldVal) => {
                 // console.log(newVal)
+                if (this.strucData.value.type === 'dicts') {
+                  this.vmodel[this.strucData.id] = []
+                } else {
+                  this.vmodel[this.strucData.id] = null
+                }
                 this.renderOptions()
               }, { deep: true })
             }
@@ -93,6 +109,11 @@
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
           // console.log(this.strucData.watch)
+          if (this.strucData.value.type === 'dicts') {
+            this.vmodel[this.strucData.id] = []
+          } else {
+            this.vmodel[this.strucData.id] = null
+          }
           this.renderOptions()
         }, { deep: true })
       } else {
@@ -127,16 +148,18 @@
       },
       renderOptions () {
         // this.whole 区分是不是快速编辑 快速编辑 不传 whole, 需要原值
-        if (!this.strucData.default.type && this.whole) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
-          if (this.strucData.value.type === 'dicts') {
-            this.vmodel[this.strucData.id] = []
-          } else {
-            this.vmodel[this.strucData.id] = null
-          }
-        } else {
-          // 这个是默认值
-          // console.log(this.vmodel[this.strucData.id], this.strucData)
-        }
+        // console.log(this.isEdting)
+        // if (!this.strucData.default.type && this.whole) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
+        //   console.log('hello dicts')
+        //   if (this.strucData.value.type === 'dicts') {
+        //     this.vmodel[this.strucData.id] = []
+        //   } else {
+        //     this.vmodel[this.strucData.id] = null
+        //   }
+        // } else {
+        //   // 这个是默认值
+        //   // console.log(this.vmodel[this.strucData.id], this.strucData)
+        // }
         if (!this.strucData.value.source) {
           this.$message({
             showClose: true,
@@ -346,7 +369,7 @@
                 }
               }
             }
-          }, 10)
+          }, 100)
         })
       }
     }

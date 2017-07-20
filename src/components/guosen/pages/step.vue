@@ -187,6 +187,9 @@
         applyData: {},
         form: {},
         taskForm: {},
+        taskData: {},
+        isEdting: false,
+        edtingInfo: '',
         bodyLableName: [],
         showTaskForm: [],
         assignForm: {
@@ -601,7 +604,28 @@
                 })
               }
             })
-            this.assignForm.body.push(newData)
+            // 判断是否为驳回信息
+            let newDataBody
+            this.taskData.variables.message.map(message => {
+              if (message.task_key === this.routerInfo.tkey) {
+                this.isEdting = true
+                this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
+                // console.log(this.assignForm.header)
+                newDataBody = message.form.body.map((body, bodyindex) => {
+                  return Object.assign({}, body, newData)
+                })
+              }
+            })
+            if (this.isEdting) {
+              this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+            }
+            // console.log(newDataBody)
+            if (newDataBody) {
+              this.assignForm.body = this.assignForm.body.concat(newDataBody)
+              // console.log(this.assignForm.body)
+            } else {
+              this.assignForm.body.push(newData)
+            }
             for (const id in item) {
               // console.log(item[id], this.assignForm.body[k][id])
               if (this.assignForm.body[k][id] !== undefined) {
@@ -709,6 +733,7 @@
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
+          this.taskData = res.data.data
           const message = res.data.data.variables.message
           res.data.data.path_list.map(list => {
             list.map(path => {

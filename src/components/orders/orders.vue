@@ -76,15 +76,15 @@
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
           </div>
-          <assign-section v-if="isProcessAdmin && (filter==='待指派')"></assign-section>
+          <assign-section v-if="isProcessAdmin && (filter==='指派')"></assign-section>
           <el-table
-            v-if="filter!=='待指派'"
+            v-if="filter!=='指派'"
             :data="filteredList"
             v-loading.body="loadingFiltered"
             stripe
             border>
             <!-- <el-table-column
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               label="流程—任务"
               width="200"
               inline-template
@@ -95,15 +95,15 @@
               label="工单号"
               prop="pid"></el-table-column>
             <el-table-column
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               label="流程"
               prop="pname"></el-table-column>
             <el-table-column
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               label="任务"
               prop="name"></el-table-column>
             <el-table-column
-              v-if="filter === '已参与'"
+              v-if="filter === '历史参与'"
               label="流程"
               prop="pname"></el-table-column>
             <el-table-column
@@ -112,21 +112,21 @@
             <el-table-column
               prop="assignee"
               label="指派者"
-              v-if="filter === '已审核' || filter === '待审核'"></el-table-column>
+              v-if="filter === '已参与' || filter === '待审核'"></el-table-column>
             <el-table-column
-              :label="filter === '已审核' ? '认领时间' : '创建时间'"
+              :label="filter === '已参与' ? '认领时间' : '创建时间'"
               inline-template
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               :context="_self">
               <template>
-                <small>{{ (filter === '已审核' ? row.claimTime : row.createTime) | convertTime }}</small>
+                <small>{{ (filter === '已参与' ? row.claimTime : row.createTime) | convertTime }}</small>
               </template>
             </el-table-column>
             <el-table-column
               label="起始时间"
               inline-template
               :context="_self"
-              v-if="filter === '已参与'">
+              v-if="filter === '历史参与'">
               <template>
                 <small>{{ row.startTime | convertTime }}</small>
               </template>
@@ -135,7 +135,7 @@
               label="终止时间"
               inline-template
               :context="_self"
-              v-if="filter === '已参与'">
+              v-if="filter === '历史参与'">
               <template>
                 <small>{{ row.endTime | convertTime }}</small>
               </template>
@@ -150,7 +150,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <div v-if="filter!=='待指派'" class="pagination-block clear">
+          <div v-if="filter!=='指派'" class="pagination-block clear">
             <el-pagination
               class="fr"
               layout="prev, pager, next"
@@ -240,11 +240,11 @@
             <router-link :to="{ path: `/guosen/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已审核'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已参与'">
             <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.pid}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已参与'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '历史参与'">
             <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.pid}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
@@ -264,12 +264,12 @@
               查看
             </router-link>
             <router-link
-              v-if="filter === '已审核'"
+              v-if="filter === '已参与'"
               :to="{ path: `/procedure-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.pid}/${deviceViewData.device.name}`}" class="el-button el-button--plain">
               查看
             </router-link>
             <router-link
-              v-if="filter === '已参与'"
+              v-if="filter === '历史参与'"
               :to="{ path: `/procedure-info/${deviceViewData.device.pkey}/${deviceViewData.device.pid}`}" class="el-button el-button--plain">
               查看
             </router-link>
@@ -294,8 +294,8 @@
         filters: {
           '待认领': 'runtime/tasks/assignee',
           '待审核': 'runtime/tasks/self',
-          '已审核': 'history/tasks/self',
-          '已参与': 'history/process/instances/self'
+          '已参与': 'history/tasks/self',
+          '历史参与': 'history/process/instances/self'
         },
         filterConfData: {
           visible: false
@@ -321,14 +321,14 @@
     created () {
       this.getFilteredList()
       if (this.isProcessAdmin) {
-        this.filters['待指派'] = ''
+        this.filters['指派'] = ''
       }
     },
 
     methods: {
       onFilterChange () {
         this.currentPage = 1
-        if (this.filter !== '待指派') {
+        if (this.filter !== '指派') {
           this.getFilteredList()
         }
       },

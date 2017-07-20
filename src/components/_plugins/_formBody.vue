@@ -149,6 +149,7 @@
       :vmodel="item"
       :strucData="formItem"
       :whole="whole"
+      :isEditing="isEdting"
       :message="message"
       :index="index"
       :table-index="tableIndex"
