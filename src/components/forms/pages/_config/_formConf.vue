@@ -42,6 +42,15 @@
     }
   }
 
+  .sortable-chosen {
+    background-color: rgba(32,160,255,.1);
+    border-color: rgba(32,160,255,.2);
+
+    label {
+      color: #20a0ff;
+    }
+  }
+
   .draggable {
     @borderColor: #dfe6ec;
     @fontColor: #48576a;
@@ -619,12 +628,21 @@ export default {
     },
     // 删除一个字段 （删除操作 可以封装为全局方法）
     onDeleteField (arr, item) {
-      this.$confirm('确定要删除这个字段吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(() => {
-        arr.splice(arr.indexOf(item), 1)
-      })
+      if (this.category && arr.length === 1) {
+        this.$confirm('此模块只剩一个字段，删除之将删除整个模块。若想保留模块，建议直接编辑该字段。继续删除？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          arr.splice(arr.indexOf(item), 1)
+        })
+      } else {
+        this.$confirm('确定要删除这个字段吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          arr.splice(arr.indexOf(item), 1)
+        })
+      }
     }
   },
   components: {
