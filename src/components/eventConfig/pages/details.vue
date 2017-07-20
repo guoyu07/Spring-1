@@ -260,7 +260,24 @@
         // 自动新增「事件详情」模块
         this.incidentFormData.form.body.body_list.push({
           name: value,
-          attr_list: [{ ...newFieldData, ...{ id: 'placeholder_field', category: '事件详情', value: { type: 'str', confVisible: false, regex: [] } } }]
+          show: {
+            key_path: 'components',
+            op: 'eq',
+            type: 'form_header',
+            value
+          },
+          attr_list: [{
+            ...newFieldData,
+            ...{
+              id: 'placeholder_field',
+              category: '事件详情',
+              value: {
+                type: 'str',
+                confVisible: false,
+                regex: []
+              }
+            }
+          }]
         })
         this.onSubmitIncidentForm('已添加！')
         this.addComponentData.isEditing = false
