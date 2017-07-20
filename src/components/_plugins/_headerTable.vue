@@ -11,7 +11,8 @@
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
-          :closable="closableIndex(tableindex, formData)">
+          :closable="item[formData.id].length > 1">
+          <!-- :closable="closableIndex(tableindex, formData) -->
           <span v-for="formItem in formData.value.attr_list">
             <form-body
               :item="table"
@@ -120,12 +121,11 @@
       rules (formItem) {
         return this.tableValid(formItem)
       },
-      closableIndex (index, value) {
-        if (value.limit.type === 'static') {
-          // return !(value.limit.min > index && index < value.limit.max)
-          return (index + 1) > value.limit.min
-        }
-      },
+      // closableIndex (index, value) {
+      //   if (value.limit.type === 'static') {
+      //     return (index + 1) > value.limit.min
+      //   }
+      // },
       removeTab (id) {
         let tabs = this.item[id]
         let activeName = this.tabsValue

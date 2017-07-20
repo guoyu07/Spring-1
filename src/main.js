@@ -168,7 +168,7 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
 }
 
 Vue.prototype.setDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'cascaders' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     Vue.prototype.$set(goalData, original.id, undefined)
@@ -182,7 +182,7 @@ Vue.prototype.setDataType = (original, goalData) => {
 }
 
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'cascaders' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
@@ -408,7 +408,8 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
           } else if (bodyList.show.type === 'message_body') {
             compareVariable = body
           } else {
-            Vue.prototype.$message.warning('显示条件的比较变量设置有误')
+            Vue.prototype.$message.warning(`${bodyList.name}显示条件的比较变量设置有误`)
+            return false
           }
           if (bodyList.show.op === 'eq') {
             if (Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path) === bodyList.show.value) {

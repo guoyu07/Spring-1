@@ -32,6 +32,7 @@
           :value="item">
         </el-option>
       </el-select>
+      <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button>
     </div>
     <!-- 不分组 -->
     <div v-else>
@@ -121,15 +122,30 @@
       assignToMe () {
         // console.log('分配给我')
         const user = window.localStorage.userName
-        this.userList.map(option => {
-          if (option.userId === user) {
-            // if (Array.isArray(this.vmodel[this.strucData.id])) {
-            //   this.vmodel[this.strucData.id].push(option)
-            // } else {
-            this.vmodel[this.strucData.id] = option
-            // }
-          }
-        })
+        if (this.strucData.isAlias) {
+          this.groupList.map(group => {
+            if (group.key === '__None__') {
+              this.member.group = group
+              setTimeout(() => {
+                this.userList.map(option => {
+                  if (option.userId === user) {
+                    this.member.user = option
+                  }
+                })
+              }, 100)
+            }
+          })
+        } else {
+          this.userList.map(option => {
+            if (option.userId === user) {
+              // if (Array.isArray(this.vmodel[this.strucData.id])) {
+              //   this.vmodel[this.strucData.id].push(option)
+              // } else {
+              this.vmodel[this.strucData.id] = option
+              // }
+            }
+          })
+        }
       },
       renderGroupList () {
         const postHeadvData = {

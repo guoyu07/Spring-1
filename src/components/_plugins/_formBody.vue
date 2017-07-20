@@ -43,11 +43,16 @@
         </span>
       </span>
     </span>
-    <el-input-number
+    <!-- <el-input-number
       v-else-if="formItem.value.type === 'int'"
       v-model="item[formItem.id]"
       :disabled="formItem.readonly">
-    </el-input-number>
+    </el-input-number> -->
+    <el-input
+      v-else-if="formItem.value.type === 'int'"
+      v-model.number="item[formItem.id]"
+      :disabled="formItem.readonly">
+    </el-input>
     <quill-editor
       v-else-if="formItem.value.type === 'richtext'"
       v-model="item[formItem.id]"
@@ -167,23 +172,25 @@
       :body-table="bodyTable"
       :header-table="headerTable">
     </member-select>
-    <el-cascader
-      v-else-if="formItem.value.type === 'cascade'"
-      :options="formItem.value.regex"
-      :disabled="formItem.readonly"
-      v-model="item[formItem.id]">
-    </el-cascader>
-    <cascaders
-      v-else-if="formItem.value.type === 'cascaders'"
-      :vmodel="item"
-      :strucData="formItem"
-      :whole="whole"
-      :message="message"
-      :index="index"
-      :table-index="tableIndex"
-      :body-table="bodyTable"
-      :header-table="headerTable">
-    </cascaders>
+    <template v-else-if="formItem.value.type === 'cascade'">
+      <el-cascader
+        v-if="!formItem.isAlias"
+        :options="formItem.value.regex"
+        :disabled="formItem.readonly"
+        v-model="item[formItem.id]">
+      </el-cascader>
+      <cascaders
+        v-else
+        :vmodel="item"
+        :strucData="formItem"
+        :whole="whole"
+        :message="message"
+        :index="index"
+        :table-index="tableIndex"
+        :body-table="bodyTable"
+        :header-table="headerTable">
+      </cascaders>
+    </template>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
@@ -441,7 +448,7 @@
           }
         } else {
           let type
-          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade' || formItem.value.type === 'cascaders') {
+          if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade') {
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
