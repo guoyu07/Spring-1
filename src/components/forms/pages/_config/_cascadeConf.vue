@@ -30,6 +30,9 @@
           <el-form-item label="值">
             <el-input size="small" v-model="layerA.value"></el-input>
           </el-form-item>
+          <el-form-item label="属性">
+            <el-input size="small" v-model="layerA.attr"></el-input>
+          </el-form-item>
           <el-form-item>
             <el-button size="small" type="success" icon="plus" @click="addChild(layerA)"></el-button>
             <el-tooltip placement="top">
@@ -48,6 +51,9 @@
                 <el-form-item label="值">
                   <el-input size="small" v-model="layerB.value"></el-input>
                 </el-form-item>
+                <el-form-item label="属性">
+                  <el-input size="small" v-model="layerB.attr"></el-input>
+                </el-form-item>
               </el-form-item>
               <el-form-item>
                 <el-button size="small" type="success" icon="plus" @click="addChild(layerB)"></el-button>
@@ -61,12 +67,13 @@
               <el-collapse-item v-for="(layerC, index) in layerB.children" :title="layerC.label">
                 <el-form label-width="80px" :inline="true">
                   <el-form-item label="Label">
-                    <el-form-item label="Label">
-                      <el-input size="small" v-model="layerC.label"></el-input>
-                    </el-form-item>
-                    <el-form-item label="值">
-                      <el-input size="small" v-model="layerC.value"></el-input>
-                    </el-form-item>
+                    <el-input size="small" v-model="layerC.label"></el-input>
+                  </el-form-item>
+                  <el-form-item label="值">
+                    <el-input size="small" v-model="layerC.value"></el-input>
+                  </el-form-item>
+                  <el-form-item label="属性">
+                    <el-input size="small" v-model="layerC.attr"></el-input>
                   </el-form-item>
                   <el-form-item>
                     <el-button size="small" type="success" icon="plus" @click="addChild(layerC)" :disabled="true">已达层数上限</el-button>
@@ -105,14 +112,14 @@
 
     methods: {
       addOutsideLayer () {
-        this.confArr.push({ value: 'New parent', label: 'New parent' })
+        this.confArr.push({ value: 'New parent', label: 'New parent', attr: '' })
       },
 
       addChild (layer) {
         if (!layer.children) {
-          this.$set(layer, 'children', [{ value: 'New child', label: 'New child' }])
+          this.$set(layer, 'children', [{ value: 'New child', label: 'New child', attr: '' }])
         } else {
-          layer.children.push({ value: '', label: 'New child' })
+          layer.children.push({ value: 'New child', label: 'New child', attr: '' })
         }
       },
 
