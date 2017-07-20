@@ -5,6 +5,8 @@
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
+            <!-- 驳回信息 -->
+            <p v-if="isEdting" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
             <div v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
@@ -20,6 +22,37 @@
                     </span>
                   </span>
                 </div>
+              </div>
+            </div>
+            <!-- header 表单填写 -->
+            <div v-if="taskForm.header">
+              <div v-for="task in taskForm.header">
+                <span v-for="taskform in task.value">
+                  <form-body
+                    v-if="showFormItem(taskform, assignForm, applyData)"
+                    :item="assignForm.header"
+                    :form-item="taskform"
+                    :whole="assignForm"
+                    :wholeName="'assignForm'"
+                    :message="applyData"
+                    :header="true">
+                  </form-body>
+                  <search-bar
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
+                    :hosts="assignForm.header"
+                    :attr-list="taskform"
+                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
+                    @on-hosts-change="onHostsChange">
+                  </search-bar>
+                  <header-table
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
+                    :form-data="taskform"
+                    :item="assignForm.header"
+                    :messageData="applyData"
+                    :postForm="assignForm"
+                    :postFormName="'assignForm'">
+                  </header-table>
+                </span>
               </div>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
@@ -88,37 +121,6 @@
                 </div>
               </el-tab-pane>
             </el-tabs>
-            <!-- header 表单填写 -->
-            <div v-if="taskForm.header">
-              <div v-for="task in taskForm.header">
-                <span v-for="taskform in task.value">
-                  <form-body
-                    v-if="showFormItem(taskform, assignForm, applyData)"
-                    :item="assignForm.header"
-                    :form-item="taskform"
-                    :whole="assignForm"
-                    :wholeName="'assignForm'"
-                    :message="applyData"
-                    :header="true">
-                  </form-body>
-                  <search-bar
-                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
-                    :hosts="assignForm.header"
-                    :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, assignForm, applyData)"
-                    @on-hosts-change="onHostsChange">
-                  </search-bar>
-                  <header-table
-                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
-                    :form-data="taskform"
-                    :item="assignForm.header"
-                    :messageData="applyData"
-                    :postForm="assignForm"
-                    :postFormName="'assignForm'">
-                  </header-table>
-                </span>
-              </div>
-            </div>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
@@ -152,6 +154,9 @@
       return {
         routerInfo: {},
         applyData: {},
+        taskData: {},
+        isEdting: false,
+        edtingInfo: '',
         form: {},
         taskForm: {},
         bodyLableName: [],
@@ -202,6 +207,7 @@
           // console.log(res)
           this.taskForm = res.data.data.form
           // console.log(this.applyData)
+          // 渲染 body 个数
           if (this.applyData.body.length === 0) {
             // TODO: 只写了两种 count.type
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
@@ -235,17 +241,7 @@
               }
             }
           }
-          // 这里是按 this.taskForm.body.count.type 复制进 this.applyData.body 里
-          // if (this.applyData.body.length !== 0) {
-          //   if (this.taskForm.body.count) {
-          //     if (this.taskForm.body.count.type === 'message_header') {
-          //       const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
-          //       this.applyData.body.forEach((body, k) => {
-          //         Object.assign(body, keyData[k])
-          //       })
-          //     }
-          //   }
-          // }
+
           this.taskForm.header.forEach((header, k) => {
             if (header) {
               header.value.map(value => {
@@ -380,6 +376,26 @@
               }
             }
           })
+          // 判断是否为驳回信息
+          let newDataBody
+          this.taskData.variables.message.map(message => {
+            if (message.task_key === this.routerInfo.tkey) {
+              this.isEdting = true
+              this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
+              // console.log(this.assignForm.header)
+              newDataBody = message.form.body.map((body, bodyindex) => {
+                return Object.assign({}, body, this.assignForm.body[bodyindex])
+              })
+            }
+          })
+          if (this.isEdting) {
+            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+          }
+          if (newDataBody) {
+            this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+              return Object.assign({}, body, newDataBody[bodyindex])
+            })
+          }
         })
       },
       renderInstanceDetail () {
@@ -391,6 +407,7 @@
           }
         }
         this.http.post('', this.parseData(postData)).then((res) => {
+          this.taskData = res.data.data
           const message = res.data.data.variables.message
           res.data.data.path_list.map(list => {
             list.map(path => {

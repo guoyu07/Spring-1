@@ -27,13 +27,15 @@
             <el-table-column
               inline-template
               :context="_self"
+              label="当前任务">
+              <p>{{row.name}}</p>
+            </el-table-column>
+            <el-table-column
+              inline-template
+              :context="_self"
               label="操作">
               <div class="btn-block">
-                <span v-for="action in row.action">
-                  <router-link v-if="action.type==='submit'" :to="{ path: `/system/online/${row.pkey}/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">{{ action.name }}</router-link>
-                  <el-button v-else-if="action.type==='back'" :plain="true" type="danger" size="small" @click="onReject(row, action)">{{action.pass===2?'驳回':'撤单'}}</el-button>
-                  <!-- action.pass===1?'驳回':'撤销' -->
-                </span>
+                <router-link :to="{ path: `/system/online/${row.pkey}/${row.taskDefinitionKey}/${row.id}/${row.name}`}" class="el-button el-button--primary el-button--small">查看详情</router-link>
               </div>
             </el-table-column>
           </el-table>
