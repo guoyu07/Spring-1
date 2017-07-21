@@ -16,7 +16,7 @@
   }
 
   .ticket-num {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: normal;
 
     code {
@@ -74,36 +74,93 @@
       }
     }
 
+    &__content {
+      position: relative;
+
+      .show-more {
+        position: absolute;
+        bottom: 40px;
+        padding: 10px;
+        width: 100%;
+        text-align: center;
+        display: block;
+        z-index: @floating;
+        background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(32,160,255,.2));
+        cursor: pointer;
+
+        &:hover {
+          background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(32,160,255,.4)) !important;
+        }
+
+        input {
+          display: none;
+        }
+
+        label {
+          color: @primary;
+          width: 100%;
+          display: block;
+        }
+
+        &.expaned {
+          label {
+            i {
+              transform: rotate(180deg);
+            }
+          }
+        }
+
+        &.hidden {
+          display: none;
+        }
+      }
+    }
+
     .el-tag + .el-tag {
       margin-left: 4px;
     }
 
     blockquote {
-      padding: 28px 25px;
+      padding: 20px 24px;
       margin: 0;
       border-left: 5px solid @eoThemeColor;
       background-color: @eoSideBgColor;
       position: relative;
       word-wrap: break-word;
+      overflow: hidden;
 
-      &::before,
-      &::after {
-        color: @eoThemeColor;
-        font-size: 40px;
-        position: absolute;
+      &.shy {
+        max-height: 300px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 38px;
+          bottom: 0;
+          left: 0;
+          background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, .9), rgba(255, 255, 255, 1));
+        }
       }
 
-      &::before {
-        top: 0;
-        left: 10px;
-        content: '\201C';
-      }
+      // &::before,
+      // &::after {
+      //   color: @eoThemeColor;
+      //   font-size: 40px;
+      //   position: absolute;
+      // }
 
-      &::after {
-        bottom: 0;
-        right: 10px;
-        content: '\201D';
-      }
+      // &::before {
+      //   top: 0;
+      //   left: 10px;
+      //   content: '\201C';
+      // }
+
+      // &::after {
+      //   bottom: 0;
+      //   right: 10px;
+      //   content: '\201D';
+      // }
     }
 
     .el-upload-list {
@@ -378,9 +435,13 @@
             <h4>描述</h4>
           </div>
           <div class="detail-block__content">
-            <blockquote v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description">
-              <slot>meh</slot>
-            </blockquote>
+            <div :class="{ expaned: isDescriptionExpanded, 'show-more': true }" v-show="!isEditing.description" ref="show-more">
+              <input type="checkbox" id="check_show" @change="toggleDescriptionExpanded">
+              <label for="check_show">
+                <i class="el-icon-arrow-down"></i>
+              </label>
+            </div>
+            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description" ref="description"></blockquote>
             <quill-editor
               v-model="eventData.variables.message[0].form.header.description"
               :options="editor.options"
@@ -629,6 +690,7 @@
           issue: {},
           assignee: {}
         },
+        isDescriptionExpanded: false,
         activeTab: 'comments',
         eventData: {},
         eventDataBuffer: '',
@@ -695,6 +757,9 @@
     },
 
     methods: {
+      toggleDescriptionExpanded () {
+        this.isDescriptionExpanded = !this.isDescriptionExpanded
+      },
       buttonIcon (oper) {
         switch (oper) {
           case '开始处理': return 'fa-play'
@@ -753,6 +818,15 @@
               this.renderStartForm()
               this.initializeFileList()
             }
+            this.$nextTick(() => {
+              const descriptionBlock = this.$refs['description']
+              const showMore = this.$refs['show-more']
+              if (descriptionBlock.clientHeight < 300) {
+                showMore.classList.add('hidden')
+              } else {
+                showMore.classList.remove('hidden')
+              }
+            })
           }
         })
       },
