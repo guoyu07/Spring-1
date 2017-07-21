@@ -16,7 +16,7 @@
   }
 
   .ticket-num {
-    font-size: 13px;
+    font-size: 14px;
     font-weight: normal;
 
     code {
@@ -108,6 +108,10 @@
               transform: rotate(180deg);
             }
           }
+        }
+
+        &.hidden {
+          display: none;
         }
       }
     }
@@ -421,15 +425,13 @@
             <h4>描述</h4>
           </div>
           <div class="detail-block__content">
-            <div :class="{ expaned: isDescriptionExpanded, 'show-more': true }" v-show="!isEditing.description">
+            <div :class="{ expaned: isDescriptionExpanded, 'show-more': true }" v-show="!isEditing.description" ref="show-more">
               <input type="checkbox" id="check_show" @change="toggleDescriptionExpanded">
               <label for="check_show">
                 <i class="el-icon-arrow-down"></i>
               </label>
             </div>
-            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description">
-              <slot>meh</slot>
-            </blockquote>
+            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description" ref="description"></blockquote>
             <quill-editor
               v-model="eventData.variables.message[0].form.header.description"
               :options="editor.options"
@@ -747,7 +749,6 @@
     methods: {
       toggleDescriptionExpanded () {
         this.isDescriptionExpanded = !this.isDescriptionExpanded
-        console.log(this.isDescriptionExpanded)
       },
       buttonIcon (oper) {
         switch (oper) {
@@ -807,6 +808,15 @@
               this.renderStartForm()
               this.initializeFileList()
             }
+            this.$nextTick(() => {
+              const descriptionBlock = this.$refs['description']
+              const showMore = this.$refs['show-more']
+              if (descriptionBlock.clientHeight < 300) {
+                showMore.classList.add('hidden')
+              } else {
+                showMore.classList.remove('hidden')
+              }
+            })
           }
         })
       },
