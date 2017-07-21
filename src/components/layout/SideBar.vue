@@ -23,7 +23,7 @@
 
     .el-menu {
       background-color: @eoSideBgColor;
-      padding-top: 20px;
+      padding-top: 60px;
 
       @media screen and (max-width: 450px) {
         padding-top: 0;
@@ -52,12 +52,30 @@
       }
     }
   }
+
+  .sidebar-title {
+      position: fixed;
+      top: 50px;
+      width: 199px;
+      padding: 17px 25px;
+      border-bottom: 1px solid @eoBorderColor;
+      font-size: 18px;
+      line-height: 25px;
+      color: #167be0;
+      background-color: @eoSideBgColor;
+      z-index: @floating;
+
+      @media screen and (max-width: 450px) {
+        display: none;
+      }
+    }
 </style>
 <template>
   <div>
     <aside class="sibebar">
-      <el-menu mode="vertical" router="router" :default-active="$route.path">
-        <el-menu-item v-for="item in this.$store.state.sidebarConf" :index="item.path"><i :class="`el-icon-${item.icon}`"></i>{{item.title}}</el-menu-item>
+      <div class="sidebar-title">{{this.$store.state.sidebarConf.title}}</div>
+      <el-menu mode="vertical" router="router" :default-active="$route.path" :collapse="isCollapse">
+        <el-menu-item v-for="item in this.$store.state.sidebarConf.routes" :index="item.path"><i :class="`el-icon-${item.icon}`"></i>{{item.name}}</el-menu-item>
       </el-menu>
     </aside>
   </div>

@@ -6,24 +6,12 @@
 </template>
 
 <script>
-  export default {
-    data () {
-      return {
-        sidebarConf: [{
-          title: '用户管理',
-          path: '/auth/users',
-          icon: 'fa-user'
-        }, {
-          title: '角色管理',
-          path: '/auth/roles',
-          icon: 'fa-users'
-        }]
-      }
-    },
+  import sidebarConf from './sidebar-conf'
 
+  export default {
     mounted () {
       this.$store.dispatch('reload_sidebar', {
-        sidebarConf: this.sidebarConf
+        sidebarConf
       })
       console.log(this.$store.state)
     }
