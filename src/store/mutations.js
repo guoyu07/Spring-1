@@ -14,5 +14,9 @@ export default {
 
   [types.IDCRACK_DATA] (state, data) {
     state.idcrackData = data.idcrackData
+  },
+
+  [types.RELOAD_SIDEBAR] (state, sidebarConf) {
+    state.sidebarConf = sidebarConf
   }
 }

@@ -23,7 +23,7 @@
 
     .el-menu {
       background-color: @eoSideBgColor;
-      padding-top: 50px;
+      padding-top: 20px;
 
       @media screen and (max-width: 450px) {
         padding-top: 0;
@@ -52,82 +52,14 @@
       }
     }
   }
-
-  .sidebar-title {
-    position: fixed;
-    top: 50px;
-    width: 199px;
-    padding: 17px 25px;
-    border-bottom: 1px solid @eoBorderColor;
-    font-size: 18px;
-    line-height: 25px;
-    color: #167be0;
-    background-color: @eoSideBgColor;
-    z-index: @floating;
-
-    @media screen and (max-width: 450px) {
-      display: none;
-    }
-  }
-
-  .toggle-btn {
-    display: none;
-    position: fixed;
-    bottom: 42px;
-    left: 10px;
-    font-size: 24px;
-    width: 32px;
-    height: 32px;
-    color: @themeColor;
-    border: 1px solid @themeColor;
-    border-radius: 4px;
-    text-align: center;
-    line-height: 1;
-    z-index: @flying;
-    background-color: #fff;
-
-    i {
-      line-height: 32px;
-    }
-
-    @media screen and (max-width: 450px) {
-      display: block;
-    }
-  }
 </style>
 <template>
   <div>
     <aside class="sibebar">
       <el-menu mode="vertical" router="router" :default-active="$route.path">
-        <div class="sidebar-title">IT 服务中心</div>
-
-        <el-menu-item-group title="首页">
-          <el-menu-item index="/home"><i class="el-icon-fa-dashboard"></i>运维服务目录</el-menu-item>
-        </el-menu-item-group>
-
-        <el-menu-item-group title="事件管理">
-          <el-menu-item index="/event-hub"><i class="el-icon-fa-rss"></i>事件管理</el-menu-item>
-        </el-menu-item-group>
-
-        <el-menu-item-group title="工单管理">
-          <el-menu-item index="/orders"><i class="el-icon-fa-calendar-o"></i>工单管理</el-menu-item>
-        </el-menu-item-group>
-
-        <el-menu-item-group title="权限自定义">
-          <el-menu-item index="/auth/users"><i class="el-icon-fa-user"></i>用户管理</el-menu-item>
-          <el-menu-item index="/auth/roles"><i class="el-icon-fa-users"></i>角色管理</el-menu-item>
-          <el-menu-item index="/process-admin/basics"><i class="el-icon-fa-circle-o"></i>流程特权管理</el-menu-item>
-          <el-menu-item index="/process-admin/steps"><i class="el-icon-fa-circle-o-notch"></i>流程环节管理</el-menu-item>
-        </el-menu-item-group>
-        <el-menu-item-group title="流程设计">
-          <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>自定义流程</el-menu-item>
-          <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>自定义表单</el-menu-item>
-          <el-menu-item index="/event-config/details"><i class="el-icon-fa-wpforms"></i>自定义事件</el-menu-item>
-        </el-menu-item-group>
+        <el-menu-item v-for="item in this.$store.state.sidebarConf" :index="item.path"><i :class="`el-icon-${item.icon}`"></i>{{item.title}}</el-menu-item>
       </el-menu>
     </aside>
-
-    <div class="toggle-btn" @click="onToggleClick"><i class="el-icon-fa-bars"></i></div>
   </div>
 </template>
 <script>
@@ -135,17 +67,6 @@
     data () {
       return {
         router: true
-      }
-    },
-
-    methods: {
-      onToggleClick () {
-        let aside = document.getElementsByTagName('aside')[0]
-        if (aside.classList.contains('shown')) {
-          aside.classList.remove('shown')
-        } else {
-          aside.classList.add('shown')
-        }
       }
     }
   }

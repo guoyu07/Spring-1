@@ -42,5 +42,16 @@ module.exports = {
       })
       resolve()
     })
+  },
+
+  reload_sidebar: ({
+    commit
+  }, {
+    sidebarConf
+  }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.RELOAD_SIDEBAR, sidebarConf)
+      resolve()
+    })
   }
 }

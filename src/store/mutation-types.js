@@ -6,3 +6,6 @@ export const REMOVE_USERINFO = 'REMOVE_USERINFO'
 
 // 清空用户信息
 export const IDCRACK_DATA = 'IDCRACK_DATA'
+
+// 刷新侧边栏入口
+export const RELOAD_SIDEBAR = 'RELOAD_SIDEBAR'
