@@ -85,7 +85,7 @@
         text-align: center;
         display: block;
         z-index: @floating;
-        background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(32,160,255,.1));
+        background: linear-gradient(to bottom, rgba(0,0,0,0), rgba(32,160,255,.2));
         cursor: pointer;
 
         &:hover {
@@ -121,7 +121,7 @@
     }
 
     blockquote {
-      padding: 28px 25px;
+      padding: 20px 24px;
       margin: 0;
       border-left: 5px solid @eoThemeColor;
       background-color: @eoSideBgColor;
@@ -131,26 +131,36 @@
 
       &.shy {
         max-height: 300px;
+
+        &::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 38px;
+          bottom: 0;
+          left: 0;
+          background: linear-gradient(to bottom, rgba(255, 255, 255, 0.3), rgba(255, 255, 255, .9), rgba(255, 255, 255, 1));
+        }
       }
 
-      &::before,
-      &::after {
-        color: @eoThemeColor;
-        font-size: 40px;
-        position: absolute;
-      }
+      // &::before,
+      // &::after {
+      //   color: @eoThemeColor;
+      //   font-size: 40px;
+      //   position: absolute;
+      // }
 
-      &::before {
-        top: 0;
-        left: 10px;
-        content: '\201C';
-      }
+      // &::before {
+      //   top: 0;
+      //   left: 10px;
+      //   content: '\201C';
+      // }
 
-      &::after {
-        bottom: 0;
-        right: 10px;
-        content: '\201D';
-      }
+      // &::after {
+      //   bottom: 0;
+      //   right: 10px;
+      //   content: '\201D';
+      // }
     }
 
     .el-upload-list {
