@@ -709,7 +709,7 @@
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
               // console.log(this.assignForm.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
-                return Object.assign({}, body, this.assignForm.body[bodyindex])
+                return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
             }
           })

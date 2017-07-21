@@ -124,7 +124,7 @@
         const user = window.localStorage.userName
         if (this.strucData.isAlias) {
           this.groupList.map(group => {
-            if (group.key === '__None__') {
+            if (group.key === '__None__') { // 我默认分配为 所有 的分组里面
               this.member.group = group
               setTimeout(() => {
                 this.userList.map(option => {

@@ -13,7 +13,8 @@
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
-          :closable="item[formData.id].length > 1">
+          :closable="item[formData.id].length > limitNum">
+          <!-- item[formData.id].length > 1 -->
           <!-- :closable="closableIndex(tableindex, formData)" -->
           <span v-for="formItem in formData.value.attr_list">
             <form-body
@@ -57,7 +58,7 @@
       }
     },
     created () {
-      // console.log(this.formData)
+      // console.log(this.postForm)
     },
 
     watch: {
@@ -73,9 +74,11 @@
         }
       },
       renderTable () { // 这里是控制一开始的固定table个数，最少的table个数或者是固定的table个数
+        const stringData = JSON.stringify(this.postForm.body[this.index][this.formData.id][0])
+        // const tableData = JSON.parse(stringData)
         for (let i = 0; i < this.limitNum; i++) {
           if (this.postForm.body[this.index][this.formData.id].length < this.limitNum) {
-            this.postForm.body[this.index][this.formData.id].push(this.postForm.body[this.index][this.formData.id][0])
+            this.postForm.body[this.index][this.formData.id].push(JSON.parse(stringData))
           }
           // 配置默认值
           this.formData.value.attr_list.map(list => {

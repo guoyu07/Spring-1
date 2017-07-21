@@ -54,8 +54,7 @@
                                 :item="postForm.body[index]"
                                 :form-item="formItem"
                                 :whole="postForm"
-                                :index="+index"
-                                keep-alive>
+                                :index="+index">
                               </form-body>
                               <search-bar
                                 v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
@@ -156,81 +155,6 @@
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskFormData = res.data.data.form
-          // this.taskFormData = res.data.data.variables.message[0].form
-          // console.log(this.taskFormData)
-          // this.taskFormData.header[0].value.push({
-          //   watch: '',
-          //   category: '',
-          //   value: {
-          //     type: 'cascaders',
-          //     regex: [{
-          //       value: 'brand1',
-          //       label: 'Y03',
-          //       attr: '品牌',
-          //       children: [{
-          //         value: 'category1',
-          //         label: '手表显示异常',
-          //         attr: '分类'
-          //       }, {
-          //         value: 'category2',
-          //         label: '手表系统异常',
-          //         attr: '分类',
-          //         children: [{
-          //           value: 'detail1',
-          //           label: '联通2G网络反馈',
-          //           attr: '详情'
-          //         }, {
-          //           value: 'detail2',
-          //           label: '移动2G网络反馈',
-          //           attr: '详情'
-          //         }, {
-          //           value: 'detail3',
-          //           label: '移动3G网络反馈',
-          //           attr: '详情'
-          //         }, {
-          //           value: 'detail4',
-          //           label: '手表界面显示“飞行模式”',
-          //           attr: '详情'
-          //         }]
-          //       }]
-          //     }, {
-          //       value: 'brand2',
-          //       label: 'Y02',
-          //       attr: '品牌',
-          //       children: [{
-          //         value: 'category1',
-          //         label: '系统异常',
-          //         attr: '分类'
-          //       }, {
-          //         value: 'category2',
-          //         label: '手表瑕疵',
-          //         attr: '分类',
-          //         children: [{
-          //           value: 'detail1',
-          //           label: '表带问题',
-          //           attr: '详情'
-          //         }, {
-          //           value: 'detail2',
-          //           label: '表扣问题',
-          //           attr: '详情'
-          //         }]
-          //       }]
-          //     }]
-          //   },
-          //   id: 'hellotest',
-          //   default: {
-          //     type: ''
-          //   },
-          //   isAlias: true,
-          //   name: '测试新级联',
-          //   need_submit: true,
-          //   readonly: false,
-          //   required: true,
-          //   show: {
-          //     type: ''
-          //   },
-          //   unique: false
-          // })
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
@@ -277,6 +201,15 @@
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
                           this.setDataType(value, this.postForm.body[0], this)
+                          if (value.value.type === 'table') {
+                            // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                            this.$set(this.postForm.body[0], value.id, [])
+                            this.$set(this.postForm.body[0][value.id], 0, {})
+                            value.value.attr_list.map(item => {
+                              this.setDataType(item, this.postForm.body[0][value.id], this)
+                              // console.log(this.postForm.body[0][value.id])
+                            })
+                          }
                           // 有默认值时 只有 form_body 和 form_header 2种
                           if (value.default && value.default.type) {
                             if (value.default.type === 'form_body') {
@@ -310,7 +243,6 @@
                         // console.log(this.postForm.body[0][value.id])
                       })
                     }
-                    console.log(this.postForm.body[0][value.id])
                     // 有默认值时 只有 form_body 和 form_header 2种
                     if (value.default && value.default.type) {
                       if (value.default.type === 'form_body') {
@@ -328,6 +260,7 @@
               })
             }
           })
+          console.log(this.postForm.body)
           if (this.isEditing) this.injectValues() // 是编辑
         })
       },
@@ -350,15 +283,6 @@
       handleClick (val) {
         console.log(val)
       },
-      // validateFormFunction () {
-      //   this.$refs['postForm'].validate((valid) => {
-      //     if (valid) {
-      //       this.validateForm = false
-      //     } else {
-      //       this.validateForm = true
-      //     }
-      //   })
-      // },
       resetForm (formName) {
         console.log(this.$refs)
         this.$refs[formName].resetFields()

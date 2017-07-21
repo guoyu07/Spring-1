@@ -8,19 +8,21 @@
             <!-- 驳回信息 -->
             <p v-if="isEdting" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
-            <div class="history-block" v-for="taskheader in form">
-              <div v-if="taskheader.form.form.header.length >= 1">
-                <p class="h5">{{taskheader.tname}}</p>
-                <div v-for="taskformheader in taskheader.form.form.header">
-                  <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
-                  <span v-for="valueheader in taskformheader.value">
-                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
-                      <header-form-display
-                        :item="applyData.header"
-                        :form-item="valueheader">
-                      </header-form-display>
+            <div class="history-block">
+              <div v-for="taskheader in form">
+                <div v-if="taskheader.form.form.header.length >= 1">
+                  <p class="h5">{{taskheader.tname}}</p>
+                  <div v-for="taskformheader in taskheader.form.form.header">
+                    <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
+                    <span v-for="valueheader in taskformheader.value">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                        <header-form-display
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -82,7 +84,7 @@
                   <div v-for="taskFormData in taskForm.body.body_list">
                       <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
                         <div class="form-block" v-for="formBlock in taskFormData.attr_list">
-                          <h5>{{formBlock.name}}</h5>
+                          <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
                             <form-body
                               v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
@@ -180,8 +182,13 @@
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
-      // this.renderForm()
-      // this.renderTaskForm()
+      if (this.routerInfo.pkey === 'host_apply' && this.routerInfo.tkey === 'start') {
+        this.$watch('assignForm.body', (val, oldVal) => {
+          for (const data of val) {
+            data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
+          }
+        }, { deep: true })
+      }
     },
     watch: {
       'taskForm': {
@@ -278,7 +285,9 @@
             this.taskForm.body.body_list.forEach(body => {
               if (body.show.type) {
                 const keyPath = body.show.key_path.split('.')
+                console.log(keyPath)
                 if (body.show.type === 'message_body') {
+                  console.log('message_body')
                   if (body.show.value === item[keyPath[0]]) {
                     // console.log(item[keyPath[0]])
                     body.attr_list.map(group => {
@@ -286,6 +295,14 @@
                         // this.setNewDataType(item, newData)
                         if (value.need_submit) {
                           this.setNewDataType(value, newData)
+                          if (value.value.type === 'table') {
+                            // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                            newData[value.id][0] = {}
+                            let data = newData[value.id][0]
+                            value.value.attr_list.map(item => {
+                              this.setNewDataType(item, data)
+                            })
+                          }
                           // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                           if (value.default && value.default.type) {
                             if (value.default.type === 'message_header') {
@@ -306,6 +323,14 @@
                     group.value.map(value => {
                       if (value.need_submit) {
                         this.setNewDataType(value, newData)
+                        if (value.value.type === 'table') {
+                          // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+                          newData[value.id][0] = {}
+                          let data = newData[value.id][0]
+                          value.value.attr_list.map(item => {
+                            this.setNewDataType(item, data)
+                          })
+                        }
                         // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                         if (value.default && value.default.type) {
                           if (value.default.type === 'message_header') {
@@ -318,13 +343,6 @@
                           }
                         }
                       }
-                      // 以下这段可以不用，这种只读不提交，直接在 formbody 显示就好，不需要赋值
-                      // if (!value.need_submit && value.readonly) {
-                      //   if (value.default.type === 'message_header') {
-                      //     // item === this.applyData.body
-                      //     item[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                      //   }
-                      // }
                     })
                   })
                 }
@@ -362,7 +380,6 @@
                           this.assignForm.body[k][value.id] = value.default.value
                         }
                       }
-                      // 机柜 U 位数的默认值 console.log(this.assignForm.body[k].idcrack, this.applyData.header.host_list[k].u_num)
                     }
                   })
                 })
@@ -381,17 +398,19 @@
           this.taskData.variables.message.map(message => {
             if (message.task_key === this.routerInfo.tkey) {
               this.isEdting = true
+              this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
               // console.log(this.assignForm.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
-                return Object.assign({}, body, this.assignForm.body[bodyindex])
+                return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
             }
           })
-          if (this.isEdting) {
-            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-          }
+          // if (this.isEdting) {
+          //   this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+          // }
           if (newDataBody) {
+            // console.log(newDataBody)
             this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
               return Object.assign({}, body, newDataBody[bodyindex])
             })
@@ -912,10 +931,14 @@
   border-radius: 6px;
   border: 1px dashed #ccc;
   padding: 10px;
+  margin-bottom: 15px;
   position: relative;
   // overflow: hidden;
   .form-block {
     background-color: none!important;
+  }
+  .el-form-item {
+    margin-bottom: 0;
   }
   &:before {
     content: '历史信息';
