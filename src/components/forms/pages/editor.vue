@@ -123,7 +123,7 @@
           </el-row>
           <el-row class="form-block">
             <h4>Header 配置</h4>
-            <form-conf :config-data="formConfig.form.form.header" :presets="presets" @on-config-change="onHeaderConfigChange"></form-conf>
+            <form-conf :config-data="formConfig.form.form.header" :presets="presetList" :option-presets="optionPresets" @on-config-change="onHeaderConfigChange"></form-conf>
           </el-row>
           <el-row class="form-block">
             <h4>Body 配置 ({{formConfig.form.form.body.body_list.length}})</h4>
@@ -160,7 +160,7 @@
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
               <h5>Body #{{index + 1}}</h5>
               <el-card>
-                <form-conf :config-data="body.attr_list" :presets="presets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
+                <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -219,10 +219,15 @@
 </template>
 <script>
 import formConf from './_config/_formConf' // 配置字段的表单
+
+import getPresetList from './../../../mixins/getPresetList'
+import getOptionPresets from './../../../mixins/getOptionPresets'
+
 export default {
+  mixins: [getPresetList, getOptionPresets],
+
   data () {
     return {
-      presets: [],
       fieldsets: [],
       id: '',
       // 操作按钮
@@ -251,7 +256,8 @@ export default {
     }
   },
   activated () {
-    this.getPresets()
+    this.getPresetList()
+    this.getOptionPresets()
     /**
      * 正常的 Restfull API 是拿一个 id 再去获取详情。
      * 这里是直接路由传对象过来，所以刷新时让他回退。
@@ -267,22 +273,11 @@ export default {
     } else {
       this.$router.go(-1)
     }
-    this.getActionDef()
+    if (this.formConfig.tkey !== 'start') this.getActionDef()
     this.initActions()
     this.initiateFieldsets()
   },
   methods: {
-    // 获取预设集
-    getPresets () {
-      let postData = {
-        action: 'cmdb/object/list',
-        method: 'GET',
-        data: {}
-      }
-      this.http.post('', this.parseData(postData)).then((res) => {
-        this.presets = res.data.data.list
-      })
-    },
     getActionDef () {
       let postData = {
         action: 'activiti/action/define/list',
@@ -293,6 +288,7 @@ export default {
         this.actionDefList = res.data.data.list
       })
     },
+
     initActions () {
       // fuck this shit
       if (this.formConfig.form.action.find(_ => _.type === 'manual')) {

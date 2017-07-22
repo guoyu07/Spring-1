@@ -98,7 +98,7 @@
 <template>
   <div>
     <aside class="sibebar">
-      <el-menu mode="vertical" router="router">
+      <el-menu mode="vertical" router="router" :default-active="$route.path">
         <div class="sidebar-title">IT 服务中心</div>
 
         <el-menu-item-group title="首页">
@@ -122,6 +122,7 @@
         <el-menu-item-group title="流程设计">
           <el-menu-item index="/custom"><i class="el-icon-fa-sitemap"></i>自定义流程</el-menu-item>
           <el-menu-item index="/forms"><i class="el-icon-fa-wpforms"></i>自定义表单</el-menu-item>
+          <el-menu-item index="/event-config/details"><i class="el-icon-fa-wpforms"></i>自定义事件</el-menu-item>
         </el-menu-item-group>
       </el-menu>
     </aside>

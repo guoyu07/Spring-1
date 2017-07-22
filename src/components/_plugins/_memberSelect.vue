@@ -32,6 +32,7 @@
           :value="item">
         </el-option>
       </el-select>
+      <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button>
     </div>
     <!-- 不分组 -->
     <div v-else>
@@ -121,19 +122,34 @@
       assignToMe () {
         // console.log('分配给我')
         const user = window.localStorage.userName
-        this.userList.map(option => {
-          if (option.userId === user) {
-            // if (Array.isArray(this.vmodel[this.strucData.id])) {
-            //   this.vmodel[this.strucData.id].push(option)
-            // } else {
-            this.vmodel[this.strucData.id] = option
-            // }
-          }
-        })
+        if (this.strucData.isAlias) {
+          this.groupList.map(group => {
+            if (group.key === '__None__') { // 我默认分配为 所有 的分组里面
+              this.member.group = group
+              setTimeout(() => {
+                this.userList.map(option => {
+                  if (option.userId === user) {
+                    this.member.user = option
+                  }
+                })
+              }, 100)
+            }
+          })
+        } else {
+          this.userList.map(option => {
+            if (option.userId === user) {
+              // if (Array.isArray(this.vmodel[this.strucData.id])) {
+              //   this.vmodel[this.strucData.id].push(option)
+              // } else {
+              this.vmodel[this.strucData.id] = option
+              // }
+            }
+          })
+        }
       },
       renderGroupList () {
         const postHeadvData = {
-          action: 'groups/all',
+          action: 'groups/all/base',
           method: 'GET',
           data: {}
         }
@@ -141,25 +157,28 @@
         .then((response) => {
           // console.log(response)
           this.groupList = response.data.data
-          if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
-            this.groupList.map(group => {
-              console.log(group.key === this.vmodel[this.strucData.id].group.key)
-              if (group.key === this.vmodel[this.strucData.id].group.key) {
-                this.member.group = group // 这里发生了change事件 导致 user = null
-                // console.log(this.vmodel[this.strucData.id])
-                // setTimeout(() => {
-                //   if (this.userId) {
-                //     this.group.users.map(user => {
-                //       if (user.userId === this.userId) {
-                //         this.vmodel[this.strucData.id].user = user
-                //         console.log(this.vmodel[this.strucData.id].user)
-                //       }
-                //     })
-                //   }
-                // }, 100)
-              }
-            })
-          }
+          setTimeout(() => {
+            // console.log(this.vmodel[this.strucData.id])
+            if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
+              this.groupList.map(group => {
+                console.log(group.key === this.vmodel[this.strucData.id].group.key)
+                if (group.key === this.vmodel[this.strucData.id].group.key) {
+                  this.member.group = group // 这里发生了change事件 导致 user = null
+                  // console.log(this.vmodel[this.strucData.id])
+                  // setTimeout(() => {
+                  //   if (this.userId) {
+                  //     this.group.users.map(user => {
+                  //       if (user.userId === this.userId) {
+                  //         this.vmodel[this.strucData.id].user = user
+                  //         console.log(this.vmodel[this.strucData.id].user)
+                  //       }
+                  //     })
+                  //   }
+                  // }, 100)
+                }
+              })
+            }
+          }, 10)
         })
       },
       renderGroupUserList (key) {

@@ -387,7 +387,7 @@ Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index, histor
 }
 
 Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
-  // console.log(messageData)
+  // console.log(taskForm)
   if (taskForm.body.body_list.length !== 0) {
     if (taskForm.body.body_list.length === 1) {
       messageData && messageData.body.map((body, index) => {
@@ -408,7 +408,8 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
           } else if (bodyList.show.type === 'message_body') {
             compareVariable = body
           } else {
-            Vue.prototype.$message.warning('显示条件的比较变量设置有误')
+            Vue.prototype.$message.warning(`${bodyList.name}显示条件的比较变量设置有误`)
+            return false
           }
           if (bodyList.show.op === 'eq') {
             if (Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, bodyList.show.key_path) === bodyList.show.value) {

@@ -1,7 +1,7 @@
 <template>
   <!-- 用 whole 来区分是否需要显示label formItem.name 因为快速编辑里面不传 whole ，只需要编辑当前一个表单 -->
   <el-form-item
-    v-if="formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'"
+    v-if="formItem.value && formItem.value.type !== 'table' && formItem.value.type !== 'search_bar'"
     :prop="prop(formItem)"
     :label="whole ? formItem.name : ''"
     :rules="rules(formItem)"
@@ -48,6 +48,11 @@
       v-model="item[formItem.id]"
       :disabled="formItem.readonly">
     </el-input-number>
+    <!-- <el-input
+      v-else-if="formItem.value.type === 'int'"
+      v-model.number="item[formItem.id]"
+      :disabled="formItem.readonly">
+    </el-input> -->
     <quill-editor
       v-else-if="formItem.value.type === 'richtext'"
       v-model="item[formItem.id]"
@@ -149,6 +154,7 @@
       :vmodel="item"
       :strucData="formItem"
       :whole="whole"
+      :isEditing="isEdting"
       :message="message"
       :index="index"
       :table-index="tableIndex"
@@ -166,18 +172,32 @@
       :body-table="bodyTable"
       :header-table="headerTable">
     </member-select>
-    <el-cascader
-      v-else-if="formItem.value.type === 'cascade'"
-      :options="formItem.value.regex"
-      :disabled="formItem.readonly"
-      v-model="item[formItem.id]">
-    </el-cascader>
+    <template v-else-if="formItem.value.type === 'cascade'">
+      <el-cascader
+        v-if="!formItem.isAlias"
+        :options="formItem.value.regex"
+        :disabled="formItem.readonly"
+        v-model="item[formItem.id]">
+      </el-cascader>
+      <cascaders
+        v-else
+        :vmodel="item"
+        :strucData="formItem"
+        :whole="whole"
+        :message="message"
+        :index="index"
+        :table-index="tableIndex"
+        :body-table="bodyTable"
+        :header-table="headerTable">
+      </cascaders>
+    </template>
     <p class="help-block" v-if="formItem.description">{{formItem.description}}</p>
   </el-form-item>
 </template>
 <script>
   import needCmdbData from './_needCMDBData'
   import memberSelect from './_memberSelect'
+  import cascaders from './_cascaders'
   import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
@@ -505,6 +525,7 @@
     components: {
       needCmdbData,
       memberSelect,
+      cascaders,
       formStructure,
       quillEditor,
       Dropzone

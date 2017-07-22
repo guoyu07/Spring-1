@@ -42,6 +42,15 @@
     }
   }
 
+  .sortable-chosen {
+    background-color: rgba(32,160,255,.1);
+    border-color: rgba(32,160,255,.2);
+
+    label {
+      color: #20a0ff;
+    }
+  }
+
   .draggable {
     @borderColor: #dfe6ec;
     @fontColor: #48576a;
@@ -127,8 +136,8 @@
     <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
     <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
-        <input type="checkbox" :id="`${bodyIndex}-${index}`">
-        <label class="draggable-item__label" :for="`${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
+        <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`">
+        <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section>
           <div class="draggable-item__inner">
             <el-row>
@@ -140,11 +149,12 @@
                     <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                     <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
                     <el-checkbox v-if="itemConf.value.type === 'dict' || itemConf.value.type === 'dicts' || itemConf.value.type === 'search_bar'" v-model="itemConf.cmdb_need_check">是否检查／占用资源</el-checkbox>
-                    <el-checkbox v-if="itemConf.value.type === 'str' || itemConf.value.type === 'enum' || itemConf.value.type ==='dict' || itemConf.value.type === 'dicts' || itemConf.value.type ==='enums' || itemConf.value.type ==='users' || itemConf.value.type ==='orders'" v-model="itemConf.isAlias">
+                    <el-checkbox v-if="['str', 'enum', 'enums', 'dict', 'dicts', 'users', 'orders', 'cascade'].includes(itemConf.value.type)" v-model="itemConf.isAlias">
                       <span v-show="itemConf.value.type === 'str'">长文本（textarea）</span>
                       <span v-show="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
                       <span v-show="itemConf.value.type === 'dicts' || itemConf.value.type ==='enums'">多选框（checkbox）</span>
                       <span v-show="itemConf.value.type === 'users'">可选分组</span>
+                      <span v-show="itemConf.value.type === 'cascade'">带属性</span>
                       <!-- <span v-show="itemConf.value.type === 'orders'">可选分类</span> -->
                     </el-checkbox>
                   </el-form-item>
@@ -283,14 +293,14 @@
     </draggable>
 
     <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField">添加字段</el-button>
-    <el-button type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
+    <el-button v-if="!category" type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
     <el-row style="margin-top: 12px">
       <el-select size="small" v-model="selectedPreset" placeholder="选择预设集">
         <el-option v-for="obj in presets" :key="obj" :value="obj" :label="obj.name"></el-option>
       </el-select>
-      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">配置预设集</el-button>
+      <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
-    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" v-if="selectedPreset"></preset-conf>
+    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
 
     <!-- 避免修改 props，不写成组件 -->
     <el-dialog title="克隆 header 已有字段" v-model="showCloneHeaderFieldVisible" v-if="!isBody">
@@ -389,7 +399,12 @@ export default {
     configData: Array,
     presets: Array,
     fieldsets: Array,
-    bodyIndex: Number
+    bodyIndex: Number,
+    optionPresets: Array,
+    category: {
+      default: '',
+      type: String
+    }
   },
 
   data () {
@@ -397,7 +412,6 @@ export default {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
       selectedPreset: null,
       selectedFields: [],
-      optionPresets: [],
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
       editBody: null,
@@ -439,18 +453,8 @@ export default {
 
     configData2 (val) {
       console.log('emitted!')
-      console.log(val)
-      this.$emit('on-config-change', { val, index: this.bodyIndex }) // 组件内对副本的变更向外部发送事件
+      this.$emit('on-config-change', { val, index: this.bodyIndex, category: this.category }) // 组件内对副本的变更向外部发送事件
     }
-  },
-
-  mounted () {
-    // this.oldList = this.configData2.map(v => v.id)
-    // this.newList = this.oldList.slice()
-    // this.$nextTick(() => {
-    //   this.setSort()
-    // })
-    this.getOptionPresets()
   },
 
   methods: {
@@ -472,18 +476,6 @@ export default {
     //     }
     //   })
     // },
-    // 获取选项预设集（for apis）
-    getOptionPresets () {
-      let postData = {
-        action: 'activiti/api/define/list',
-        method: 'GET',
-        data: {}
-      }
-      this.http.post('', this.parseData(postData)).then((res) => {
-        this.optionPresets = res.data.data.list
-        console.log(this.optionPresets)
-      })
-    },
     // 导入预设集
     importPreset (preset, currentFields) {
       for (let attr of preset) {
@@ -566,7 +558,7 @@ export default {
       this.configData2.push({
         id: '',
         name: '新字段',
-        category: '', // 分组
+        category: this.category, // 分组
         unique: false, // 唯一
         required: true, // 必填
         need_submit: true, // 需要提交
@@ -636,12 +628,21 @@ export default {
     },
     // 删除一个字段 （删除操作 可以封装为全局方法）
     onDeleteField (arr, item) {
-      this.$confirm('确定要删除这个字段吗？', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消'
-      }).then(() => {
-        arr.splice(arr.indexOf(item), 1)
-      })
+      if (this.category && arr.length === 1) {
+        this.$confirm('此模块只剩一个字段，删除之将删除整个模块。若想保留模块，建议直接编辑该字段。继续删除？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          arr.splice(arr.indexOf(item), 1)
+        })
+      } else {
+        this.$confirm('确定要删除这个字段吗？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(() => {
+          arr.splice(arr.indexOf(item), 1)
+        })
+      }
     }
   },
   components: {

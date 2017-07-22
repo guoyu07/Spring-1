@@ -76,15 +76,15 @@
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>
             </el-radio-group>
           </div>
-          <assign-section v-if="isProcessAdmin && (filter==='待指派')"></assign-section>
+          <assign-section v-if="isProcessAdmin && (filter==='指派')"></assign-section>
           <el-table
-            v-if="filter!=='待指派'"
+            v-if="filter!=='指派'"
             :data="filteredList"
             v-loading.body="loadingFiltered"
             stripe
             border>
             <!-- <el-table-column
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               label="流程—任务"
               width="200"
               inline-template
@@ -95,15 +95,15 @@
               label="工单号"
               prop="pid"></el-table-column>
             <el-table-column
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               label="流程"
               prop="pname"></el-table-column>
             <el-table-column
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               label="任务"
               prop="name"></el-table-column>
             <el-table-column
-              v-if="filter === '已参与'"
+              v-if="filter === '历史参与'"
               label="流程"
               prop="pname"></el-table-column>
             <el-table-column
@@ -112,21 +112,21 @@
             <el-table-column
               prop="assignee"
               label="指派者"
-              v-if="filter === '已审核' || filter === '待审核'"></el-table-column>
+              v-if="filter === '已参与' || filter === '待处理'"></el-table-column>
             <el-table-column
-              :label="filter === '已审核' ? '认领时间' : '创建时间'"
+              :label="filter === '已参与' ? '认领时间' : '创建时间'"
               inline-template
-              v-if="filter !== '已参与'"
+              v-if="filter !== '历史参与'"
               :context="_self">
               <template>
-                <small>{{ (filter === '已审核' ? row.claimTime : row.createTime) | convertTime }}</small>
+                <small>{{ (filter === '已参与' ? row.claimTime : row.createTime) | convertTime }}</small>
               </template>
             </el-table-column>
             <el-table-column
               label="起始时间"
               inline-template
               :context="_self"
-              v-if="filter === '已参与'">
+              v-if="filter === '历史参与'">
               <template>
                 <small>{{ row.startTime | convertTime }}</small>
               </template>
@@ -135,7 +135,7 @@
               label="终止时间"
               inline-template
               :context="_self"
-              v-if="filter === '已参与'">
+              v-if="filter === '历史参与'">
               <template>
                 <small>{{ row.endTime | convertTime }}</small>
               </template>
@@ -150,7 +150,7 @@
               </template>
             </el-table-column>
           </el-table>
-          <div v-if="filter!=='待指派'" class="pagination-block clear">
+          <div v-if="filter!=='指派'" class="pagination-block clear">
             <el-pagination
               class="fr"
               layout="prev, pager, next"
@@ -227,49 +227,49 @@
         <span class="dialog-footer" slot="footer">
           <el-button v-if="filter === '待认领'" type="info" @click="onClaim(deviceViewData.device)"><i class="el-icon-check"></i> 认领</el-button>
 
-          <!-- <span v-else-if="(deviceViewData.device.pkey==='import_device' || deviceViewData.device.pkey==='alter_device') && filter === '待审核'">
+          <!-- <span v-else-if="(deviceViewData.device.pkey==='import_device' || deviceViewData.device.pkey==='alter_device') && filter === '待处理'">
             <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/store-manage/instock/edit/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
             <router-link v-else :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="deviceViewData.device.pkey==='export_device' && filter === '待审核'">
+          <span v-else-if="deviceViewData.device.pkey==='export_device' && filter === '待处理'">
             <router-link :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span> -->
 
-          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '待审核'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '待处理'">
             <router-link :to="{ path: `/guosen/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已审核'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已参与'">
             <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.pid}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '已参与'">
+          <span v-else-if="['host', 'host_my'].includes(deviceViewData.device.pkey) && filter === '历史参与'">
             <router-link :to="{ path: `/guosen-info/${deviceViewData.device.pkey}/${deviceViewData.device.pid}`}" class="el-button el-button--plain">查看</router-link>
           </span>
 
-          <!-- <span v-else-if="deviceViewData.device.pkey==='test' && filter === '待审核'">
+          <!-- <span v-else-if="deviceViewData.device.pkey==='test' && filter === '待处理'">
             <router-link :to="{ path: `/test/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span> -->
 
-          <!-- <span v-else-if="deviceViewData.device.pkey==='host_apply' && filter === '待审核'">
+          <!-- <span v-else-if="deviceViewData.device.pkey==='host_apply' && filter === '待处理'">
             <router-link v-if="deviceViewData.device.taskDefinitionKey === 'start'" :to="{ path: `/system/apply/${deviceViewData.device.id}`, query: { object_id: deviceViewData.device.variables.message[0].form.object_id }}" class="el-button el-button--success">查看</router-link>
             <router-link v-else :to="{ path: `/store-manage/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">查看</router-link>
           </span> -->
 
           <span v-else>
             <router-link
-              v-if="filter === '待审核'"
+              v-if="filter === '待处理'"
               :to="{ path: `/procedure/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.id}/${deviceViewData.device.name}`}" class="el-button el-button--plain">
               查看
             </router-link>
             <router-link
-              v-if="filter === '已审核'"
+              v-if="filter === '已参与'"
               :to="{ path: `/procedure-info/${deviceViewData.device.pkey}/${deviceViewData.device.taskDefinitionKey}/${deviceViewData.device.pid}/${deviceViewData.device.name}`}" class="el-button el-button--plain">
               查看
             </router-link>
             <router-link
-              v-if="filter === '已参与'"
+              v-if="filter === '历史参与'"
               :to="{ path: `/procedure-info/${deviceViewData.device.pkey}/${deviceViewData.device.pid}`}" class="el-button el-button--plain">
               查看
             </router-link>
@@ -290,12 +290,12 @@
   export default {
     data () {
       return {
-        filter: '待认领',
+        filter: '待处理',
         filters: {
-          '待认领': 'runtime/tasks/assignee',
-          '待审核': 'runtime/tasks/self',
-          '已审核': 'history/tasks/self',
-          '已参与': 'history/process/instances/self'
+          '待处理': 'runtime/tasks/self',
+          '已参与': 'history/tasks/self',
+          '历史参与': 'history/process/instances/self',
+          '待认领': 'runtime/tasks/assignee'
         },
         filterConfData: {
           visible: false
@@ -321,14 +321,14 @@
     created () {
       this.getFilteredList()
       if (this.isProcessAdmin) {
-        this.filters['待指派'] = ''
+        this.filters['指派'] = ''
       }
     },
 
     methods: {
       onFilterChange () {
         this.currentPage = 1
-        if (this.filter !== '待指派') {
+        if (this.filter !== '指派') {
           this.getFilteredList()
         }
       },
@@ -368,19 +368,21 @@
               this.deviceViewData.visible = false
               this.$message.success('已认领！')
             }
+            this.$router.push(`/procedure/${task.pkey}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+
             // this.$router.replace(``)
-            switch (task.pkey) {
-              case 'host_apply':
-                // replace 浏览器后退键没效（没有历史），push 会有
-                this.$router.replace(`/system/${task.taskDefinitionKey}/${task.id}/${task.name}`)
-                break
-              case 'equipment_on':
-                this.$router.replace(`/equipment/${task.variables.message[0].form.object_id}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
-                break
-              default:
-                console.log('default')
-                break
-            }
+            // switch (task.pkey) {
+            //   case 'host_apply':
+            //     // replace 浏览器后退键没效（没有历史），push 会有
+            //     this.$router.push(`/system/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+            //     break
+            //   case 'equipment_on':
+            //     this.$router.push(`/equipment/${task.variables.message[0].form.object_id}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+            //     break
+            //   default:
+            //     console.log('default')
+            //     break
+            // }
             this.getFilteredList()
           })
         })

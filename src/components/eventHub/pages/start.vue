@@ -1,95 +1,168 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
-        <el-card class="box-card">
-          <h3 class="form-title">{{ $route.params.pname }}</h3>
-          <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="100px" :label-position="right">
-            <!-- header 表单填写 -->
-            <div v-if="taskFormData.header">
-              <div v-for="task in taskFormData.header">
-                <span v-for="taskform in task.value">
-                  <form-body
-                    v-if="showFormItem(taskform, postForm)"
-                    :item="postForm.header"
-                    :form-item="taskform"
-                    :whole="postForm"
-                    :is-editing="isEditing"
-                    :header="true">
-                  </form-body>
-                  <search-bar
-                    v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
-                    :hosts="postForm.header"
-                    :attr-list="taskform"
-                    :limit="getLimitQuantity(taskform, postForm)"
-                    @on-hosts-change="onHostsChange">
-                  </search-bar>
-                  <header-table
-                    v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
-                    :form-data="task"
-                    :item="postForm.header"
-                    :headerTable="true">
-                  </header-table>
-                </span>
-              </div>
-            </div>
-            <!-- body 表单填写 -->
-            <template v-if="postForm.body && postForm.body.length !== 0">
-              <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
-                <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
-                  增加
-                </el-button>
-                <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
-              </div>
-              <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :name="index + ''" :closable="postForm.body.length !== 1">
-                  <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
-                    <div v-for="bodyList in taskFormData.body.body_list">
-                        <div v-if="showBodyList(bodyList, postForm, applyData, index)">
-                          <div class="form-block" v-for="formBlock in bodyList.attr_list">
-                            <h5>{{formBlock.name}}</h5>
-                            <span v-for="formItem in formBlock.value">
-                              <form-body
-                                v-if="showFormItem(formItem, postForm)"
-                                :item="postForm.body[index]"
-                                :form-item="formItem"
-                                :whole="postForm"
-                                :index="+index">
-                              </form-body>
-                              <search-bar
-                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
-                                :index="index"
-                                :hosts="postForm.body[index]"
-                                :attr-list="formItem"
-                                :limit="getLimitQuantity(formItem, postForm, applyData, index)"
-                                @on-hosts-change="onHostsChange">
-                              </search-bar>
-                              <body-table
-                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
-                                :form-data="formItem"
-                                :item="postForm.body[index]"
-                                :post-form="postForm"
-                                :index="index"
-                                :bodyTable="true">
-                              </body-table>
-                            </span>
+    <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="100px" :label-position="right">
+      <h3 class="form-title">{{ $route.params.pname }}</h3>
+      <el-row :gutter="24">
+        <el-col :lg="16">
+          <div class="box-card">
+              <div v-if="taskFormData.header">
+                <div v-for="task in taskFormData.header">
+                  <!-- header 表单填写 -->
+                  <template v-if="task.name!=='人事' && ['概要', '工单信息', '描述', '附件'].includes(task.name)">
+                    <h3 class="module-title"><span>{{task.name}}</span></h3>
+                    <span v-for="taskform in task.value">
+                      <form-body
+                        v-if="showFormItem(taskform, postForm)"
+                        :item="postForm.header"
+                        :form-item="taskform"
+                        :whole="postForm"
+                        :is-editing="isEditing"
+                        :header="true">
+                      </form-body>
+                      <search-bar
+                        v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
+                        :hosts="postForm.header"
+                        :attr-list="taskform"
+                        :limit="getLimitQuantity(taskform, postForm)"
+                        @on-hosts-change="onHostsChange">
+                      </search-bar>
+                      <header-table
+                        v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                        :form-data="task"
+                        :item="postForm.header"
+                        :headerTable="true">
+                      </header-table>
+                    </span>
+                  </template>
+                  <!-- body 表单填写 分类的自定义模块-->
+                  <template v-if="postForm.body && postForm.body.length !== 0 && task.name === '工单信息'">
+                    <!-- <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
+                      <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+                        增加
+                      </el-button>
+                      <el-checkbox style="margin-left:15px;" v-model="toCopy">复制</el-checkbox>
+                    </div> -->
+                    <!-- <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
+                      <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :name="index + ''" :closable="index !== 0"> -->
+                      <div v-for="(data, index) in postForm.body">
+                        <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
+                          <div v-for="bodyList in taskFormData.body.body_list">
+                              <div v-if="showBodyList(bodyList, postForm, applyData, index)">
+                                <div class="form-block" v-for="formBlock in bodyList.attr_list">
+                                  <h3 class="module-title"><span>{{formBlock.name}}</span></h3>
+                                  <span v-for="formItem in formBlock.value">
+                                    <form-body
+                                      v-if="showFormItem(formItem, postForm)"
+                                      :item="postForm.body[index]"
+                                      :form-item="formItem"
+                                      :whole="postForm"
+                                      :index="+index"
+                                      keep-alive>
+                                    </form-body>
+                                    <search-bar
+                                      v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
+                                      :index="index"
+                                      :hosts="postForm.body[index]"
+                                      :attr-list="formItem"
+                                      :limit="getLimitQuantity(formItem, postForm, applyData, index)"
+                                      @on-hosts-change="onHostsChange">
+                                    </search-bar>
+                                    <body-table
+                                      v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
+                                      :form-data="formItem"
+                                      :item="postForm.body[index]"
+                                      :post-form="postForm"
+                                      :index="index"
+                                      :bodyTable="true">
+                                    </body-table>
+                                  </span>
+                                </div>
+                              </div>
                           </div>
                         </div>
+                      </div>
+                      <!-- </el-tab-pane>
+                    </el-tabs> -->
+                  </template>
+                  <!-- header 表单填写 通用的自定义模块 -->
+                  <div v-if="taskFormData.header && task.name === '工单信息'">
+                    <div v-for="task in taskFormData.header">
+                      <!-- header 表单填写 -->
+                      <template v-if="!['概要', '工单信息', '描述', '附件', '人事'].includes(task.name)">
+                        <h3 class="module-title"><span>{{task.name}}</span></h3>
+                        <span v-for="taskform in task.value">
+                          <form-body
+                            v-if="showFormItem(taskform, postForm)"
+                            :item="postForm.header"
+                            :form-item="taskform"
+                            :whole="postForm"
+                            :is-editing="isEditing"
+                            :header="true">
+                          </form-body>
+                          <search-bar
+                            v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
+                            :hosts="postForm.header"
+                            :attr-list="taskform"
+                            :limit="getLimitQuantity(taskform, postForm)"
+                            @on-hosts-change="onHostsChange">
+                          </search-bar>
+                          <header-table
+                            v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                            :form-data="task"
+                            :item="postForm.header"
+                            :headerTable="true">
+                          </header-table>
+                        </span>
+                      </template>
                     </div>
                   </div>
-                </el-tab-pane>
-              </el-tabs>
-            </template>
-          </el-form>
-        </el-card>
-        <div class="btn-area">
-          <!-- :disabled="validateForm" -->
-          <el-button type="primary" @click="onSubmit" icon="check">确认</el-button>
-          <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
-          <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
-        </div>
-      </el-col>
-    </el-row>
+                </div>
+              </div>
+          </div>
+        </el-col>
+        <el-col :lg="8">
+          <div class="right-side">
+            <div v-if="taskFormData.header">
+              <div v-for="task in taskFormData.header">
+                <!-- header 表单填写 -->
+                <template v-if="task.name==='人事'">
+                  <h3 class="module-title"><span>{{task.name}}</span></h3>
+                  <span v-for="taskform in task.value">
+                    <form-body
+                      v-if="showFormItem(taskform, postForm)"
+                      :item="postForm.header"
+                      :form-item="taskform"
+                      :whole="postForm"
+                      :is-editing="isEditing"
+                      :header="true">
+                    </form-body>
+                    <search-bar
+                      v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
+                      :hosts="postForm.header"
+                      :attr-list="taskform"
+                      :limit="getLimitQuantity(taskform, postForm)"
+                      @on-hosts-change="onHostsChange">
+                    </search-bar>
+                    <header-table
+                      v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
+                      :form-data="task"
+                      :item="postForm.header"
+                      :headerTable="true">
+                    </header-table>
+                  </span>
+                </template>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <div class="btn-area">
+        <!-- :disabled="validateForm" -->
+        <el-button type="primary" @click="onSubmit" icon="check">确认</el-button>
+        <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
+        <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
+      </div>
+    </el-form>
   </div>
 </template>
 <script>
@@ -155,6 +228,8 @@
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskFormData = res.data.data.form
+          // this.taskFormData = res.data.data.variables.message[0].form
+          // console.log(this.taskFormData)
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
@@ -187,6 +262,10 @@
                   })
                 }
               }
+              // 特殊处理--分类
+              if (this.isEditing && item.id === 'components') {
+                item.readonly = true
+              }
             })
           })
           // let newData = {}
@@ -201,15 +280,6 @@
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
                           this.setDataType(value, this.postForm.body[0], this)
-                          if (value.value.type === 'table') {
-                            // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                            this.$set(this.postForm.body[0], value.id, [])
-                            this.$set(this.postForm.body[0][value.id], 0, {})
-                            value.value.attr_list.map(item => {
-                              this.setDataType(item, this.postForm.body[0][value.id], this)
-                              // console.log(this.postForm.body[0][value.id])
-                            })
-                          }
                           // 有默认值时 只有 form_body 和 form_header 2种
                           if (value.default && value.default.type) {
                             if (value.default.type === 'form_body') {
@@ -243,6 +313,7 @@
                         // console.log(this.postForm.body[0][value.id])
                       })
                     }
+                    console.log(this.postForm.body[0][value.id])
                     // 有默认值时 只有 form_body 和 form_header 2种
                     if (value.default && value.default.type) {
                       if (value.default.type === 'form_body') {
@@ -260,7 +331,6 @@
               })
             }
           })
-          console.log(this.postForm.body)
           if (this.isEditing) this.injectValues() // 是编辑
         })
       },
@@ -283,6 +353,15 @@
       handleClick (val) {
         console.log(val)
       },
+      // validateFormFunction () {
+      //   this.$refs['postForm'].validate((valid) => {
+      //     if (valid) {
+      //       this.validateForm = false
+      //     } else {
+      //       this.validateForm = true
+      //     }
+      //   })
+      // },
       resetForm (formName) {
         console.log(this.$refs)
         this.$refs[formName].resetFields()
@@ -560,3 +639,32 @@
     }
   }
 </script>
+<style lang="less" scoped>
+  .module-title {
+    font-size: 16px;
+    color: #333;
+    margin: 15px 0 20px;
+    position: relative;
+    span {
+      background-color: #fff;
+      padding-right: 15px;
+    }
+    &:before {
+      content: '';
+      display: block;
+      width: 100%;
+      height: 1px;
+      position: absolute;
+      top: 50%;
+      right: 0;
+      z-index: -1;
+      border-top: 1px dashed #ccc;
+    }
+  }
+  .el-form-item {
+    display: inline-flex;
+  }
+  .right-side .el-form-item__content {
+    width: 100%;
+  }
+</style>

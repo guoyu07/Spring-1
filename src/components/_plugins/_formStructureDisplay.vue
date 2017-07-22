@@ -64,7 +64,7 @@
                 <!-- <pre>{{scope.row}}</pre> -->
                 <span v-if="col.value.type === 'dict'">
                   <span v-if="typeof Object.assign({}, scope.row[col.id]) === 'object'">
-                    {{ Object.assign({}, Object.assign({}, scope.row[col.id]))[col.value.source.res.show_key] }}
+                    {{ Object.assign({}, Object.assign({}, scope.row[col.id]))[col.value.source.res.show_key[0]] }}
                   </span>
                   <span v-else>{{ Object.assign({}, scope.row.header)[col.id] }}</span>
                 </span>
@@ -123,7 +123,7 @@
 <style lang="less" scoped>
   .form-block {
     font-size: 0;
-    background-color: rgba(247, 250, 252, .5);
+    background-color: #fbfcfd;
     border-radius: 12px;
     padding: 10px;
     h5 {

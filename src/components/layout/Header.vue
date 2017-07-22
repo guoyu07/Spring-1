@@ -87,6 +87,17 @@
         }
       }
     }
+
+    .screenfull {
+      padding: 0;
+      display: none;
+    }
+
+    &:hover {
+      .screenfull {
+        display: list-item;
+      }
+    }
   }
 </style>
 
@@ -104,17 +115,22 @@
       <el-menu-item index="2">
         <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a>
       </el-menu-item>
-      <el-menu-item index="4" class="fr">
+      <el-menu-item index="5" class="fr">
         <a @click="logout">退出</a>
       </el-menu-item>
-      <el-menu-item index="3" class="fr disabled"><!--<i class="el-icon-fa-user-circle"></i>--><b>
+      <el-menu-item index="4" class="fr disabled"><!--<i class="el-icon-fa-user-circle"></i>--><b>
         {{userName}}</b></el-menu-item>
+      <el-menu-item index="3" class="fr screenfull" @click="onScreenFull">
+        <i class="el-icon-fa-arrows-alt"></i>
+      </el-menu-item> 
     </el-menu>
   </header>
 </template>
 
 <script>
   import Auth from '../../auth'
+  import screenfull from 'screenfull'
+
   export default {
     data () {
       return {
@@ -130,6 +146,17 @@
       logout () {
         Auth.logout()
         // this.$router.go(0)
+      },
+
+      onScreenFull () {
+        if (!screenfull.enabled) {
+          this.$message({
+            message: '你的浏览器不支持全屏！',
+            type: 'warning'
+          })
+          return false
+        }
+        screenfull.toggle()
       }
     }
   }
