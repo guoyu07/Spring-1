@@ -1,5 +1,5 @@
 <style lang="less" scoped>
-  @import url("../../assets/css/variables");
+  @import url("../../../assets/css/variables");
 
   .dashboard {
     padding: .4em 1.2em;
@@ -121,53 +121,6 @@
         entries: [],
         searchResult: [],
         topList: []
-        // {
-        //   category: '流程',
-        //   children: [{
-        //     icon: 'fa-sign-in',
-        //     title: '设备入库',
-        //     path: '/procedure/start/import_device/设备入库'
-        //   }, {
-        //     icon: 'fa-sign-out',
-        //     title: '设备出库',
-        //     path: '/procedure/start/export_device/设备出库'
-        //   }, {
-        //     icon: 'fa-edit',
-        //     title: '设备变更',
-        //     path: '/procedure/start/alter_device/设备变更'
-        //   }, {
-        //     icon: 'fa-upload',
-        //     title: '设备上架',
-        //     path: '/equipment/on'
-        //   }, {
-        //     icon: 'fa-envelope-open-o',
-        //     title: '服务器申请',
-        //     path: '/system/apply'
-        //   }, {
-        //     icon: 'fa-star',
-        //     title: '系统上线',
-        //     path: '/system/onlinelist'
-        //   }]
-        // }
-        // , {
-        //           category: '工单管理',
-        //           children: [{
-        //             icon: 'fa-calendar-o',
-        //             title: '工单管理',
-        //             path: '/orders'
-        //           }]
-        //         }, {
-        //           category: '自定义平台',
-        //           children: [{
-        //             icon: 'fa-sitemap',
-        //             title: 'BPMN 配置',
-        //             path: '/custom'
-        //           }, {
-        //             icon: 'fa-wpforms',
-        //             title: '表单配置',
-        //             path: '/forms'
-        //           }]
-        //         }
       }
     },
 

@@ -13,7 +13,6 @@
       this.$store.dispatch('reload_sidebar', {
         sidebarConf
       })
-      console.log(this.$store.state)
     }
   }
 </script>
