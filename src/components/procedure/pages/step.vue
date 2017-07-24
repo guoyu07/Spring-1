@@ -1,6 +1,6 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <el-row>
+    <el-row v-if="isEdting !== undefined">
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
@@ -35,6 +35,7 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :isEdting="isEdting"
                     :wholeName="'assignForm'"
                     :message="applyData"
                     :header="true">
@@ -86,12 +87,14 @@
                         <div class="form-block" v-for="formBlock in taskFormData.attr_list">
                           <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
                           <span v-for="formItem in formBlock.value">
+                            <!-- {{isEdting}} -->
                             <form-body
                               v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
                               :item="assignForm.body[index]"
                               :form-item="formItem"
                               :whole="assignForm"
                               :index="index"
+                              :isEdting="isEdting"
                               :message="applyData"
                               keep-alive>
                             </form-body>
@@ -157,7 +160,7 @@
         routerInfo: {},
         applyData: {},
         taskData: {},
-        isEdting: false,
+        isEdting: undefined,
         edtingInfo: '',
         form: {},
         taskForm: {},
@@ -395,7 +398,20 @@
           })
           // 判断是否为驳回信息
           let newDataBody
-          this.taskData.variables.message.map(message => {
+          // this.taskData.variables.message.map(message => {
+          //   if (message.task_key === this.routerInfo.tkey) {
+          //     this.isEdting = true
+          //     this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+          //     this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
+          //     // console.log(this.assignForm.header)
+          //     newDataBody = message.form.body.map((body, bodyindex) => {
+          //       return Object.assign({}, this.assignForm.body[bodyindex], body)
+          //     })
+          //   } else {
+          //     this.isEdting = false
+          //   }
+          // })
+          for (var message of this.taskData.variables.message) {
             if (message.task_key === this.routerInfo.tkey) {
               this.isEdting = true
               this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
@@ -404,11 +420,15 @@
               newDataBody = message.form.body.map((body, bodyindex) => {
                 return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
+              return false
             }
-          })
-          // if (this.isEdting) {
-          //   this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-          // }
+          }
+          if (this.isEdting) {
+            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+          } else {
+            // console.log('hello false')
+            this.isEdting = false
+          }
           if (newDataBody) {
             // console.log(newDataBody)
             this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {

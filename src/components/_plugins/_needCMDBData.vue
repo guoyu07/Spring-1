@@ -76,9 +76,10 @@
             this.$watch('whole.header.' + keyPath[0], (newVal, oldVal) => {
               if (this.strucData.value.type === 'dicts') {
                 this.vmodel[this.strucData.id] = []
-              } else {
-                this.vmodel[this.strucData.id] = null
               }
+              //  else {
+              //   this.vmodel[this.strucData.id] = null
+              // }
               this.renderOptions()
             }, { deep: true })
           } else if (para.value.type === 'form_body') {
@@ -87,9 +88,10 @@
                 // console.log(newVal)
                 if (this.strucData.value.type === 'dicts') {
                   this.vmodel[this.strucData.id] = []
-                } else {
-                  this.vmodel[this.strucData.id] = null
                 }
+                //  else {
+                //   this.vmodel[this.strucData.id] = null
+                // }
                 this.renderOptions()
               }, { deep: true })
             } else {
@@ -97,9 +99,10 @@
                 // console.log(newVal)
                 if (this.strucData.value.type === 'dicts') {
                   this.vmodel[this.strucData.id] = []
-                } else {
-                  this.vmodel[this.strucData.id] = null
                 }
+                //  else {
+                //   this.vmodel[this.strucData.id] = null
+                // }
                 this.renderOptions()
               }, { deep: true })
             }
@@ -111,9 +114,10 @@
           // console.log(this.strucData.watch)
           if (this.strucData.value.type === 'dicts') {
             this.vmodel[this.strucData.id] = []
-          } else {
-            this.vmodel[this.strucData.id] = null
           }
+          //  else {
+          //   this.vmodel[this.strucData.id] = null
+          // }
           this.renderOptions()
         }, { deep: true })
       } else {
@@ -242,6 +246,9 @@
         this.http.post(this.strucData.value.source.url.substring(4), this.parseData(postHeadvData))
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+          if (this.optionList.length === 0 && !this.isAlias) {
+            this.vmodel[this.strucData.id] = null
+          }
           // 配置默认值
           if (this.strucData.default && this.strucData.default.type) {
             if (this.strucData.default.type === 'api') {
@@ -356,16 +363,32 @@
                 })
               } else {
                 if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                  this.optionList.map(option => {
+                  // this.optionList.map(option => {
+                  //   if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                  //     this.vmodel[this.strucData.id] = option
+                  //     return false
+                  //   } else {
+                  //     if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                  //       // console.log('???')
+                  //       this.optionList.push(this.vmodel[this.strucData.id])
+                  //     }
+                  //   }
+                  // })
+                  let isIncludes
+                  for (var option of this.optionList) {
                     if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
                       this.vmodel[this.strucData.id] = option
+                      isIncludes = true
                       return false
-                    } else {
+                    }
+                  }
+                  setTimeout(() => {
+                    if (!isIncludes) {
                       if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
                         this.optionList.push(this.vmodel[this.strucData.id])
                       }
                     }
-                  })
+                  }, 100)
                 }
               }
             }
