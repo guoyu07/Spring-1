@@ -452,6 +452,7 @@
         } else {
           let type
           if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade') {
+            // console.log(formItem.name)
             type = 'array'
           } else if (formItem.value.type === 'int') {
             type = 'number'
@@ -465,7 +466,7 @@
             type: type,
             required: formItem.required,
             message: formItem.name + '不能为空',
-            trigger: 'blur, change'
+            trigger: 'blur'
           }
         }
       },

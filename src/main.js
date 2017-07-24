@@ -103,7 +103,10 @@ const parseData = obj => {
 Vue.prototype.parseData = parseData
 
 const getPathResult = (result, path, k) => {
-  if (!result) console.log('找不到result')
+  if (!result) {
+    // console.log('找不到result')
+    return false
+  }
   let _result = result
   const _path = path.split('.')
   // console.log(_path, Array.isArray(_result[_path[0]]))
@@ -113,6 +116,10 @@ const getPathResult = (result, path, k) => {
     }, null)
   } else {
     for (const i in _path) {
+      if (!_result) {
+        // console.log('找不到_result')
+        return false
+      }
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
         if (_result[_path[i]] !== undefined) { // 读取不到值时 return false
           // console.log(_result[_path[i]])

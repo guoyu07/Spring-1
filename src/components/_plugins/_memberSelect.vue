@@ -32,7 +32,9 @@
           :value="item">
         </el-option>
       </el-select>
-      <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button>
+      <div class="assign-btn">
+        <el-button size="small" @click="assignToMe" type="text">分配给我</el-button>
+      </div>
     </div>
     <!-- 不分组 -->
     <div v-else>
@@ -58,7 +60,10 @@
         </el-option>
         <!-- </el-tooltip> -->
       </el-select>
-      <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button>
+      <div class="assign-btn">
+        <el-button size="small" @click="assignToMe" type="text">分配给我</el-button>
+      </div>
+      <!-- <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button> -->
     </div>
   </div>
 </template>
@@ -206,7 +211,7 @@
                 }
               })
             }
-          }, 100)
+          }, 10)
         })
       },
       renderUserList () {
@@ -224,3 +229,8 @@
     }
   }
 </script>
+<style scoped>
+  .assign-btn {
+    line-height: 1;
+  }
+</style>

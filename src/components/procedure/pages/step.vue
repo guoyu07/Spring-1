@@ -3,7 +3,17 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
+          <h3 class="form-title">
+            <i class="el-icon-fa-server"></i> {{ routerInfo.name }}
+            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">历史</el-button>
+          </h3>
+          <div class="step-progress" v-if="taskFormAll.show_progress">
+            <progress-wrap :progress="{
+             task: taskData.taskDefinitionKey,
+             pkey: taskData.pkey,
+             taskList: taskData.task_list
+             }"></progress-wrap>
+          </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
@@ -142,6 +152,25 @@
         </el-card>
       </el-col>
     </el-row>
+    <el-dialog
+      title="历史"
+      v-model="showHistory">
+      <el-collapse>
+        <el-collapse-item v-for="(task, key) in taskData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+          <el-form label-position="left" label-width="90px" inline class="expanded-form">
+            <el-form-item v-if="task.task_key" label="任务 Key：">
+              <code>{{task.task_key}}</code>
+            </el-form-item>
+            <el-form-item v-if="task.operator" label="操作者：">
+              <span>{{task.operator.name}}</span>
+            </el-form-item>
+            <el-form-item v-if="task.time" label="处理时间：">
+              <span>{{task.time}}</span>
+            </el-form-item>
+          </el-form>
+        </el-collapse-item>
+      </el-collapse>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -155,6 +184,7 @@
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
   import headerTable from '../../_plugins/_headerTable'
+  import progressWrap from '../../_plugins/_progress'
   export default {
     data () {
       return {
@@ -162,9 +192,11 @@
         applyData: {},
         taskData: {},
         isEditing: false,
+        showHistory: false,
         edtingInfo: '',
         form: {},
         taskForm: {},
+        taskFormAll: {},
         bodyLableName: [],
         showTaskForm: [],
         assignForm: {
@@ -217,6 +249,7 @@
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskForm = res.data.data.form
+          this.taskFormAll = res.data.data
           // console.log(this.applyData)
           // 渲染 body 个数
           if (this.applyData.body.length === 0) {
@@ -399,37 +432,27 @@
           })
           // 判断是否为驳回信息
           let newDataBody
-          // this.taskData.variables.message.map(message => {
-          //   if (message.task_key === this.routerInfo.tkey) {
-          //     this.isEdting = true
-          //     this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-          //     this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-          //     // console.log(this.assignForm.header)
-          //     newDataBody = message.form.body.map((body, bodyindex) => {
-          //       return Object.assign({}, this.assignForm.body[bodyindex], body)
-          //     })
-          //   } else {
-          //     this.isEdting = false
-          //   }
-          // })
           for (var message of this.taskData.variables.message) {
             if (message.task_key === this.routerInfo.tkey) {
               this.isEditing = true
               this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-              // console.log(this.assignForm.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
                 return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
+              // console.log(newDataBody)
+              this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+                return Object.assign({}, body, newDataBody[bodyindex])
+              })
+              // console.log(this.assignForm.body)
               return false
             }
-          })
-          if (newDataBody) {
-            // console.log(newDataBody)
-            this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
-              return Object.assign({}, body, newDataBody[bodyindex])
-            })
           }
+          // if (newDataBody) {
+          //   this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+          //     return Object.assign({}, body, newDataBody[bodyindex])
+          //   })
+          // }
         })
       },
       renderInstanceDetail () {
@@ -787,7 +810,8 @@
       formBody,
       searchBar,
       bodyTable,
-      headerTable
+      headerTable,
+      progressWrap
     }
   }
 </script>
