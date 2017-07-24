@@ -154,7 +154,7 @@
       :vmodel="item"
       :strucData="formItem"
       :whole="whole"
-      :isEditing="isEdting"
+      :isEditing="isEditing"
       :message="message"
       :index="index"
       :table-index="tableIndex"
@@ -406,7 +406,9 @@
               const reg = new RegExp(ele)
               return !value.match(reg)
             }
-            if (value && formItem.value.regex.some(isMatch)) {
+            if (!value) {
+              return cb(new Error(`${formItem.name}不能为空`))
+            } else if (value && formItem.value.regex.some(isMatch)) {
               return cb(new Error(`请输入正确的${formItem.name}`))
             } else {
               cb()

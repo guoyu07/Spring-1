@@ -54,7 +54,7 @@
       tableIndex: { type: Number },
       bodyTable: { type: Boolean },
       headerTable: { type: Boolean },
-      isEdting: { type: Boolean }
+      isEditing: { type: Boolean }
     },
     data () {
       return {
@@ -74,8 +74,12 @@
           keyPath = para.value.key_path.split('.')
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + keyPath[0], (newVal, oldVal) => {
-              if (this.strucData.value.type === 'dicts') {
-                this.vmodel[this.strucData.id] = []
+              if (!this.isEditing) {
+                if (this.strucData.value.type === 'dicts') {
+                  this.vmodel[this.strucData.id] = []
+                } else {
+                  this.vmodel[this.strucData.id] = null
+                }
               }
               //  else {
               //   this.vmodel[this.strucData.id] = null
@@ -85,9 +89,12 @@
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
-                // console.log(newVal)
-                if (this.strucData.value.type === 'dicts') {
-                  this.vmodel[this.strucData.id] = []
+                if (!this.isEditing) {
+                  if (this.strucData.value.type === 'dicts') {
+                    this.vmodel[this.strucData.id] = []
+                  } else {
+                    this.vmodel[this.strucData.id] = null
+                  }
                 }
                 //  else {
                 //   this.vmodel[this.strucData.id] = null
@@ -96,9 +103,12 @@
               }, { deep: true })
             } else {
               this.$watch('whole.body.' + this.index + '.' + keyPath[0], (newVal, oldVal) => {
-                // console.log(newVal)
-                if (this.strucData.value.type === 'dicts') {
-                  this.vmodel[this.strucData.id] = []
+                if (!this.isEditing) {
+                  if (this.strucData.value.type === 'dicts') {
+                    this.vmodel[this.strucData.id] = []
+                  } else {
+                    this.vmodel[this.strucData.id] = null
+                  }
                 }
                 //  else {
                 //   this.vmodel[this.strucData.id] = null
@@ -112,8 +122,12 @@
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
           // console.log(this.strucData.watch)
-          if (this.strucData.value.type === 'dicts') {
-            this.vmodel[this.strucData.id] = []
+          if (!this.isEditing) {
+            if (this.strucData.value.type === 'dicts') {
+              this.vmodel[this.strucData.id] = []
+            } else {
+              this.vmodel[this.strucData.id] = null
+            }
           }
           //  else {
           //   this.vmodel[this.strucData.id] = null
@@ -152,7 +166,7 @@
       },
       renderOptions () {
         // this.whole 区分是不是快速编辑 快速编辑 不传 whole, 需要原值
-        // console.log(this.isEdting)
+        // console.log(this.isEditing)
         // if (!this.strucData.default.type && this.whole) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
         //   console.log('hello dicts')
         //   if (this.strucData.value.type === 'dicts') {
@@ -306,7 +320,7 @@
               }
             }
           }
-          if (this.strucData.value.source.data.action === 'users/all') {
+          if (this.strucData.value.source.data.action === 'users/all' && !this.isEditing) {
             // let userlist = []
             // this.optionList.map(list => {
             //   if (userlist.some(item => { return item.label === list.groups[0].key })) {
@@ -327,7 +341,7 @@
                 })
               }
             }
-          } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER') {
+          } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
             if (this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                 const user = window.localStorage.userName

@@ -1,14 +1,14 @@
 <template>
   <div id="item1-side" class="wrapper">
-    <el-row v-if="isEdting !== undefined">
+    <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
-            <p v-if="isEdting" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
+            <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
-            <div class="history-block">
+            <div class="history-block" v-if="!isEmptyObj(applyData.header)">
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
@@ -37,6 +37,7 @@
                     :whole="assignForm"
                     :isEdting="isEdting"
                     :wholeName="'assignForm'"
+                    :isEditing="isEditing"
                     :message="applyData"
                     :header="true">
                   </form-body>
@@ -59,10 +60,10 @@
               </div>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
+            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                 <!-- body 信息显示 -->
-                <div class="history-block">
+                <div class="history-block" v-if="!isEmptyObj(data)">
                   <div v-for="task in form">
                     <div v-for="taskbody in task.form.form.body.body_list">
                       <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
@@ -94,7 +95,7 @@
                               :form-item="formItem"
                               :whole="assignForm"
                               :index="index"
-                              :isEdting="isEdting"
+                              :isEditing="isEditing"
                               :message="applyData"
                               keep-alive>
                             </form-body>
@@ -160,7 +161,7 @@
         routerInfo: {},
         applyData: {},
         taskData: {},
-        isEdting: undefined,
+        isEditing: false,
         edtingInfo: '',
         form: {},
         taskForm: {},
@@ -413,7 +414,7 @@
           // })
           for (var message of this.taskData.variables.message) {
             if (message.task_key === this.routerInfo.tkey) {
-              this.isEdting = true
+              this.isEditing = true
               this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
               // console.log(this.assignForm.header)
@@ -422,13 +423,7 @@
               })
               return false
             }
-          }
-          if (this.isEdting) {
-            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-          } else {
-            // console.log('hello false')
-            this.isEdting = false
-          }
+          })
           if (newDataBody) {
             // console.log(newDataBody)
             this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
@@ -686,7 +681,7 @@
               if (this.routerInfo.pkey === 'easyops_monitor') {
                 this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
               } else {
-                this.$router.replace('/orders') // 跳转工单管理
+                this.$router.replace('/home') // 跳转运维目录
               }
             }
           })
