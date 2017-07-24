@@ -50,7 +50,7 @@
       <div class="btn-area">
         <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至设备列表</el-button>
       </div>
-      <h5>设备列表</h5>
+      <h5>列表</h5>
       <el-table
         :data="hostList"
         border
@@ -119,15 +119,19 @@
         // 取搜索字段的必读字段(非输入的搜索字段)
         for (const param of this.attrList.value.source.data.params) {
           if (param.value.type === 'static') {
-            this.searchData[param.id] = param.value.value
+            this.searchData[param.id] = {}
+            this.searchData[param.id].value = param.value.value
+            this.searchData[param.id].op = param.op
           }
         }
         // 绑定搜索字段，响应式取值
         for (const key of this.searchKeyList) {
           this.$set(this.searchKeys, key.id, {})
           this.$set(this.searchKeys[key.id], 'value', '')
-          this.$set(this.searchKeys[key.id], 'op', 'reg')
+          this.$set(this.searchKeys[key.id], 'op', 'reg') // 默认为包含 reg
         }
+        // // 一开始先渲染所有的数据回来
+        // this.onSearchDevices()
       }
       //   }
       // }
@@ -135,7 +139,9 @@
 
     watch: {
       'hosts' (newVal, oldVal) {
+        console.log(newVal)
         this.hostList = [] // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中  val
+        // this.onSearchDevices()
       },
       'hostList' (val) {
         this.$emit('on-hosts-change', val, this.index) // ③组件内对 hostList 变更后向外部发送事件通知
@@ -153,10 +159,13 @@
           this.$message.info('搜索条件不能为空！')
           return false
         }
+        this.renderData(searchData)
+      },
+      renderData (searchData) {
         let postData = {
           action: this.mainInfo.value.source.data.action,
           method: this.mainInfo.value.source.data.method,
-          data: searchData
+          data: searchData || {}
         }
         this.deviceLoading = false
         this.http.post(this.mainInfo.value.source.url.substring(4), this.parseData(postData)).then((res) => {
