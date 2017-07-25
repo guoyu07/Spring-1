@@ -85,7 +85,7 @@
   import getPresetList from './../../../mixins/getPresetList'
   import getOptionPresets from './../../../mixins/getOptionPresets'
 
-  import _ from '../../../utils/_'
+  import _ from './../../../utils/_'
 
   // 历史遗留
   const newFieldData = {
