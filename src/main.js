@@ -175,11 +175,11 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
 }
 
 Vue.prototype.setDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     Vue.prototype.$set(goalData, original.id, undefined)
-  } else if (original.value.type === 'dict' || original.value.type === 'dicts' || (original.value.type === 'users' && !original.isAlias)) {
+  } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
     Vue.prototype.$set(goalData, original.id, null)
   } else if (original.value.type === 'str' || original.value.type === 'enum') {
     Vue.prototype.$set(goalData, original.id, '')
@@ -189,11 +189,11 @@ Vue.prototype.setDataType = (original, goalData) => {
 }
 
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
-  } else if (original.value.type === 'dict' || original.value.type === 'dicts' || (original.value.type === 'users' && !original.isAlias)) {
+  } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
     goalData[original.id] = null
   } else if (original.value.type === 'str' || original.value.type === 'enum') {
     goalData[original.id] = ''

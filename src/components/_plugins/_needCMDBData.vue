@@ -11,7 +11,7 @@
           <el-option  v-for="option in optionList"
                       :label="showLabel(option)"
                       :value="option">
-                      <p>{{ showLabel(option) }}</p>
+                      <span>{{ showLabel(option) }}</span>
                       <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
           </el-option>
       </el-select>
@@ -19,7 +19,7 @@
         v-else
         v-model="vmodel[strucData.id]"
         :disabled="strucData.readonly">
-        <el-radio v-for="option in optionList" :label="option">{{option[strucData.value.source.res.show_key]}}</el-radio>
+        <el-radio v-for="option in optionList" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
       </el-radio-group>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
@@ -30,15 +30,18 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         multiple>
-        <el-option v-for="option in optionList"
-          :label="option[strucData.value.source.res.show_key]"
-          :value="option"></el-option>
+          <el-option  v-for="option in optionList"
+                      :label="showLabel(option)"
+                      :value="option">
+                      <span>{{ showLabel(option) }}</span>
+                      <p v-if="toolTipContent(option)" style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+          </el-option>
       </el-select>
       <el-checkbox-group
         v-else
         v-model="vmodel[strucData.id]"
         :disabled="strucData.readonly">
-        <el-checkbox v-for="option in optionList" :label="option" :name="strucData.id">{{option[strucData.value.source.res.show_key]}}</el-checkbox>
+        <el-checkbox v-for="option in optionList" :label="option" :name="strucData.id">{{option[strucData.value.source.res.show_key[0]]}}</el-checkbox>
       </el-checkbox-group>
     </template>
   </div>
@@ -362,9 +365,9 @@
             if (this.vmodel[this.strucData.id]) {
               if (Array.isArray(this.vmodel[this.strucData.id])) {
                 this.vmodel[this.strucData.id].map((item, itemindex) => {
-                  if (item[this.strucData.value.source.res.show_key]) {
+                  if (item[this.strucData.value.source.res.show_key[0]]) {
                     this.optionList.map(option => {
-                      if (option[this.strucData.value.source.res.show_key] === item[this.strucData.value.source.res.show_key]) {
+                      if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
                         // item = option
                         this.vmodel[this.strucData.id][itemindex] = option
                       } else {

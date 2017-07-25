@@ -161,7 +161,7 @@
                 if (item.show.type === 'form_header') {
                   this.$watch('applyForm.header.' + item.show.key_path, (newVal, oldVal) => {
                     if (item.show.op === 'eq' && newVal === item.show.value) {
-                      this.setDataType(item, this.applyForm.header, this)
+                      console.log(item, this.applyForm.header)
                     } else if (item.show.op === 'neq' && newVal !== item.show.value) {
                       this.setDataType(item, this.applyForm.header, this)
                     } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
