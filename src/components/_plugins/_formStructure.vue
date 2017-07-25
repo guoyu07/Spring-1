@@ -59,10 +59,4 @@
     width:-webkit-calc(100% - 85px);
     width: calc(100% - 85px);
   }
-  .help-block {
-    font-size: 12px;
-    color: #666;
-    margin: 0.5em 0 0;
-    line-height: 1.2;
-  }
 </style>

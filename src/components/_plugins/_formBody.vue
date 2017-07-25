@@ -5,6 +5,7 @@
     :prop="prop(formItem)"
     :label="whole ? formItem.name : ''"
     :rules="rules(formItem)"
+    class="formbody"
     :class="((formItem.isAlias && formItem.value.type !== 'users') || ['file', 'files'].includes(formItem.value.type)) ? 'blockElement' : ''">
     <!-- <el-input
       v-if="formItem.value.type === 'str'"
@@ -536,7 +537,7 @@
     }
   }
 </script>
-<style lang="less">
+<style lang="less" scoped>
   .blockElement {
     word-break: break-all;
     width: 100%;
@@ -548,12 +549,14 @@
       width: calc(100% - 85px);
     }
   }
+
   .help-block {
     font-size: 12px;
     color: #666;
     margin: 0.5em 0 0;
-    line-height: 1.2;
+    line-height: 1;
   }
+
   .dz-remove {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;

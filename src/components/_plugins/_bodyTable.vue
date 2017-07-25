@@ -1,15 +1,13 @@
 <template>
   <div>
-    <!-- <template v-for="bodylist in formData">
-      <template v-for="value in bodylist.value">
-        <template v-if="value.value.type === 'table'"> -->
     <el-form-item
       v-if="formData.value.type === 'table'"
       :prop="prop(formData)"
       :rules="rules(formData)"
       class="block">
-      <!-- formData.limit.type === 'static' 或者 formData.limit.type存在的情况下 这2种情况是允许增加 table 的 -->
-      <el-button v-if="formData.limit.type === 'static' || formData.limit.type" size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
+      <!-- formData.limit.type === 'static' 这种情况是允许增加 table 的 -->
+      <!-- formData.limit.type === 'message_body' 或者 message_header 这种情况 table 的个数是固定的 不允许增加 -->
+      <el-button v-if="(formData.limit.type && formData.limit.type === 'static' && formData.limit.type !== 'message_body' && formData.limit.type !== 'message_header')" size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
           v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
@@ -31,10 +29,6 @@
         </el-tab-pane>
       </el-tabs>
     </el-form-item>
-          <!--
-        </template>
-      </template>
-    </template> -->
   </div>
 </template>
 
