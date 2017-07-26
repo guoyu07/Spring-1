@@ -441,16 +441,16 @@
                 <i class="el-icon-arrow-down"></i>
               </label>
             </div>
-            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description" v-show="!isEditing.description" ref="description"></blockquote>
+            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description || '<i>暂无描述 :(</i>'" v-show="!isEditing.description" ref="description"></blockquote>
             <quill-editor
               v-model="eventData.variables.message[0].form.header.description"
               :options="editor.options"
               v-show="isEditing.description">
             </quill-editor>
-            <el-row type="flex" justify="end" style="margin-top: 12px;">
-              <el-button size="small" icon="edit" type="primary" @click="toggleEditable('description')" v-show="!isEditing.description">编辑</el-button>
+            <el-row type="flex" :justify="isEditing.description ? 'end' : 'start'" style="margin-top: 12px;">
+              <el-button icon="edit" type="text" @click="toggleEditable('description')" v-show="!isEditing.description">编辑</el-button>
               <el-button size="small" icon="close" type="error" @click="toggleEditable('description')" v-show="isEditing.description">取消</el-button>
-              <el-button size="small" icon="check" type="success" @click="onConfirmEdit('description')" v-show="isEditing.description">确定</el-button>
+              <el-button size="small" icon="check" type="primary" @click="onConfirmEdit('description')" v-show="isEditing.description">确定</el-button>
             </el-row>
           </div>
         </div>
@@ -534,7 +534,7 @@
                           :options="editor.options">
             </quill-editor>
             <el-row type="flex" justify="end" style="margin-top: 12px">
-              <el-button type="info" size="small" :disabled="!editor.content" @click="onPostComment">发布评论</el-button>
+              <el-button type="primary" size="small" :disabled="!editor.content" @click="onPostComment">发布评论</el-button>
             </el-row>
           </div>
         </div>
