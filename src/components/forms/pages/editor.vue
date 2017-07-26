@@ -158,7 +158,7 @@
               </el-popover>
             </el-row>
             <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
-              <h5>Body #{{index + 1}}</h5>
+              <h5>Body #{{index + 1}} {{body.name}}</h5>
               <el-card>
                 <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
