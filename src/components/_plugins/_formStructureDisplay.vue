@@ -9,12 +9,12 @@
           :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' || (formItem.isAlias && formItem.value.type !== 'users') ? 'blockElement' : ''">
 
           <span v-if="formItem.value.type === 'dict'">
-            {{ item && item[formItem.id][formItem.value.source.res.show_key] }}
+            {{ item && item[formItem.id][formItem.value.source.res.show_key[0]] }}
           </span>
 
           <span v-else-if="formItem.value.type === 'dicts'">
             <span v-for="(span, spanindex) in item && item[formItem.id]">
-              {{ span[formItem.value.source.res.show_key] }}
+              {{ span[formItem.value.source.res.show_key[0]] }}
               <span v-if="spanindex === (item[formItem.id].length - 1)"></span>
               <span v-else> | </span>
             </span>

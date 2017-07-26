@@ -25,9 +25,29 @@
             inline-template
             :context="_self">
             <template>
-              <code>
+              <!-- <code>
                 {{JSON.stringify(row.old_value)}}
-              </code>
+              </code> -->
+              <template v-for="headerform in formData.header">
+                <template v-for="header in headerform.value">
+                  <template v-if="row.key === header.id">
+                    <el-form>
+                      <form-display :item="getObject(row, true)" :form-item="header" :show-name="false"></form-display>
+                    </el-form>
+                  </template>
+                </template>
+              </template>
+              <template v-for="bodylist in formData.body.body_list">
+                <template v-for="attrlist in bodylist">
+                  <template v-for="attr in attrlist.value">
+                    <template v-if="row.key === attr.id">
+                      <el-form>
+                        <form-display :item="getObject(row, true)" :form-item="attr" :show-name="false"></form-display>
+                      </el-form>
+                    </template>
+                  </template>
+                </template>
+              </template>
             </template>
           </el-table-column>
           <el-table-column
@@ -35,7 +55,27 @@
             inline-template
             :context="_self">
             <template>
-              <code>{{JSON.stringify(row.new_value)}}</code>
+              <!-- <code>{{JSON.stringify(row.new_value)}}</code> -->
+              <template v-for="headerform in formData.header">
+                <template v-for="header in headerform.value">
+                  <template v-if="row.key === header.id">
+                    <el-form>
+                      <form-display :item="getObject(row)" :form-item="header" :show-name="false"></form-display>
+                    </el-form>
+                  </template>
+                </template>
+              </template>
+              <template v-for="bodylist in formData.body.body_list">
+                <template v-for="attrlist in bodylist">
+                  <template v-for="attr in attrlist.value">
+                    <template v-if="row.key === attr.id">
+                      <el-form>
+                        <form-display :item="getObject(row)" :form-item="attr" :show-name="false"></form-display>
+                      </el-form>
+                    </template>
+                  </template>
+                </template>
+              </template>
             </template>
           </el-table-column>
         </el-table>
@@ -45,9 +85,11 @@
 </template>
 
 <script>
+  import formDisplay from '../../../_plugins/_headerFormDisplay.vue'
   export default {
     props: {
-      pid: String
+      pid: String,
+      formData: Object
     },
 
     data () {
@@ -70,7 +112,20 @@
         this.http.post('', this.parseData(postData)).then((res) => {
           this.activityLogs = res.data.data.list
         })
+      },
+      getObject (row, old) {
+        let obj = {}
+        if (old) {
+          obj[row.key] = row.old_value
+        } else {
+          obj[row.key] = row.new_value
+        }
+        return obj
       }
+    },
+
+    components: {
+      formDisplay
     }
   }
 </script>

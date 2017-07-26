@@ -500,7 +500,7 @@
               <el-tab-pane label="活动" name="activities">
                 <!-- 首次点击时才请求活动日志，并避免每次点击都加载 -->
                 <keep-alive>
-                  <activity-tab :pid="eventData.pid" v-if="activeTab === 'activities'"></activity-tab>
+                  <activity-tab :pid="eventData.pid" :formData="startFormData" v-if="activeTab === 'activities'"></activity-tab>
                 </keep-alive>
               </el-tab-pane>
             </el-tabs>

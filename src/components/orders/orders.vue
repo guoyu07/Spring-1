@@ -319,7 +319,10 @@
     },
 
     created () {
-      this.getFilteredList()
+      // 针对跳转过去，新的步骤没更新到工单列表，要刷新一下，延迟100ms请求
+      setTimeout(() => {
+        this.getFilteredList()
+      }, 1000)
       if (this.isProcessAdmin) {
         this.filters['指派'] = ''
       }

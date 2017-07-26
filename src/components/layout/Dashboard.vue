@@ -96,7 +96,8 @@
           </el-col>
         </template>
         <template v-for="entry in searchResult">
-          <el-col :sm="24">
+          <!-- 屏蔽 应用发布更新 -->
+          <el-col :sm="24" v-if="entry.category !== '应用发布更新'">
             <h4 class="category">{{entry.category}}</h4>
             <ul class="grid">
               <li v-for="child in entry.children" class="entry" @click="onEntryClick(child.path)">
