@@ -107,7 +107,9 @@
       }
     },
     created () {
-      console.log(this.hosts)
+      // if (this.hosts[this.attrList.id].length) {
+      //   this.hostList = this.hosts[this.attrList.id]
+      // }
       // for (const block of this.attrList) {
       //   for (const item of block.value) {
       this.mainInfo = this.attrList

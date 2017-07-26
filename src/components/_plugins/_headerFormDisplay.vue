@@ -2,7 +2,7 @@
       <!-- 新建应用时，是一个字符串，非选取的对象 -->
   <!-- <div class="history-block"> -->
     <el-form-item
-      :label="showName ? formItem.name : ''"
+      :label="hideName ? '' : formItem.name"
       :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' ? 'blockElement' : ''">
       <!-- {{typeof item[formItem.id]}} -->
       <template v-if="item[formItem.id]">
@@ -96,7 +96,7 @@
   export default {
     props: {
       item: { type: Object },
-      showName: { type: Boolean },
+      hideName: { type: Boolean },
       formItem: { type: Object }
     },
 

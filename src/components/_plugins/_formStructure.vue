@@ -51,12 +51,12 @@
 <style>
   .blockElement {
     width: 100%;
-    display: flex;
+    display: flex!important;
   }
   .blockElement .el-form-item__content {
     width: 50%;
-    width:-moz-calc(100% - 85px);
-    width:-webkit-calc(100% - 85px);
-    width: calc(100% - 85px);
+    width:-moz-calc(100% - 100px);
+    width:-webkit-calc(100% - 100px);
+    width: calc(100% - 100px);
   }
 </style>

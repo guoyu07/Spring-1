@@ -32,7 +32,7 @@
                 <template v-for="header in headerform.value">
                   <template v-if="row.key === header.id">
                     <el-form>
-                      <form-display :item="getObject(row, true)" :form-item="header" :show-name="false"></form-display>
+                      <form-display :item="getObject(row, true)" :form-item="header" :hide-name="false"></form-display>
                     </el-form>
                   </template>
                 </template>
@@ -42,7 +42,7 @@
                   <template v-for="attr in attrlist.value">
                     <template v-if="row.key === attr.id">
                       <el-form>
-                        <form-display :item="getObject(row, true)" :form-item="attr" :show-name="false"></form-display>
+                        <form-display :item="getObject(row, true)" :form-item="attr" :hide-name="false"></form-display>
                       </el-form>
                     </template>
                   </template>
