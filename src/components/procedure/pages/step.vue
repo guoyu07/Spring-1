@@ -438,21 +438,24 @@
               this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
-                return Object.assign({}, this.assignForm.body[bodyindex], body)
+                let data = {}
+                for (const key in this.assignForm.body[bodyindex]) {
+                  // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
+                  if (body[key]) {
+                    data[key] = body[key]
+                  } else {
+                    data[key] = this.assignForm.body[bodyindex][key]
+                  }
+                }
+                return data
+                // return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
-              // console.log(newDataBody)
               this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
                 return Object.assign({}, body, newDataBody[bodyindex])
               })
-              // console.log(this.assignForm.body)
               return false
             }
           }
-          // if (newDataBody) {
-          //   this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
-          //     return Object.assign({}, body, newDataBody[bodyindex])
-          //   })
-          // }
         })
       },
       renderInstanceDetail () {

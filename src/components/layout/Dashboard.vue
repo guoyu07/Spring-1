@@ -19,6 +19,11 @@
     margin-bottom: 0;
   }
 
+  .hot-category {
+    font-size: 14px;
+    color: #888;
+  }
+
   .entry {
     flex: none;
     padding: 1.5em 0 0 1.5em;
@@ -84,7 +89,7 @@
         </el-col>
         <template v-if="!searchProcedure" v-for="top in topList">
           <el-col :sm="24">
-            <h4 class="category">{{top.category}}</h4>
+            <h4 class="category hot-category">{{top.category}}</h4>
             <ul class="grid">
               <li v-for="child in top.children" class="entry" @click="onEntryClick(child.path)">
                 <div class="entry__icon">

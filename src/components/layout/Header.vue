@@ -113,7 +113,8 @@
         </router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a>
+        <a href="http://192.168.10.102/">返回 EasyOps 自动化运维平台</a>
+        <!-- <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a> -->
       </el-menu-item>
       <el-menu-item index="5" class="fr">
         <a @click="logout">退出</a>
@@ -122,7 +123,7 @@
         {{userName}}</b></el-menu-item>
       <el-menu-item index="3" class="fr screenfull" @click="onScreenFull">
         <i class="el-icon-fa-arrows-alt"></i>
-      </el-menu-item> 
+      </el-menu-item>
     </el-menu>
   </header>
 </template>
