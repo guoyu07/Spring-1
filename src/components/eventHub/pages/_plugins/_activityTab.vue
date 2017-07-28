@@ -3,7 +3,7 @@
     <h5 class="sub-title" v-if="!activityLogs.length">
       <i class="el-icon-information"></i> 暂时没有人作出变更…
     </h5>
-    <el-collapse v-if="activityLogs.length">
+    <!-- <el-collapse v-if="activityLogs.length">
       <el-collapse-item v-for="ac in activityLogs">
         <template slot="title">
           <el-tooltip placement="top">
@@ -25,9 +25,6 @@
             inline-template
             :context="_self">
             <template>
-              <!-- <code>
-                {{JSON.stringify(row.old_value)}}
-              </code> -->
               <template v-for="headerform in formData.header">
                 <template v-for="header in headerform.value">
                   <template v-if="row.key === header.id">
@@ -55,7 +52,6 @@
             inline-template
             :context="_self">
             <template>
-              <!-- <code>{{JSON.stringify(row.new_value)}}</code> -->
               <template v-for="headerform in formData.header">
                 <template v-for="header in headerform.value">
                   <template v-if="row.key === header.id">
@@ -80,7 +76,61 @@
           </el-table-column>
         </el-table>
       </el-collapse-item>
-    </el-collapse>
+    </el-collapse> -->
+    <template v-if="activityLogs.length">
+      <div class="media" v-for="(log, logIndex) in activityLogs">
+        <div class="media-left">
+          <a class="media-object" href="#">
+            {{log.from_user.userId[0]}}
+          </a>
+        </div>
+        <div class="media-body">
+          <!-- <h4 class="media-heading">{{log.from_user.userId}}</h4> -->
+          <div class="media-body__content">
+            <div class="activity">
+              <div v-for="text in (log.text.body[0] ? [...log.text.header, ...log.text.body[0]] : log.text.header)">
+                <span class="name">{{log.from_user.userId}}</span> 把
+                <template>
+                  <template v-for="headerform in formData.header">
+                    <template v-for="header in headerform.value">
+                      <template v-if="text.key === header.id">
+                        {{header.name}} 更新为
+                        <el-form>
+                          <form-display :item="getObject(text)" :form-item="header" :hide-name="true"></form-display>
+                        </el-form>
+                      </template>
+                    </template>
+                  </template>
+                  <template v-for="bodylist in formData.body.body_list">
+                    <template v-for="attrlist in bodylist">
+                      <template v-for="attr in attrlist.value">
+                        <template v-if="text.key === attr.id">
+                          {{attr.name}} 更新为
+                          <el-form>
+                            <form-display :item="getObject(text)" :form-item="attr" :hide-name="true"></form-display>
+                          </el-form>
+                        </template>
+                      </template>
+                    </template>
+                  </template>
+                </template>
+              </div>
+            </div>
+            <a v-if="contentHeight.length && contentHeight[logIndex]" class="more" href="###" @click="checkMore(logIndex)">查看全部...</a>
+          </div>
+          <p class="time">
+            <i class="el-icon-fa-calendar"></i>
+            <!-- <i class="el-icon-date"></i> -->
+            <template v-if="isToday(log.ctime)">
+              <timeago :since="log.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago>
+            </template>
+            <template v-if="!isToday(log.ctime)">
+              {{log.ctime}}
+            </template>
+          </p>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -94,12 +144,17 @@
 
     data () {
       return {
-        activityLogs: []
+        activityLogs: [],
+        contentHeight: []
       }
     },
 
     mounted () {
       this.getActivities()
+      // console.log(this.$refs)
+    },
+
+    created () {
     },
 
     methods: {
@@ -111,6 +166,12 @@
         }
         this.http.post('', this.parseData(postData)).then((res) => {
           this.activityLogs = res.data.data.list
+          this.$nextTick(() => {
+            const elementList = document.querySelectorAll('.activity')
+            for (const i in elementList) {
+              this.contentHeight.push(elementList[i].scrollHeight > 100)
+            }
+          })
         })
       },
       getObject (row, old) {
@@ -121,6 +182,18 @@
           obj[row.key] = row.new_value
         }
         return obj
+      },
+      isToday (time) {
+        const date = new Date(time)
+        const today = new Date()
+        const num = 24 * 60 * 60 * 1000 // 一天的毫秒数
+        const timeDiff = today.getTime() - date.getTime() // 两个时间的毫秒差
+        return timeDiff < num
+      },
+      checkMore (index) {
+        this.$set(this.contentHeight, index, false)
+        const elementList = document.querySelectorAll('.activity')
+        elementList[index].style['max-height'] = elementList[index].scrollHeight + 'px'
       }
     },
 
@@ -129,3 +202,69 @@
     }
   }
 </script>
+<style scoped lang="less">
+.el-form-item {
+  display: inline-block;
+  margin-bottom: 0;
+  line-height: 1;
+  .el-form-item__content {
+    line-height: 1;
+  }
+}
+.media {
+  display: flex;
+  margin-bottom: 8px;
+  border-bottom: 1px dashed #ccc;
+  .media-left {
+    display: block;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: #ccc;
+    margin-right: 8px;
+    .media-object {
+      display: block;
+      width: 100%;
+      line-height: 42px;
+      text-align: center;
+      font-size: 30px;
+      color: #fff;
+    }
+  }
+  .media-body {
+    font-size: 14px;
+    width: calc(~"100% - 58px");
+    .activity {
+      max-height: 100px;
+      overflow: hidden;
+    }
+    .more {
+      display: block;
+      width: 100%;
+      // text-align: center;
+      padding: 5px 0;
+      color: #888;
+      &:hover {
+        background-color: #eef1f6;
+        text-decoration: none;
+      }
+    }
+    .name {
+      color: #06c;
+      margin-right: 5px;
+    }
+    form {
+      display: inline-block;
+    }
+    .time {
+      font-size: 12px;
+      color: #888;
+      margin-top: 5px;
+      i {
+        color: #FF4949;
+        margin-right: 5px;
+      }
+    }
+  }
+}
+</style>

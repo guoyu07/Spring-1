@@ -348,7 +348,7 @@
 <style lang="less" scoped>
     @import url("./../../../assets/css/variables.less");
   .editor-content {
-    
+
     .el-input, .conf-btn {
       max-width: 180px;
       display: inline-block;
