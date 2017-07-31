@@ -3,9 +3,9 @@
     <h5 class="sub-title" v-if="!activityLogs.length">
       <i class="el-icon-information"></i> 暂时没有人作出变更…
     </h5>
-    <!-- <el-collapse v-if="activityLogs.length">
-      <el-collapse-item v-for="ac in activityLogs">
-        <template slot="title">
+    <template v-if="activityLogs.length">
+      <template v-for="ac in activityLogs">
+        <p class="title">
           <el-tooltip placement="top">
             <div slot="content">
               <p><b>Email</b>: {{ac.from_user.email}}</p>
@@ -13,13 +13,40 @@
             </div>
             <a href="javascript:;" class="tooltip-link">{{ac.from_user.code}} <i class="el-icon-fa-user-circle"></i></a>
           </el-tooltip>
-          <span>作出变更 - <timeago :since="ac.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago></span>
-        </template>
+          <span>作出变更 -
+            <template v-if="isToday(ac.ctime)">
+              <timeago :since="ac.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago>
+            </template>
+            <template v-if="!isToday(ac.ctime)">
+              {{ac.ctime}}
+            </template>
+          </span>
+        </p>
         <el-table class="activity-table" :data="ac.text.body[0] ? [...ac.text.header, ...ac.text.body[0]] : ac.text.header" border>
           <el-table-column
-            prop="key"
-            label="键名"
-            width="150"></el-table-column>
+            label="字段"
+            inline-template
+            :context="_self"
+            width="150">
+            <template>
+              <template v-for="headerform in formData.header">
+                <template v-for="header in headerform.value">
+                  <template v-if="row.key === header.id">
+                    {{header.name}}
+                  </template>
+                </template>
+              </template>
+              <template v-for="bodylist in formData.body.body_list">
+                <template v-for="attrlist in bodylist">
+                  <template v-for="attr in attrlist.value">
+                    <template v-if="row.key === attr.id">
+                      {{attr.name}}
+                    </template>
+                  </template>
+                </template>
+              </template>
+            </template>
+          </el-table-column>
           <el-table-column
             label="旧值"
             inline-template
@@ -75,63 +102,7 @@
             </template>
           </el-table-column>
         </el-table>
-      </el-collapse-item>
-    </el-collapse> -->
-    <template v-if="activityLogs.length">
-      <div class="media" v-for="(log, logIndex) in activityLogs">
-        <div class="media-left">
-          <a class="media-object" href="#">
-            {{log.from_user.userId[0]}}
-          </a>
-        </div>
-        <div class="media-body">
-          <!-- <h4 class="media-heading">{{log.from_user.userId}}</h4> -->
-          <div class="media-body__content">
-            <div class="activity">
-              <div v-for="text in (log.text.body[0] ? [...log.text.header, ...log.text.body[0]] : log.text.header)">
-                <span class="name">{{log.from_user.userId}}</span> 把
-                <template>
-                  <template v-for="headerform in formData.header">
-                    <template v-for="header in headerform.value">
-                      <template v-if="text.key === header.id">
-                        {{header.name}} 更新为
-                        <el-form>
-                          <form-display :item="getObject(text)" :form-item="header" :hide-name="true"></form-display>
-                        </el-form>
-                      </template>
-                    </template>
-                  </template>
-                  <template v-for="bodylist in formData.body.body_list">
-                    <template v-for="attrlist in bodylist">
-                      <template v-for="attr in attrlist.value">
-                        <template v-if="text.key === attr.id">
-                          {{attr.name}} 更新为
-                          <el-form>
-                            <form-display :item="getObject(text)" :form-item="attr" :hide-name="true"></form-display>
-                          </el-form>
-                        </template>
-                      </template>
-                    </template>
-                  </template>
-                </template>
-              </div>
-              <el-button type="text" icon="arrow-up" v-if="contentHeight.length && contentHeight[logIndex] > 100" @click="onRetract(logIndex)">收起</el-button>
-            </div>
-            <el-button v-if="isAbove.length && isAbove[logIndex]" icon="arrow-down" type="text" @click="checkMore(logIndex)">全部</el-button>
-            <!-- <a v-if="isAbove.length && isAbove[logIndex]" class="more" href="###" @click="checkMore(logIndex)">查看全部...</a> -->
-          </div>
-          <p class="time">
-            <i class="el-icon-fa-calendar"></i>
-            <!-- <i class="el-icon-date"></i> -->
-            <template v-if="isToday(log.ctime)">
-              <timeago :since="log.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago>
-            </template>
-            <template v-if="!isToday(log.ctime)">
-              {{log.ctime}}
-            </template>
-          </p>
-        </div>
-      </div>
+      </template>
     </template>
   </div>
 </template>
@@ -147,7 +118,6 @@
     data () {
       return {
         activityLogs: [],
-        isAbove: [],
         contentHeight: []
       }
     },
@@ -172,8 +142,7 @@
           this.$nextTick(() => {
             const elementList = document.querySelectorAll('.activity')
             for (const i in elementList) {
-              this.isAbove.push(elementList[i].scrollHeight > 100)
-              this.contentHeight.push(elementList[i].scrollHeight)
+              this.contentHeight.push(elementList[i].scrollHeight > 100)
             }
           })
         })
@@ -195,14 +164,9 @@
         return timeDiff < num
       },
       checkMore (index) {
-        this.$set(this.isAbove, index, false)
+        this.$set(this.contentHeight, index, false)
         const elementList = document.querySelectorAll('.activity')
         elementList[index].style['max-height'] = elementList[index].scrollHeight + 'px'
-      },
-      onRetract (index) {
-        this.$set(this.isAbove, index, true)
-        const elementList = document.querySelectorAll('.activity')
-        elementList[index].style['max-height'] = '100px'
       }
     },
 
@@ -220,60 +184,8 @@
     line-height: 1;
   }
 }
-.media {
-  display: flex;
-  margin-bottom: 8px;
-  border-bottom: 1px dashed #ccc;
-  .media-left {
-    display: block;
-    width: 50px;
-    height: 50px;
-    border-radius: 50%;
-    background-color: #ccc;
-    margin-right: 8px;
-    .media-object {
-      display: block;
-      width: 100%;
-      line-height: 42px;
-      text-align: center;
-      font-size: 30px;
-      color: #fff;
-    }
-  }
-  .media-body {
-    font-size: 14px;
-    width: calc(~"100% - 58px");
-    .activity {
-      max-height: 100px;
-      overflow: hidden;
-    }
-    .more {
-      display: block;
-      width: 100%;
-      // text-align: center;
-      padding: 5px 0;
-      color: #888;
-      &:hover {
-        background-color: #eef1f6;
-        text-decoration: none;
-      }
-    }
-    .name {
-      color: #06c;
-      margin-right: 5px;
-    }
-    form {
-      display: inline-block;
-    }
-    .time {
-      font-size: 12px;
-      color: #888;
-      margin-top: 5px;
-      i {
-        color: #FF4949;
-        margin-right: 5px;
-      }
-    }
-  }
+.title {
+  font-size: 14px;
+  margin-top: 15px;
 }
 </style>

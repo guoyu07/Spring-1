@@ -479,7 +479,7 @@
                   </li>
                 </ul>
               </el-tab-pane>
-              <el-tab-pane label="历史" name="history">
+              <el-tab-pane label="工作流" name="history">
                 <!-- <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5> -->
                 <el-collapse>
                   <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
@@ -496,6 +496,12 @@
                     </el-form>
                   </el-collapse-item>
                 </el-collapse>
+              </el-tab-pane>
+              <el-tab-pane label="修改记录" name="logs">
+                <!-- 首次点击时才请求活动日志，并避免每次点击都加载 -->
+                <keep-alive>
+                  <logs-tab :pid="eventData.pid" :formData="startFormData" v-if="activeTab === 'logs'"></logs-tab>
+                </keep-alive>
               </el-tab-pane>
               <el-tab-pane label="活动" name="activities">
                 <!-- 首次点击时才请求活动日志，并避免每次点击都加载 -->
@@ -664,6 +670,7 @@
 
   import eventConf from './_plugins/_eventConf.vue'
   import activityTab from './_plugins/_activityTab.vue'
+  import logsTab from './_plugins/_logsTab.vue'
 
   import formStructureDisplay from '../../_plugins/_formStructureDisplay.vue'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay.vue'
@@ -1250,6 +1257,7 @@
       quillEditor,
       eventConf,
       activityTab,
+      logsTab,
       formStructureDisplay,
       headerFormDisplay,
       formBody,
