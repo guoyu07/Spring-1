@@ -40,7 +40,6 @@
               </el-card>
             </el-col>
           </el-row>
-
           <el-row>
             <el-col :sm="24" :md="20">
               <el-card class="box-card">
@@ -54,12 +53,10 @@
                     :label="comp"
                     :value="comp"></el-option>
                 </el-select>
-
                 <!-- <el-row class="form-block">
                   <h4>事件详情</h4>
                   <form-conf :config-data="eventDetailList" :presets="presetList"></form-conf>
                 </el-row> -->
-
                 <el-row class="form-block" v-for="(module, name, index) in groupedCustomModuleMap">
                   <h4>{{name}}</h4>
                   <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onCustomModuleChange"></form-conf>
@@ -69,7 +66,6 @@
               </el-card>
             </el-col>
           </el-row>
-
           <el-row>
             <!-- <el-button type="warning" :plain="true" icon="fa-undo" @click="$router.go(-1)">取消</el-button> -->
             <el-button type="success" icon="fa-check" @click="onSubmitIncidentForm()">确认提交</el-button>
@@ -79,14 +75,11 @@
     </el-row>
   </div>
 </template>
-
 <script>
   import formConf from './../../forms/pages/_config/_formConf' // 借用表单配置的字段配置组件
   import getPresetList from './../../../mixins/getPresetList'
   import getOptionPresets from './../../../mixins/getOptionPresets'
-
   import _ from '../../../utils/_'
-
   // 历史遗留
   const newFieldData = {
     id: '',
@@ -116,10 +109,8 @@
       type: ''
     }
   }
-
   export default {
     mixins: [getPresetList, getOptionPresets],
-
     data () {
       return {
         pkey: 'incident',
@@ -136,7 +127,6 @@
         selectedComponent: ''
       }
     },
-
     computed: {
       // 待提交的表单数据
       submitFormData () {
@@ -147,7 +137,6 @@
           pkey: this.pkey
         }
       },
-
       // 符合当前事件分类的 body
       currentBody () {
         let result = null
@@ -160,7 +149,6 @@
         })
         return result
       },
-
       // 事件详情
       // eventDetailList () {
       //   let result = []
@@ -173,16 +161,13 @@
       //   })
       //   return result
       // },
-
       // 模块映射集，以相同 category 值为键名
-
       groupedGenericModuleMap () {
         let result = []
         if (!this.incidentFormData) return result
         result = _._groupBy(this.incidentFormData.form.header, 'category')
         return result
       },
-
       groupedCustomModuleMap () {
         let result = []
         if (!this.incidentFormData || !this.currentBody) return result
@@ -190,13 +175,11 @@
         return result
       }
     },
-
     created () {
       this.getIncidentForm()
       this.getPresetList()
       this.getOptionPresets()
     },
-
     methods: {
       getIncidentForm () {
         let { pkey, tkey } = this
@@ -216,14 +199,12 @@
           })
         })
       },
-
       onSubmitIncidentForm (message) {
         // 把 groupBy 好的数据转换回去
         if (this.currentBody) {
           this.currentBody.attr_list = _._reverseGroupBy(this.groupedCustomModuleMap, this.currentBody.attr_list)
         }
         this.incidentFormData.form.header = _._reverseGroupBy(this.groupedGenericModuleMap, this.incidentFormData.form.header)
-
         // console.log(this.currentBody.attr_list)
         // console.log(this.submitFormData)
         let postData = {
@@ -239,19 +220,16 @@
           }
         })
       },
-
       onRemoveComponent (tag) {
         this.componentList.splice(this.componentList.indexOf(tag), 1)
         this.onSubmitIncidentForm('已移除！')
       },
-
       onAttemptToAddComponent () {
         this.addComponentData.isEditing = true
         this.$nextTick(_ => {
           this.$refs.addComponentInput.$refs.input.focus()
         })
       },
-
       onAddComponent () {
         let value = this.addComponentData.value
         if (value) {
@@ -283,7 +261,6 @@
         this.addComponentData.isEditing = false
         this.addComponentData.value = ''
       },
-
       onAddGenericModule () {
         this.$prompt('请输入新模块标题', '提示', {
           confirmButtonText: '确定',
@@ -292,7 +269,6 @@
           this.incidentFormData.form.header.push({ ...newFieldData, ...{ category: value } })
         })
       },
-
       onDeleteGenericModule (name) {
         this.$confirm(`此操作将删除通用模块「${name}」及其下所有字段，是否继续？`, '提示', {
           confirmButtonText: '确定',
@@ -305,7 +281,6 @@
           })
         })
       },
-
       onAddCustomModule () {
         this.$prompt('请输入新模块标题', '提示', {
           confirmButtonText: '确定',
@@ -314,7 +289,6 @@
           this.currentBody.attr_list.push({ ...newFieldData, ...{ category: value } })
         })
       },
-
       onDeleteCustomModule (name) {
         this.$confirm(`此操作将删除自定义模块「${name}」及其下所有字段，是否继续？`, '提示', {
           confirmButtonText: '确定',
@@ -327,24 +301,20 @@
           })
         })
       },
-
       onGenericModuleChange (args) {
         console.log('received!')
         this.groupedGenericModuleMap[args.category] = args.val
       },
-
       onCustomModuleChange (args) {
         console.log('received!')
         this.groupedCustomModuleMap[args.category] = args.val
       }
     },
-
     components: {
       formConf
     }
   }
 </script>
-
 <style lang="less" scoped>
     @import url("./../../../assets/css/variables.less");
   .editor-content {
@@ -353,26 +323,21 @@
       max-width: 180px;
       display: inline-block;
     }
-
     .options-btn {
       margin-bottom: 10px;
       float: right;
     }
-
     label {
       line-height: 36px;
     }
-
     .el-tag + .el-tag {
       margin-left: 10px;
     }
-
     .input-new-tag {
       width: 97px;
       margin-left: 10px;
       vertical-align: bottom;
     }
-
     .button-new-tag {
       margin-left: 10px;
       height: 24px;
@@ -380,18 +345,15 @@
       padding-top: 0;
       padding-bottom: 0
     }
-
     .button-del-mod {
       position: absolute;
       bottom: 12px;
       right: 12px;
     }
-
     .box-card {
       margin-bottom: 18px;
       position: relative;
     }
-
     .corner-ribbon {
       position: absolute;
       right: -5px;
@@ -400,7 +362,6 @@
       overflow: hidden;
       width: 75px;
       height: 75px;
-
       span {
         position: absolute;
         top: 19px;
@@ -415,7 +376,6 @@
         display: block;
         background-color: @eoThemeColor;
         box-shadow: 0 3px 10px -5px rgba(0, 0, 0, 1);
-
         &::before,
         &::after {
           content: '';
@@ -425,13 +385,11 @@
           border-bottom: 3px solid transparent;
           border-top: 3px solid @eoThemeColor;
         }
-
         &::before {
           left: 0;
           border-left: 3px solid @eoThemeColor;
           border-right: 3px solid transparent;
         }
-
         &::after {
           right: 0;
           border-right: 3px solid @eoThemeColor;
@@ -440,18 +398,15 @@
       }
     }
   }
-
   .form-block {
     border-bottom: 2px dotted @borderColor;
     margin: 10px 0 20px;
     // background-color: @bgLighter;
     padding: 6px 12px 12px;
-
     h4 {
       color: @primary;
       position: relative;
       padding-left: 8px;
-
       &::before {
         content: '';
         width: 4px;
@@ -463,7 +418,6 @@
         top: 10px;
       }
     }
-
     h5 {
       margin: 14px 0 10px;
       color: @textColor;

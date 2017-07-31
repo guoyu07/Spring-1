@@ -555,6 +555,9 @@
     color: #666;
     margin: 0.5em 0 0;
     line-height: 1;
+    // position: absolute;
+    // top: 24px;
+    // left: 0;
   }
 
   .dz-remove {

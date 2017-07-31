@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3>服务资源申请单</h3>
-          <el-form ref="applyForm" :model="applyForm" label-width="100px" :inline="true">
+          <el-form label-position="right" ref="applyForm" :model="applyForm" label-width="100px" :inline="true">
             <!-- <header-form-structure :form-data="form.header" :item="applyForm.header"></header-form-structure> -->
             <div v-if="form.header">
               <div v-for="task in form.header">
@@ -38,7 +38,7 @@
             增加服务器
           </el-button>
           <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
-          <el-form ref="applyForm" :model="applyForm" label-position="top" :inline="true">
+          <el-form ref="applyForm" :model="applyForm" label-position="right" label-width="100px" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.body" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="applyForm.body.length !== 1">
                 <!-- <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :index="index"></form-structure> -->
@@ -161,6 +161,7 @@
                 if (item.show.type === 'form_header') {
                   this.$watch('applyForm.header.' + item.show.key_path, (newVal, oldVal) => {
                     if (item.show.op === 'eq' && newVal === item.show.value) {
+                      this.setDataType(item, this.applyForm.header, this)
                       console.log(item, this.applyForm.header)
                     } else if (item.show.op === 'neq' && newVal !== item.show.value) {
                       this.setDataType(item, this.applyForm.header, this)
