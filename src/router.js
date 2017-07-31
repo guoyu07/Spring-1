@@ -28,7 +28,7 @@ const CustomPages = {
 }
 
 const OrderPages = {
-  Orders: resolve => require(['./components/orders/orders'], resolve)
+  List: resolve => require(['./components/orders/pages/list'], resolve)
 }
 
 const FormPages = {
@@ -56,8 +56,12 @@ const routes = [{
   component: require('./components/Home'),
   redirect: { path: '/home' },
   children: [{
-    path: '/home',
-    component: require('./components/layout/Dashboard')
+    path: '/',
+    component: require('./components/dashboard/index'),
+    children: [{
+      path: '/home',
+      component: require('./components/dashboard/pages/dashboard')
+    }]
   }, {
     path: '/procedure',
     component: require('./components/procedure/index'),
@@ -189,7 +193,11 @@ const routes = [{
     }]
   }, {
     path: '/orders',
-    component: OrderPages.Orders
+    component: require('./components/orders/index'),
+    children: [{
+      path: '',
+      component: OrderPages.List
+    }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
     component: require('./components/forms/index'),

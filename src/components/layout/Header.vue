@@ -1,9 +1,12 @@
 <style lang="less">
   @import url("../../assets/css/variables");
+
+  @headerHeight: 50px;
+
   .header {
     position: fixed;
-    z-index: @flying;
-    height: 50px;
+    z-index: @floating;
+    height: @headerHeight;
     -webkit-box-shadow: 0 1px 2px #b6b6b6;
     box-shadow: 0 1px 2px #b6b6b6;
 
@@ -14,7 +17,7 @@
 
         img {
           // max-width: 100%;
-          height: 50px;
+          height: @headerHeight;
           padding: 9px 0;
 
           @media screen and (max-width: 450px) {
@@ -29,29 +32,56 @@
       }
     }
 
-    .disabled {
-      &:hover {
-        border-bottom: none;
-        cursor: text;
-      }
-
-      &:focus,
-      &:active,
-      &.is-active {
-        border-bottom: none;
-        color: #bfcbd9;
-      }
-    }
-
     .el-menu {
       background-color: @eoThemeColor;
+      // padding: 0 10px;
+    }
+
+    .el-submenu,
+    .el-menu-item {
+      font-weight: bold;
+    }
+
+    .el-submenu {
+      height: @headerHeight;
+      line-height: @headerHeight;
+
+      .el-submenu__title {
+        height: @headerHeight;
+        line-height: @headerHeight;
+        color: #fff;
+
+        &:hover {
+          background-color: inherit;
+        }
+      }
+
+      &__icon-arrow {
+        color: #fff !important;
+        vertical-align: initial;
+      }
+
+      & > .el-menu {
+        top: @headerHeight;
+        background-color: @eoThemeColor;
+        border: none;
+
+        i {
+          width: 14px;
+        }
+      }
+
+      .el-menu-item {
+        background-color: @eoThemeColor;
+        min-width: inherit;
+      }
     }
 
     .el-menu-item {
-      height: 50px;
-      line-height: 50px;
+      height: @headerHeight;
+      line-height: @headerHeight;
       color: #fff;
-      border-bottom: none !important;
+      // border-bottom: none !important;
 
       @media screen and (max-width: 450px) {
         font-size: 12px;
@@ -72,8 +102,8 @@
 
       &:hover {
         background-color: @eoThemeColor;
-        color: #e2f0ff;
-        opacity: .5;
+        // color: #e2f0ff;
+        // opacity: .5;
       }
 
       i {
@@ -89,8 +119,16 @@
     }
 
     .screenfull {
-      padding: 0;
       display: none;
+
+      i {
+        margin-right: 0;
+      }
+    }
+
+    .menu-img {
+      width: 20px;
+      vertical-align: middle;
     }
 
     &:hover {
@@ -108,20 +146,48 @@
         <router-link to="/">
           <!-- <b>EasyOps</b> 运维管理系统 -->
           <div class="logo-img">
-            <img src="../../assets/logo.png" alt="">
+            <img src="../../assets/logo-lg.png" alt="">
           </div>
         </router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <a href="http://192.168.10.102/">返回 EasyOps 自动化运维平台</a>
-        <!-- <a href="http://preview.easyops.cn/">返回 EasyOps 自动化运维平台</a> -->
+        <router-link :to="{ path: '/home' }">运维服务目录</router-link>
       </el-menu-item>
-      <el-menu-item index="5" class="fr">
-        <a @click="logout">退出</a>
+      <el-menu-item index="3">
+        <router-link :to="{ path: '/event-hub' }">事件管理</router-link>
       </el-menu-item>
-      <el-menu-item index="4" class="fr disabled"><!--<i class="el-icon-fa-user-circle"></i>--><b>
-        {{userName}}</b></el-menu-item>
-      <el-menu-item index="3" class="fr screenfull" @click="onScreenFull">
+      <el-submenu index="4">
+        <template slot="title">工单管理</template>
+        <el-menu-item index="4-1">
+          <router-link :to="{ path: '/event-hub' }">事件管理</router-link>
+        </el-menu-item>
+        <el-menu-item index="4-2">
+          <router-link :to="{ path: '/orders' }">流程管理</router-link>
+        </el-menu-item>
+      </el-submenu>
+      <el-submenu index="5" class="fr">
+        <template slot="title">{{userName}}</template>
+        <el-menu-item index="5-1">
+          <a href=""><i class="el-icon-fa-user"></i> 我的账户</a>
+        </el-menu-item>
+        <el-menu-item index="5-2">
+          <router-link :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 账户管理</router-link>
+        </el-menu-item>
+        <el-menu-item index="5-3">
+          <router-link :to="{ path: '/process-admin/basics' }"><i class="el-icon-fa-key"></i> 权限管理</router-link>
+        </el-menu-item>
+        <el-menu-item index="5-3">
+          <a @click="logout"><i class="el-icon-fa-sign-out"></i> 退出</a>
+        </el-menu-item>
+      </el-submenu>
+      <el-menu-item index="6" class="fr">
+        <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
+          <a href="http://preview.easyops.cn/">
+            <img src="../../assets/logo.png" alt="" class="menu-img">
+          </a>
+        </el-tooltip>
+      </el-menu-item>
+      <el-menu-item index="7" class="fr screenfull" @click="onScreenFull">
         <i class="el-icon-fa-arrows-alt"></i>
       </el-menu-item>
     </el-menu>

@@ -285,7 +285,7 @@
 <script>
   import assignSection from './_assignSection'
   // import filterConf from './_filterConf'
-  import progressWrap from '../_plugins/_progress'
+  import progressWrap from '../../_plugins/_progress'
 
   export default {
     data () {
