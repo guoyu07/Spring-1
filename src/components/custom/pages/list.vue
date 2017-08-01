@@ -44,7 +44,7 @@
                 <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
                 <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row.editing)"></i>
                 <span v-show="!row.editing">{{row.category}}</span>
-                <i class="el-icon-edit text-info" v-show="!row.editing" @click="row.editing = true"></i>
+                <i class="el-icon-edit text-info" v-show="!row.editing" @click="row.editing = true;getCategoryList()"></i>
               </template>
             </el-table-column>
             <el-table-column
@@ -84,7 +84,7 @@
 
     created () {
       this.getPermittedProcessList()
-      this.getCategoryList()
+      // this.getCategoryList()
     },
 
     methods: {
