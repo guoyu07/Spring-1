@@ -156,19 +156,22 @@
           this.form = res.data.data.form
           this.form.header.map(group => {
             group.value.map(item => {
-              this.setDataType(item, this.applyForm.header, this)
+              this.setDataType(item, this.applyForm.header)
               if (item.show.type) {
                 if (item.show.type === 'form_header') {
                   this.$watch('applyForm.header.' + item.show.key_path, (newVal, oldVal) => {
                     if (item.show.op === 'eq' && newVal === item.show.value) {
-                      this.setDataType(item, this.applyForm.header, this)
-                      console.log(item, this.applyForm.header)
+                      this.setDataType(item, this.applyForm.header)
+                      // console.log(item, this.applyForm.header)
                     } else if (item.show.op === 'neq' && newVal !== item.show.value) {
-                      this.setDataType(item, this.applyForm.header, this)
+                      this.setDataType(item, this.applyForm.header)
                     } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
-                      this.setDataType(item, this.applyForm.header, this)
+                      this.setDataType(item, this.applyForm.header)
                     } else {
-                      delete this.applyForm.header[item.id]
+                      // 好像无论如何都是执行这一条 设置 等于 不等于 包含 好像没用似的
+                      this.setDataType(item, this.applyForm.header)
+                      // delete this.applyForm.header[item.id]
+                      // this.$delete(this.applyForm.header, item.id)
                     }
                   })
                 }
@@ -234,7 +237,7 @@
         }
       },
       onSubmit (applyForm) {
-        console.log(this.applyForm)
+        // console.log(this.applyForm)
         if (this.applyForm.header.applyType === '新建应用' && typeof this.applyForm.header.applicationName === 'object') {
           this.$message('请填写新建的应用名')
           return false
@@ -247,6 +250,32 @@
           if (valid) {
             this.$refs['applyForm'].validate(valid => {
               if (valid) {
+                let postFormData = {
+                  header: {},
+                  body: []
+                }
+                const data = this.applyForm
+                for (const headerid in data.header) {
+                  if (Array.isArray(data.header[headerid])) {
+                    if (data.header[headerid].length !== 0) {
+                      postFormData.header[headerid] = data.header[headerid]
+                    }
+                  } else if (data.header[headerid]) {
+                    postFormData.header[headerid] = data.header[headerid]
+                  }
+                }
+                data.body.map((body, bodyIndex) => {
+                  postFormData.body[bodyIndex] = {}
+                  for (const bodyid in body) {
+                    if (Array.isArray(body[bodyid])) {
+                      if (body[bodyid].length !== 0) {
+                        postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                      }
+                    } else if (body[bodyid]) {
+                      postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                    }
+                  }
+                })
                 let postData = {}
                 if (this.editInfo.id) {
                   postData = {
@@ -254,7 +283,7 @@
                     method: 'POST',
                     data: {
                       tid: this.editInfo.id,
-                      form: this.applyForm // 通过审批 需要判断一下登录的账号的角色身份
+                      form: postFormData // 通过审批 需要判断一下登录的账号的角色身份
                         // pass: "流程走向控制变量,整型(可选,默认为0)"
                     }
                   }
@@ -264,10 +293,7 @@
                     method: 'POST',
                     data: {
                       pkey: 'host_apply',
-                      form: {
-                        'body': this.applyForm.body,
-                        'header': this.applyForm.header
-                      }
+                      form: postFormData
                     }
                   }
                 }

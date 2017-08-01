@@ -137,6 +137,9 @@
       }
     }
   }
+  .link-block {
+    display: block;
+  }
 </style>
 
 <template>
@@ -151,18 +154,18 @@
         </router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <router-link :to="{ path: '/home' }">运维服务目录</router-link>
+        <router-link class="link-block" :to="{ path: '/home' }">运维服务目录</router-link>
       </el-menu-item>
       <el-menu-item index="3">
-        <router-link :to="{ path: '/event-hub' }">事件管理</router-link>
+        <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>
       </el-menu-item>
       <el-submenu index="4">
         <template slot="title">工单管理</template>
         <el-menu-item index="4-1">
-          <router-link :to="{ path: '/event-hub' }">事件管理</router-link>
+          <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>
         </el-menu-item>
         <el-menu-item index="4-2">
-          <router-link :to="{ path: '/orders' }">流程管理</router-link>
+          <router-link class="link-block" :to="{ path: '/orders' }">流程管理</router-link>
         </el-menu-item>
       </el-submenu>
       <el-submenu index="5" class="fr">
@@ -171,18 +174,19 @@
           <a href=""><i class="el-icon-fa-user"></i> 我的账户</a>
         </el-menu-item>
         <el-menu-item index="5-2">
-          <router-link :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 账户管理</router-link>
+          <router-link class="link-block" :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 账户管理</router-link>
         </el-menu-item>
         <el-menu-item index="5-3">
-          <router-link :to="{ path: '/process-admin/basics' }"><i class="el-icon-fa-key"></i> 权限管理</router-link>
+          <router-link class="link-block" :to="{ path: '/process-admin/basics' }"><i class="el-icon-fa-key"></i> 权限管理</router-link>
         </el-menu-item>
         <el-menu-item index="5-3">
-          <a @click="logout"><i class="el-icon-fa-sign-out"></i> 退出</a>
+          <a class="link-block" @click="logout"><i class="el-icon-fa-sign-out"></i> 退出</a>
         </el-menu-item>
       </el-submenu>
       <el-menu-item index="6" class="fr">
         <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
-          <a href="http://preview.easyops.cn/">
+          <a class="link-block" href="http://192.168.10.102/">
+          <!-- <a class="link-block" href="http://preview.easyops.cn/"> -->
             <img src="../../assets/logo.png" alt="" class="menu-img">
           </a>
         </el-tooltip>

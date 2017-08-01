@@ -117,7 +117,7 @@
               </div>
               <el-button type="text" icon="arrow-up" v-if="contentHeight.length && contentHeight[logIndex] > 100" @click="onRetract(logIndex)">收起</el-button>
             </div>
-            <el-button v-if="isAbove.length && isAbove[logIndex]" icon="arrow-down" type="text" @click="checkMore(logIndex)">全部</el-button>
+            <el-button type="text" icon="arrow-down" v-if="isAbove.length && isAbove[logIndex]" @click="checkMore(logIndex)" class="checkMore">全部</el-button>
             <!-- <a v-if="isAbove.length && isAbove[logIndex]" class="more" href="###" @click="checkMore(logIndex)">查看全部...</a> -->
           </div>
           <p class="time">
@@ -274,6 +274,22 @@
         margin-right: 5px;
       }
     }
+  }
+}
+.checkMore {
+  display: block;
+  width: 100%;
+  text-align: left;
+  position: relative;
+  &:before {
+    content: '';
+    position: absolute;
+    top: -40px;
+    left: 0;
+    display: block;
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1) 70%);
   }
 }
 </style>

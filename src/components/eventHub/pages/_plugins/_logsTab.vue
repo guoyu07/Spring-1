@@ -24,7 +24,7 @@
         </p>
         <el-table class="activity-table" :data="ac.text.body[0] ? [...ac.text.header, ...ac.text.body[0]] : ac.text.header" border>
           <el-table-column
-            label="字段"
+            label="属性名称"
             inline-template
             :context="_self"
             width="150">

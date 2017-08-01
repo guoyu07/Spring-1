@@ -174,7 +174,7 @@
                     } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
                       this.setDataType(item, this.postForm.header, this)
                     } else {
-                      delete this.postForm.header[item.id]
+                      // delete this.postForm.header[item.id]
                     }
                   })
                 }
