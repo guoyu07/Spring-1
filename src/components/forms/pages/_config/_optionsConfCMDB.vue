@@ -44,6 +44,9 @@
       margin-bottom: 4px;
     }
   }
+  .el-collapse-item__content {
+    padding: 0;
+  }
 </style>
 
 <template>
@@ -168,26 +171,6 @@
           </template>
         </el-row> -->
 
-      <h5>选择 API 预设集：</h5>
-      <el-card v-if="optionPresets && optionPresets.length">
-        <el-radio-group v-model="selectedOption" @change="onSelectOption">
-          <el-popover
-            placement="top"
-            trigger="hover"
-            v-for="api in optionPresets"
-            :title="api.name">
-            <el-form label-position="right" label-width="60px" class="detail-popover">
-              <el-form-item label="Action"><code>{{api.action}}</code></el-form-item>
-              <el-form-item label="Data path"><code>{{api.data_path}}</code></el-form-item>
-              <el-form-item label="Method"><code>{{api.method}}</code></el-form-item>
-              <el-form-item label="URL"><code>{{api.url}}</code></el-form-item>
-              <!-- <el-form-item label="Params"><code>{{api.params}}</code></el-form-item> -->
-            </el-form>
-            <el-radio slot="reference" :label="api" :key="api">{{api.name}}</el-radio>
-          </el-popover>
-        </el-radio-group>
-      </el-card>
-
       <h5>选项数据路径配置：</h5>
       <el-card>
         <el-form label-position="top" :inline="true">
@@ -206,6 +189,48 @@
           </el-form-item>
         </el-form>
       </el-card>
+
+      <h5>选择 API 预设集：</h5>
+      <template v-if="optionPresets && optionPresets.length">
+        <!-- <el-radio-group v-model="selectedOption" @change="onSelectOption">
+          <el-popover
+            placement="top"
+            trigger="hover"
+            v-for="api in optionPresets"
+            :title="api.name">
+            <el-form label-position="right" label-width="60px" class="detail-popover">
+              <el-form-item label="Action"><code>{{api.action}}</code></el-form-item>
+              <el-form-item label="Data path"><code>{{api.data_path}}</code></el-form-item>
+              <el-form-item label="Method"><code>{{api.method}}</code></el-form-item>
+              <el-form-item label="URL"><code>{{api.url}}</code></el-form-item>
+            </el-form>
+            <el-radio slot="reference" :label="api" :key="api">{{api.name}}</el-radio>
+          </el-popover>
+        </el-radio-group> -->
+        <el-table
+          ref="singleTable"
+          :data="optionPresets"
+          highlight-current-row
+          @current-change="handleCurrentChange"
+          style="width: 100%">
+          <el-table-column
+            property="name"
+            label="名称">
+          </el-table-column>
+          <el-table-column
+            property="url"
+            label="请求地址">
+          </el-table-column>
+          <el-table-column
+            property="action"
+            label="动作">
+          </el-table-column>
+          <el-table-column
+            property="data_path"
+            label="属性路径">
+          </el-table-column>
+        </el-table>
+      </template>
 
       <!-- <template v-if="dialogProps.value.type === 'dicts'">
         <h5>多选选择个数配置：</h5>
@@ -270,6 +295,11 @@
     },
     methods: {
       onSelectOption (val) {
+        Object.assign(this.dialogProps.value.source.data, { action: val.action, method: val.method })
+        Object.assign(this.dialogProps.value.source.res, { data_path: val.data_path })
+        this.dialogProps.value.source.url = val.url
+      },
+      handleCurrentChange (val) {
         Object.assign(this.dialogProps.value.source.data, { action: val.action, method: val.method })
         Object.assign(this.dialogProps.value.source.res, { data_path: val.data_path })
         this.dialogProps.value.source.url = val.url

@@ -4,7 +4,7 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">
-            <i class="el-icon-fa-server"></i> {{ routerInfo.name }}
+            <i class="el-icon-fa-server color-primary"></i> {{ routerInfo.name }}
             <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">历史</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
@@ -851,7 +851,10 @@
 .h5 {
   margin: 10px 0;
   font-size: 12px;
-  color: #ccc;
+  color: #2ba4ff;
+  // background-color: #f3faff;
+  border-radius: 5px;
+  padding: 8px;
 }
 .el-table {
   table {
