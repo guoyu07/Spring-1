@@ -1,6 +1,6 @@
 import router from './router'
 import store from './store'
-import eventHub from './utils/eventHub'
+import eventHub from './utils/event-hub'
 
 // URL 及端点常量
 // const API_URL = 'http://localhost:3001/'

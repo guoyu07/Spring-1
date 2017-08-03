@@ -7,7 +7,7 @@ import App from './App'
 import router from './router'
 import store from './store'
 
-import eventHub from './utils/eventHub'
+import eventHub from './utils/event-hub'
 import auth from './auth'
 // import apis from './api.mock'
 import axios from 'axios'

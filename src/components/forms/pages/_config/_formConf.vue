@@ -219,8 +219,8 @@
                     </el-popover>
                     <!--动态选项（cmdb）-->
                     <!-- <template v-if="['dict', 'dicts'].includes(itemConf.value.type)"> -->
-                    <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" placement="left" trigger="click" @show="showCMDBConf(itemConf)">
-                      <options-conf-cmdb :dialog-props="itemConf" :option-presets="optionPresets"></options-conf-cmdb>
+                    <el-popover placement="left" trigger="click" @show="showCMDBConf(itemConf)">
+                      <options-conf-cmdb v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" :item-conf="itemConf" :option-presets="optionPresets"></options-conf-cmdb>
                       <el-button size="small" slot="reference">配置选项</el-button>
                     </el-popover>
                     <!-- </template> -->
@@ -295,8 +295,8 @@
     <el-button icon="plus" type="info" :plain="true" size="small" @click="onAddField">添加字段</el-button>
     <el-button v-if="!category" type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
     <el-row style="margin-top: 12px">
-      <el-select size="small" v-model="selectedPreset" placeholder="选择预设集">
-        <el-option v-for="obj in presets" :key="obj" :value="obj" :label="obj.name"></el-option>
+      <el-select size="small" v-model="selectedPreset" placeholder="选择预设集" value-key="name">
+        <el-option v-for="obj in presets" :value="obj" :label="obj.name"></el-option>
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
@@ -394,6 +394,8 @@ import limitConf from './_limitConf'
 import presetConf from './_presetConf'
 import cascadeConf from './_cascadeConf'
 
+import eventHub from './../../../../utils/event-hub'
+
 export default {
   props: {
     configData: Array,
@@ -481,10 +483,15 @@ export default {
       for (let attr of preset) {
         if (currentFields.every(i => i.id !== attr.id)) {
           Object.assign(attr, { need_submit: false, isAlias: false, default: { type: '' } })
+          if (attr.value.type === 'FK') {
+            attr.value.type = 'dict'
+          }
+          if (attr.value.type === 'FKs') {
+            attr.value.type = 'dicts'
+          }
           currentFields.push(attr)
         }
       }
-      console.log(currentFields)
     },
     // 显示预设集弹窗
     showPresetConf () {
@@ -516,6 +523,7 @@ export default {
         })
       }
       itemConf.value.confVisible = true
+      eventHub.$emit('cmdb-got-shown')
     },
     // 显示级联菜单的选项
     showCascadeConf (itemConf) {

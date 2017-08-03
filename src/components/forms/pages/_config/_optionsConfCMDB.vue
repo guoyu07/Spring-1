@@ -50,7 +50,7 @@
 </style>
 
 <template>
-  <!-- <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="dialogProps.value.confVisible"> -->
+  <!-- <el-dialog class="cmdb-config-dialog" title="字典选项配置" v-model="itemConf.value.confVisible"> -->
     <!-- <el-radio-group v-model="optionType">
       <el-radio label="dynamic">动态</el-radio>
       <el-radio label="static">静态</el-radio>
@@ -59,7 +59,7 @@
 
     <!-- <div class="conf-cmdb-contain" v-if="optionType === 'static'">
       <el-collapse>
-        <el-collapse-item v-for="(obj, index) of dialogProps.value.regex" :title="'字典' + index">
+        <el-collapse-item v-for="(obj, index) of itemConf.value.regex" :title="'字典' + index">
           <el-row>
             <el-form label-width="80px">
               <el-form-item v-for="(value, key) in obj" :label="key">
@@ -76,16 +76,16 @@
       </el-row>
     </div> -->
 
-    <div class="conf-cmdb-contain" v-if="dialogProps.value.source">
-      <el-form :model="dialogProps.value.source" label-width="120px" :inline="true">
+    <div class="conf-cmdb-contain" v-if="itemConf.value.source">
+      <el-form :model="itemConf.value.source" label-width="120px" :inline="true">
         <el-form-item label="URL (请求地址)">
-          <el-input size="small" class="code-input" v-model="dialogProps.value.source.url"></el-input>
+          <el-input size="small" class="code-input" v-model="itemConf.value.source.url"></el-input>
         </el-form-item>
         <el-form-item label="Action (动作)">
-          <el-input size="small" class="code-input" v-model="dialogProps.value.source.data.action"></el-input>
+          <el-input size="small" class="code-input" v-model="itemConf.value.source.data.action"></el-input>
         </el-form-item>
         <el-form-item label="Method (方法)">
-          <el-input size="small" class="code-input" v-model="dialogProps.value.source.data.method"></el-input>
+          <el-input size="small" class="code-input" v-model="itemConf.value.source.data.method"></el-input>
         </el-form-item>
         <el-form-item label="Params (参数)">
           <el-dropdown trigger="click" @command="selectParams">
@@ -100,19 +100,19 @@
             </el-dropdown-menu>
           </el-dropdown>
         </el-form-item>
-        <el-form-item label="允许新增选项" v-if="dialogProps.value.type !== 'search_bar'">
-          <el-radio v-model="dialogProps.value.allow_create" :label="true">是</el-radio>
-          <el-radio v-model="dialogProps.value.allow_create" :label="false">否</el-radio>
+        <el-form-item label="允许新增选项" v-if="itemConf.value.type !== 'search_bar'">
+          <el-radio v-model="itemConf.value.allow_create" :label="true">是</el-radio>
+          <el-radio v-model="itemConf.value.allow_create" :label="false">否</el-radio>
         </el-form-item>
       </el-form>
 
-      <h5 v-if="dialogProps.value.source.data.params.length">接口请求参数：</h5>
-      <el-collapse v-if="dialogProps.value.source.data.params.length">
-        <el-collapse-item v-for="param in dialogProps.value.source.data.params">
+      <h5 v-if="itemConf.value.source.data.params.length">接口请求参数：</h5>
+      <el-collapse v-if="itemConf.value.source.data.params.length">
+        <el-collapse-item v-for="param in itemConf.value.source.data.params">
           <template slot="title">
             <span>{{ param.value.type }}>{{ param.id }}</span>
             <el-button size="mini" icon="delete" type="danger" class="del-btn"
-              @click.stop="paramsDelBtn(dialogProps.value.source.data.params, param)">
+              @click.stop="paramsDelBtn(itemConf.value.source.data.params, param)">
             </el-button>
           </template>
           <el-row>
@@ -144,30 +144,30 @@
         </el-collapse-item>
       </el-collapse>
       <!--多选 配置数量-->
-      <!-- <el-card v-if="dialogProps.type === 'dicts'">
+      <!-- <el-card v-if="itemConf.type === 'dicts'">
         <el-row>
           <label>count：</label>
-          <el-select v-model="dialogProps.count.type" @change="countTypeChange" placeholder="请选择">
+          <el-select v-model="itemConf.count.type" @change="countTypeChange" placeholder="请选择">
             <el-option v-for="item in countConfig" :value="item"></el-option>
           </el-select>
         </el-row>
         <el-row>
-          <template v-if="dialogProps.count.type === 'static'">
+          <template v-if="itemConf.count.type === 'static'">
             <label>min：</label>
             <el-input-number size="small"
-              v-model="dialogProps.count.min"
-              :min="1" :max="dialogProps.count.max"/>
+              v-model="itemConf.count.min"
+              :min="1" :max="itemConf.count.max"/>
             <label>max：</label>
-            <el-input-number v-model="dialogProps.count.max"
+            <el-input-number v-model="itemConf.count.max"
               size="small" :min="1"/>
           </template>
-          <template v-if="['message_header', 'message_body'].includes(dialogProps.count.type)">
+          <template v-if="['message_header', 'message_body'].includes(itemConf.count.type)">
             <label>流程环节 id：</label>
-            <el-input v-model="dialogProps.count.id" size="small"></el-input>
+            <el-input v-model="itemConf.count.id" size="small"></el-input>
           </template>
-          <template v-if="dialogProps.count.type && dialogProps.count.type !== 'static'">
+          <template v-if="itemConf.count.type && itemConf.count.type !== 'static'">
             <label>属性 key_path：</label>
-            <el-input v-model="dialogProps.count.key_path" size="small"></el-input>
+            <el-input v-model="itemConf.count.key_path" size="small"></el-input>
           </template>
         </el-row> -->
 
@@ -175,12 +175,12 @@
       <el-card>
         <el-form label-position="top" :inline="true">
           <el-form-item label="data_path (属性路径)">
-            <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.data_path"></el-input>
+            <el-input size="small" class="code-input" v-model="itemConf.value.source.res.data_path"></el-input>
           </el-form-item>
           <el-form-item label="show_key (显示键名)">
-            <!-- <el-input size="small" class="code-input" v-model="dialogProps.value.source.res.show_key"></el-input> -->
+            <!-- <el-input size="small" class="code-input" v-model="itemConf.value.source.res.show_key"></el-input> -->
             <el-select
-              v-model="dialogProps.value.source.res.show_key"
+              v-model="itemConf.value.source.res.show_key"
               multiple
               filterable
               allow-create
@@ -208,7 +208,7 @@
           </el-popover>
         </el-radio-group> -->
         <el-table
-          ref="singleTable"
+          ref="presetTable"
           :data="optionPresets"
           highlight-current-row
           @current-change="handleCurrentChange"
@@ -232,35 +232,35 @@
         </el-table>
       </template>
 
-      <!-- <template v-if="dialogProps.value.type === 'dicts'">
+      <!-- <template v-if="itemConf.value.type === 'dicts'">
         <h5>多选选择个数配置：</h5>
         <el-card>
           <el-form label-width="90px" :inline="true">
             <el-form-item label="个数类型">
-              <el-select size="small" v-model="dialogProps.value.count.type" @change="countTypeChange" placeholder="请选择">
+              <el-select size="small" v-model="itemConf.value.count.type" @change="countTypeChange" placeholder="请选择">
                 <el-option v-for="item in countConfig" :value="item"></el-option>
               </el-select>
             </el-form-item>
             <br>
-            <template v-if="dialogProps.value.count.type === 'static'">
+            <template v-if="itemConf.value.count.type === 'static'">
               <el-form-item label="Min">
                 <el-input-number size="small"
-                  v-model="dialogProps.value.count.min"
-                  :min="1" :max="dialogProps.value.count.max"></el-input-number>
+                  v-model="itemConf.value.count.min"
+                  :min="1" :max="itemConf.value.count.max"></el-input-number>
               </el-form-item>
               <el-form-item label="Max">
-                <el-input-number v-model="dialogProps.value.count.max"
+                <el-input-number v-model="itemConf.value.count.max"
                   size="small" :min="1"></el-input-number>
               </el-form-item>
             </template>
-            <template v-if="['message_header', 'message_body'].includes(dialogProps.value.count.type)">
+            <template v-if="['message_header', 'message_body'].includes(itemConf.value.count.type)">
               <el-form-item label="流程节点 ID">
-                <el-input v-model="dialogProps.value.count.id" size="small"></el-input>
+                <el-input v-model="itemConf.value.count.id" size="small"></el-input>
               </el-form-item>
             </template>
-            <template v-if="dialogProps.value.count.type && dialogProps.value.count.type !== 'static'">
+            <template v-if="itemConf.value.count.type && itemConf.value.count.type !== 'static'">
               <el-form-item label="属性路径">
-                <el-input class="code-input" v-model="dialogProps.value.count.key_path" size="small"></el-input>
+                <el-input class="code-input" v-model="itemConf.value.count.key_path" size="small"></el-input>
               </el-form-item>
             </template>
           </el-form>
@@ -275,34 +275,54 @@
 </template>
 
 <script>
+  import eventHub from './../../../../utils/event-hub.js'
   export default {
     props: {
-      dialogProps: Object,
+      itemConf: Object,
       optionPresets: Array
+    },
+    mounted () {
+      if (this.itemConf.value.external) {
+        // 若是外键，默认选中 API 预设集第一个
+        eventHub.$on('cmdb-got-shown', this.handleCMDBShown)
+      }
     },
     data () {
       return {
-        optionType: 'dynamic',
+        // optionType: 'dynamic',
+        // currentRowKey: null,
         selectedOption: {},
-        allowCreate: this.dialogProps.value && this.dialogProps.value.allowCreate ? this.dialogProps.value.allowCreate : true,
+        allowCreate: this.itemConf.value && this.itemConf.value.allowCreate ? this.itemConf.value.allowCreate : true,
         countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
     },
     computed: {
       isSearchBar () {
-        return this.dialogProps.value.type === 'search_bar'
+        return this.itemConf.value.type === 'search_bar'
       }
     },
     methods: {
+      handleCMDBShown () {
+        console.log(this.$refs)
+        console.log(this.itemConf)
+        this.$nextTick(_ => {
+          console.log(this.$refs)
+        })
+        this.$refs.presetTable.setCurrentRow(this.optionPresets[0])
+        // 设定其 show_key
+        this.itemConf.value.source.res.show_key.push(this.itemConf.value.external[0].name)
+        // this.$set(, 'show_key', this.itemConf.value.external[0].name)
+        console.log(this.itemConf.value.source.res)
+      },
       onSelectOption (val) {
-        Object.assign(this.dialogProps.value.source.data, { action: val.action, method: val.method })
-        Object.assign(this.dialogProps.value.source.res, { data_path: val.data_path })
-        this.dialogProps.value.source.url = val.url
+        Object.assign(this.itemConf.value.source.data, { action: val.action, method: val.method })
+        Object.assign(this.itemConf.value.source.res, { data_path: val.data_path })
+        this.itemConf.value.source.url = val.url
       },
       handleCurrentChange (val) {
-        Object.assign(this.dialogProps.value.source.data, { action: val.action, method: val.method })
-        Object.assign(this.dialogProps.value.source.res, { data_path: val.data_path })
-        this.dialogProps.value.source.url = val.url
+        Object.assign(this.itemConf.value.source.data, { action: val.action, method: val.method })
+        Object.assign(this.itemConf.value.source.res, { data_path: val.data_path })
+        this.itemConf.value.source.url = val.url
       },
       selectParams (cmd) {
         let param = null
@@ -366,23 +386,23 @@
           default:
             break
         }
-        this.dialogProps.value.source.data.params.push(param)
+        this.itemConf.value.source.data.params.push(param)
       },
       // 切换类型 加不同的属性
       countTypeChange (type) {
-        this.dialogProps.value.count = {} // 清除
-        this.$set(this.dialogProps.value.count, 'type', type)
+        this.itemConf.value.count = {} // 清除
+        this.$set(this.itemConf.value.count, 'type', type)
         if (type === 'static') {
           // 静态
-          this.$set(this.dialogProps.value.count, 'min', 1)
-          this.$set(this.dialogProps.value.count, 'max', 1)
+          this.$set(this.itemConf.value.count, 'min', 1)
+          this.$set(this.itemConf.value.count, 'max', 1)
         } else if (type) {
           // 本表单
-          this.$set(this.dialogProps.value.count, 'key_path', '')
+          this.$set(this.itemConf.value.count, 'key_path', '')
         }
         // 历史表单
         if (['message_header', 'message_body'].includes(type)) {
-          this.$set(this.dialogProps.value.count, 'id', '')
+          this.$set(this.itemConf.value.count, 'id', '')
         }
       },
       // 删除操作
@@ -390,36 +410,36 @@
         arr.splice(arr.indexOf(item), 1)
       },
       onAddDict () {
-        console.log(this.dialogProps.value)
-        if (!this.dialogProps.value.regex.length) {
-          this.dialogProps.value.regex.push({
+        console.log(this.itemConf.value)
+        if (!this.itemConf.value.regex.length) {
+          this.itemConf.value.regex.push({
             name: 'new'
           })
         } else {
-          this.dialogProps.value.regex.push(this.dialogProps.value.regex[this.dialogProps.value.regex.length - 1])
+          this.itemConf.value.regex.push(this.itemConf.value.regex[this.itemConf.value.regex.length - 1])
         }
       },
       onAddField () {
         // 弹窗填写 k-v，非空时执行以下
         let key = ''
         let value = ''
-        for (let dict of this.dialogProps.value.regex) {
+        for (let dict of this.itemConf.value.regex) {
           this.$set(dict, key, value)
         }
-        console.log(this.dialogProps.value.regex)
+        console.log(this.itemConf.value.regex)
       },
       onSubmit () {
-        console.log(this.dialogProps.value.confVisible)
-        this.$set(this.dialogProps.value, 'confVisible', false)
-        console.log(this.dialogProps.value.confVisible)
+        console.log(this.itemConf.value.confVisible)
+        this.$set(this.itemConf.value, 'confVisible', false)
+        console.log(this.itemConf.value.confVisible)
       },
 
       onClose () {
-        if (this.dialogProps.value.type !== 'search_bar') {
-          this.dialogProps.value.allow_create = this.allowCreate
+        if (this.itemConf.value.type !== 'search_bar') {
+          this.itemConf.value.allow_create = this.allowCreate
         }
-        this.dialogProps.value.confVisible = false
-        console.log(this.dialogProps.value.confVisible)
+        this.itemConf.value.confVisible = false
+        console.log(this.itemConf.value.confVisible)
       }
     }
   }

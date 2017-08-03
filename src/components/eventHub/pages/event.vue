@@ -409,7 +409,7 @@
 
         <!-- 通用的自定义模块 -->
         <div v-if="startFormData.header && startFormData.header.length > 0">
-          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name !== '概要' && header.name !== '工单信息' && header.name !== '人事' && header.name !== '描述' && header.name !== '附件' })">
+          <div v-for="taskformheader in startFormData.header.filter(header => !['概要', '工单信息', '人事', '描述', '附件'].includes(header.name))">
             <div class="detail-block">
               <div class="detail-block__heading">
                 <h4>{{taskformheader.name}}</h4>

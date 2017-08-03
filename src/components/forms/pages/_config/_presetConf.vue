@@ -61,7 +61,6 @@
       @selection-change="handleSelectionChange">
       <el-table-column
         type="selection"
-        :selectable="isSelectable"
         width="55">
       </el-table-column>
       <el-table-column
@@ -128,9 +127,9 @@
         const array = this.selectedPreset.attrList
         this.currentList = (offset + 10 >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + 10)
       },
-      isSelectable (row, index) {
-        return !['FK', 'FKs'].includes(row.value.type)
-      },
+      // isSelectable (row, index) {
+      //   return !['FK', 'FKs'].includes(row.value.type)
+      // },
       handleSelectionChange (val) {
         this.checkedAttributes = val
       },
