@@ -30,7 +30,7 @@
                   <el-button v-else class="button-new-tag" size="small" icon="plus" @click="onAttemptToAddComponent">新事件分类</el-button>
                 </el-row>
                 <el-row class="form-block" v-for="(module, name, index) in groupedGenericModuleMap" v-if="name !== '通用'">
-                  <h4>{{name}}</h4>
+                  <h4>{{name}} <span v-show="!['概要', '工单信息', '人员', '描述', '附件'].includes(name)" class="el-icon-edit" @click="onEditGenericModuleName(name)"></span></h4>
                   <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onGenericModuleChange"></form-conf>
                   <el-button class="button-del-mod" type="danger" size="small" icon="delete" @click="onDeleteGenericModule(name)"></el-button>
                 </el-row>
@@ -58,7 +58,7 @@
                   <form-conf :config-data="eventDetailList" :presets="presetList"></form-conf>
                 </el-row> -->
                 <el-row class="form-block" v-for="(module, name, index) in groupedCustomModuleMap">
-                  <h4>{{name}}</h4>
+                  <h4>{{name}} <span v-show="name !== '事件详情'" class="el-icon-edit" @click="onEditCustomModuleName(name)"></span></h4>
                   <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onCustomModuleChange"></form-conf>
                   <el-button class="button-del-mod" type="danger" size="small" icon="delete" @click="onDeleteCustomModule(name)"></el-button>
                 </el-row>
@@ -260,6 +260,36 @@
         this.onSubmitIncidentForm('已添加！')
         this.addComponentData.isEditing = false
         this.addComponentData.value = ''
+      },
+      onEditGenericModuleName (name) {
+        this.$prompt('修改通用模块标题：', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({ value }) => {
+          if (value !== name) {
+            let buffer = JSON.stringify(this.incidentFormData.form.header)
+            buffer = buffer.replace(new RegExp(name, 'g'), value)
+            // console.log(buffer)
+            // this.$set(this.groupedCustomModuleMap, JSON.parse(buffer))
+            this.incidentFormData.form.header = JSON.parse(buffer)
+            // console.log(this.groupedCustomModuleMap)
+          }
+        })
+      },
+      onEditCustomModuleName (name) {
+        this.$prompt('修改事件模块标题：', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({ value }) => {
+          if (value !== name) {
+            let buffer = JSON.stringify(this.currentBody.attr_list)
+            buffer = buffer.replace(new RegExp(name, 'g'), value)
+            // console.log(buffer)
+            // this.$set(this.groupedCustomModuleMap, JSON.parse(buffer))
+            this.currentBody.attr_list = JSON.parse(buffer)
+            // console.log(this.groupedCustomModuleMap)
+          }
+        })
       },
       onAddGenericModule () {
         this.$prompt('请输入新模块标题', '提示', {
