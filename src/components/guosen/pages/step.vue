@@ -57,9 +57,17 @@
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
-                  <div v-if="taskform.value.type==='table'">
+                  <header-table
+                    v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
+                    :form-data="taskform"
+                    :item="assignForm.header"
+                    :messageData="applyData"
+                    :postForm="assignForm"
+                    :postFormName="'assignForm'">
+                  </header-table>
+                  <!-- <div v-if="taskform.value.type==='table'">
                       headerTable
-                  </div>
+                  </div> -->
                 </span>
               </div>
             </div>
@@ -213,6 +221,7 @@
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
+  import headerTable from '../../_plugins/_headerTable'
   import progressWrap from '../../_plugins/_progress'
 
   export default {
@@ -1019,6 +1028,7 @@
       formBody,
       searchBar,
       bodyTable,
+      headerTable,
       progressWrap
     }
   }
@@ -1068,7 +1078,6 @@
   margin: 10px 0;
   font-size: 12px;
   color: #2ba4ff;
-  // background-color: #f3faff;
   border-radius: 5px;
   padding: 8px;
 }

@@ -178,7 +178,7 @@
                           formTakedData = []
                         }
                       })
-                      console.log(this.assignForm.body[k].idcrack.code, formTakedData)
+                      // console.log(this.assignForm.body[k].idcrack.code, formTakedData)
                       if (!formTakedData.includes(i)) {
                         // if (!this.assignForm.body[k].idcracku) {
                         this.assignForm.body[k].idcracku = i
@@ -653,7 +653,9 @@
 .h5 {
   margin: 10px 0;
   font-size: 12px;
-  color: #ccc;
+  color: #2ba4ff;
+  border-radius: 5px;
+  padding: 8px;
 }
 
 .el-table {

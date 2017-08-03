@@ -107,9 +107,9 @@
       }
     },
     created () {
-      // if (this.hosts[this.attrList.id].length) {
-      //   this.hostList = this.hosts[this.attrList.id]
-      // }
+      if (this.hosts[this.attrList.id].length) {
+        this.hostList = this.hosts[this.attrList.id]
+      }
       // for (const block of this.attrList) {
       //   for (const item of block.value) {
       this.mainInfo = this.attrList
@@ -188,7 +188,9 @@
         const value = this.selectedDevices
         if (this.selectedDevices.length) {
           for (const selection of this.selectedDevices) {
-            if (!this.hostList.includes(selection)) {
+            // if (!this.hostList.includes(selection)) {
+            const inclu = this.hostList.find(list => { return list.instanceId === selection.instanceId })
+            if (!inclu) {
               if (this.limit.max) { // static时，有一个范围值
                 if (value.length < this.limit.min) {
                   this.$message.error(`至少需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`)
@@ -207,12 +209,10 @@
                 }
               }
               this.hostList = [...this.hostList, selection]
-              // if (this.hostList.length >= this.limit) {
-              //   this.$message.warning(`设备选择最多${this.limit}个！`)
-              // } else {
-              //   this.hostList = [...this.hostList, selection]
-              // }
             }
+            // else {
+            //   this.$message.info(`列表中已存在${selection.name}`)
+            // }
           }
         } else {
           this.$message.warning('请选择数据')
