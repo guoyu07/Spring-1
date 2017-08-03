@@ -15,8 +15,10 @@
              }"></progress-wrap>
           </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
+            <!-- 驳回信息 -->
+            <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
-                  <!-- {{taskformheader.name}} 这是分组名称 因为显示了步骤任务名称，不在重复显示一个分组名称-->
+            <!-- {{taskformheader.name}} 这是分组名称 因为显示了步骤任务名称，不在重复显示一个分组名称-->
             <div>
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
@@ -44,6 +46,7 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :isEditing="isEditing"
                     :message="applyData"
                     :header="true">
                   </form-body>
@@ -96,6 +99,7 @@
                               :form-item="formItem"
                               :whole="assignForm"
                               :index="index"
+                              :isEditing="isEditing"
                               :message="applyData"
                               keep-alive>
                             </form-body>
@@ -215,6 +219,7 @@
     data () {
       return {
         showHistory: false,
+        isEditing: false,
         routerInfo: {},
         applyData: {},
         form: {},
@@ -639,23 +644,29 @@
           })
           // 判断是否为驳回信息
           let newDataBody
-          this.taskData.variables.message.map(message => {
+          for (var message of this.taskData.variables.message) {
             if (message.task_key === this.routerInfo.tkey) {
-              this.isEdting = true
+              this.isEditing = true
+              this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-              // console.log(this.assignForm.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
-                return Object.assign({}, this.assignForm.body[bodyindex], body)
+                let data = {}
+                for (const key in this.assignForm.body[bodyindex]) {
+                  // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
+                  if (body[key]) {
+                    data[key] = body[key]
+                  } else {
+                    data[key] = this.assignForm.body[bodyindex][key]
+                  }
+                }
+                return data
+                // return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
+              this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+                return Object.assign({}, body, newDataBody[bodyindex])
+              })
+              return false
             }
-          })
-          if (this.isEdting) {
-            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-          }
-          if (newDataBody) {
-            this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
-              return Object.assign({}, body, newDataBody[bodyindex])
-            })
           }
         })
       },
