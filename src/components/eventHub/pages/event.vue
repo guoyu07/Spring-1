@@ -566,7 +566,7 @@
           </div>
         </div>
 
-        <div class="detail-block">
+        <!-- <div class="detail-block">
           <div class="detail-block__heading">
             <h4>人员</h4>
           </div>
@@ -608,6 +608,30 @@
               <el-form-item label="受邀参与者"><span v-for="person in eventData.variables.message[0].form.header.requestParticipants">{{person}} </span></el-form-item>
               <el-form-item label="追踪者"><span v-for="person in eventData.variables.message[0].form.header.watchers">{{person}} </span></el-form-item>
             </el-form>
+          </div>
+        </div> -->
+        <!-- 人员模块 -->
+        <div v-if="startFormData.header && startFormData.header.length > 0">
+          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name === '人员' })">
+            <div class="detail-block">
+              <div class="detail-block__heading">
+                <h4>{{taskformheader.name}}</h4>
+              </div>
+              <el-form label-position="right" label-width="120px" class="form-display-info people-form">
+                <div class="detail-block__content">
+                  <span v-for="valueheader in taskformheader.value">
+                    <span v-if="showFormItem(valueheader, postForm, eventData.variables.message[0].form, 'current', 'history')">
+                        <header-form-display
+                          :is-editing="true"
+                          :key-data="{pid: eventData.pid, pkey: eventData.pkey, tkey: 'start'}"
+                          :item="eventData.variables.message[0].form.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                    </span>
+                  </span>
+                </div>
+              </el-form>
+            </div>
           </div>
         </div>
 

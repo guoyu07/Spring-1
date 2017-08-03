@@ -42,9 +42,22 @@
         </span>
 
         <span v-else-if="formItem.value.type === 'users'">
-          <span v-if="item[formItem.id] && item[formItem.id].user && item[formItem.id].user.code" class="tooltip-link">{{item[formItem.id].user.userId}} <i class="el-icon-fa-user-circle"></i></span>
-          <span v-else-if="item[formItem.id] && item[formItem.id].group && item[formItem.id].group.name" class="tooltip-link">{{ item[formItem.id].group.name}} <i class="el-icon-fa-users"></i></span>
-          <span v-else>未指定</span>
+          <template v-if="!isEditing || !editing[formItem.id]">
+            <span v-if="item[formItem.id] && item[formItem.id].user && item[formItem.id].user.code" class="tooltip-link">{{item[formItem.id].user.userId}} <i class="el-icon-fa-user-circle"></i></span>
+            <span v-else-if="item[formItem.id] && item[formItem.id].group && item[formItem.id].group.name" class="tooltip-link">{{ item[formItem.id].group.name}} <i class="el-icon-fa-users"></i></span>
+            <span v-else>未指定</span>
+            <i v-if="isEditing" @click="toggleEditable(formItem.id)" class="editable-field__indicator el-icon-edit text-info"></i>
+          </template>
+          <div v-if="isEditing && editing[formItem.id]">
+            <span>
+              <member-select
+                :vmodel="item"
+                :strucData="formItem">
+              </member-select>
+            </span>
+            <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit(formItem.id)"></i>
+            <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable(formItem.id)"></i>
+          </div>
         </span>
 
         <span v-else-if="formItem.value.type === 'richtext'">
@@ -93,21 +106,63 @@
 </template>
 
 <script>
+  import memberSelect from './_memberSelect'
   export default {
     props: {
       item: { type: Object },
       hideName: { type: Boolean },
-      formItem: { type: Object }
+      formItem: { type: Object },
+      isEditing: { type: Boolean },
+      keyData: { type: Object }
     },
 
     data () {
       return {
+        editing: {},
+        itemBuffer: ''
       }
     },
     created () {
+      console.log(this.keyData)
+      this.$set(this.editing, this.formItem.id, false)
+      this.itemBuffer = JSON.stringify(this.item)
     },
 
     methods: {
+      toggleEditable (key) {
+        this.editing[key] = !this.editing[key]
+        const buffer = JSON.parse(this.itemBuffer)
+        if (!this.editing[key]) this.item[key] = buffer[key]
+      },
+      onConfirmEdit (key) {
+        this.editing[key] = false
+        let data = {}
+        data[key] = this.item[key]
+        this.realtimeSubmit(data)
+      },
+      realtimeSubmit (data) {
+        let postData = {
+          action: 'modify/form/data',
+          method: 'POST',
+          data: {
+            pid: this.keyData.pid,
+            pkey: this.keyData.pkey,
+            tkey: this.keyData.tkey,
+            form: {
+              header: data
+            }
+          }
+        }
+        this.http.post('', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已修改！')
+          }
+        })
+      }
+    },
+
+    components: {
+      memberSelect
     }
   }
 </script>
