@@ -37,7 +37,7 @@
                 </template>
               </template>
               <template v-for="bodylist in formData.body.body_list">
-                <template v-for="attrlist in bodylist">
+                <template v-for="attrlist in bodylist.attr_list">
                   <template v-for="attr in attrlist.value">
                     <template v-if="row.key === attr.id">
                       {{attr.name}}
@@ -62,7 +62,7 @@
                 </template>
               </template>
               <template v-for="bodylist in formData.body.body_list">
-                <template v-for="attrlist in bodylist">
+                <template v-for="attrlist in bodylist.attr_list">
                   <template v-for="attr in attrlist.value">
                     <template v-if="row.key === attr.id">
                       <el-form>
@@ -89,7 +89,7 @@
                 </template>
               </template>
               <template v-for="bodylist in formData.body.body_list">
-                <template v-for="attrlist in bodylist">
+                <template v-for="attrlist in bodylist.attr_list">
                   <template v-for="attr in attrlist.value">
                     <template v-if="row.key === attr.id">
                       <el-form>
