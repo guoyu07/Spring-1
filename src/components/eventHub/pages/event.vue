@@ -409,7 +409,7 @@
 
         <!-- 通用的自定义模块 -->
         <div v-if="startFormData.header && startFormData.header.length > 0">
-          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name !== '概要' && header.name !== '工单信息' && header.name !== '人事' && header.name !== '描述' && header.name !== '附件' })">
+          <div v-for="taskformheader in startFormData.header.filter(header => { return header.name !== '概要' && header.name !== '工单信息' && header.name !== '人员' && header.name !== '描述' && header.name !== '附件' })">
             <div class="detail-block">
               <div class="detail-block__heading">
                 <h4>{{taskformheader.name}}</h4>
@@ -568,7 +568,7 @@
 
         <div class="detail-block">
           <div class="detail-block__heading">
-            <h4>人事</h4>
+            <h4>人员</h4>
           </div>
           <div class="detail-block__content">
             <el-form label-position="right" label-width="120px" class="form-display-info people-form">

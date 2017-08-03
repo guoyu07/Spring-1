@@ -8,7 +8,7 @@
               <div v-if="taskFormData.header">
                 <div v-for="task in taskFormData.header">
                   <!-- header 表单填写 -->
-                  <template v-if="task.name!=='人事' && ['概要', '工单信息', '描述', '附件'].includes(task.name)">
+                  <template v-if="task.name!=='人员' && ['概要', '工单信息', '描述', '附件'].includes(task.name)">
                     <h3 class="module-title"><span>{{task.name}}</span></h3>
                     <span v-for="taskform in task.value">
                       <form-body
@@ -88,7 +88,7 @@
                   <div v-if="taskFormData.header && task.name === '工单信息'">
                     <div v-for="task in taskFormData.header">
                       <!-- header 表单填写 -->
-                      <template v-if="!['概要', '工单信息', '描述', '附件', '人事'].includes(task.name)">
+                      <template v-if="!['概要', '工单信息', '描述', '附件', '人员'].includes(task.name)">
                         <h3 class="module-title"><span>{{task.name}}</span></h3>
                         <span v-for="taskform in task.value">
                           <form-body
@@ -125,7 +125,7 @@
             <div v-if="taskFormData.header">
               <div v-for="task in taskFormData.header">
                 <!-- header 表单填写 -->
-                <template v-if="task.name==='人事'">
+                <template v-if="task.name==='人员'">
                   <h3 class="module-title"><span>{{task.name}}</span></h3>
                   <span v-for="taskform in task.value">
                     <form-body
