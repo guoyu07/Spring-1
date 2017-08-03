@@ -156,14 +156,14 @@
       <el-menu-item index="2">
         <router-link class="link-block" :to="{ path: '/home' }">运维服务目录</router-link>
       </el-menu-item>
-      <!-- <el-menu-item index="3">
+      <el-menu-item index="3">
         <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>
-      </el-menu-item> -->
+      </el-menu-item>
       <el-submenu index="4">
         <template slot="title">工单管理</template>
-        <!-- <el-menu-item index="4-1">
+        <el-menu-item index="4-1">
           <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>
-        </el-menu-item> -->
+        </el-menu-item>
         <el-menu-item index="4-2">
           <router-link class="link-block" :to="{ path: '/orders' }">流程管理</router-link>
         </el-menu-item>
@@ -185,7 +185,7 @@
       </el-submenu>
       <el-menu-item index="6" class="fr">
         <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
-          <a class="link-block" href="http://192.168.10.27/">
+          <a class="link-block" href="http://192.168.10.102/">
           <!-- <a class="link-block" href="http://preview.easyops.cn/"> -->
             <img src="../../assets/logo.png" alt="" class="menu-img">
           </a>
