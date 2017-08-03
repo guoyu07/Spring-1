@@ -653,7 +653,9 @@
 .h5 {
   margin: 10px 0;
   font-size: 12px;
-  color: #ccc;
+  color: #2ba4ff;
+  border-radius: 5px;
+  padding: 8px;
 }
 
 .el-table {
