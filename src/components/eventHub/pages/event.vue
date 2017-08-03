@@ -249,7 +249,7 @@
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="24" :xs="24">
         <!-- <el-button size="small" icon="edit" class="fr" @click="onShowEditConf">编辑</el-button> -->
-        <router-link :to="{ path: `/event-hub/modify/${eventData.pkey}/${eventData.variables && eventData.variables.message[0].form.header.summary}/${eventData.pid}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
+        <router-link :to="{ path: `/event-hub/modify/${eventData.pkey}/${encodeURIComponent(eventData.variables.message[0].form.header.summary)}/${eventData.pid}/${eventData.id}/start` }" class="el-button el-button--plain"><i class="el-icon-edit"></i> 编辑</router-link>
       <!-- </el-col>
       <el-col :span="8" :xs="24"> -->
         <el-button-group>

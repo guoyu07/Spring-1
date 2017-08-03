@@ -10,42 +10,6 @@ import NProgress from 'nprogress'
 // import TimeEntries from './components/TimeEntries'
 import NotFound from './components/NotFound'
 
-// 懒加载的页面
-
-const AuthPages = {
-  User: resolve => require(['./components/auth/pages/users'], resolve),
-  Role: resolve => require(['./components/auth/pages/roles'], resolve)
-}
-
-const ProcessPages = {
-  Basics: resolve => require(['./components/process/pages/basics'], resolve),
-  Steps: resolve => require(['./components/process/pages/steps'], resolve)
-}
-
-const CustomPages = {
-  List: resolve => require(['./components/custom/pages/list'], resolve),
-  Bpmn: resolve => require(['./components/custom/pages/bpmn'], resolve)
-}
-
-const OrderPages = {
-  List: resolve => require(['./components/orders/pages/list'], resolve)
-}
-
-const FormPages = {
-  List: resolve => require(['./components/forms/pages/list'], resolve),
-  Editor: resolve => require(['./components/forms/pages/editor'], resolve)
-}
-
-const EventConfPages = {
-  Details: resolve => require(['./components/eventConfig/pages/details'], resolve)
-}
-
-const EventHubPages = {
-  List: resolve => require(['./components/eventHub/pages/list'], resolve),
-  Event: resolve => require(['./components/eventHub/pages/event'], resolve),
-  Start: resolve => require(['./components/eventHub/pages/start'], resolve)
-}
-
 Vue.use(VueRouter)
 
 const routes = [{
@@ -121,16 +85,16 @@ const routes = [{
     component: require('./components/eventHub/index'),
     children: [{
       path: '',
-      component: EventHubPages.List
+      component: resolve => require(['./components/eventHub/pages/list'], resolve)
     }, {
       path: '/event-hub/event/:tkey',
-      component: EventHubPages.Event
+      component: resolve => require(['./components/eventHub/pages/event'], resolve)
     }, {
       path: '/event-hub/start/:pkey/:pname',
-      component: EventHubPages.Start
+      component: resolve => require(['./components/eventHub/pages/start'], resolve)
     }, {
       path: '/event-hub/modify/:pkey/:pname/:pid/:tid/:tkey',
-      component: EventHubPages.Start
+      component: resolve => require(['./components/eventHub/pages/start'], resolve)
     }]
   }, {
     path: '/system',
@@ -163,54 +127,54 @@ const routes = [{
     component: require('./components/auth/index'),
     children: [{
       path: '/auth/users',
-      component: AuthPages.User
+      component: resolve => require(['./components/auth/pages/users'], resolve)
     }, {
       path: '/auth/roles',
-      component: AuthPages.Role
+      component: resolve => require(['./components/auth/pages/roles'], resolve)
     }]
   }, {
     path: '/process-admin',
     component: require('./components/process/index'),
     children: [{
       path: '/process-admin/basics',
-      component: ProcessPages.Basics
+      component: resolve => require(['./components/process/pages/basics'], resolve)
     }, {
       path: '/process-admin/steps',
-      component: ProcessPages.Steps
+      component: resolve => require(['./components/process/pages/steps'], resolve)
     }]
   }, { // 流程设计 删
     path: '/custom',
     component: require('./components/custom/index'),
     children: [{
       path: '/custom',
-      component: CustomPages.List
+      component: resolve => require(['./components/custom/pages/list'], resolve)
     }, {
       path: '/custom/new',
-      component: CustomPages.Bpmn
+      component: resolve => require(['./components/custom/pages/bpmn'], resolve)
     }, {
       path: '/custom/bpmn/:pkey',
-      component: CustomPages.Bpmn
+      component: resolve => require(['./components/custom/pages/bpmn'], resolve)
     }]
   }, {
     path: '/orders',
     component: require('./components/orders/index'),
     children: [{
       path: '',
-      component: OrderPages.List
+      component: resolve => require(['./components/orders/pages/list'], resolve)
     }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
     component: require('./components/forms/index'),
     children: [{
       path: '',
-      component: FormPages.List
+      component: resolve => require(['./components/forms/pages/list'], resolve)
     }, {
       path: '/forms/editor',
-      component: FormPages.Editor
+      component: resolve => require(['./components/forms/pages/editor'], resolve)
     }]
   }, {
     path: '/event-config/details',
-    component: EventConfPages.Details
+    component: resolve => require(['./components/eventConfig/pages/details'], resolve)
     // children: [{
     //   path: '/event-config/details',
     //   components: EventConfPages.Details
