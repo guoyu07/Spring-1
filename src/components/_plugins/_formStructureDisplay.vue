@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="form-block" v-for="formBlock in formData">
+    <div class="form-block info-block" v-for="formBlock in formData">
       <!-- <h5>{{formBlock.name}}</h5> -->
       <template v-for="formItem in formBlock.value">
         <el-form-item
@@ -123,9 +123,9 @@
 <style lang="less" scoped>
   .form-block {
     font-size: 0;
-    background-color: #fbfcfd;
-    border-radius: 12px;
-    padding: 10px;
+    // background-color: #fbfcfd;
+    // border-radius: 12px;
+    // padding: 10px;
     h5 {
       font-size: 12px;
       padding: 5px;

@@ -70,7 +70,7 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <div class="tag-container clear">
-            <h3><i class="el-icon-date"></i> {{filter}}工单</h3>
+            <h3><i class="el-icon-date color-primary"></i> {{filter}}工单</h3>
             <!-- <el-button type="primary" :plain="true" size="small" class="fr" icon="setting" style="margin-left: 8px;" @click="filterConfData.visible = true"></el-button> -->
             <el-radio-group v-model="filter" @change="onFilterChange" size="small" class="fr">
               <el-radio-button v-for="(filter, key) in filters" :label="key"></el-radio-button>

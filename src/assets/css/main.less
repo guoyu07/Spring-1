@@ -72,6 +72,10 @@ h1, h2, h3, h4, h5, h6, p {
   margin: 0 0 .6em;
 }
 
+.color-primary {
+  color: @eoThemeColor;
+}
+
 .el-loading-mask.is-fullscreen {
   top: 60px;
 }
@@ -491,4 +495,32 @@ h1, h2, h3, h4, h5, h6, p {
 }
 .step-progress {
   padding: 0 20px;
+}
+.el-table__body {
+  tr {
+    &.current-row {
+      &:hover {
+        & > td {
+          background-color: @info;
+        }
+      }
+      td {
+        background-color: @info;
+        color: #fff;
+        // &:first-child {
+        //   position: relative;
+        //   &:before {
+        //     position: absolute;
+        //     top: 0;
+        //     left: 0;
+        //     display: block;
+        //     content: '';
+        //     width: 2px;
+        //     height: 100%;
+        //     background: @eoThemeColor;
+        //   }
+        // }
+      }
+    }
+  }
 }

@@ -11,7 +11,7 @@
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card">
-          <h3><i class="el-icon-fa-rss icon-lg"></i> 事件</h3>
+          <h3><i class="el-icon-fa-rss icon-lg color-primary"></i> 事件</h3>
           <!-- <el-button icon="plus" @click="eventConfVisible = true" style="margin-bottom: 12px">创建事件</el-button> -->
           <el-row type="flex" justify="space-between">
             <el-col :span="6">

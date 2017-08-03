@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <el-card class="box-card">
-          <h3><i class="el-icon-fa-wpforms icon-lg"></i> 事件自定义</h3>
+          <h3><i class="el-icon-fa-wpforms icon-lg color-primary"></i> 事件自定义</h3>
           <el-row>
             <el-col :sm="24" :md="20">
               <el-card class="box-card">

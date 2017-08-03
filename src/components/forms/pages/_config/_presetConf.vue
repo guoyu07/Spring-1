@@ -19,6 +19,9 @@
     margin-right: 12px;
     margin-bottom: 8px;
   }
+  .select-pagination {
+    margin-top: 5px;
+  }
 </style>
 
 <template>
@@ -31,8 +34,9 @@
       <el-form-item label="创建者"><span>{{selectedPreset.creator}}</span></el-form-item>
       <el-form-item label="备注"><span>{{selectedPreset.memo}}</span></el-form-item>
     </el-form>
-    <h4>请在预设集中选择欲导入的属性<small>（鼠标悬浮于属性名，可察看属性详情）</small></h4>
-    <el-checkbox-group 
+    <h4>请在预设集中选择欲导入的属性</h4>
+    <!-- <small>（鼠标悬浮于属性名，可察看属性详情）</small> -->
+    <!-- <el-checkbox-group
       v-model="checkedAttributes">
       <el-popover
         placement="top"
@@ -48,7 +52,45 @@
         </el-form>
         <el-checkbox slot="reference" :label="attr" :key="attr" :disabled="['FK', 'FKs'].includes(attr.value.type)">{{attr.name}}</el-checkbox>
       </el-popover>
-    </el-checkbox-group>
+    </el-checkbox-group> -->
+    <el-table
+      ref="multipleTable"
+      :data="currentList"
+      border
+      style="width: 100%"
+      @selection-change="handleSelectionChange">
+      <el-table-column
+        type="selection"
+        :selectable="isSelectable"
+        width="55">
+      </el-table-column>
+      <el-table-column
+        prop="name"
+        label="属性名称">
+      </el-table-column>
+      <el-table-column
+        label="类型">
+        <template scope="scope">{{ scope.row.value.type }}</template>
+      </el-table-column>
+      <el-table-column
+        label="只读">
+        <template scope="scope">{{ scope.row.readonly ? '只读' : '' }}</template>
+      </el-table-column>
+      <el-table-column
+        label="必填">
+        <template scope="scope">{{ scope.row.required ? '必填' : '' }}</template>
+      </el-table-column>
+      <el-table-column
+        label="唯一">
+        <template scope="scope">{{ scope.row.unique ? '唯一' : '' }}</template>
+      </el-table-column>
+    </el-table>
+    <el-pagination
+      class="select-pagination"
+      layout="prev, pager, next"
+      @current-change="handleCurrentChange"
+      :total="selectedPreset.attrList.length">
+    </el-pagination>
     <div class="dialog-footer" slot="footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
     </div>
@@ -66,14 +108,32 @@
       }
     },
 
+    created () {
+      this.handleCurrentChange(1)
+    },
+
     data () {
       return {
         checkedPresetIds: [],
-        checkedAttributes: []
+        checkedAttributes: [],
+        currentList: [],
+        currentPage: 1
       }
     },
 
     methods: {
+      handleCurrentChange (val) {
+        this.currentPage = val
+        const offset = (this.currentPage - 1) * 10
+        const array = this.selectedPreset.attrList
+        this.currentList = (offset + 10 >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + 10)
+      },
+      isSelectable (row, index) {
+        return !['FK', 'FKs'].includes(row.value.type)
+      },
+      handleSelectionChange (val) {
+        this.checkedAttributes = val
+      },
       onSubmit () {
         // 简陋的方法
         // 若 checkbox 可绑定对象，则不必如此

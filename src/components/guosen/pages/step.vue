@@ -3,10 +3,22 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name }}</h3>
+          <h3 class="form-title">
+            <i class="el-icon-fa-server color-primary"></i> {{ routerInfo.name }}
+            <el-button :plain="true" type="info" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">历史</el-button>
+          </h3>
+          <div class="step-progress" v-if="taskFormAll.show_progress">
+            <progress-wrap :progress="{
+             task: taskData.taskDefinitionKey,
+             pkey: taskData.pkey,
+             taskList: taskData.task_list
+             }"></progress-wrap>
+          </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
+            <!-- 驳回信息 -->
+            <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
-                  <!-- {{taskformheader.name}} 这是分组名称 因为显示了步骤任务名称，不在重复显示一个分组名称-->
+            <!-- {{taskformheader.name}} 这是分组名称 因为显示了步骤任务名称，不在重复显示一个分组名称-->
             <div>
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
@@ -34,6 +46,7 @@
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
+                    :isEditing="isEditing"
                     :message="applyData"
                     :header="true">
                   </form-body>
@@ -86,6 +99,7 @@
                               :form-item="formItem"
                               :whole="assignForm"
                               :index="index"
+                              :isEditing="isEditing"
                               :message="applyData"
                               keep-alive>
                             </form-body>
@@ -167,6 +181,26 @@
         </el-col>
       </el-row>
     </div>
+    <!-- 历史工作流 -->
+    <el-dialog
+      title="历史"
+      v-model="showHistory">
+      <el-collapse>
+        <el-collapse-item v-for="(task, key) in taskData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+          <el-form label-position="left" label-width="90px" inline class="expanded-form">
+            <el-form-item v-if="task.task_key" label="任务 Key：">
+              <code>{{task.task_key}}</code>
+            </el-form-item>
+            <el-form-item v-if="task.operator" label="操作者：">
+              <span>{{task.operator.name}}</span>
+            </el-form-item>
+            <el-form-item v-if="task.time" label="处理时间：">
+              <span>{{task.time}}</span>
+            </el-form-item>
+          </el-form>
+        </el-collapse-item>
+      </el-collapse>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -179,14 +213,18 @@
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
+  import progressWrap from '../../_plugins/_progress'
 
   export default {
     data () {
       return {
+        showHistory: false,
+        isEditing: false,
         routerInfo: {},
         applyData: {},
         form: {},
         taskForm: {},
+        taskFormAll: {},
         taskData: {},
         isEdting: false,
         edtingInfo: '',
@@ -217,104 +255,6 @@
       console.log('onlinestep')
       // this.renderForm()
       // this.renderTaskForm()
-    },
-    mounted () {
-      // 为机柜 U 位默认值而生
-      // if (this.routerInfo.tkey === 'cabinet') {
-      //   this.http.interceptors.response.use(rs => {
-      //     if (rs.config.data.includes('action=idcrack%2Flist')) {
-      //       this.applyData && this.applyData.body.map((item, k) => {
-      //         console.log(this.assignForm.body[k] && this.assignForm.body[k].idcrack, k)
-      //         // if (this.assignForm.body[k] && this.assignForm.body[k].idcrack) {
-      //         //   const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
-      //         //   // 整理出一个未被占用的 U位 列表
-      //         //   let untakedData = []
-      //         //   for (let i = 1; i <= uHeight; i++) {
-      //         //     if (this.assignForm.body[k].idcrack.u_info.assetList.length !== 0) {
-      //         //       if (this.assignForm.body[k].idcrack.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
-      //         //         untakedData.push(i)
-      //         //       }
-      //         //     }
-      //         //   }
-      //         //   console.log(untakedData)
-      //         //   for (let i = 1; i <= uHeight; i++) {
-      //         //     if (this.assignForm.body[k].idcrack.u_info.assetList.length === 0) {
-      //         //       console.log(k, i)
-      //         //       this.assignForm.body[k].idcracku = i
-      //         //     } else {
-      //         //       const iend = +this.applyData.header.host_list[k].u_num + i - 1
-      //         //       console.log(i, iend)
-      //         //       // 判断 i iend(U位末端) 都在未被占用的范围内
-      //         //       if (untakedData.includes(i) && untakedData.includes(iend)) {
-      //         //         // 判断是否已被当前其他表单占用
-      //         //         let formTakedData = [] // 用于判断是否已被当前其他表单占用
-      //         //         this.assignForm.body.map((body, bodyk) => {
-      //         //           if (body.idcracku && body.idcrack && (body.idcrack.instanceId === this.assignForm.body[k].idcrack.instanceId)) {
-      //         //             const eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
-      //         //             console.log(bodyk, body.idcracku, eU)
-      //         //             for (let tU = body.idcracku; tU <= eU; tU++) {
-      //         //               if (!formTakedData.includes(tU)) {
-      //         //                 formTakedData.push(tU)
-      //         //               }
-      //         //             }
-      //         //           }
-      //         //           //  else {
-      //         //           //   formTakedData = []
-      //         //           // }
-      //         //         })
-      //         //         console.log(this.assignForm.body[k].idcrack.code, formTakedData)
-      //         //         if (!formTakedData.includes(i)) {
-      //         //           console.log(i)
-      //         //           // if (!this.assignForm.body[k].idcracku) {
-      //         //           this.assignForm.body[k].idcracku = i
-      //         //           // }
-      //         //           return false
-      //         //         }
-      //         //       }
-      //         //     }
-      //         //   }
-      //         //   // console.log(this.assignForm.body[k].idcrack.u_info, this.applyData.header.host_list[k].u_num)
-      //         //   // let takedData = {}
-      //         //   // takedData.id = this.assignForm.body[k].idcrack.instanceId
-      //         //   // takedData.taked = []
-      //         //   // const uHeight = this.assignForm.body[k].idcrack.u_info.jgUHeight
-      //         //   // this.assignForm.body[k].idcrack.u_info.assetList.map(item => {
-      //         //   //   for (let i = 0; i < uHeight; i++) {
-      //         //   //     if (i >= item.beginU && i <= item.endU) {
-      //         //   //       takedData.taked.push(i)
-      //         //   //     }
-      //         //   //   }
-      //         //   // })
-      //         //   // if (this.idcrackTaked.length === 0) {
-      //         //   //   this.idcrackTaked.push(takedData)
-      //         //   // } else if (!this.idcrackTaked.some(item => { return takedData.id === item.id })) {
-      //         //   //   this.idcrackTaked.push(takedData)
-      //         //   // }
-      //         //   // console.log(k)
-      //         //   // for (let i = 0; i < uHeight; i++) {
-      //         //   //   for (const item of this.idcrackTaked) {
-      //         //   //     if (item.id === takedData.id) {
-      //         //   //       let uNum = i + +this.applyData.header.host_list[k].u_num
-      //         //   //       if (!item.taked.includes(uNum) && !item.taked.includes((i + 1))) {
-      //         //   //         this.assignForm.body[k].idcracku = i + 1
-      //         //   //         console.log(i)
-      //         //   //         // item.taked.push(this.assignForm.body[k].idcrackui+1)
-      //         //   //         for (let utaked = (i + 1); utaked <= uNum; utaked++) {
-      //         //   //           item.taked.push(utaked)
-      //         //   //         }
-      //         //   //         return false
-      //         //   //       }
-      //         //   //     }
-      //         //   //   }
-      //         //   // }
-      //         // }
-      //       })
-      //     }
-      //     return rs
-      //   }, err => {
-      //     console.log(err.response.data.errorMessage)
-      //   })
-      // }
     },
     watch: {
       'idcrackData': 'idcrackIsTaked',
@@ -399,6 +339,7 @@
         this.http.post('', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskForm = res.data.data.form
+          this.taskFormAll = res.data.data
           // console.log(this.applyData)
           if (this.applyData.body.length === 0) {
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
@@ -451,14 +392,14 @@
                       this.setDataType(item, data, this)
                     })
                   }
-                  console.log(this.assignForm.header)
+                  // console.log(this.assignForm.header)
                   // 有默认值时 TODO：默认值暂时只写了 message_header 一种
                   if (value.default.type) {
                     if (value.default.type === 'message_header') {
                       // console.log(value.id, this.getPathResult(this.applyData.header, value.default.key_path))
                       // this.$set(this.assignForm.header, value.id, this.getPathResult(this.applyData.header, value.default.key_path))
                       this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                      console.log(this.assignForm.header[value.id])
+                      // console.log(this.assignForm.header[value.id])
                     }
                   }
                 }
@@ -544,7 +485,7 @@
                         }
                       })
                     })
-                    console.log(newData)
+                    // console.log(newData)
                   }
                 } else if (body.show.type === 'message_header') {
                   body.attr_list.map(group => {
@@ -703,23 +644,29 @@
           })
           // 判断是否为驳回信息
           let newDataBody
-          this.taskData.variables.message.map(message => {
+          for (var message of this.taskData.variables.message) {
             if (message.task_key === this.routerInfo.tkey) {
-              this.isEdting = true
+              this.isEditing = true
+              this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-              // console.log(this.assignForm.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
-                return Object.assign({}, this.assignForm.body[bodyindex], body)
+                let data = {}
+                for (const key in this.assignForm.body[bodyindex]) {
+                  // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
+                  if (body[key]) {
+                    data[key] = body[key]
+                  } else {
+                    data[key] = this.assignForm.body[bodyindex][key]
+                  }
+                }
+                return data
+                // return Object.assign({}, this.assignForm.body[bodyindex], body)
               })
+              this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+                return Object.assign({}, body, newDataBody[bodyindex])
+              })
+              return false
             }
-          })
-          if (this.isEdting) {
-            this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
-          }
-          if (newDataBody) {
-            this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
-              return Object.assign({}, body, newDataBody[bodyindex])
-            })
           }
         })
       },
@@ -1071,7 +1018,8 @@
       headerFormStructure,
       formBody,
       searchBar,
-      bodyTable
+      bodyTable,
+      progressWrap
     }
   }
 </script>
@@ -1119,7 +1067,10 @@
 .h5 {
   margin: 10px 0;
   font-size: 12px;
-  color: #ccc;
+  color: #2ba4ff;
+  // background-color: #f3faff;
+  border-radius: 5px;
+  padding: 8px;
 }
 
 .el-table {
