@@ -192,7 +192,12 @@
 
       <h5>选择 API 预设集：</h5>
       <template v-if="optionPresets && optionPresets.length">
-        <!-- <el-radio-group v-model="selectedOption" @change="onSelectOption">
+        <el-card>
+          <el-select placeholder="API 预设集" v-model="selectedPreset" value-key="name" @change="onSelectPreset">
+            <el-option v-for="preset in optionPresets" :label="preset.name" :value="preset"></el-option>
+          </el-select>
+        </el-card>
+        <!-- <el-radio-group v-model="selectedOption" @change="onSelectPreset">
           <el-popover
             placement="top"
             trigger="hover"
@@ -207,7 +212,7 @@
             <el-radio slot="reference" :label="api" :key="api">{{api.name}}</el-radio>
           </el-popover>
         </el-radio-group> -->
-        <el-table
+        <!-- <el-table
           ref="presetTable"
           :data="optionPresets"
           highlight-current-row
@@ -229,7 +234,7 @@
             property="data_path"
             label="属性路径">
           </el-table-column>
-        </el-table>
+        </el-table> -->
       </template>
 
       <!-- <template v-if="itemConf.value.type === 'dicts'">
@@ -284,14 +289,16 @@
     mounted () {
       if (this.itemConf.value.external) {
         // 若是外键，默认选中 API 预设集第一个
+        this.selectedPreset = this.optionPresets[0]
         eventHub.$on('cmdb-got-shown', this.handleCMDBShown)
+        // eventHub.$on('cmdb-got-shown', this.handleCMDBShown)
       }
     },
     data () {
       return {
         // optionType: 'dynamic',
         // currentRowKey: null,
-        selectedOption: {},
+        selectedPreset: {},
         allowCreate: this.itemConf.value && this.itemConf.value.allowCreate ? this.itemConf.value.allowCreate : true,
         countConfig: [ 'static', 'form_header', 'form_body', 'message_header', 'message_body' ]
       }
@@ -303,27 +310,23 @@
     },
     methods: {
       handleCMDBShown () {
-        console.log(this.$refs)
-        console.log(this.itemConf)
-        this.$nextTick(_ => {
-          console.log(this.$refs)
-        })
-        this.$refs.presetTable.setCurrentRow(this.optionPresets[0])
-        // 设定其 show_key
-        this.itemConf.value.source.res.show_key.push(this.itemConf.value.external[0].name)
-        // this.$set(, 'show_key', this.itemConf.value.external[0].name)
-        console.log(this.itemConf.value.source.res)
+        Object.assign(this.itemConf.value.source.data, { action: this.selectedPreset.action, method: this.selectedPreset.method })
+        Object.assign(this.itemConf.value.source.res, { data_path: this.selectedPreset.data_path, show_key: [this.itemConf.value.external[0].name] })
+        this.itemConf.value.source.url = this.selectedPreset.url
+        // this.onSelectPreset(this.selectedPreset)
+        // this.itemConf.value.source.res.show_key.push(this.itemConf.value.external[0].name)
       },
-      onSelectOption (val) {
+      onSelectPreset (val) {
+        console.log(val)
         Object.assign(this.itemConf.value.source.data, { action: val.action, method: val.method })
         Object.assign(this.itemConf.value.source.res, { data_path: val.data_path })
         this.itemConf.value.source.url = val.url
       },
-      handleCurrentChange (val) {
-        Object.assign(this.itemConf.value.source.data, { action: val.action, method: val.method })
-        Object.assign(this.itemConf.value.source.res, { data_path: val.data_path })
-        this.itemConf.value.source.url = val.url
-      },
+      // handleCurrentChange (val) {
+      //   Object.assign(this.itemConf.value.source.data, { action: val.action, method: val.method })
+      //   Object.assign(this.itemConf.value.source.res, { data_path: val.data_path })
+      //   this.itemConf.value.source.url = val.url
+      // },
       selectParams (cmd) {
         let param = null
         switch (cmd) {
