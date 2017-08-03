@@ -52,7 +52,6 @@
 
           <span v-else-if="formItem.value.type === 'str' || formItem.value.type==='enum' || formItem.value.type==='int' || formItem.value.type==='date' || formItem.value.type==='datetime'">
             {{ item[formItem.id] }}
-            9999
           </span>
 
           <el-table
