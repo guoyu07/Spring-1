@@ -3,7 +3,7 @@
   <!-- <div class="history-block"> -->
     <el-form-item
       :label="hideName ? '' : formItem.name"
-      :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' ? 'blockElement' : ''">
+      :class="['search_bar','table', 'richtext'].includes(formItem.value.type) ? 'blockElement' : ''">
       <!-- {{typeof item[formItem.id]}} -->
       <template v-if="item[formItem.id]">
         <span v-if="formItem.value.type === 'dict'">
@@ -60,7 +60,7 @@
           </div>
         </span>
 
-        <span v-else-if="formItem.value.type === 'richtext'">
+        <span class="ql-editor" v-else-if="formItem.value.type === 'richtext'">
           <span v-html="item && item[formItem.id]">{{item && item[formItem.id]}}</span>
         </span>
 
@@ -153,7 +153,7 @@
             }
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', postData).then((res) => {
           if (res.status === 200) {
             this.$message.success('已修改！')
           }

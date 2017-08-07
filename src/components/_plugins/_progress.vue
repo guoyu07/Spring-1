@@ -82,17 +82,17 @@
         }, [])
       },
       getFilteredList () {
-        console.log(this.progress.taskList)
+        // console.log(this.progress.taskList)
         let postData = {
-          action: 'activiti/task/form',
+          action: 'process/form',
           method: 'GET',
           data: {
             pkey: this.progress.pkey,
-            // tkey: "流程任务key(POST/GET[GET可不填此参数])",
+            tkey: this.progress.tkey,
             form: {}
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/form/', this.parseData(postData)).then((res) => {
           console.log(res)
         })
       }

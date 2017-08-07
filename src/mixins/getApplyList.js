@@ -60,7 +60,7 @@ export default {
           return
         }
         let postData = {
-          action: 'runtime/task/complete',
+          action: 'task',
           method: 'POST',
           data: {
             tid: task.id,
@@ -68,7 +68,7 @@ export default {
             pass: action.pass
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已' + action.name)
           }

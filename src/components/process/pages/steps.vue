@@ -236,12 +236,12 @@
         let { toAdd } = this.candidateData
         type === 'user' ? data = { pkey, tkey, users: toAdd } : data = { pkey, tkey, groups: toAdd }
         let postData = {
-          action: 'permission/process/task/role/users',
+          action: 'process/task',
           method: 'POST',
           data
         }
         this.candidateData.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             Object.assign(this.candidateData, { loading: false, visible: false, toAdd: [] })
             this.$message.success('加入成功！')
@@ -274,11 +274,11 @@
           let { toRemove } = this.candidateData
           type === 'user' ? data = { pkey, tkey, users: toRemove } : data = { pkey, tkey, groups: toRemove }
           let postData = {
-            action: 'permission/process/task/role/users',
+            action: 'process/task',
             method: 'DELETE',
             data
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               Object.assign(this.candidateData, { toRemove: [], isUserCheckable: false, isGroupCheckable: false })
               this.$message.success('移除成功！')
@@ -291,12 +291,12 @@
       onChangeAssignee ({ pkey, tkey, assignee, initiator }) {
         if (initiator) assignee = '申请人'
         let postData = {
-          action: 'permission/process/task/role/users',
+          action: 'process/task',
           method: 'POST',
           data: { pkey, tkey, assign: assignee }
         }
         this.assigneeData.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             Object.assign(this.assigneeData, { visible: false, loading: false, assignee: '' })
             this.$message.success('操作成功！')

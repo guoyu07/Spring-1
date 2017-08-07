@@ -260,7 +260,7 @@
           }
           return false
         }
-        this.http.post(this.strucData.value.source.url.substring(4), this.parseData(postHeadvData))
+        this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
           if (this.optionList.length === 0 && !this.isAlias) {

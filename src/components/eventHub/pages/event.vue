@@ -441,7 +441,7 @@
                 <i class="el-icon-arrow-down"></i>
               </label>
             </div>
-            <blockquote :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description || '<i>暂无描述 :(</i>'" v-show="!isEditing.description" ref="description"></blockquote>
+            <blockquote class="ql-editor" :class="{ shy: !isDescriptionExpanded }" v-html="eventData.variables && eventData.variables.message[0].form.header.description || '<i>暂无描述 :(</i>'" v-show="!isEditing.description" ref="description"></blockquote>
             <quill-editor
               v-model="eventData.variables.message[0].form.header.description"
               :options="editor.options"
@@ -804,7 +804,7 @@
       },
       renderStartForm () { // 渲染表单数据
         const postData = {
-          action: 'activiti/task/form/group',
+          action: 'process/form/group',
           method: 'GET',
           data: {
             pkey: 'incident',
@@ -812,7 +812,7 @@
             version: this.eventData.version
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/form/', this.parseData(postData)).then((res) => {
           this.startFormData = res.data.data.form
           this.startFormData.header.map(header => {
             header.value.map(attr => {
@@ -833,11 +833,11 @@
       },
       getEventData (needRefetch = false) {
         let postData = {
-          action: 'runtime/task',
+          action: 'task',
           method: 'GET',
-          data: { taskId: this.taskId }
+          data: { tid: this.taskId }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.eventData = res.data.data
             this.eventDataBuffer = JSON.stringify(res.data.data)  // create an immutable buffer object
@@ -877,7 +877,7 @@
 
       getTaskFormData () {
         let postData = {
-          action: 'activiti/task/form/group',
+          action: 'process/form/group',
           method: 'GET',
           data: {
             pkey: this.eventData.pkey,
@@ -885,7 +885,7 @@
             version: this.eventData.version
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/form/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.taskFormData = res.data.data.form
             // 按钮
@@ -1022,11 +1022,11 @@
 
       getComments () {
         let postData = {
-          action: 'get/comments',
-          method: 'POST',
+          action: 'comment',
+          method: 'get',
           data: { pid: this.eventData.pid }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.comments = res.data.data.list
           }
@@ -1102,14 +1102,14 @@
 
       onPostComment () {
         let postData = {
-          action: 'add/comment',
+          action: 'comment',
           method: 'POST',
           data: {
             pid: this.eventData.pid,
             text: this.editor.content
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('评论成功！')
             this.editor.content = ''
@@ -1252,14 +1252,14 @@
           }
         })
         const postData = {
-          action: 'runtime/task/complete',
+          action: 'task',
           method: 'POST',
           data: {
             tid: this.eventData.id,
             form: postFormData
           }
         }
-        this.http.post('', this.parseData(postData))
+        this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
             if (res && res.status === 200) {
               this.$message({

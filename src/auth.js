@@ -13,7 +13,7 @@ export default {
   // 往登录 URL 发起请求并保存返回的 token
   login (context, creds, redirect) {
     console.log(creds)
-    context.http.post('', creds).then(response => {
+    context.http.post('/base/', creds).then(response => {
       window.localStorage.setItem('userName', response.data.data.userId)
       window.localStorage.setItem('isAdmin', response.data.data.admin)
       window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)

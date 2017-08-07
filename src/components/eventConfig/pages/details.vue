@@ -131,7 +131,7 @@
       // 待提交的表单数据
       submitFormData () {
         return {
-          tname: this.tname,
+          // tname: this.tname,
           tkey: this.tkey,
           form: this.incidentFormData,
           pkey: this.pkey
@@ -185,11 +185,11 @@
         let { pkey, tkey } = this
         // 顶，有个接口是分好组的，不用自己 groupBy
         let postData = {
-          action: 'activiti/task/form',
+          action: 'process/form',
           method: 'GET',
           data: { pkey, tkey }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/form/', this.parseData(postData)).then((res) => {
           this.incidentFormData = res.data.data
           // this.incidentFormDataBuffer = JSON.stringify(this.incidentFormData)
           this.incidentFormData.form.header.find((attr) => {
@@ -208,11 +208,11 @@
         // console.log(this.currentBody.attr_list)
         // console.log(this.submitFormData)
         let postData = {
-          action: 'activiti/task/form',
+          action: 'process/form',
           method: 'POST',
           data: this.submitFormData
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/form/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success(message)
             this.getIncidentForm()

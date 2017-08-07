@@ -11,11 +11,11 @@ export default {
     getProcessList () {
       this.loading = true
       const postData = {
-        action: 'activiti/process/definition',
+        action: 'process/define',
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/activiti/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           this.processList = res.data.data.list
           this.loading = false

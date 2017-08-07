@@ -17,8 +17,8 @@
             :data="userList"
             border>
             <el-table-column
-              prop="code"
-              label="名称"></el-table-column>
+              prop="nick"
+              label="昵称"></el-table-column>
             <el-table-column
               prop="userId"
               label="ID"
@@ -52,8 +52,8 @@
 
     <el-dialog title="新建用户" size="tiny" v-model="addUserData.visible">
       <el-form :rules="userFormRules" label-width="72px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="addUserData.user.code"></el-input>
+        <el-form-item label="昵称" prop="username">
+          <el-input v-model="addUserData.user.nick"></el-input>
         </el-form-item>
         <el-form-item label="用户 ID" prop="userId">
           <el-input v-model="addUserData.user.userId" placeholder="请填写英文"></el-input>
@@ -73,8 +73,8 @@
 
     <el-dialog title="编辑用户" size="tiny" v-model="editUserData.visible">
       <el-form :rules="userFormRules" label-width="72px">
-        <el-form-item label="用户名" prop="username">
-          <el-input v-model="editUserData.user.code"></el-input>
+        <el-form-item label="昵称" prop="username">
+          <el-input v-model="editUserData.user.nick"></el-input>
         </el-form-item>
         <el-form-item label="用户 ID" prop="userId">
           <el-input v-model="editUserData.user.userId" placeholder="请填写英文"></el-input>
@@ -138,20 +138,20 @@
     },
 
     methods: {
-      onAddUser ({ code, userId, email, level }) {
+      onAddUser ({ nick, userId, email, level }) {
         if (!/^[a-z][a-z0-9_]+[a-z]$/.test(userId)) {
           this.$message.error('用户 ID 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
           return
         }
         let postData = {
-          action: 'permission/users',
+          action: 'user',
           method: 'POST',
-          data: { code, userId, email, level }
+          data: { nick, userId, email, level }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.addUserData.visible = false
-            this.$alert(`用户 ${code} 的密码是 ${res.data.data.pwd}。`, '新建成功！', {
+            this.$alert(`用户 ${nick} 的密码是 ${res.data.data.pwd}。`, '新建成功！', {
               confirmButtonText: '记住了'
             })
             this.getPermittedUserList()
@@ -159,17 +159,17 @@
         })
       },
 
-      onEditUser ({ code, userId, email, pwd, level }) {
+      onEditUser ({ nick, userId, email, pwd, level }) {
         if (!/^[a-z][a-z0-9_]+[a-z]$/.test(userId)) {
           this.$message.error('用户 ID 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
           return
         }
         let postData = {
-          action: 'permission/users',
+          action: 'user',
           method: 'PUT',
-          data: { code, userId, email, pwd, level }
+          data: { nick, userId, email, pwd, level }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.editUserData.visible = false
             this.$message.success('修改成功！')
@@ -178,20 +178,20 @@
         })
       },
 
-      onToggleUser ({ code, userId, status }) {
-        this.$confirm(`确定${status ? '启用' : '禁用'}用户 ${code}？`, '提示', {
+      onToggleUser ({ nick, userId, status }) {
+        this.$confirm(`确定${status ? '启用' : '禁用'}用户 ${nick}？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
         }).then(() => {
           let postData = {
-            action: 'permission/users',
+            action: 'user',
             method: 'DELETE',
             data: { userId }
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/user/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.$message.success(`已${status ? '启用' : '禁用'}用户「${code}」！`)
+              this.$message.success(`已${status ? '启用' : '禁用'}用户「${nick}」！`)
               this.getPermittedUserList()
             }
           })

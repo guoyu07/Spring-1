@@ -72,7 +72,7 @@
     methods: {
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
-          action: 'activiti/task/form',
+          action: 'process/form',
           method: 'GET',
           data: {
             pkey: 'host_apply',
@@ -80,7 +80,7 @@
           }
         }
         // this.loading = true
-        this.http.post('', this.parseData(renderFromData)).then((res) => {
+        this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
           this.form = res.data.data.form
           this.form.header.map(group => {
             group.value.map(item => {
@@ -140,7 +140,7 @@
             return
           }
           let postData = {
-            action: 'runtime/task/complete',
+            action: 'task',
             method: 'POST',
             data: {
               tid: task.id,
@@ -148,7 +148,7 @@
               pass: action.pass
             }
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/flow/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success('已' + action.name)
             }

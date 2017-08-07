@@ -362,11 +362,11 @@
           type: 'info'
         }).then(() => {
           let postData = {
-            action: 'runtime/task/claim',
+            action: 'task_assign',
             method: 'POST',
             data: { tid: task.id }
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/flow/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.deviceViewData.visible = false
               this.$message.success('已认领！')
