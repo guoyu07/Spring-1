@@ -255,7 +255,7 @@
             ipscopeId: ipscope
           }
         }
-        this.http.post('', this.parseData(postHeadvData))
+        this.http.post('/data/', this.parseData(postHeadvData))
         .then((response) => {
           console.log(response)
           this.idcrackList = response.data.data.list

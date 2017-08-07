@@ -42,9 +42,6 @@
                     </div>
                   </div>
                 </div>
-                <!-- <div class="clear">
-                  <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
-                </div> -->
               </el-tab-pane>
             </el-tabs>
             <!-- 按钮区域 -->
@@ -246,29 +243,6 @@
             }
           }
         }
-      },
-      getPreview (ipscope) {
-        const postHeadvData = {
-          action: 'idcrack/list',
-          method: 'GET',
-          data: {
-            ipscopeId: ipscope
-          }
-        }
-        this.http.post('', this.parseData(postHeadvData))
-        .then((response) => {
-          console.log(response)
-          this.idcrackList = response.data.data.list
-          this.previewShown = !this.previewShown
-          this.pageNum = Math.ceil(this.idcrackList.length / 4)
-          this.idcrackData = this.idcrackList.slice(0, 4)
-        })
-        // this.$store.dispatch('idcrack_data', {
-        //   idcrackData: this.optionList
-        // })
-        // this.previewShown = !this.previewShown
-        // this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
-        // this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
       },
       closePreview () {
         this.previewShown = !this.previewShown
