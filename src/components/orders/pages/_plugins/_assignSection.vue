@@ -140,9 +140,9 @@
 </template>
 
 <script>
-  import getPermittedUserList from './../../../mixins/getPermittedUserList'
-  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
-  import onAssign from './../../../mixins/onAssign'
+  import getPermittedUserList from './../../../../mixins/getPermittedUserList'
+  import getPermittedRoleList from './../../../../mixins/getPermittedRoleList'
+  import onAssign from './../../../../mixins/onAssign'
 
   export default {
     mixins: [getPermittedUserList, getPermittedRoleList, onAssign],

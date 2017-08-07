@@ -215,13 +215,13 @@
                     <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
                       placement="left" trigger="click" @show="showMultiConf(itemConf)">
                       <options-conf :conf-arr="itemConf.value.regex"></options-conf>
-                      <el-button size="small" slot="reference">配置选项</el-button>
+                      <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover>
                     <!--动态选项（cmdb）-->
                     <!-- <template v-if="['dict', 'dicts'].includes(itemConf.value.type)"> -->
-                    <el-popover placement="left" trigger="click" @show="showCMDBConf(itemConf)">
-                      <options-conf-cmdb v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" :item-conf="itemConf" :option-presets="optionPresets"></options-conf-cmdb>
-                      <el-button size="small" slot="reference">配置选项</el-button>
+                    <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" placement="left" trigger="click" @show="showCMDBConf(itemConf)">
+                      <options-conf-cmdb :item-conf="itemConf" :option-presets="optionPresets"></options-conf-cmdb>
+                      <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover>
                     <!-- </template> -->
                     <!-- 级联菜单 -->
@@ -241,7 +241,7 @@
                     <!-- 搜索元件 -->
                     <!-- <el-popover v-if="itemConf.value.type === 'search_bar'" placement="top" trigger="click" @show="showCMDBConf(itemConf)" class="limited-popover">
                       <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
-                      <el-button size="small" slot="reference">配置选项</el-button>
+                      <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover> -->
                   </el-form-item>
                   <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
@@ -283,8 +283,8 @@
                 </el-form>
               </el-col>
             </el-row>
-            <el-row type="flex" justify="end">
-              <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(itemConf)">显示条件</el-button>
+            <el-row type="flex" justify="end" style="margin-top: 8px;">
+              <el-button size="small" type="info" :plain="true" icon="fa-eye-slash" @click="showCondition(itemConf)">显示条件</el-button>
               <el-button size="small" type="danger" icon="delete" @click="onDeleteField(configData2, itemConf)">删除字段</el-button>
             </el-row>
           </div>

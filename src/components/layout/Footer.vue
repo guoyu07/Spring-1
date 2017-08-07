@@ -1,10 +1,10 @@
 <style lang="less">
   @import url("../../assets/css/variables");
-  @footerH: 36px;
+
   .footer {
     background-color: #fff;
     width: 100%;
-    height: @footerH;
+    height: @footerHeight;
     padding: 4px;
     text-align: center;
     position: fixed;

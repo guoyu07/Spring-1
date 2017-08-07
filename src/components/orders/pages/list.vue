@@ -283,7 +283,7 @@
 </template>
 
 <script>
-  import assignSection from './_assignSection'
+  import assignSection from './_plugins/_assignSection'
   // import filterConf from './_filterConf'
   import progressWrap from '../../_plugins/_progress'
 

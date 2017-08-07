@@ -77,19 +77,19 @@
     </div> -->
 
     <div class="conf-cmdb-contain" v-if="itemConf.value.source">
-      <el-form :model="itemConf.value.source" label-width="120px" :inline="true">
-        <el-form-item label="URL (请求地址)">
-          <el-input size="small" class="code-input" v-model="itemConf.value.source.url"></el-input>
+      <el-form :model="itemConf.value.source" label-width="120px" label-position="left" :inline="true">
+        <el-form-item label="URL">
+          <el-input size="small" class="code-input" v-model="itemConf.value.source.url" placeholder="请求地址"></el-input>
         </el-form-item>
-        <el-form-item label="Action (动作)">
-          <el-input size="small" class="code-input" v-model="itemConf.value.source.data.action"></el-input>
+        <el-form-item label="Action">
+          <el-input size="small" class="code-input" v-model="itemConf.value.source.data.action" placeholder="动作"></el-input>
         </el-form-item>
-        <el-form-item label="Method (方法)">
-          <el-input size="small" class="code-input" v-model="itemConf.value.source.data.method"></el-input>
+        <el-form-item label="Method">
+          <el-input size="small" class="code-input" v-model="itemConf.value.source.data.method" placeholder="方法"></el-input>
         </el-form-item>
-        <el-form-item label="Params (参数)">
+        <el-form-item label="Params">
           <el-dropdown trigger="click" @command="selectParams">
-            <el-button size="small" type="primary" :plain="true" icon="plus">添加 Param</el-button>
+            <el-button size="small" type="primary" :plain="true" icon="plus">添加参数</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="static">静态输入</el-dropdown-item>
               <el-dropdown-item command="input" v-if="isSearchBar">输入框</el-dropdown-item>
@@ -174,17 +174,18 @@
       <h5>选项数据路径配置：</h5>
       <el-card>
         <el-form label-position="top" :inline="true">
-          <el-form-item label="data_path (属性路径)">
-            <el-input size="small" class="code-input" v-model="itemConf.value.source.res.data_path"></el-input>
+          <el-form-item label="data_path">
+            <el-input size="small" class="code-input" v-model="itemConf.value.source.res.data_path" placeholder="属性路径"></el-input>
           </el-form-item>
-          <el-form-item label="show_key (显示键名)">
+          <el-form-item label="show_key">
             <!-- <el-input size="small" class="code-input" v-model="itemConf.value.source.res.show_key"></el-input> -->
             <el-select
               v-model="itemConf.value.source.res.show_key"
+              size="small"
               multiple
               filterable
               allow-create
-              placeholder="请输入显示键名">
+              placeholder="显示键名">
             </el-select>
           </el-form-item>
         </el-form>

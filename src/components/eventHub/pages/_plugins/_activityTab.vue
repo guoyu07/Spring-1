@@ -121,7 +121,7 @@
             <!-- <a v-if="isAbove.length && isAbove[logIndex]" class="more" href="###" @click="checkMore(logIndex)">查看全部...</a> -->
           </div>
           <p class="time">
-            <i class="el-icon-fa-calendar"></i>
+            <i class="el-icon-fa-clock-o text-info"></i>
             <!-- <i class="el-icon-date"></i> -->
             <template v-if="isToday(log.ctime)">
               <timeago :since="log.ctime" :max-time="86400 * 24" :auto-update="60" :format="formatTime" locale="zh-CN"></timeago>
@@ -270,7 +270,6 @@
       color: #888;
       margin-top: 5px;
       i {
-        color: #FF4949;
         margin-right: 5px;
       }
     }

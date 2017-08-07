@@ -1,8 +1,6 @@
 <style lang="less">
   @import url("../../assets/css/variables");
 
-  @headerHeight: 50px;
-
   .header {
     position: fixed;
     z-index: @floating;

@@ -162,6 +162,16 @@ const routes = [{
       path: '',
       component: resolve => require(['./components/orders/pages/list'], resolve)
     }]
+  }, {
+    path: '/orders2',
+    component: require('./components/orders2/index'),
+    children: [{
+      path: '/orders/queues/:id',
+      component: resolve => require(['./components/orders2/pages/list'], resolve)
+    }, {
+      path: '/orders/queues/:id/edit',
+      component: resolve => require(['./components/orders2/pages/edit'], resolve)
+    }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
     component: require('./components/forms/index'),
