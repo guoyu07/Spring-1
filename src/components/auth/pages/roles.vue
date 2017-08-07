@@ -33,7 +33,7 @@
                       :class="{ empty: !isCheckable }"
                       @click="onDeleteUser(props.row.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
                   </el-tooltip>
-                  <el-tooltip content="加入用户" placement="left" class="fr">
+                  <el-tooltip v-if="props.row.users.length" content="加入用户" placement="left" class="fr">
                     <el-button
                       :disabled="!isQualified"
                       icon="plus"
@@ -78,7 +78,8 @@
     <el-dialog title="编辑角色" size="tiny" v-model="editRoleData.visible">
       <el-form :rules="roleFormRules" label-width="100px">
         <el-form-item label="角色标签" prop="roleTags">
-          <el-input v-model="editRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input>
+          <!-- <el-input v-model="editRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input> -->
+          <el-select v-model="editRoleData.role.tags" multiple allow-create placeholder="请填写角色标签"></el-select>
         </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="editRoleData.role.name" placeholder="请填写角色名称"></el-input>
@@ -92,7 +93,8 @@
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
       <el-form :rules="roleFormRules" label-width="100px">
         <el-form-item label="角色标签" prop="roleTags">
-          <el-input v-model="addedRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input>
+          <!-- <el-input v-model="addedRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input> -->
+          <el-select v-model="addedRoleData.role.tags" multiple allow-create placeholder="请填写角色标签"></el-select>
         </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="addedRoleData.role.name" placeholder="请填写角色名称"></el-input>
@@ -133,7 +135,10 @@
         editRoleData: {
           visible: false,
           loading: false,
-          role: {}
+          role: {
+            name: '',
+            tags: []
+          }
         },
         roleFormRules: {
           roleTags: [

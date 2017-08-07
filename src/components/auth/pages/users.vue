@@ -51,8 +51,8 @@
     </el-row>
 
     <el-dialog title="新建用户" size="tiny" v-model="addUserData.visible">
-      <el-form :rules="userFormRules" label-width="72px">
-        <el-form-item label="昵称" prop="username">
+      <el-form :rules="userFormRules" ref="addUserData.user" :model="addUserData.user" label-width="72px">
+        <el-form-item label="昵称" prop="nick">
           <el-input v-model="addUserData.user.nick"></el-input>
         </el-form-item>
         <el-form-item label="用户 ID" prop="userId">
@@ -72,8 +72,8 @@
     </el-dialog>
 
     <el-dialog title="编辑用户" size="tiny" v-model="editUserData.visible">
-      <el-form :rules="userFormRules" label-width="72px">
-        <el-form-item label="昵称" prop="username">
+      <el-form :rules="userFormRules" ref="addUserData.user" :model="addUserData.user" label-width="72px">
+        <el-form-item label="昵称" prop="nick">
           <el-input v-model="editUserData.user.nick"></el-input>
         </el-form-item>
         <el-form-item label="用户 ID" prop="userId">
@@ -114,14 +114,14 @@
           user: {}
         },
         userFormRules: {
-          username: [
+          nick: [
             { required: true, message: '用户名必填', trigger: 'blur' }
           ],
           userId: [
             { required: true, message: '用户 ID 必填', trigger: 'blur' }
           ],
           email: [
-            { required: true, message: '用户 Email 必填', trigger: 'blur' }
+            { type: 'email', required: true, message: '用户 Email 必填', trigger: 'blur' }
           ]
         }
       }
