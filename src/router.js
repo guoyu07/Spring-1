@@ -62,25 +62,6 @@ const routes = [{
       component: require('./components/guosen/pages/stepInfo')
     }]
   }, {
-    path: '/equipment',
-    component: require('./components/equipment/index'),
-    children: [{
-      path: '/equipment/on',
-      component: require('./components/equipment/pages/on')
-    }, {
-      path: '/equipment/on/:device',
-      component: require('./components/equipment/pages/ondevice')
-    }, {
-      path: '/equipment/off',
-      component: require('./components/equipment/pages/off')
-    }, {
-      path: '/equipment/off-review',
-      component: require('./components/equipment/pages/offReview')
-    }, {
-      path: '/equipment/:pkey/:tkey/:id/:name', // 具体步骤操作
-      component: require('./components/equipment/pages/step')
-    }]
-  }, {
     path: '/event-hub',
     component: require('./components/eventHub/index'),
     children: [{

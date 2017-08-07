@@ -245,7 +245,7 @@
           }
         } else {
           postData = {
-            action: 'runtime/process/instances',
+            action: 'process',
             method: 'POST',
             data: {
               pkey: 'incident',

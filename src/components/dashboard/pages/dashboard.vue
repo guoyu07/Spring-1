@@ -132,11 +132,13 @@
 
     created () {
       const postHeadvData = {
-        action: 'permission/process/start',
-        method: 'POST',
-        data: {}
+        action: 'start/process',
+        method: 'get',
+        data: {
+          group: true
+        }
       }
-      this.http.post('', this.parseData(postHeadvData))
+      this.http.post('/flow/', this.parseData(postHeadvData))
       .then((response) => {
         console.log(response.data.data.list)
         const res = response.data.data.list
@@ -181,13 +183,13 @@
         })
       })
       const topData = {
-        action: 'permission/process/start/top',
-        method: 'POST',
+        action: 'start/process/top',
+        method: 'get',
         data: {
           top: 5
         }
       }
-      this.http.post('', this.parseData(topData))
+      this.http.post('/flow/', this.parseData(topData))
       .then((response) => {
         const res = response.data.data.list
         this.topList = [{

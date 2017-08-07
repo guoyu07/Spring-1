@@ -103,7 +103,7 @@
     methods: {
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
-          action: 'activiti/task/form/group',
+          action: 'process/form/group',
           method: 'GET',
           data: {
             pkey: 'host',
@@ -111,7 +111,7 @@
           }
         }
         // this.loading = true
-        this.http.post('', this.parseData(renderFromData)).then((res) => {
+        this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
           this.form = res.data.data.form
           this.form.header.map(group => {
             group.value.map(item => {
@@ -146,13 +146,13 @@
       },
       renderInstanceDetail () {
         let postData = {
-          action: 'runtime/task',
+          action: 'task',
           method: 'GET',
           data: {
-            taskId: this.editInfo.id
+            tid: this.editInfo.id
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           const message = res.data.data.variables.message
           this.applyForm = this.findTaskMsgR(message, ['start']).form
           // this.editData.applicationName = this.applyForm.applicationName
@@ -189,7 +189,7 @@
                 let postData = {}
                 if (this.editInfo.id) {
                   postData = {
-                    action: 'runtime/task/complete',
+                    action: 'task',
                     method: 'POST',
                     data: {
                       tid: this.editInfo.id,
@@ -229,7 +229,7 @@
                     }
                   })
                   postData = {
-                    action: 'runtime/process/instances',
+                    action: 'process',
                     method: 'POST',
                     data: {
                       pkey: 'host',
@@ -237,7 +237,7 @@
                     }
                   }
                 }
-                this.http.post('', this.parseData(postData))
+                this.http.post('/flow/', this.parseData(postData))
                 .then((res) => {
                   // console.log(res, res.data.data)
                   if ((res && res.status === 200) || (res && res.status === 201)) {

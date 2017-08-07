@@ -318,7 +318,7 @@
       },
       renderForm () { // 渲染表单数据
         const renderFromData = {
-          action: 'activiti/task/form/group',
+          action: 'process/form/group',
           method: 'GET',
           data: {
             pkey: this.routerInfo.pkey,
@@ -327,7 +327,7 @@
           }
         }
         // this.loading = true
-        this.http.post('', this.parseData(renderFromData)).then((res) => {
+        this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
           this.form = res.data.data.list
         })
       },
@@ -488,7 +488,7 @@
           }
         })
         const postData = {
-          action: 'runtime/task/complete',
+          action: 'task',
           method: 'POST',
           data: {
             tid: id,
@@ -496,7 +496,7 @@
               // pass: "流程走向控制变量,整型(可选,默认为0)"
           }
         }
-        this.http.post('', this.parseData(postData))
+        this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
             if (res && res.status === 200) {
               this.$message({
@@ -582,7 +582,7 @@
             return
           }
           let postData = {
-            action: 'runtime/task/complete',
+            action: 'task',
             method: 'POST',
             data: {
               tid: this.routerInfo.id,
@@ -590,7 +590,7 @@
               pass: action.pass
             }
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/flow/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success('已驳回！')
             }

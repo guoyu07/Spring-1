@@ -10,12 +10,12 @@ export default {
   methods: {
     onAssign (tid, assignee, assigneeGroup) {
       let postData = {
-        action: 'runtime/task/assignee',
+        action: 'task_assign', // runtime/task/assignee
         method: 'POST',
         data: { tid, assignee }
       }
       this.assignViewData.loading = true
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/flow/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           if (assigneeGroup.length) {
             let postData = {

@@ -95,9 +95,10 @@ Vue.prototype.http = http
 
 const parseData = obj => {
   // qs.stringify(obj)
-  const action = encodeURIComponent(obj.action)
-  const result = `action=${action}&method=${obj.method}&data=`
-  return result + encodeURIComponent(JSON.stringify(obj.data))
+  // const action = encodeURIComponent(obj.action)
+  // const result = `action=${action}&method=${obj.method}&data=`
+  // return result + encodeURIComponent(JSON.stringify(obj.data))
+  return obj
 }
 
 Vue.prototype.parseData = parseData

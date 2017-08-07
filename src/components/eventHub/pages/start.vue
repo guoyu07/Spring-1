@@ -159,7 +159,6 @@
       <div class="btn-area">
         <!-- :disabled="validateForm" -->
         <el-button type="primary" @click="onSubmit" icon="check">确认</el-button>
-        <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
         <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
       </div>
     </el-form>
@@ -217,7 +216,7 @@
       renderForm () {
         const renderFromData = {
           // action: 'runtime/task',
-          action: 'activiti/task/form/group',
+          action: 'process/form/group',
           method: 'GET',
           data: {
             pkey: this.$route.params.pkey,
@@ -225,7 +224,7 @@
             // taskId: this.$route.params.tid
           }
         }
-        this.http.post('', this.parseData(renderFromData)).then((res) => {
+        this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskFormData = res.data.data.form
           // this.taskFormData = res.data.data.variables.message[0].form
@@ -336,11 +335,11 @@
       },
       injectValues () {
         const postData = {
-          action: 'runtime/task',
+          action: 'task',
           method: 'GET',
-          data: { taskId: this.$route.params.tid }
+          data: { tid: this.$route.params.tid }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           this.Editdata = res.data.data.variables.message[0].form
           this.postForm.header = Object.assign({}, this.postForm.header, this.Editdata.header)
           setTimeout(() => {
@@ -537,25 +536,6 @@
           })
         })
       },
-      onModify () {
-        let { pid, pkey, tkey, tid } = this.$route.params
-        let postData = {
-          action: 'modify/form/data',
-          method: 'POST',
-          data: {
-            pid,
-            pkey,
-            tkey,
-            form: this.postForm
-          }
-        }
-        this.http.post('', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.$message.success('修改事件成功！')
-            this.$router.push(`/event-hub/event/${tid}`)
-          }
-        })
-      },
       postMethod (data) {
         let postFormData = {
           header: {},
@@ -597,7 +577,7 @@
           }
         } else {
           postData = {
-            action: 'runtime/process/instances',
+            action: 'process',
             method: 'POST',
             data: {
               pkey: this.$route.params.pkey,
@@ -606,7 +586,7 @@
           }
         }
         console.log(postFormData)
-        this.http.post('', this.parseData(postData))
+        this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
             if (res && res.status === 200) {
               this.$message({

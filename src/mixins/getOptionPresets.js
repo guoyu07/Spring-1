@@ -9,11 +9,11 @@ export default {
   methods: {
     getOptionPresets () {
       let postData = {
-        action: 'activiti/api/define/list',
+        action: 'api/source',
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/form/', this.parseData(postData)).then((res) => {
         this.optionPresets = res.data.data.list
         console.log(this.optionPresets)
       })

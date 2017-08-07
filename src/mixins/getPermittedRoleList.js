@@ -9,11 +9,11 @@ export default {
   methods: {
     getPermittedRoleList () {
       let postData = {
-        action: 'permission/role',
+        action: 'process/define',
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/activiti/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           this.roleList = res.data.data
           console.log('mixin working')

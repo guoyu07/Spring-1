@@ -112,7 +112,7 @@
             // pageSize: "默认30"
           }
         }
-        this.http.post('', this.parseData(postData))
+        this.http.post('/easyops/', postData)
         .then((res) => {
           this.applicationList = res.data.data.list
         })

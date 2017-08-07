@@ -280,11 +280,11 @@ export default {
   methods: {
     getActionDef () {
       let postData = {
-        action: 'activiti/action/define/list',
+        action: 'action/define/list',
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then(res => {
+      this.http.post('/form/', this.parseData(postData)).then(res => {
         this.actionDefList = res.data.data.list
       })
     },
@@ -336,7 +336,7 @@ export default {
     // 确认完成
     onSubmit () {
       const postData = {
-        action: 'activiti/task/form',
+        action: 'process/form',
         method: 'POST',
         data: this.formConfig
       }
@@ -351,7 +351,7 @@ export default {
 
       console.log(this.formConfig)
       this.submitting = true
-      this.http.post('', this.parseData(postData)).then(res => {
+      this.http.post('/form/', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
           this.submitting = false
           this.$message.success('修改成功！')

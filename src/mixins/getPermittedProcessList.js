@@ -12,11 +12,11 @@ export default {
     getPermittedProcessList () {
       this.permittedProcessLoading = true
       let postData = {
-        action: 'permission/process',
+        action: 'process/define',
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/activiti/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           this.permittedProcessList = res.data.data
           for (let i = 0; i < this.permittedProcessList.length; i++) {

@@ -158,7 +158,7 @@
           method: 'GET',
           data: {}
         }
-        this.http.post('', this.parseData(postHeadvData))
+        this.http.post('/base/', this.parseData(postHeadvData))
         .then((response) => {
           // console.log(response)
           this.groupList = response.data.data
@@ -194,7 +194,7 @@
             group_key: key
           }
         }
-        this.http.post('', this.parseData(postHeadvData))
+        this.http.post('/base/', postHeadvData)
         .then((response) => {
           // console.log(response)
           this.userList = response.data.data
@@ -220,7 +220,7 @@
           method: 'GET',
           data: {}
         }
-        this.http.post('', this.parseData(postHeadvData))
+        this.http.post('/base/', this.parseData(postHeadvData))
         .then((response) => {
           // console.log(response)
           this.userList = response.data.data

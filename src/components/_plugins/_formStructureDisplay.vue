@@ -6,7 +6,7 @@
         <el-form-item
           v-if="(showFormItem(formItem, postForm, messageData, historyTask, currentTask, index) && item[formItem.id]) || currentTask === 'current'"
           :label="formItem.name"
-          :class="formItem.value.type === 'search_bar' || formItem.value.type === 'table' || (formItem.isAlias && formItem.value.type !== 'users') ? 'blockElement' : ''">
+          :class="['search_bar','table', 'richtext'].includes(formItem.value.type) || (formItem.isAlias && formItem.value.type !== 'users') ? 'blockElement' : ''">
 
           <span v-if="formItem.value.type === 'dict'">
             {{ item && item[formItem.id][formItem.value.source.res.show_key[0]] }}
@@ -52,6 +52,29 @@
 
           <span v-else-if="formItem.value.type === 'str' || formItem.value.type==='enum' || formItem.value.type==='int' || formItem.value.type==='date' || formItem.value.type==='datetime'">
             {{ item[formItem.id] }}
+          </span>
+
+          <span v-else-if="formItem.value.type === 'users'">
+            <template v-if="!isEditing || !editing[formItem.id]">
+              <span v-if="item[formItem.id] && item[formItem.id].user && item[formItem.id].user.code" class="tooltip-link">{{item[formItem.id].user.userId}} <i class="el-icon-fa-user-circle"></i></span>
+              <span v-else-if="item[formItem.id] && item[formItem.id].group && item[formItem.id].group.name" class="tooltip-link">{{ item[formItem.id].group.name}} <i class="el-icon-fa-users"></i></span>
+              <span v-else>未指定</span>
+              <!-- <i v-if="isEditing" @click="toggleEditable(formItem.id)" class="editable-field__indicator el-icon-edit text-info"></i> -->
+            </template>
+            <!-- <div v-if="isEditing && editing[formItem.id]">
+              <span>
+                <member-select
+                  :vmodel="item"
+                  :strucData="formItem">
+                </member-select>
+              </span>
+              <i class="editable-field__indicator el-icon-check text-success" @click="onConfirmEdit(formItem.id)"></i>
+              <i class="editable-field__indicator el-icon-close text-error" @click="toggleEditable(formItem.id)"></i>
+            </div> -->
+          </span>
+
+          <span class="ql-editor" v-else-if="formItem.value.type === 'richtext'">
+            <span v-html="item && item[formItem.id]">{{item && item[formItem.id]}}</span>
           </span>
 
           <el-table

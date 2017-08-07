@@ -77,11 +77,11 @@
 
     <el-dialog title="编辑角色" size="tiny" v-model="editRoleData.visible">
       <el-form :rules="roleFormRules" label-width="100px">
-        <el-form-item label="角色 Key" prop="roleKey">
-          <el-input v-model="editRoleData.role.key" placeholder="请填写英文"></el-input>
+        <el-form-item label="角色标签" prop="roleTags">
+          <el-input v-model="editRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input>
         </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="editRoleData.role.name" placeholder="请填写中文"></el-input>
+          <el-input v-model="editRoleData.role.name" placeholder="请填写角色名称"></el-input>
         </el-form-item>
       </el-form>
       <span class="dialog-footer" slot="footer">
@@ -91,11 +91,11 @@
 
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
       <el-form :rules="roleFormRules" label-width="100px">
-        <el-form-item label="角色 Key" prop="roleKey">
-          <el-input v-model="addedRoleData.role.key" placeholder="请填写英文"></el-input>
+        <el-form-item label="角色标签" prop="roleTags">
+          <el-input v-model="addedRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input>
         </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
-          <el-input v-model="addedRoleData.role.name" placeholder="请填写中文"></el-input>
+          <el-input v-model="addedRoleData.role.name" placeholder="请填写角色名称"></el-input>
         </el-form-item>
       </el-form>
       <span class="dialog-footer" slot="footer">
@@ -111,7 +111,7 @@
 
   export default {
     mixins: [getPermittedRoleList, getPermittedUserList],
-  
+
     data () {
       return {
         usersToAdd: [],
@@ -127,7 +127,7 @@
           loading: false,
           role: {
             name: '',
-            key: ''
+            tags: []
           }
         },
         editRoleData: {
@@ -136,8 +136,8 @@
           role: {}
         },
         roleFormRules: {
-          roleKey: [
-            { required: true, message: '角色 Key 必填', trigger: 'blur' }
+          roleTags: [
+            { type: 'array', required: true, message: '角色标签必填', trigger: 'blur' }
           ],
           roleName: [
             { required: true, message: '角色名称必填', trigger: 'blur' }
@@ -158,18 +158,18 @@
     },
 
     methods: {
-      onAddRole ({ name, key }) {
-        if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
-          this.$message.error('角色 Key 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
-          return
-        }
+      onAddRole ({ name, tags }) {
+        // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
+        //   this.$message.error('角色 Key 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
+        //   return
+        // }
         let postData = {
-          action: 'permission/role',
+          action: 'group', // permission/role
           method: 'POST',
-          data: { name, key }
+          data: { name, tags }
         }
         this.addedRoleData.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.addedRoleData.loading = false
             this.addedRoleData.visible = false
@@ -179,18 +179,18 @@
         })
       },
 
-      onEditRole ({ key, name }) {
-        if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
-          this.$message.error('角色 Key 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
-          return
-        }
+      onEditRole ({ tags, name, key }) {
+        // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
+        //   this.$message.error('角色 Key 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
+        //   return
+        // }
         let postData = {
           action: 'permission/role',
           method: 'PUT',
-          data: { key, name }
+          data: { tags, name, key }
         }
         this.editRoleData.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('修改成功！')
             this.editRoleData.loading = false
@@ -207,11 +207,11 @@
           type: 'error'
         }).then(() => {
           let postData = {
-            action: 'permission/role',
+            action: 'group',
             method: 'DELETE',
             data: { key }
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/user/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success(`已移除角色「${name}」！`)
               this.getPermittedRoleList()
@@ -236,15 +236,15 @@
           return
         }
         let postData = {
-          action: 'permission/role/users',
+          action: 'group/user',
           method: 'POST',
           data: {
-            users: this.usersToAdd,
+            userId_list: this.usersToAdd,
             key: this.userViewData.roleKey
           }
         }
         this.userViewData.loading = true
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.userViewData.loading = false
             this.userViewData.visible = false
@@ -270,14 +270,14 @@
           type: 'warning'
         }).then(() => {
           let postData = {
-            action: 'permission/role/users',
+            action: 'group/user',
             method: 'DELETE',
             data: {
-              users: this.usersToDelete,
+              userId_list: this.usersToDelete,
               key
             }
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/user/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success('移除成功！')
               this.isCheckable = false

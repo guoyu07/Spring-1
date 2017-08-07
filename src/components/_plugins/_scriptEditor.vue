@@ -54,11 +54,11 @@
       onSubmit () {
         let { pkey, data } = this.editorProps
         let postData = {
-          action: 'process/custom/script',
+          action: 'process/script',
           method: 'POST',
           data: { pkey, data }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', postData).then((res) => {
           if (res.status === 200) {
             this.editorProps.visible = false
             this.$message.success('编辑后置脚本成功！')

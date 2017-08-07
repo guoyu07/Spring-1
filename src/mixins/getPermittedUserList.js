@@ -9,11 +9,11 @@ export default {
   methods: {
     getPermittedUserList () {
       let postData = {
-        action: 'permission/users',
+        action: 'user',
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/user/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           this.userList = res.data.data
           console.log('mixin working')

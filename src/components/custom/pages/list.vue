@@ -95,11 +95,11 @@
 
       getCategoryList () {
         let postData = {
-          action: 'process/category/list',
+          action: 'process/category',
           method: 'POST',
           data: {}
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.categoryList = res.data.data.list
           }
@@ -108,14 +108,14 @@
 
       onEditCategory ({ pkey, category }) {
         let postData = {
-          action: 'permission/process',
+          action: 'process/define',
           method: 'PUT',
           data: {
             category,
             pkey
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已修改！')
             this.getPermittedProcessList()
@@ -130,11 +130,11 @@
 
       onEditScript (pkey) {
         let postData = {
-          action: 'process/custom/script',
+          action: 'process/script',
           method: 'GET',
           data: { pkey }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.editorProps = { visible: true, pkey, data: res.data.data }
           }

@@ -156,11 +156,11 @@ export default {
         this._importXML(diagramXML)
       } else {
         let postData = {
-          action: 'process/bpmn/data',
+          action: 'deploy',
           method: 'GET',
           data: { pkey: this.$route.params.pkey }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this._importXML(res.data.data)
           }
@@ -183,7 +183,7 @@ export default {
             }
           } else {
             postData = {
-              action: 'process/bpmn/data',
+              action: 'deploy',
               method: 'PUT',
               data: {
                 pkey: this.$route.params.pkey,
@@ -192,7 +192,7 @@ export default {
             }
           }
           this.committing = true
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
             if (res.status === 200 || res.status === 201) {
               this.$message.success('保存成功！')
               this.$router.replace('/custom')

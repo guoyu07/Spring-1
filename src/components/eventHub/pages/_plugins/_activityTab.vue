@@ -95,7 +95,7 @@
                     <template v-for="header in headerform.value">
                       <template v-if="text.key === header.id">
                         {{header.name}} 更新为
-                        <el-form>
+                        <el-form :class="{'b-width': header.value.type === 'richtext'}">
                           <form-display :item="getObject(text)" :form-item="header" :hide-name="true"></form-display>
                         </el-form>
                       </template>
