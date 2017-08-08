@@ -177,7 +177,7 @@ export default {
           let postData
           if (this.isNew) {
             postData = {
-              action: 'process/bpmn/data',
+              action: 'deploy',
               method: 'POST',
               data: { bpmn_data: xml }
             }

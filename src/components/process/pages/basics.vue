@@ -43,9 +43,9 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户（{{scope.row.admin_users.length || '0'}}）</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户（{{scope.row.users.length || '0'}}）</h5>
                           <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
-                          <el-tooltip content="移除管理员用户" placement="top" class="fr" v-if="scope.row.admin_users.length">
+                          <el-tooltip content="移除管理员用户" placement="top" class="fr" v-if="scope.row.users.length">
                             <el-button
                               icon="minus"
                               type="danger"
@@ -58,12 +58,12 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_users, type: 'user' }); currentProcess = scope.row">
+                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.users, type: 'user' }); currentProcess = scope.row">
                             </el-button>
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="adminData.toRemove" :class="{ uncheckable: !adminData.isCheckable }">
-                          <el-checkbox v-for="user in scope.row.admin_users" :label="user.userId">{{user.code}}</el-checkbox>
+                          <el-checkbox v-for="user in scope.row.users" :label="user.userId">{{user.nick}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -91,7 +91,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="initiatorData.toRemove" :class="{ uncheckable: !initiatorData.isCheckable }">
-                          <el-checkbox v-for="user in scope.row.start_users" :label="user.userId">{{user.code}}</el-checkbox>
+                          <el-checkbox v-for="user in scope.row.start_users" :label="user.userId">{{user.nick}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -101,9 +101,9 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 管理员用户组（角色）（{{scope.row.admin_groups.length || '0'}}）</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 管理员用户组（角色）（{{scope.row.groups.length || '0'}}）</h5>
                           <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
-                          <el-tooltip content="移除管理员用户组（角色）" placement="top" class="fr" v-if="scope.row.admin_groups.length">
+                          <el-tooltip content="移除管理员用户组（角色）" placement="top" class="fr" v-if="scope.row.groups.length">
                             <el-button
                               icon="minus"
                               type="danger"
@@ -116,12 +116,12 @@
                               icon="plus"
                               type="success"
                               size="small"
-                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.admin_groups, type: 'group' }); currentProcess = scope.row">
+                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.groups, type: 'group' }); currentProcess = scope.row">
                             </el-button>
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="adminData.toRemove" :class="{ uncheckable: !adminData.isCheckable }">
-                          <el-checkbox v-for="group in scope.row.admin_groups" :label="group.key">{{group.name}}</el-checkbox>
+                          <el-checkbox v-for="group in scope.row.groups" :label="group.key">{{group.name}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -172,9 +172,9 @@
           <el-option
             v-for="user in userList"
             :key="user.userId"
-            :label="`${user.code} - ${user.email}`"
+            :label="`${user.nick} - ${user.email}`"
             :value="user.userId"
-            :disabled="currentProcess && currentProcess.admin_users.some(u => u.userId === user.userId)"></el-option>
+            :disabled="currentProcess && currentProcess.users.some(u => u.userId === user.userId)"></el-option>
         </template>
         <template v-if="adminData.type === 'group'">
           <el-option
@@ -182,7 +182,7 @@
             :key="role.key"
             :label="role.name"
             :value="role.key"
-            :disabled="currentProcess && currentProcess.admin_groups.some(r => r.key === role.key)"></el-option>
+            :disabled="currentProcess && currentProcess.groups.some(r => r.key === role.key)"></el-option>
         </template>
       </el-select>
       <!-- <el-checkbox-group v-model="adminData.toAdd">
@@ -201,7 +201,7 @@
           <el-option
             v-for="user in userList"
             :key="user.userId"
-            :label="`${user.code} - ${user.email}`"
+            :label="`${user.nick} - ${user.email}`"
             :value="user.userId"
             :disabled="currentProcess && currentProcess.start_users.some(u => u.userId === user.userId)"></el-option>
         </template>
@@ -240,7 +240,7 @@
           loading: false,
           visible: false,
           isCheckable: false,
-          action: 'permission/process/admin/role/users',
+          action: 'process/admin',
           type: '', // 是操作用户还是用户组
           pkey: '', // 要增删管理员的流程
           toAdd: [],  // 待加入的管理员
@@ -250,7 +250,7 @@
           loading: false,
           visible: false,
           isCheckable: false,
-          action: 'permission/process/start/role/users',
+          action: 'process/task',
           type: '',
           pkey: '',
           toAdd: [],
@@ -287,7 +287,7 @@
           method: 'POST',
           data
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('加入成功！')
             // Object.assign(_operationRelations[operationType], { visible: false, loading: false })
@@ -303,7 +303,7 @@
           'admin': this.adminData,
           'initiator': this.initiatorData
         }
-  
+
         // 设定 adminData || initiatorData 的 type 属性
         _operationRelations[operationType].type = adminType || initiatorType
         if (!_operationRelations[operationType].isCheckable) {
@@ -332,7 +332,7 @@
             method: 'DELETE',
             data
           }
-          this.http.post('', this.parseData(postData)).then((res) => {
+          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
               this.$message.success('移除成功！')
               Object.assign(_operationRelations[operationType], { visible: false, isCheckable: false })

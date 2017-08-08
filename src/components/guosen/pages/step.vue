@@ -302,7 +302,7 @@
             ipscopeId: ipscope
           }
         }
-        this.http.post('', this.parseData(postHeadvData))
+        this.http.post('/data/', this.parseData(postHeadvData))
         .then((response) => {
           console.log(response)
           this.idcrackList = response.data.data.list
@@ -641,7 +641,7 @@
                   prefix: prefix
                 }
               }
-              this.http.post('', this.parseData(postHeadvData))
+              this.http.post('/data/', this.parseData(postHeadvData))
               .then((response) => {
                 if (response.status === 200) {
                   this.assignForm.body.map((body, bodyIndex) => {
