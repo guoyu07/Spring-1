@@ -13,7 +13,7 @@ export default {
         method: 'GET',
         data: {}
       }
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/easyops/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
           this.presetList = res.data.data.list
         }

@@ -9,7 +9,7 @@
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
-          <h3><i class="el-icon-fa-wpforms icon-lg"></i> 表单配置</h3>
+          <h3><i class="el-icon-fa-wpforms icon-lg color-primary"></i> 表单配置</h3>
           <el-select v-model="selectedProcess" placeholder="请先选择流程…" @change="getFormList" class="process-select">
             <el-option
               v-for="process in processList"
@@ -65,12 +65,12 @@ export default {
     // 根据所选流程 pkey 获取流程下表单
     getFormList (pkey) {
       const postData = {
-        action: 'activiti/task/form',
+        action: 'process/form', // activiti/task/form
         method: 'GET',
-        data: { pkey }
+        data: { pkey, tkey: 'start' } // TODO: 这里加多一个 tkey 参数，应该填什么值？？暂时填了 start
       }
       this.formListLoading = true
-      this.http.post('', this.parseData(postData)).then((res) => {
+      this.http.post('/form/', this.parseData(postData)).then((res) => {
         this.formList = res.data.data.list
         this.formListLoading = false
       })
