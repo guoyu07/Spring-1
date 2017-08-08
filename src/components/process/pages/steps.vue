@@ -38,13 +38,13 @@
               <template scope="scope">
                 <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
                 <el-collapse accordion @change="onAccordionChange">
-                  <el-collapse-item v-for="task in scope.row.tasks" :title="task.tname">
+                  <el-collapse-item v-for="task in scope.row.task_list" :title="task.tname">
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 候选人（{{task.candidate_users.length || '0'}}）</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 候选人（{{task.users.length || '0'}}）</h5>
                           <el-button v-if="candidateData.isUserCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isUserCheckable = false">取消</el-button>
-                          <el-tooltip content="移除候选人" placement="top" class="fr" v-if="task.candidate_users.length">
+                          <el-tooltip content="移除候选人" placement="top" class="fr" v-if="task.users.length">
                             <el-button
                               icon="minus"
                               type="danger"
@@ -62,7 +62,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isUserCheckable }">
-                          <el-checkbox v-for="user in task.candidate_users" :label="user.userId">{{user.code}}</el-checkbox>
+                          <el-checkbox v-for="user in task.users" :label="user.userId">{{user.code}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -70,9 +70,9 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 候选组（{{task.candidate_groups.length || '0'}}）</h5>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 候选组（{{task.groups.length || '0'}}）</h5>
                           <el-button v-if="candidateData.isGroupCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isGroupCheckable = false">取消</el-button>
-                          <el-tooltip content="移除候选组" placement="top" class="fr" v-if="task.candidate_groups.length">
+                          <el-tooltip content="移除候选组" placement="top" class="fr" v-if="task.groups.length">
                             <el-button
                               icon="minus"
                               type="danger"
@@ -90,7 +90,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isGroupCheckable }">
-                          <el-checkbox v-for="group in task.candidate_groups" :label="group.key">{{group.name}}</el-checkbox>
+                          <el-checkbox v-for="group in task.groups" :label="group.key">{{group.name}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -98,25 +98,25 @@
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user-secret"></i> 受指派人：<span style="color: #1f2d3d; font-size: 14px; font-weight: normal;">{{task.assignee ? task.assignee.code : '无'}}</span></h5>
-                          <el-tooltip content="移除受指派人" placement="top" class="fr" v-if="task.assignee !== null">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              class="empty"
-                              @click="prepareRemoveAssignee(scope.row.pkey, task.tkey, task.assignee.code)">
-                            </el-button>
-                          </el-tooltip>
-                          <el-tooltip content="指定受指派人" placement="top" class="fr">
-                            <el-button
-                              :icon="task.assignee ? 'edit' : 'plus'"
-                              type="success"
-                              :plain="task.assignee ? true : false"
-                              size="small"
-                              @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey }); currentTask = task">
-                            </el-button>
-                          </el-tooltip>
+                          <h5 class="sub-title fl"><i class="el-icon-fa-user-secret"></i> 受指派人：<span style="color: #1f2d3d; font-size: 14px; font-weight: normal;">{{task.assign || '无'}}</span></h5>
+                          <!-- <el-tooltip content="移除受指派人" placement="top" class="fr" v-if="task.assign !== null"> -->
+                          <el-button
+                            icon="minus"
+                            type="danger"
+                            size="small"
+                            class="empty"
+                            @click="prepareRemoveAssignee(scope.row.pkey, task.tkey, task.assign)">
+                          </el-button>
+                          <!-- </el-tooltip> -->
+                          <!-- <el-tooltip content="指定受指派人" placement="top" class="fr"> -->
+                          <el-button
+                            :icon="task.assign ? 'edit' : 'plus'"
+                            type="success"
+                            :plain="task.assign ? true : false"
+                            size="small"
+                            @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey }); currentTask = task">
+                          </el-button>
+                          <!-- </el-tooltip> -->
                         </div>
                       </el-col>
                     </el-row>
@@ -139,9 +139,9 @@
           <el-option
             v-for="user in userList"
             :key="user.userId"
-            :label="`${user.code} - ${user.email}`"
+            :label="`${user.nick} - ${user.email}`"
             :value="user.userId"
-            :disabled="currentTask.candidate_users.some(u => u.userId === user.userId)"></el-option>
+            :disabled="currentTask.users.some(u => u.userId === user.userId)"></el-option>
         </template>
         <template v-if="candidateData.type === 'group'">
           <el-option
@@ -149,7 +149,7 @@
             :key="role.key"
             :label="role.name"
             :value="role.key"
-            :disabled="currentTask.candidate_groups.some(r => r.key === role.key)"></el-option>
+            :disabled="currentTask.groups.some(r => r.key === role.key)"></el-option>
         </template>
       </el-select>
       <!-- <el-checkbox-group v-model="candidateData.toAdd">
