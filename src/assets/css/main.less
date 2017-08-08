@@ -477,7 +477,7 @@ h1, h2, h3, h4, h5, h6, p {
   }
 }
 
-.el-form-item {
+.el-form--inline .el-form-item {
   display: inline-flex;
 }
 
@@ -528,5 +528,13 @@ h1, h2, h3, h4, h5, h6, p {
   width: 100%;
   .ql-editor {
     padding: 0;
+  }
+}
+
+.el-card {
+  h3 {
+    [class^="el-icon"] {
+      color: @eoThemeColor;
+    }
   }
 }

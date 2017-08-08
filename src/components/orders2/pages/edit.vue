@@ -1,0 +1,112 @@
+<template>
+  <div>
+    <el-card>
+      <h3><i class="el-icon-fa-filter icon-lg"></i> 编辑筛选器</h3>
+      <el-form class="order-form" label-width="100px">
+        <el-form-item label="筛选器名称">
+          <el-input class="shorter-input" v-model="filterData.name"></el-input>
+        </el-form-item>
+        <el-form-item label="筛选条件">
+          <condition-conf :filters="filterData.filters" @on-filter-change="onFilterMutated"></condition-conf>
+        </el-form-item>
+        <el-form-item label="排序规则">
+          <order-conf :order="filterData.order" @on-order-change="onFilterMutated"></order-conf>
+        </el-form-item>
+        <el-form-item label="显示列">
+          <column-conf :columns="filterData.show" @on-column-change="onFilterMutated"></column-conf>
+        </el-form-item>
+      </el-form>
+    </el-card>
+  </div>
+</template>
+
+<script>
+  import conditionConf from './_plugins/_conditionConf'
+  import orderConf from './_plugins/_orderConf'
+  import columnConf from './_plugins/_columnConf'
+
+  export default {
+    data () {
+      return {
+        filterData: {}
+      }
+    },
+
+    computed: {
+      orderId () {
+        return this.$route.params.id
+      }
+    },
+
+    // watch: {
+    //   filterData: {
+    //     handler (val, oldVal) {
+    //       console.log(_._isEmpty(oldVal))
+    //       if (_._isEmpty(oldVal)) return
+    //     },
+    //     deep: true
+    //   }
+    // },
+
+    created () {
+      this.getFilterData()
+    },
+
+    methods: {
+      getFilterData () {
+        let postData = {
+          action: 'filter',
+          method: 'GET',
+          data: { id: this.orderId }
+        }
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.filterData = res.data.data
+          }
+        })
+      },
+
+      onFilterMutated (args) {
+        Object.assign(this.filterData, args)
+      },
+
+      onSubmit () {
+        let postData = {
+          action: 'filter',
+          method: 'PUT',
+          data: this.filterData
+        }
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已更新！')
+          }
+        })
+      }
+    },
+
+    components: {
+      conditionConf,
+      orderConf,
+      columnConf
+    }
+  }
+</script>
+
+<style lang="less">
+  .shorter-input {
+    max-width: 200px;
+  }
+
+  .flex-checkboxes {
+    display: flex;
+    flex-wrap: wrap;
+    max-height: 280px;
+    overflow-y: scroll;
+
+    .el-checkbox {
+      margin-left: 0;
+      padding: 8px 0 0 8px;
+      flex: 1;
+    }
+  }
+</style>

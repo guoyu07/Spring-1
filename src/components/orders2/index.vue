@@ -1,7 +1,7 @@
 <template>
   <div class="orders">
     <sidebar></sidebar>
-    <router-view></router-view>
+    <router-view class="order-view"></router-view>
   </div>
 </template>
 
@@ -22,8 +22,13 @@
   }
 </script>
 
-<style>
+<style lang="less">
+  @import url("./../../assets/css/variables.less");
   .orders {
     position: relative;
+  }
+
+  .order-view {
+    padding-left: 200px;
   }
 </style>

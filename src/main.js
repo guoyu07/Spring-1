@@ -261,11 +261,11 @@ Vue.prototype.getTask = (arrMsg, taskKeyArr) => {
   return rs
 }
 
-Vue.prototype.isEmptyObj = obj => {
-  for (const id in obj) {
-    return id
-  }
-}
+// Vue.prototype.isEmptyObj = obj => {
+//   for (const id in obj) {
+//     return id
+//   }
+// }
 
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
   let data = {}

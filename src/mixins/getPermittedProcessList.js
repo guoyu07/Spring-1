@@ -18,7 +18,7 @@ export default {
       }
       this.http.post('/activiti/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
-          this.permittedProcessList = res.data.data
+          this.permittedProcessList = res.data.data.list
           for (let i = 0; i < this.permittedProcessList.length; i++) {
             this.$set(this.permittedProcessList[i], 'editing', false)
           }

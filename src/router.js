@@ -152,6 +152,9 @@ const routes = [{
     }, {
       path: '/orders/queues/:id/edit',
       component: resolve => require(['./components/orders2/pages/edit'], resolve)
+    }, {
+      path: '/orders/queues/new',
+      component: resolve => require(['./components/orders2/pages/new'], resolve)
     }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
