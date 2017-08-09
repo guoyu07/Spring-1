@@ -137,14 +137,14 @@ const routes = [{
       component: resolve => require(['./components/custom/pages/bpmn'], resolve)
     }]
   }, {
+  //   path: '/orders',
+  //   component: require('./components/orders/index'),
+  //   children: [{
+  //     path: '',
+  //     component: resolve => require(['./components/orders/pages/list'], resolve)
+  //   }]
+  // }, {
     path: '/orders',
-    component: require('./components/orders/index'),
-    children: [{
-      path: '',
-      component: resolve => require(['./components/orders/pages/list'], resolve)
-    }]
-  }, {
-    path: '/orders2',
     component: require('./components/orders2/index'),
     children: [{
       path: '/orders/queues/:id',
