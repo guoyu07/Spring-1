@@ -15,9 +15,13 @@
       width="150"
       trigger="click">
       <el-checkbox-group class="flex-checkboxes" v-model="selectedFilterLabels" @change="onFilterChange">
+        <el-input
+          placeholder="搜索"
+          icon="search"
+          size="small"
+          v-model="searchLabel"></el-input>
         <el-checkbox
-          :ref="filter.label"
-          v-for="filter in filterList"
+          v-for="filter in filteredList"
           :label="filter.label"
           :key="filter.label"></el-checkbox>
       </el-checkbox-group>
@@ -37,7 +41,18 @@
         filterList: [],
         selectedFilters: [],
         selectedFilterLabels: [],
+        searchLabel: '',
         activeTab: ''
+      }
+    },
+
+    computed: {
+      filteredList () {
+        // this.filterList.forEach((_) => {
+        //   console.log(_.label.indexOf(this.searchLabel))
+        // })
+        // if (!this.searchLabel.trim()) return
+        return this.filterList.filter(_ => _.label.indexOf(this.searchLabel.trim()) >= 0)
       }
     },
 

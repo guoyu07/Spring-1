@@ -22,8 +22,13 @@
       width="150"
       trigger="click">
       <el-checkbox-group class="flex-checkboxes" v-model="selectedColumnLabels" @change="onColumnChange">
+        <el-input
+          placeholder="搜索"
+          icon="search"
+          size="small"
+          v-model="searchLabel"></el-input>
         <el-checkbox
-          v-for="col in columnList"
+          v-for="col in filteredList"
           :label="col.label"
           :key="col.label"></el-checkbox>
       </el-checkbox-group>
@@ -44,7 +49,18 @@
       return {
         columnList: [],
         selectedColumns: [],
-        selectedColumnLabels: []
+        selectedColumnLabels: [],
+        searchLabel: ''
+      }
+    },
+
+    computed: {
+      filteredList () {
+        // this.filterList.forEach((_) => {
+        //   console.log(_.label.indexOf(this.searchLabel))
+        // })
+        // if (!this.searchLabel.trim()) return
+        return this.columnList.filter(_ => _.label.indexOf(this.searchLabel.trim()) >= 0)
       }
     },
 
