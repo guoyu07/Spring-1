@@ -1,7 +1,7 @@
 <template>
   <div>
-    <el-select v-model="selectedOrder" value-key="key">
-      <el-option v-for="field in orderFields" :label="field.label" :value="field"></el-option>
+    <el-select v-model="selectedOrder" filterable value-key="key">
+      <el-option v-for="field in orderList" :label="field.label" :value="field"></el-option>
     </el-select>
     <span :class="[arrowClass, 'order-arrow']" @click="onToggleOrder"></span>
   </div>
@@ -24,6 +24,19 @@
           'el-icon-fa-long-arrow-down': !this.isAsce
         }
       }
+
+      // selectedOrder () {
+      //   if (_._isEmpty(this.order) || !this.orderList.length) return null
+      //   let orderKey = this.order.charAt(0) === '-'
+      //                ? this.order.slice(1)
+      //                : this.order
+      //   return this.orderList.find(_ => _.key === orderKey)
+      // },
+
+      // isAsce () {
+      //   if (_._isEmpty(this.order) || !this.selectedOrder) return false
+      //   return !!(this.selectedOrder.key.charAt(0) !== '-')
+      // }
     },
 
     watch: {
@@ -34,21 +47,13 @@
           this.$emit('on-order-change', { order: val.key })
         },
         deep: true
-      },
-
-      isAsce (val, oldVal) {
-        if (!val) {
-          this.selectedOrder.key = '-' + this.selectedOrder.key
-        } else if (val && !oldVal) {
-          this.selectedOrder.key = this.selectedOrder.key.slice(1)
-        }
       }
     },
 
     data () {
       return {
-        orderFields: [],
-        selectedOrder: {},
+        orderList: [],
+        selectedOrder: null,
         isAsce: false
       }
     },
@@ -66,7 +71,7 @@
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.orderFields = res.data.data.list
+            this.orderList = res.data.data.list
             this.initializeSelectedOrder()
           }
         })
@@ -76,12 +81,23 @@
         let orderKey = this.order.charAt(0) === '-'
                      ? this.order.slice(1)
                      : this.order
-        this.selectedOrder = this.orderFields.find(_ => _.key === orderKey)
+        this.selectedOrder = this.orderList.find(_ => _.key === orderKey)
         this.isAsce = !!(this.selectedOrder.key.charAt(0) !== '-')
       },
 
       onToggleOrder () {
         this.isAsce = !this.isAsce
+        if (!this.isAsce) {
+          for (let item of this.orderList) {
+            item.key = '-' + item.key
+          }
+          // this.selectedOrder.key = '-' + this.selectedOrder.key
+        } else {
+          // this.selectedOrder.key = this.selectedOrder.key.slice(1)
+          for (let item of this.orderList) {
+            item.key = item.key.slice(1)
+          }
+        }
       }
     }
   }
