@@ -348,7 +348,7 @@ export default {
       const postData = {
         action: 'process/form',
         method: 'POST',
-        data: this.formConfig
+        data: { form: this.formConfig, pkey: this.$route.query.pkey, tkey: this.$route.query.tkey }
       }
       // this.formConfig.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
       // this.formConfig.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
