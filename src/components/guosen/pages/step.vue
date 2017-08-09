@@ -149,11 +149,11 @@
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')" :loading="submitLoading">{{action.name}}</el-button>
                 <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
-                  <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
+                  <el-button type="primary" @click="onManual(action)" :loading="submitLoading">{{action.name}}</el-button>
                 </el-tooltip>
-                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='back'" type="danger" :loading="submitLoading" @click="onReject(applyData, action)">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>
@@ -255,7 +255,8 @@
         previewPage: 1,
         pageNum: 1,
         idcrackList: [],
-        idcrackTaked: []
+        idcrackTaked: [],
+        submitLoading: false
       }
     },
     created () {
@@ -875,12 +876,7 @@
         })
       },
       postMethod (id, data) {
-        // if (data.body.length === 0) {
-        //   this.applyData.body.forEach(item => {
-        //     data.body.push({})
-        //   })
-        // }
-        // console.log(data)
+        this.submitLoading = true
         for (const headerid in data.header) {
           // console.log(headerid, data.header[headerid], !data.header[headerid])
           if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
@@ -914,6 +910,7 @@
         }
         this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
+            this.submitLoading = false
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
@@ -932,7 +929,6 @@
         if (ref) { // 有表单的情况下，表单的自验证
           this.$refs['assignForm'].validate((valid) => {
             if (valid) {
-              console.log(this.assignForm.body)
               if (this.assignForm.body) {
                 for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
                   for (const item in data) {
@@ -967,6 +963,7 @@
         }
       },
       manualMethod (action) {
+        this.submitLoading = true
         const postData = {
           action: 'do/activiti/form/action',
           method: 'POST',
@@ -978,6 +975,7 @@
         }
         this.http.post('', this.parseData(postData))
         .then((res) => {
+          this.submitLoading = false
           if (res && res.status === 200) {
             this.$message({
               type: 'success',
@@ -997,6 +995,7 @@
             this.$message.error('失败：驳回意见不可留空！')
             return
           }
+          this.submitLoading = true
           let postData = {
             action: 'task',
             method: 'POST',
@@ -1007,6 +1006,7 @@
             }
           }
           this.http.post('/flow/', this.parseData(postData)).then((res) => {
+            this.submitLoading = false
             if (res.status === 200) {
               this.$message.success('已驳回！')
             }

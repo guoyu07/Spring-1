@@ -60,18 +60,18 @@
             <h4>基础配置</h4>
             <el-form label-width="80px" label-position="left" :inline="true">
               <el-form-item label="表单名称">
-                <el-input v-model="formConfig.tname" disabled></el-input>
+                <el-input v-model="$route.query.tname" disabled></el-input>
               </el-form-item>
               <el-form-item label="表单 Key">
-                <el-input v-model="formConfig.tkey" class="code-input" disabled></el-input>
+                <el-input v-model="$route.query.tkey" class="code-input" disabled></el-input>
               </el-form-item>
               <br>
-              <el-form-item label="操作按钮" v-if="formConfig.tkey !== 'start'">
+              <el-form-item label="操作按钮" v-if="$route.query.tkey !== 'start'">
                 <el-checkbox-group v-model="checkedActions" @change="actionChange">
                   <el-checkbox v-for="ac of actions" :label="ac.type"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
-              <template v-if="formConfig.form.action.find(_ => _.type === 'target') || checkedActions.includes('target')">
+              <template v-if="formConfig.action.find(_ => _.type === 'target') || checkedActions.includes('target')">
                 <br>
                 <el-form-item label="下载 URL">
                   <el-popover
@@ -83,7 +83,7 @@
                   </el-popover>
                 </el-form-item>
               </template>
-              <template v-if="formConfig.form.action.find(_ => _.type === 'auto') || checkedActions.includes('auto')">
+              <template v-if="formConfig.action.find(_ => _.type === 'auto') || checkedActions.includes('auto')">
                 <!-- <br> -->
                 <el-form-item label="自动触发">
                   <el-select v-model="selectedAuto.name" @change="onChangeAuto">
@@ -91,7 +91,7 @@
                   </el-select>
                 </el-form-item>
               </template>
-              <template v-if="formConfig.form.action.find(_ => _.type === 'manual') || checkedActions.includes('manual')">
+              <template v-if="formConfig.action.find(_ => _.type === 'manual') || checkedActions.includes('manual')">
                 <!-- <br> -->
                 <el-form-item label="手动触发">
                   <el-select v-model="selectedManual.name" @change="onChangeManual">
@@ -106,7 +106,7 @@
                 <el-checkbox v-model="formConfig.form.show_history">是否显示步骤</el-checkbox>
               </el-form-item>
 
-              <!-- <template v-if="formConfig.form.action.find(_ => _.type !== 'target')">
+              <!-- <template v-if="formConfig.action.find(_ => _.type !== 'target')">
                 <br>
                 <el-form-item label="触发方式">
                   <el-select v-model="selectedTrigger" @change="showFlag = false">
@@ -115,56 +115,56 @@
                   <span v-if="showFlag" class="show-flag">{{selectedTrigger.name}}</span>
                 </el-form-item>
                 <el-form-item>
-                  <el-radio label="auto" v-model="formConfig.form.action.find(_ => _.type !== 'target').type">自动</el-radio>
-                  <el-radio label="manual" v-model="formConfig.form.action.find(_ => _.type !== 'target').type">手动</el-radio>
+                  <el-radio label="auto" v-model="formConfig.action.find(_ => _.type !== 'target').type">自动</el-radio>
+                  <el-radio label="manual" v-model="formConfig.action.find(_ => _.type !== 'target').type">手动</el-radio>
                 </el-form-item>
               </template> -->
             </el-form>
           </el-row>
           <el-row class="form-block">
             <h4>Header 配置</h4>
-            <form-conf :config-data="formConfig.form.form.header" :presets="presetList" :option-presets="optionPresets" @on-config-change="onHeaderConfigChange"></form-conf>
+            <form-conf :config-data="formConfig.form.header" :presets="presetList" :option-presets="optionPresets" @on-config-change="onHeaderConfigChange"></form-conf>
           </el-row>
           <el-row class="form-block">
-            <h4>Body 配置 ({{formConfig.form.form.body.body_list.length}})</h4>
+            <h4>Body 配置 ({{formConfig.form.body.body_list.length}})</h4>
             <el-row>
               <h5>Body 个数配置</h5>
-              <el-select v-model="formConfig.form.form.body.count.type" @change="countConfig">
+              <el-select v-model="formConfig.form.body.count.type" @change="countConfig">
                 <el-option label="静态" value="static"></el-option>
                 <el-option label="来自以往节点 header" value="form_header"></el-option>
                 <el-option label="来自当前节点 header" value="message_header"></el-option>
               </el-select>
-              <el-popover v-if="formConfig.form.form.body.count.type === 'static'"
+              <el-popover v-if="formConfig.form.body.count.type === 'static'"
                 placement="right" trigger="click">
                 <h5>Min: </h5>
-                <el-input-number size="small" v-model="formConfig.form.form.body.count.min"></el-input-number>
+                <el-input-number size="small" v-model="formConfig.form.body.count.min"></el-input-number>
                 <h5>Max: </h5>
-                <el-input-number size="small" v-model="formConfig.form.form.body.count.max"></el-input-number>
+                <el-input-number size="small" v-model="formConfig.form.body.count.max"></el-input-number>
                 <el-button slot="reference">配置</el-button>
               </el-popover>
-              <el-popover v-if="formConfig.form.form.body.count.type === 'form_header'"
+              <el-popover v-if="formConfig.form.body.count.type === 'form_header'"
                 placement="right" trigger="click">
                 <h5>所取表单 header 中的字段：</h5>
-                <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+                <el-input size="small" v-model="formConfig.form.body.count.key_path"></el-input>
                 <el-button slot="reference">配置</el-button>
               </el-popover>
-              <el-popover v-if="formConfig.form.form.body.count.type === 'message_header'"
+              <el-popover v-if="formConfig.form.body.count.type === 'message_header'"
                 placement="right" trigger="click">
                 <h5>所取流程节点 ID：</h5>
-                <el-input size="small" v-model="formConfig.form.form.body.count.id"></el-input>
+                <el-input size="small" v-model="formConfig.form.body.count.id"></el-input>
                 <h5>所取该节点下表单的字段：</h5>
-                <el-input size="small" v-model="formConfig.form.form.body.count.key_path"></el-input>
+                <el-input size="small" v-model="formConfig.form.body.count.key_path"></el-input>
                 <el-button slot="reference">配置</el-button>
               </el-popover>
             </el-row>
-            <el-row v-for="(body, index) in formConfig.form.form.body.body_list">
+            <el-row v-for="(body, index) in formConfig.form.body.body_list">
               <h5>Body #{{index + 1}} {{body.name}}</h5>
               <el-card>
                 <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
-                    @click="onDeleteBody(formConfig.form.form.body.body_list, body)">删除 Body</el-button>
+                    @click="onDeleteBody(formConfig.form.body.body_list, body)">删除 Body</el-button>
                 </div>
               </el-card>
             </el-row>
@@ -173,7 +173,7 @@
             <el-dropdown trigger="click" @command="selectClonedBody">
               <el-button type="primary" :plain="true" size="small"><i class="el-icon-fa-clone"></i> 克隆 Body</el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="(body, index) of formConfig.form.form.body.body_list" :command="index.toString()">Body #{{index + 1}}</el-dropdown-item>
+                <el-dropdown-item v-for="(body, index) of formConfig.form.body.body_list" :command="index.toString()">Body #{{index + 1}}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-row>
@@ -246,13 +246,13 @@ export default {
   },
   computed: {
     selectedTarget () {
-      return this.formConfig.form.action.find(_ => _.type === 'target') ? this.formConfig.form.action.find(_ => _.type === 'target') : {}
+      return this.formConfig.action.find(_ => _.type === 'target') ? this.formConfig.action.find(_ => _.type === 'target') : {}
     },
     selectedAuto () {
-      return this.formConfig.form.action.find(_ => _.type === 'auto') ? this.formConfig.form.action.find(_ => _.type === 'auto') : {}
+      return this.formConfig.action.find(_ => _.type === 'auto') ? this.formConfig.action.find(_ => _.type === 'auto') : {}
     },
     selectedManual () {
-      return this.formConfig.form.action.find(_ => _.type === 'manual') ? this.formConfig.form.action.find(_ => _.type === 'manual') : {}
+      return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
     }
   },
   activated () {
@@ -262,20 +262,30 @@ export default {
      * 正常的 Restfull API 是拿一个 id 再去获取详情。
      * 这里是直接路由传对象过来，所以刷新时让他回退。
      */
-    this.formConfig = this.$route.query.row || null
-    if (this.formConfig && this.formConfig.form) {
-      // body 类型：从 obj 修改为 arr
-      const bodyIsArr = Array.isArray(this.formConfig.form.form.body.body_list)
-      if (!bodyIsArr) {
-        this.$set(this.formConfig.form.form.body.count, 'type', 'static')
-        this.formConfig.form.form.body.body_list = [this.formConfig.form.form.body.body_list]
-      }
-    } else {
-      this.$router.go(-1)
+    // this.formConfig = this.$route.query.row || null
+    // 根据所选流程 pkey tkey 获取流程下表单
+    const postData = {
+      action: 'process/form',
+      method: 'GET',
+      data: { pkey: this.$route.query.pkey, tkey: this.$route.query.tkey }
     }
-    if (this.formConfig.tkey !== 'start') this.getActionDef()
-    this.initActions()
-    this.initiateFieldsets()
+    this.http.post('/form/', this.parseData(postData)).then((res) => {
+      console.log(res)
+      this.formConfig = res.data.data
+      if (this.formConfig && this.formConfig.form) {
+        // body 类型：从 obj 修改为 arr
+        const bodyIsArr = Array.isArray(this.formConfig.form.body.body_list)
+        if (!bodyIsArr) {
+          this.$set(this.formConfig.form.body.count, 'type', 'static')
+          this.formConfig.form.body.body_list = [this.formConfig.form.body.body_list]
+        }
+      } else {
+        this.$router.go(-1)
+      }
+      if (this.$route.query.tkey !== 'start') this.getActionDef()
+      this.initActions()
+      this.initiateFieldsets()
+    })
   },
   methods: {
     getActionDef () {
@@ -291,17 +301,17 @@ export default {
 
     initActions () {
       // fuck this shit
-      if (this.formConfig.form.action.find(_ => _.type === 'manual')) {
-        this.actions.find(_ => _.type === 'manual').name = this.formConfig.form.action.find(_ => _.type === 'manual').name
+      if (this.formConfig.action.find(_ => _.type === 'manual')) {
+        this.actions.find(_ => _.type === 'manual').name = this.formConfig.action.find(_ => _.type === 'manual').name
       }
-      if (this.formConfig.form.action.find(_ => _.type === 'auto')) {
-        this.actions.find(_ => _.type === 'auto').name = this.formConfig.form.action.find(_ => _.type === 'auto').name
+      if (this.formConfig.action.find(_ => _.type === 'auto')) {
+        this.actions.find(_ => _.type === 'auto').name = this.formConfig.action.find(_ => _.type === 'auto').name
       }
       // 拿到 actions 的 name
-      this.checkedActions = this.formConfig.form.action.map(item => item.type)
+      this.checkedActions = this.formConfig.action.map(item => item.type)
     },
     initiateFieldsets () {
-      for (let body of this.formConfig.form.form.body.body_list) {
+      for (let body of this.formConfig.form.body.body_list) {
         console.log(body)
         this.fieldsets.push(body.attr_list)
       }
@@ -309,8 +319,8 @@ export default {
     },
     // 选择功能按钮 action
     actionChange (arr) {
-      this.formConfig.form.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
-      console.log(this.formConfig.form.action)
+      this.formConfig.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
+      console.log(this.formConfig.action)
     },
     onChangeAuto (val) {
       if (val === 'CMDB更新实例') {
@@ -340,13 +350,13 @@ export default {
         method: 'POST',
         data: this.formConfig
       }
-      // this.formConfig.form.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
-      // this.formConfig.form.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
-      // this.formConfig.form.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
-      // console.log(this.formConfig.form.action.find(_ => _.type !== 'target'))
-      // this.$set(this.formConfig.form.action, 'target', this.selectedTarget)
+      // this.formConfig.action.find(_ => _.type !== 'target').desc = this.selectedTrigger.desc
+      // this.formConfig.action.find(_ => _.type !== 'target').id = this.selectedTrigger.id
+      // this.formConfig.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
+      // console.log(this.formConfig.action.find(_ => _.type !== 'target'))
+      // this.$set(this.formConfig.action, 'target', this.selectedTarget)
       if (!this.selectedTarget) {
-        Object.assign(this.formConfig.form.action.find(_ => _.type === 'target'), this.selectedTarget)
+        Object.assign(this.formConfig.action.find(_ => _.type === 'target'), this.selectedTarget)
       }
 
       console.log(this.formConfig)
@@ -361,7 +371,7 @@ export default {
     },
     // 增加 body
     addBodyConfig () {
-      this.formConfig.form.form.body.body_list.push({
+      this.formConfig.form.body.body_list.push({
         attr_list: []
         // id: new Date().getUTCMilliseconds()
       })
@@ -369,8 +379,8 @@ export default {
     // 选择克隆 body
     selectClonedBody (cmd) {
       const selectedBodyIndex = Number(cmd)
-      this.formConfig.form.form.body.body_list.push({
-        attr_list: this.formConfig.form.form.body.body_list[selectedBodyIndex].attr_list
+      this.formConfig.form.body.body_list.push({
+        attr_list: this.formConfig.form.body.body_list[selectedBodyIndex].attr_list
       })
     },
     // 删除 body
@@ -414,15 +424,10 @@ export default {
     // 监听子组件 props 副本改变事件
     onHeaderConfigChange (args) {
       console.log('received!!!')
-      this.formConfig.form.form.header = args.val
+      this.formConfig.form.header = args.val
     },
     onBodyConfigChange (args) {
-      console.log('received!!!')
-      console.log(args.val)
-      // console.log(this.formConfig.form.form.body.body_list)
-      // console.log(this.formConfig.form.form.body.body_list[args.index])
-      // console.log(args.val)
-      this.formConfig.form.form.body.body_list[args.index].attr_list = args.val
+      this.formConfig.form.body.body_list[args.index].attr_list = args.val
     }
   },
   components: {

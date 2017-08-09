@@ -50,7 +50,7 @@
             </el-form>
           </template>
           <div class="btn-area">
-            <el-button type="primary" @click="onSubmit('applyForm')">立即创建</el-button>
+            <el-button type="primary" @click="onSubmit('applyForm')" :loading="submitLoading">立即创建</el-button>
             <el-button v-if="!editInfo.id" @click="resetForm('applyForm')">重置</el-button>
           </div>
         </el-card>
@@ -74,7 +74,8 @@
         applyForm: {
           header: {},
           body: []
-        }
+        },
+        submitLoading: false
       }
     },
     created () {
@@ -186,6 +187,7 @@
           if (valid) {
             this.$refs['applyForm'].validate(valid => {
               if (valid) {
+                this.submitLoading = true
                 let postData = {}
                 if (this.editInfo.id) {
                   postData = {
@@ -240,6 +242,7 @@
                 this.http.post('/flow/', this.parseData(postData))
                 .then((res) => {
                   // console.log(res, res.data.data)
+                  this.submitLoading = false
                   if ((res && res.status === 200) || (res && res.status === 201)) {
                     this.$notify.success({
                       title: '成功',
