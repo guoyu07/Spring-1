@@ -70,7 +70,7 @@
       }
     },
 
-    mounted () {
+    created () {
       this.getColumnList()
     },
 

@@ -66,7 +66,7 @@
       }
     },
 
-    mounted () {
+    created () {
       this.getFilterList()
     },
 
