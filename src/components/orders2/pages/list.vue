@@ -30,16 +30,22 @@
       }
     },
 
+    watch: {
+      '$route.params.id' (id) {
+        this.getFilterData(id)
+      }
+    },
+
     mounted () {
-      this.getFilterData()
+      this.getFilterData(this.orderId)
     },
 
     methods: {
-      getFilterData () {
+      getFilterData (id) {
         let postData = {
           action: 'filter',
           method: 'GET',
-          data: { id: this.orderId }
+          data: { id }
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
