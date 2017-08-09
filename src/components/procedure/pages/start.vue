@@ -83,8 +83,7 @@
           </el-form>
         </el-card>
         <div class="btn-area">
-          <!-- :disabled="validateForm" -->
-          <el-button type="primary" @click="onSubmit" icon="check">确认</el-button>
+          <el-button type="primary" @click="onSubmit" icon="check" :loading="submitLoading">确认</el-button>
           <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
           <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
         </div>
@@ -109,11 +108,11 @@
         existingForm: {},
         hostList: [],
         taskFormData: {},
-        validateForm: true,
         tabsValue: '0',
         tabsIndex: 0,
         bodyLableName: [],
-        Editdata: {}
+        Editdata: {},
+        submitLoading: false
       }
     },
     computed: {
@@ -478,6 +477,7 @@
         })
       },
       postMethod (data) {
+        this.submitLoading = true
         let postFormData = {
           header: {},
           body: []
@@ -529,6 +529,7 @@
         console.log(postFormData)
         this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
+            this.submitLoading = false
             if (res && res.status === 200) {
               this.$message({
                 message: '成功!',
