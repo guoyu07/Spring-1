@@ -132,19 +132,16 @@
                       </div>
                   </div>
                 </div>
-                <div class="clear">
-                  <el-button v-if="routerInfo.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
-                </div>
               </el-tab-pane>
             </el-tabs>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')" :loading="submitLoading">{{action.name}}</el-button>
                 <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
-                  <el-button type="primary" @click="onManual(action)">{{action.name}}</el-button>
+                  <el-button type="primary" @click="onManual(action)" :loading="submitLoading">{{action.name}}</el-button>
                 </el-tooltip>
-                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)" :loading="submitLoading">{{action.name}}</el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>
@@ -198,21 +195,13 @@
         taskForm: {},
         taskFormAll: {},
         bodyLableName: [],
-        showTaskForm: [],
         assignForm: {
           header: {},
           body: []
         },
-        index: 0,
-        selectedDevices: [],
-        searchKeyList: [],
-        searchKeys: {},
-        searchData: {},
+        tabIndex: 0,
         path_list: [],
-        hostList: [],
-        previewShown: false,
-        previewPage: 1,
-        pageNum: 1
+        submitLoading: false
       }
     },
     created () {
@@ -501,20 +490,8 @@
         })
       },
       handleClick (tab, event) {
-        this.index = tab.index
-        // console.log(this.index)
-      },
-      onHostsChange (val, index) {
-        // console.log(val, index)
-        if (index !== undefined) {
-          for (const id in this.assignForm.body[index]) {
-            this.assignForm.body[index][id] = val
-          }
-        } else {
-          this.hostList = []
-          this.hostList = val
-        }
-        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+        this.tabIndex = tab.index
+        // console.log(this.tabIndex)
       },
       onSubmit (assignForm) {
         this.taskForm.header.map(header => {
@@ -660,12 +637,7 @@
         })
       },
       postMethod (id, data) {
-        // if (data.body.length === 0) {
-        //   this.applyData.body.forEach(item => {
-        //     data.body.push({})
-        //   })
-        // }
-        // console.log(data)
+        this.submitLoading = true
         for (const headerid in data.header) {
           // console.log(headerid, data.header[headerid], !data.header[headerid])
           if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
@@ -699,6 +671,7 @@
         }
         this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
+            this.submitLoading = false
             if (res && res.status === 200) {
               this.$message({
                 type: 'success',
@@ -752,6 +725,7 @@
         }
       },
       manualMethod (action) {
+        this.submitLoading = true
         const postData = {
           action: 'do/activiti/form/action',
           method: 'POST',
@@ -763,6 +737,7 @@
         }
         this.http.post('', this.parseData(postData))
         .then((res) => {
+          this.submitLoading = false
           if (res && res.status === 200) {
             this.$message({
               type: 'success',
@@ -782,6 +757,7 @@
             this.$message.error('失败：驳回意见不可留空！')
             return
           }
+          this.submitLoading = true
           let postData = {
             action: 'task',
             method: 'POST',
@@ -792,6 +768,7 @@
             }
           }
           this.http.post('/flow/', this.parseData(postData)).then((res) => {
+            this.submitLoading = false
             if (res.status === 200) {
               this.$message.success('已驳回！')
             }
