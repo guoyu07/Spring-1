@@ -120,14 +120,31 @@
             <h5 class="sub-title"><i class="el-icon-circle-check"></i> 请勾选欲指派的用户或候选组：</h5>
             <el-form label-width="60px" label-position="left">
               <el-form-item label="用户">
-                <el-radio-group v-model="newAssignee">
+                <!-- <el-radio-group v-model="newAssignee">
                   <el-radio v-for="user in userList" :label="user.userId" :disabled="assignViewData.task.assignee === user.userId">{{user.code}}</el-radio>
-                </el-radio-group>
+                </el-radio-group> -->
+                <el-select v-model="newAssignee" filterable clearable placeholder="请选择用户">
+                  <el-option
+                    v-for="user in userList"
+                    :key="user.userId"
+                    :label="user.userId"
+                    :value="user.code"
+                    :disabled="assignViewData.task.assignee === user.userId">
+                  </el-option>
+                </el-select>
               </el-form-item>
               <el-form-item label="候选组">
-                <el-checkbox-group v-model="newAssigneeGroup">
+                <!-- <el-checkbox-group v-model="newAssigneeGroup">
                   <el-checkbox v-for="role in roleList" :label="role.key" :checked="assignViewData.task.candidate_groups.includes(role.key)">{{role.name}}</el-checkbox>
-                </el-checkbox-group>
+                </el-checkbox-group> -->
+                <el-select v-model="newAssigneeGroup" multiple filterable placeholder="请选择候选组">
+                  <el-option
+                    v-for="role in roleList"
+                    :key="role.key"
+                    :label="role.name"
+                    :value="role.key">
+                  </el-option>
+                </el-select>
               </el-form-item>
             </el-form>
           </el-col>
@@ -178,11 +195,11 @@
       getProcessList () {
         this.processLoading = true
         let postData = {
-          action: 'permission/process',
+          action: 'process/define', // permission/process
           method: 'GET',
           data: {}
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.processList = res.data.data
             this.processList.map(item => {
