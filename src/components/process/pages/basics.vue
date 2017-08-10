@@ -50,6 +50,7 @@
                               icon="minus"
                               type="danger"
                               size="small"
+                              style="margin-left: 6px;"
                               :class="{ empty: !adminData.isCheckable }"
                               @click="onRemove(scope.row.pkey, { adminType: 'user', operationType: 'admin' })">{{adminData.isCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
@@ -78,6 +79,7 @@
                               icon="minus"
                               type="danger"
                               size="small"
+                              style="margin-left: 6px;"
                               :class="{ empty: !initiatorData.isCheckable }"
                               @click="onRemove(scope.row.pkey, { initiatorType: 'user', operationType: 'initiator' })">{{initiatorData.isCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
@@ -108,6 +110,7 @@
                               icon="minus"
                               type="danger"
                               size="small"
+                              style="margin-left: 6px;"
                               :class="{ empty: !adminData.isCheckable }"
                               @click="onRemove(scope.row.pkey, { adminType: 'group', operationType: 'admin' })">{{adminData.isCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
