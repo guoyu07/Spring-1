@@ -31,5 +31,22 @@ export default {
     }
 
     return true
+  },
+
+  _byString (obj, str) {
+    str = str.replace(/\[(\w+)\]/g, '.$1')
+    str = str.replace(/^\./, '')
+    var a = str.split('.')
+    console.log('a: ', a)
+    for (let i = 0, n = a.length; i < n; ++i) {
+      var k = a[i]
+      console.log('k: ', k)
+      if (k in obj) {
+        obj = obj[k]
+      } else {
+        return false
+      }
+    }
+    return obj
   }
 }

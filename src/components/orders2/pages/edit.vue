@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card>
-      <h3><i class="el-icon-fa-filter icon-lg"></i> 编辑筛选器</h3>
+      <h3><i class="el-icon-fa-filter icon-lg"></i> 编辑{{filterData.name}}筛选器</h3>
       <el-form class="order-form" label-width="100px">
         <el-form-item label="筛选器名称">
           <el-input class="shorter-input" v-model="filterData.name"></el-input>
