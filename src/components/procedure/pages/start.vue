@@ -34,7 +34,7 @@
               </div>
             </div>
             <!-- body 表单填写 -->
-            <template v-if="postForm.body && postForm.body.length !== 0">
+            <!-- <template v-if="postForm.body && postForm.body.length !== 0">
               <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
                 <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
                   增加
@@ -79,9 +79,59 @@
                   </div>
                 </el-tab-pane>
               </el-tabs>
+            </template> -->
+            <!-- body 表单新样式 填写 -->
+            <template v-if="postForm.body && postForm.body.length !== 0">
+              <el-tabs v-for="(data, index) in postForm.body" :id="'anchor-'+index" type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" editable @edit="addTab(tabsValue, index)">
+                <el-tab-pane :label="bodyLableName[index]" :closable="postForm.body.length !== 1">
+                  <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
+                    <div v-for="bodyList in taskFormData.body.body_list">
+                        <div v-if="showBodyList(bodyList, postForm, applyData, index)">
+                          <div class="form-block" v-for="formBlock in bodyList.attr_list">
+                            <h5>{{formBlock.name}}</h5>
+                            <span v-for="formItem in formBlock.value">
+                              <form-body
+                                v-if="showFormItem(formItem, postForm)"
+                                :item="postForm.body[index]"
+                                :form-item="formItem"
+                                :whole="postForm"
+                                :index="+index">
+                              </form-body>
+                              <search-bar
+                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
+                                :index="index"
+                                :hosts="postForm.body[index]"
+                                :attr-list="formItem"
+                                :limit="getLimitQuantity(formItem, postForm, applyData, index)"
+                                @on-hosts-change="onHostsChange">
+                              </search-bar>
+                              <body-table
+                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
+                                :form-data="formItem"
+                                :item="postForm.body[index]"
+                                :post-form="postForm"
+                                :index="index"
+                                :bodyTable="true">
+                              </body-table>
+                            </span>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
+              <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
+                <el-button class="btn-block margin-bottom" type="primary" icon="plus" @click="addTab(tabsValue)">
+                  增加
+                </el-button>
+              </div>
             </template>
           </el-form>
         </el-card>
+        <!-- 新样式才有锚点 -->
+        <div class="anchorNav">
+          <a href="javascript:void(0)" v-for="(data, index) in postForm.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+        </div>
         <div class="btn-area">
           <el-button type="primary" @click="onSubmit" icon="check" :loading="submitLoading">确认</el-button>
           <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
@@ -287,7 +337,6 @@
         this.$refs[formName].resetFields()
       },
       removeTab (targetName) {
-        // console.log(targetName)
         let tabs = this.postForm.body
         let activeName = this.tabsValue
         // if (activeName === targetName) {
@@ -301,12 +350,14 @@
         })
         // }
         this.tabsValue = activeName + ''
+        // console.log(targetName)
         this.postForm.body.splice(targetName, 1)
+        console.log(this.postForm.body.splice(targetName, 1))
       },
-      addTab (targetName) {
+      addTab (targetName, index) {
         var that = this
         let newData = {}
-        if (that.toCopy) {
+        if (that.toCopy || index !== undefined) {
           // 需要复制时，这里去除唯一值
           this.taskFormData.body.body_list.map(bodyList => {
             if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
@@ -315,7 +366,11 @@
                   this.setNewDataType(item, newData)
                   if (!item.unique) {
                     // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
-                    newData[item.id] = this.postForm.body[this.tabsValue][item.id]
+                    if (index !== undefined) {
+                      newData[item.id] = this.postForm.body[index][item.id]
+                    } else {
+                      newData[item.id] = this.postForm.body[this.tabsValue][item.id]
+                    }
                   }
                 })
               })
@@ -551,6 +606,10 @@
       },
       cancel () {
         this.$router.go(-1) // 跳转历史的上一页
+      },
+      goAnchor (selector) {
+        const anchor = this.$el.querySelector(selector)
+        document.body.scrollTop = anchor.offsetTop
       }
     },
     components: {
