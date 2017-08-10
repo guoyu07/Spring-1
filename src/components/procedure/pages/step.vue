@@ -18,12 +18,12 @@
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
             <!-- 表头信息显示 -->
+            <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
             <div class="history-block" v-if="!isEmptyObj(applyData.header)">
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
                   <div v-for="taskformheader in taskheader.form.form.header">
-                    <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
                     <span v-for="valueheader in taskformheader.value">
                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
                         <header-form-display

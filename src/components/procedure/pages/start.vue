@@ -82,7 +82,7 @@
             </template> -->
             <!-- body 表单新样式 填写 -->
             <template v-if="postForm.body && postForm.body.length !== 0">
-              <el-tabs v-for="(data, index) in postForm.body" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick" editable @edit="addTab(tabsValue, index)">
+              <el-tabs v-for="(data, index) in postForm.body" :id="'anchor-'+index" type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" editable @edit="addTab(tabsValue, index)">
                 <el-tab-pane :label="bodyLableName[index]" :closable="postForm.body.length !== 1">
                   <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                     <div v-for="bodyList in taskFormData.body.body_list">
@@ -128,6 +128,10 @@
             </template>
           </el-form>
         </el-card>
+        <!-- 新样式才有锚点 -->
+        <div class="anchorNav">
+          <a href="javascript:void(0)" v-for="(data, index) in postForm.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+        </div>
         <div class="btn-area">
           <el-button type="primary" @click="onSubmit" icon="check" :loading="submitLoading">确认</el-button>
           <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
@@ -333,7 +337,6 @@
         this.$refs[formName].resetFields()
       },
       removeTab (targetName) {
-        // console.log(targetName)
         let tabs = this.postForm.body
         let activeName = this.tabsValue
         // if (activeName === targetName) {
@@ -347,7 +350,9 @@
         })
         // }
         this.tabsValue = activeName + ''
+        // console.log(targetName)
         this.postForm.body.splice(targetName, 1)
+        console.log(this.postForm.body.splice(targetName, 1))
       },
       addTab (targetName, index) {
         var that = this
@@ -601,6 +606,10 @@
       },
       cancel () {
         this.$router.go(-1) // 跳转历史的上一页
+      },
+      goAnchor (selector) {
+        const anchor = this.$el.querySelector(selector)
+        document.body.scrollTop = anchor.offsetTop
       }
     },
     components: {

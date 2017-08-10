@@ -253,7 +253,7 @@
           loading: false,
           visible: false,
           isCheckable: false,
-          action: 'process/task',
+          action: 'process/start',
           type: '',
           pkey: '',
           toAdd: [],
