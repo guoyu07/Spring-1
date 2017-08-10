@@ -49,6 +49,7 @@
                               icon="minus"
                               type="danger"
                               size="small"
+                              style="margin-left: 6px;"
                               :class="{ empty: !candidateData.isUserCheckable }"
                               @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'user')">{{candidateData.isUserCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
@@ -62,7 +63,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isUserCheckable }">
-                          <el-checkbox v-for="user in task.users" :label="user.userId">{{user.code}}</el-checkbox>
+                          <el-checkbox v-for="user in task.users" :label="user.userId">{{user.nick}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -77,6 +78,7 @@
                               icon="minus"
                               type="danger"
                               size="small"
+                              style="margin-left: 6px;"
                               :class="{ empty: !candidateData.isGroupCheckable }"
                               @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'group')">{{candidateData.isGroupCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
@@ -104,7 +106,8 @@
                             icon="minus"
                             type="danger"
                             size="small"
-                            class="empty"
+                            style="margin-left: 6px;"
+                            class="fr"
                             @click="prepareRemoveAssignee(scope.row.pkey, task.tkey, task.assign)">
                           </el-button>
                           <!-- </el-tooltip> -->
@@ -112,6 +115,7 @@
                           <el-button
                             :icon="task.assign ? 'edit' : 'plus'"
                             type="success"
+                            class="fr"
                             :plain="task.assign ? true : false"
                             size="small"
                             @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey }); currentTask = task">
@@ -167,7 +171,7 @@
         <el-option
           v-for="user in userList"
           :key="user.userId"
-          :label="`${user.code} - ${user.email}`"
+          :label="`${user.nick} - ${user.email}`"
           :value="user.userId"
           :disabled="currentTask && currentTask.assignee && currentTask.assignee.userId === user.userId"></el-option>
       </el-select>
