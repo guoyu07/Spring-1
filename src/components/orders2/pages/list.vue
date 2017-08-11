@@ -86,6 +86,7 @@
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
+            console.log(res)
             const columnList = res.data.data.list
             this.filteredColumnList = columnList.filter(col => this.filteredTasks.list.some(task => keypath.get(task, col.key_path) !== undefined))
             // columnList.forEach((col) => {
