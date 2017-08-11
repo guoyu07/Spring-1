@@ -2,13 +2,46 @@
   <div>
     <el-tabs type="border-card" closable @tab-remove="onRemoveFilter" :value="activeTab">
       <el-tab-pane
-        v-for="filter in selectedFilters"
+        v-for="(filter, index) in selectedFilters"
         :label="filter.label"
         :name="filter.label">
         <template v-if="filter.type === 'str'">
-          <el-input v-model="filter.filter"></el-input>
+          <el-select
+            v-model="filter.filter"
+            multiple
+            allow-create
+            filterable
+            :placeholder="`输入创建 ${filter.label}`"></el-select>
         </template>
-        <!-- <el-select v-model="filter.filter" :key="filter.filter."></el-select> -->
+        <template v-if="filter.type === 'time'">
+          <el-select v-model="filter.filter.type">
+            <el-option label="在过去的 ${time} 之内" value="before"></el-option>
+            <el-option label="超过 ${time} 之前" value="after"></el-option>
+            <el-option label="在 ${start} 和 ${end} 之间" value="range"></el-option>
+          </el-select>
+          <template v-if="['before', 'after'].includes(filter.filter.type)">
+            <span>{{ filter.filter.type === 'before' ? '在过去的' : '超过' }}</span>
+            <el-input-number v-model="filter.filter.time" :min="1"></el-input-number>
+            <el-select v-model="filter.filter.unit">
+              <el-option value="min">分</el-option>
+              <el-option value="h">小时</el-option>
+              <el-option value="d">天</el-option>
+              <el-option value="w">周</el-option>
+            </el-select>
+            <span>{{ filter.filter.type === 'before' ? '之内' : '之前' }}</span>
+          </template>
+          <template v-else="filter.filter.type === 'range'">
+            <el-date-picker
+              v-model="filter.filter.s_date"
+              type="date"
+              placeholder="起始日期"></el-date-picker>
+            至
+            <el-date-picker
+              v-model="filter.filter.e_date"
+              type="date"
+              placeholder="终止日期"></el-date-picker>
+          </template>
+        </template>
       </el-tab-pane>
     </el-tabs>
 
@@ -76,6 +109,7 @@
     },
 
     methods: {
+
       getFilterList () {
         let postData = {
           action: 'filter/fields',
@@ -86,9 +120,10 @@
           if (res.status === 200) {
             this.filterList = res.data.data.list
             this.selectedFilters = this.filters
-            console.log(this.filters)
-            this.selectedFilterLabels = this.selectedFilters.map(_ => _.label)
-            this.activeTab = this.selectedFilters[0].label
+            this.$nextTick(() => {
+              this.selectedFilterLabels = this.selectedFilters.map(_ => _.label)
+              this.activeTab = this.selectedFilters[0].label
+            })
           }
         })
       },
@@ -100,10 +135,19 @@
 
       onFilterChange (list) {
         let filterBuffer = []
+        // console.log(this.filterList)
         for (let item of list) {
-          filterBuffer.push(this.filterList.find(_ => _.label === item))
+          this.filteredList.forEach((_) => {
+            if (_.label === item) {
+              console.log(_)
+              filterBuffer.push(_)
+            }
+          })
         }
-        this.selectedFilters = filterBuffer
+        console.log(filterBuffer)
+        this.selectedFilters = [
+          ...this.selectedFilters.filter(m => filterBuffer.some(n => n.key === m.key)),
+          ...filterBuffer.filter(i => !this.selectedFilters.some(j => j.key === i.key))]
       }
     }
   }
