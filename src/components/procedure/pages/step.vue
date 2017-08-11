@@ -9,9 +9,9 @@
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
-             task: taskData.taskDefinitionKey,
-             pkey: taskData.pkey,
-             taskList: taskData.task_list
+             task: taskData.ptask.tkey,
+             pkey: taskData.pinstance.pkey,
+             taskList: taskData.pinstance.task_list
              }"></progress-wrap>
           </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
@@ -78,6 +78,19 @@
                     <div v-for="taskbody in task.form.form.body.body_list">
                       <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
                         <p class="h5">{{task.tname}}</p>
+                        <!-- header 信息显示 -->
+                        <!-- <div v-if="task.form.header.length >= 1">
+                          <div v-for="taskformheader in task.form.form.header">
+                            <span v-for="valueheader in taskformheader.value">
+                              <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                                <header-form-display
+                                  :item="applyData.header"
+                                  :form-item="valueheader">
+                                </header-form-display>
+                              </span>
+                            </span>
+                          </div>
+                        </div> -->
                         <form-structure-display
                           :item="data"
                           :form-data="taskbody.attr_list"
@@ -152,14 +165,14 @@
     <el-dialog
       title="历史"
       v-model="showHistory">
-      <el-collapse>
-        <el-collapse-item v-for="(task, key) in taskData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+      <el-collapse v-if="taskData && taskData.pinstance">
+        <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name">
           <el-form label-position="left" label-width="90px" inline class="expanded-form">
             <el-form-item v-if="task.task_key" label="任务 Key：">
               <code>{{task.task_key}}</code>
             </el-form-item>
             <el-form-item v-if="task.operator" label="操作者：">
-              <span>{{task.operator.name}}</span>
+              <span>{{task.operator.nick}}</span>
             </el-form-item>
             <el-form-item v-if="task.time" label="处理时间：">
               <span>{{task.time}}</span>
@@ -227,16 +240,13 @@
       },
       renderTaskForm () { // 渲染表单数据
         const renderFromData = {
-          action: 'process/form/group',
+          action: 'task/form/group',
           method: 'GET',
           data: {
-            pkey: this.routerInfo.pkey,
-            tkey: this.routerInfo.tkey,
-            version: this.applyData.version
+            tid: this.routerInfo.id
           }
         }
-        this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
-          // console.log(res)
+        this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
           this.taskForm = res.data.data.form
           this.taskFormAll = res.data.data
           // console.log(this.applyData)
@@ -421,10 +431,10 @@
           })
           // 判断是否为驳回信息
           let newDataBody
-          for (var message of this.taskData.variables.message) {
+          for (var message of this.taskData.message) {
             if (message.task_key === this.routerInfo.tkey) {
               this.isEditing = true
-              this.edtingInfo = this.taskData.variables.message[this.taskData.variables.message.length - 1].form.value
+              this.edtingInfo = this.taskData.message[this.taskData.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
               newDataBody = message.form.body.map((body, bodyindex) => {
                 let data = {}
@@ -452,13 +462,14 @@
           action: 'task',
           method: 'GET',
           data: {
-            taskId: this.routerInfo.id
+            tid: this.routerInfo.id
           }
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          console.log(res)
           this.taskData = res.data.data
-          const message = res.data.data.variables.message
-          res.data.data.path_list.map(list => {
+          const message = res.data.data.message
+          res.data.data.paths.map(list => {
             list.map(path => {
               if (!this.path_list.includes(path.tkey)) {
                 this.path_list.push(path.tkey)
@@ -476,16 +487,16 @@
       },
       renderForm () { // 渲染表单数据
         const renderFromData = {
-          action: 'process/form/group',
+          action: 'task/form/groups',
           method: 'GET',
           data: {
-            pkey: this.routerInfo.pkey,
-            tkey: this.path_list,
-            version: this.applyData.version
+            tid: this.routerInfo.id,
+            tkey_list: this.path_list
           }
         }
         // this.loading = true
-        this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
+        this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
+          console.log(res)
           this.form = res.data.data.list
         })
       },
