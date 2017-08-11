@@ -16,6 +16,17 @@
           <column-conf :columns="filterData.show" @on-column-change="onFilterMutated"></column-conf>
         </el-form-item>
       </el-form>
+      <el-table
+        :data="filteredTasks.list"
+        v-loading="loading"
+        max-height="250"
+        border
+        style="opacity: .4;">
+        <el-table-column
+          v-for="col in filteredColumnList"
+          :prop="col.key_path"
+          :label="col.label"></el-table-column>
+      </el-table>
     </el-card>
   </div>
 </template>
@@ -25,47 +36,16 @@
   import orderConf from './_plugins/_orderConf'
   import columnConf from './_plugins/_columnConf'
 
+  import getFilteredTasks from './../../../mixins/getFilteredTasks'
+
   export default {
-    data () {
-      return {
-        filterData: {}
-      }
-    },
-
-    computed: {
-      orderId () {
-        return this.$route.params.id
-      }
-    },
-
-    // watch: {
-    //   filterData: {
-    //     handler (val, oldVal) {
-    //       console.log(_._isEmpty(oldVal))
-    //       if (_._isEmpty(oldVal)) return
-    //     },
-    //     deep: true
-    //   }
-    // },
+    mixins: [ getFilteredTasks ],
 
     created () {
-      this.getFilterData()
+      this.getFilterData(this.orderId)
     },
 
     methods: {
-      getFilterData () {
-        let postData = {
-          action: 'filter',
-          method: 'GET',
-          data: { id: this.orderId }
-        }
-        this.http.post('/flow/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.filterData = res.data.data
-          }
-        })
-      },
-
       onFilterMutated (args) {
         Object.assign(this.filterData, args)
       },
