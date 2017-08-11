@@ -13,7 +13,7 @@
           <order-conf :order="filterData.order" @on-order-change="onFilterMutated"></order-conf>
         </el-form-item>
         <el-form-item label="显示列">
-          <column-conf :columns="filterData.show" @on-column-change="onFilterMutated"></column-conf>
+          <column-conf :shown-columns="filterData.show" :all-columns="columnList" @on-column-change="onFilterMutated"></column-conf>
         </el-form-item>
       </el-form>
       <el-table
@@ -23,7 +23,7 @@
         border
         style="opacity: .4;">
         <el-table-column
-          v-for="col in filteredColumnList"
+          v-for="col in filterData.show"
           :prop="col.key_path"
           :label="col.label"></el-table-column>
       </el-table>
@@ -47,7 +47,9 @@
 
     methods: {
       onFilterMutated (args) {
+        // if (!args.filters) return
         Object.assign(this.filterData, args)
+        // this.getFilteredTasks()
       },
 
       onSubmit () {

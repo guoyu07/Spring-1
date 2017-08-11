@@ -5,6 +5,9 @@
         v-for="filter in selectedFilters"
         :label="filter.label"
         :name="filter.label">
+        <template v-if="filter.type === 'str'">
+          <el-input v-model="filter.filter"></el-input>
+        </template>
         <!-- <el-select v-model="filter.filter" :key="filter.filter."></el-select> -->
       </el-tab-pane>
     </el-tabs>
@@ -67,7 +70,9 @@
     },
 
     created () {
-      this.getFilterList()
+      this.$nextTick(() => {
+        this.getFilterList()
+      })
     },
 
     methods: {
@@ -81,6 +86,7 @@
           if (res.status === 200) {
             this.filterList = res.data.data.list
             this.selectedFilters = this.filters
+            console.log(this.filters)
             this.selectedFilterLabels = this.selectedFilters.map(_ => _.label)
             this.activeTab = this.selectedFilters[0].label
           }

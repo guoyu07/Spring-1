@@ -10,7 +10,7 @@
         v-loading="loading"
         border>
         <el-table-column
-          v-for="col in filteredColumnList"
+          v-for="col in filterData.show"
           :prop="col.key_path"
           :label="col.label"></el-table-column>
       </el-table>

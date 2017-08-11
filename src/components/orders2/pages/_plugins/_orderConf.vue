@@ -59,7 +59,9 @@
     },
 
     created () {
-      this.getOrderFields()
+      this.$nextTick(() => {
+        this.getOrderFields()
+      })
     },
 
     methods: {
