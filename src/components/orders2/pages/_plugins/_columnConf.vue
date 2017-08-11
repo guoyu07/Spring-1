@@ -84,8 +84,10 @@
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.columnList = res.data.data.list
-            this.selectedColumns = this.columns
-            this.selectedColumnLabels = this.selectedColumns.map(_ => _.label)
+            this.$nextTick(() => {
+              this.selectedColumns = this.columns
+              this.selectedColumnLabels = this.selectedColumns.map(_ => _.label)
+            })
           }
         })
       },

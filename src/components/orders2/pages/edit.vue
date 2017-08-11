@@ -13,21 +13,24 @@
           <order-conf :order="filterData.order" @on-order-change="onFilterMutated"></order-conf>
         </el-form-item>
         <el-form-item label="显示列">
-          <column-conf :shown-columns="filterData.show" :all-columns="columnList" @on-column-change="onFilterMutated"></column-conf>
+          <column-conf :columns="filterData.show" @on-column-change="onFilterMutated"></column-conf>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" icon="check" @click="onSubmit">提交</el-button>
         </el-form-item>
       </el-form>
-      <el-table
-        :data="filteredTasks.list"
-        v-loading="loading"
-        max-height="250"
-        border
-        style="opacity: .4;">
-        <el-table-column
-          v-for="col in filterData.show"
-          :prop="col.key_path"
-          :label="col.label"></el-table-column>
-      </el-table>
     </el-card>
+    <el-table
+      :data="filteredTasks.list"
+      v-loading="loading"
+      max-height="250"
+      border
+      style="margin-top: 12px; opacity: .4;">
+      <el-table-column
+        v-for="col in filterData.show"
+        :prop="col.key_path"
+        :label="col.label"></el-table-column>
+    </el-table>
   </div>
 </template>
 
