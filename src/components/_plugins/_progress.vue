@@ -21,7 +21,8 @@
       progress: { type: Object }
     },
     created () {
-      this.getFilteredList()
+      // this.getFilteredList()
+      console.log(this.progress.taskList)
       this.renderPro()
     },
     watch: {
@@ -55,18 +56,17 @@
                 tname: cur.tname
               }]
             })
-            if (cur.next.length > 1) {
-              // console.log(index)
+            if (cur.action.length > 1) {
               let data = {}
               data.list = []
-              const leng = cur.next.length
+              const leng = cur.action.length
               for (var i = 0; i < leng; i++) {
-                if (cur.next[i].pass === 0) {
+                if (cur.action[i].expression === 'pass==0') {
                   alltasksIndex.push(index + 1)
                   data.value = index + 1
-                  alltasks.push(cur.next[i].tkey)
+                  alltasks.push(cur.action[i].target)
                   arr.map(task => {
-                    if (task.tkey === cur.next[i].tkey) {
+                    if (task.tkey === cur.action[i].target) {
                       data.list.push({
                         tkey: task.tkey,
                         tname: task.tname
@@ -80,22 +80,22 @@
           }
           return pre
         }, [])
-      },
-      getFilteredList () {
-        // console.log(this.progress.taskList)
-        let postData = {
-          action: 'process/form',
-          method: 'GET',
-          data: {
-            pkey: this.progress.pkey,
-            tkey: this.progress.tkey,
-            form: {}
-          }
-        }
-        this.http.post('/form/', this.parseData(postData)).then((res) => {
-          console.log(res)
-        })
       }
+      // getFilteredList () {
+      //   // console.log(this.progress.taskList)
+      //   let postData = {
+      //     action: 'process/form',
+      //     method: 'GET',
+      //     data: {
+      //       pkey: this.progress.pkey,
+      //       tkey: this.progress.tkey,
+      //       form: {}
+      //     }
+      //   }
+      //   this.http.post('/form/', this.parseData(postData)).then((res) => {
+      //     console.log(res)
+      //   })
+      // }
     },
 
     computed: {
