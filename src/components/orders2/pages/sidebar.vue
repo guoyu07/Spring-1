@@ -5,9 +5,8 @@
       <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: parseInt($route.params.id) === filter.id }">
         <router-link :to="{ path: `/orders/queues/${filter.id}` }">
           <span class="filter-name">{{filter.name}}</span>
-          <span>
+          <span style="padding-right: 14px;">
             <i class="filter-number">{{filter.count}}</i>
-            <i class="filter-close el-icon-fa-times" @click="onDeleteFilter(filter)"></i>
           </span>
         </router-link>
       </li>
@@ -20,7 +19,7 @@
           <span class="filter-name">{{filter.name}}</span>
           <span>
             <i class="filter-number">{{filter.count}}</i>
-            <i class="filter-close el-icon-fa-times" @click="onDeleteFilter(filter)"></i>
+            <i class="filter-close el-icon-fa-times" @click.stop.prevent="onDeleteFilter(filter)"></i>
           </span>
         </router-link>
       </div>
@@ -33,6 +32,7 @@
 
 <script>
   import draggable from 'vuedraggable'
+  import EventHub from './../../../utils/event-hub'
 
   export default {
     data () {
@@ -64,6 +64,8 @@
 
     created () {
       this.getFilterList()
+
+      EventHub.$on('should-refetch-filters', this.getFilterList)
     },
 
     methods: {

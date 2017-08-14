@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-card>
-      <h3><i class="el-icon-fa-filter icon-lg"></i> 编辑{{filterData.name}}筛选器</h3>
+      <h3><i class="el-icon-fa-filter icon-lg"></i> {{ $route.meta.isEdit ? `编辑${filterData.name}` : '创建' }}筛选器</h3>
       <el-form class="order-form" label-width="100px">
         <el-form-item label="筛选器名称">
           <el-input class="shorter-input" v-model="filterData.name"></el-input>
@@ -41,11 +41,19 @@
 
   import getFilteredTasks from './../../../mixins/getFilteredTasks'
 
+  import EventHub from './../../../utils/event-hub'
+
   export default {
     mixins: [ getFilteredTasks ],
 
+    computed: {
+      isEdit () {
+        return this.$route.meta.isEdit
+      }
+    },
+
     created () {
-      if (this.$route.meta.isEdit) {
+      if (this.isEdit) {
         this.getFilterData(this.orderId)
       } else {
         this.filterData = {
@@ -64,7 +72,7 @@
           filters: [{
             filter: [],
             type: 'str',
-            key: 'pinstance_pnum',
+            key: 'pinstance__pnum',
             label: '流程单号'
           }]
         }
@@ -85,12 +93,18 @@
       onSubmit () {
         let postData = {
           action: 'filter',
-          method: 'PUT',
+          method: this.isEdit ? 'PUT' : 'POST',
           data: this.filterData
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.$message.success('已更新！')
+            if (this.isEdit) {
+              this.$message.success('已更新！')
+            } else {
+              this.$message.success('已创建！')
+              this.$router.push({ path: `/orders/queues/${res.data.data.id}` })
+            }
+            EventHub.$emit('should-refetch-filters')
           }
         })
       }
