@@ -13,6 +13,7 @@
             filterable
             :placeholder="`输入创建 ${filter.label}`"></el-select>
         </template>
+
         <template v-if="filter.type === 'time'">
           <el-select v-model="filter.filter.type">
             <el-option label="在过去的 ${time} 之内" value="before"></el-option>
@@ -23,10 +24,11 @@
             <span>{{ filter.filter.type === 'before' ? '在过去的' : '超过' }}</span>
             <el-input-number v-model="filter.filter.time" :min="1"></el-input-number>
             <el-select v-model="filter.filter.unit">
-              <el-option value="min">分</el-option>
-              <el-option value="h">小时</el-option>
-              <el-option value="d">天</el-option>
-              <el-option value="w">周</el-option>
+              <el-option label="分" value="min">分</el-option>
+              <el-option label="小时" value="h"></el-option>
+              <el-option label="天" value="d"></el-option>
+              <el-option label="周" value="w"></el-option>
+              <el-option label="月" value="m"></el-option>
             </el-select>
             <span>{{ filter.filter.type === 'before' ? '之内' : '之前' }}</span>
           </template>
@@ -41,6 +43,32 @@
               type="date"
               placeholder="终止日期"></el-date-picker>
           </template>
+        </template>
+
+        <template v-if="filter.type === 'user'">
+          <el-select
+            v-model="filter.filter"
+            multiple
+            placeholder="请选择用户"
+            value-key="nick">
+            <el-option
+              v-for="user in userDicts"
+              :label="user.nick"
+              :value="user"></el-option>
+          </el-select>
+        </template>
+
+        <template v-if="filter.type === 'group'">
+          <el-select
+            v-model="filter.filter"
+            multiple
+            placeholder="请选择用户组"
+            value-key="name">
+            <el-option
+              v-for="group in groupDicts"
+              :label="group.name"
+              :value="group"></el-option>
+          </el-select>
         </template>
       </el-tab-pane>
     </el-tabs>
@@ -78,7 +106,9 @@
         selectedFilters: [],
         selectedFilterLabels: [],
         searchLabel: '',
-        activeTab: ''
+        activeTab: '',
+        userDicts: [],
+        groupDicts: []
       }
     },
 
@@ -96,6 +126,12 @@
       selectedFilters: {
         handler (val, oldVal) {
           console.log('emitted!')
+          if (val.some(_ => _.type === 'user') && !this.userDicts.length) {
+            this.getUserDicts()
+          }
+          if (val.some(_ => _.type === 'group') && !this.groupDicts.length) {
+            this.getGroupDicts()
+          }
           this.$emit('on-filter-change', { filters: val })
         },
         deep: true
@@ -119,8 +155,8 @@
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.filterList = res.data.data.list
-            this.selectedFilters = this.filters
             this.$nextTick(() => {
+              this.selectedFilters = this.filters
               this.selectedFilterLabels = this.selectedFilters.map(_ => _.label)
               this.activeTab = this.selectedFilters[0].label
             })
@@ -148,6 +184,26 @@
         this.selectedFilters = [
           ...this.selectedFilters.filter(m => filterBuffer.some(n => n.key === m.key)),
           ...filterBuffer.filter(i => !this.selectedFilters.some(j => j.key === i.key))]
+      },
+
+      getUserDicts () {
+        const userApi = this.filterList.find(_ => _.type === 'user').source
+        const url = (userApi.url).replace('/api', '')
+        this.http.post(url, userApi.data).then((res) => {
+          if (res.status === 200) {
+            this.userDicts = res.data.data.list
+          }
+        })
+      },
+
+      getGroupDicts () {
+        const groupApi = this.filterList.find(_ => _.type === 'group').source
+        const url = (groupApi.url).replace('/api', '')
+        this.http.post(url, groupApi.data).then((res) => {
+          if (res.status === 200) {
+            this.groupDicts = res.data.data.list
+          }
+        })
       }
     }
   }

@@ -13,7 +13,7 @@
           <order-conf :order="filterData.order" @on-order-change="onFilterMutated"></order-conf>
         </el-form-item>
         <el-form-item label="显示列">
-          <column-conf :columns="filterData.show" @on-column-change="onFilterMutated"></column-conf>
+          <column-conf :columns="filterData.show" @on-column-change="onColumnMutated"></column-conf>
         </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="check" @click="onSubmit">提交</el-button>
@@ -45,14 +45,41 @@
     mixins: [ getFilteredTasks ],
 
     created () {
-      this.getFilterData(this.orderId)
+      if (this.$route.meta.isEdit) {
+        this.getFilterData(this.orderId)
+      } else {
+        this.filterData = {
+          name: '新过滤器',
+          order: 'pinstance__pnum',
+          show: [{
+            label: '流程单号',
+            key_path: 'pinstance.pnum'
+          }, {
+            label: '流程名称',
+            key_path: 'pinstance.pd.pname'
+          }, {
+            label: '流程分类',
+            key_path: 'pinstance.pd.category'
+          }],
+          filters: [{
+            filter: [],
+            type: 'str',
+            key: 'pinstance_pnum',
+            label: '流程单号'
+          }]
+        }
+      }
     },
 
     methods: {
       onFilterMutated (args) {
         // if (!args.filters) return
         Object.assign(this.filterData, args)
-        // this.getFilteredTasks()
+        this.getFilteredTasks()
+      },
+
+      onColumnMutated (args) {
+        Object.assign(this.filterData, args)
       },
 
       onSubmit () {

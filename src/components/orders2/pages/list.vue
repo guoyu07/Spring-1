@@ -2,7 +2,7 @@
   <div>
     <el-card class="box-card">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
-      <el-button icon="edit" style="margin-bottom: 12px">
+      <el-button icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
         <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
       </el-button>
       <el-table

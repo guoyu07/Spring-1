@@ -1,8 +1,21 @@
 <template>
   <div class="order-sidebar">
-    <h4 class="order-sidebar__title">队列</h4>
-    <draggable v-model="filterList" @start="drag=true" @end="drag=false" class="order-sidebar__list">
-      <div class="order-sidebar__item" v-for="filter in filterList" :class="{ active: parseInt($route.params.id) === filter.id }">
+    <h4 class="order-sidebar__title">系统内置</h4>
+    <ul class="order-sidebar__list">
+      <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: parseInt($route.params.id) === filter.id }">
+        <router-link :to="{ path: `/orders/queues/${filter.id}` }">
+          <span class="filter-name">{{filter.name}}</span>
+          <span>
+            <i class="filter-number">{{filter.count}}</i>
+            <i class="filter-close el-icon-fa-times" @click="onDeleteFilter(filter)"></i>
+          </span>
+        </router-link>
+      </li>
+    </ul>
+
+    <h4 class="order-sidebar__title">用户自定义</h4>
+    <draggable v-model="filterList[1].list" @start="drag=true" @end="drag=false" class="order-sidebar__list draggable">
+      <div class="order-sidebar__item" v-for="filter in filterList[1].list" :class="{ active: parseInt($route.params.id) === filter.id }">
         <router-link :to="{ path: `/orders/queues/${filter.id}` }">
           <span class="filter-name">{{filter.name}}</span>
           <span>
@@ -12,7 +25,9 @@
         </router-link>
       </div>
     </draggable>
-    <el-button class="order-sidebar__plus" type="text" size="small" icon="plus" @click="onAddQueue">新队列</el-button>
+    <router-link :to="{ path: '/orders/queues/custom/new' }">
+      <el-button class="order-sidebar__plus" type="text" size="small" icon="plus">新队列</el-button>
+    </router-link>
   </div>
 </template>
 
@@ -27,20 +42,23 @@
     },
 
     watch: {
-      filterList (val) {
-        let orderList = val.map(_ => _.id)
-        let postData = {
-          action: 'filters/order',
-          method: 'POST',
-          data: {
-            ids: orderList
+      filterList: {
+        handler (val) {
+          let orderList = val[1].list.map(_ => _.id)
+          let postData = {
+            action: 'filters/order',
+            method: 'POST',
+            data: {
+              ids: orderList
+            }
           }
-        }
-        this.http.post('/flow/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            return
-          }
-        })
+          this.http.post('/flow/', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              return
+            }
+          })
+        },
+        deep: true
       }
     },
 
@@ -83,10 +101,6 @@
             }
           })
         })
-      },
-
-      onAddQueue () {
-        this.$router.push({ path: '/orders/queues/new' })
       }
     },
 
@@ -118,6 +132,16 @@
     &__list {
       padding: 0;
       margin: 12px 0;
+
+      &.draggable {
+        .order-sidebar__item {
+          &::before {
+            content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAALCAYAAAC3ZUeVAAAAJUlEQVQI12OYOXPmfyhmgLEZcAliYAbitf//D8EgQRibgV62AwAP/odG9/7LRgAAAABJRU5ErkJggg==);
+            position: absolute;
+            left: 4px;
+          }
+        }
+      }
     }
 
     &__item {
@@ -126,12 +150,6 @@
       line-height: 32px;
       padding: 0 12px 0 16px;
       position: relative;
-
-      &::before {
-        content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAALCAYAAAC3ZUeVAAAAJUlEQVQI12OYOXPmfyhmgLEZcAliYAbitf//D8EgQRibgV62AwAP/odG9/7LRgAAAABJRU5ErkJggg==);
-        position: absolute;
-        left: 4px;
-      }
 
       &.active {
         .filter-name {

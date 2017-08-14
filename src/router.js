@@ -151,10 +151,16 @@ const routes = [{
       component: resolve => require(['./components/orders2/pages/list'], resolve)
     }, {
       path: '/orders/queues/:id/edit',
-      component: resolve => require(['./components/orders2/pages/edit'], resolve)
+      component: resolve => require(['./components/orders2/pages/edit'], resolve),
+      meta: {
+        isEdit: true
+      }
     }, {
-      path: '/orders/queues/new',
-      component: resolve => require(['./components/orders2/pages/new'], resolve)
+      path: '/orders/queues/custom/new',
+      component: resolve => require(['./components/orders2/pages/edit'], resolve),
+      meta: {
+        isEdit: false
+      }
     }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
