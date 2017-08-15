@@ -84,12 +84,8 @@
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            if (this.isEdit) {
-              this.$message.success('已更新！')
-            } else {
-              this.$message.success('已创建！')
-              this.$router.push({ path: `/orders/queues/${res.data.data.id}` })
-            }
+            this.$message.success(this.isEdit ? '已更新！' : '已创建！')
+            this.$router.push({ path: `/orders/queues/${res.data.data.id}` })
             EventHub.$emit('should-refetch-filters')
           }
         })

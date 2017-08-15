@@ -21,6 +21,7 @@
       display: block;
       text-align: center;
       transform: rotate(-90deg);
+      color: @info;
 
       &::before {
         font-size: 54px;

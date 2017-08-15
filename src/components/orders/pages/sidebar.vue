@@ -1,5 +1,6 @@
 <template>
   <div class="order-sidebar">
+    <spinner v-show="filterLoading"></spinner>
     <h4 class="order-sidebar__title">系统内置</h4>
     <ul class="order-sidebar__list">
       <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: $route.params.id === filter.id }">
@@ -32,12 +33,14 @@
 
 <script>
   import draggable from 'vuedraggable'
+  import spinner from 'vue-simple-spinner'
   import EventHub from './../../../utils/event-hub'
 
   export default {
     data () {
       return {
-        filterList: []
+        filterList: [],
+        filterLoading: false
       }
     },
 
@@ -75,11 +78,13 @@
           method: 'GET',
           data: {}
         }
+        this.filterLoading = true
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             const filter = res.data.data.list
             this.filterList = filter
             // this.$store.dispatch('get_first_filter', { filter })
+            this.filterLoading = false
           }
         })
       },
@@ -109,7 +114,8 @@
     },
 
     components: {
-      draggable
+      draggable,
+      spinner
     }
   }
 </script>
