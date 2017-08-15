@@ -59,22 +59,8 @@
         this.filterData = {
           name: '新过滤器',
           order: 'pinstance__pnum',
-          show: [{
-            label: '流程单号',
-            key_path: 'pinstance.pnum'
-          }, {
-            label: '流程名称',
-            key_path: 'pinstance.pd.pname'
-          }, {
-            label: '流程分类',
-            key_path: 'pinstance.pd.category'
-          }],
-          filters: [{
-            filter: [],
-            type: 'str',
-            key: 'pinstance__pnum',
-            label: '流程单号'
-          }]
+          show: [],
+          filters: []
         }
       }
     },

@@ -1,10 +1,12 @@
 <template>
   <div class="orders">
-    <router-view></router-view>
+    <sidebar></sidebar>
+    <router-view class="order-view"></router-view>
   </div>
 </template>
 
 <script>
+  import sidebar from './pages/sidebar.vue'
   import sidebarConf from './sidebar-conf'
 
   export default {
@@ -12,6 +14,21 @@
       this.$store.dispatch('reload_sidebar', {
         sidebarConf
       })
+    },
+
+    components: {
+      sidebar
     }
   }
 </script>
+
+<style lang="less">
+  @import url("./../../assets/css/variables.less");
+  .orders {
+    position: relative;
+  }
+
+  .order-view {
+    padding-left: 200px;
+  }
+</style>

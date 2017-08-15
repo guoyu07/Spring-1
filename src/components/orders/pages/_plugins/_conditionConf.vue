@@ -145,7 +145,6 @@
     },
 
     methods: {
-
       getFilterList () {
         let postData = {
           action: 'filter/fields',
@@ -175,12 +174,11 @@
         for (let item of list) {
           this.filteredList.forEach((_) => {
             if (_.label === item) {
-              console.log(_)
               filterBuffer.push(_)
             }
           })
         }
-        console.log(filterBuffer)
+        // 高能预警
         this.selectedFilters = [
           ...this.selectedFilters.filter(m => filterBuffer.some(n => n.key === m.key)),
           ...filterBuffer.filter(i => !this.selectedFilters.some(j => j.key === i.key))]

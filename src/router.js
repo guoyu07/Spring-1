@@ -145,19 +145,22 @@ const routes = [{
   //   }]
   // }, {
     path: '/orders',
-    component: require('./components/orders2/index'),
+    component: require('./components/orders/index'),
     children: [{
+      path: '/orders',
+      component: require('./components/orders/pages/placeholder')
+    }, {
       path: '/orders/queues/:id',
-      component: resolve => require(['./components/orders2/pages/list'], resolve)
+      component: resolve => require(['./components/orders/pages/list'], resolve)
     }, {
       path: '/orders/queues/:id/edit',
-      component: resolve => require(['./components/orders2/pages/edit'], resolve),
+      component: resolve => require(['./components/orders/pages/edit'], resolve),
       meta: {
         isEdit: true
       }
     }, {
       path: '/orders/queues/custom/new',
-      component: resolve => require(['./components/orders2/pages/edit'], resolve),
+      component: resolve => require(['./components/orders/pages/edit'], resolve),
       meta: {
         isEdit: false
       }

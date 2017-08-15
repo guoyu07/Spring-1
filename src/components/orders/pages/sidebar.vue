@@ -2,7 +2,7 @@
   <div class="order-sidebar">
     <h4 class="order-sidebar__title">系统内置</h4>
     <ul class="order-sidebar__list">
-      <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: parseInt($route.params.id) === filter.id }">
+      <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: $route.params.id === filter.id }">
         <router-link :to="{ path: `/orders/queues/${filter.id}` }">
           <span class="filter-name">{{filter.name}}</span>
           <span style="padding-right: 14px;">
@@ -77,7 +77,9 @@
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.filterList = res.data.data.list
+            const filter = res.data.data.list
+            this.filterList = filter
+            // this.$store.dispatch('get_first_filter', { filter })
           }
         })
       },
