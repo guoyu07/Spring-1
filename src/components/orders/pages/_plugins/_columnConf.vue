@@ -5,7 +5,7 @@
       :label="col.label"
       :value="col"></el-option>
   </el-select> -->
-  <div>
+  <div class="column-conf">
     <draggable v-model="selectedColumns" @start="drag=true" @end="drag=false">
       <el-tag
         v-for="col in selectedColumns"
@@ -113,7 +113,12 @@
 </script>
 
 <style lang="less">
-  .el-tag + .el-tag {
-    margin-left: 6px;
+  .column-conf {
+    .el-tag {
+      cursor: move;
+      & + .el-tag {
+        margin-left: 6px;
+      }
+    }
   }
 </style>

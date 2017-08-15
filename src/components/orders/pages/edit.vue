@@ -60,7 +60,12 @@
           name: '新过滤器',
           order: 'pinstance__pnum',
           show: [],
-          filters: []
+          filters: [{
+            key: 'assign',
+            label: '当前处理人',
+            type: 'user',
+            filter: []
+          }]
         }
       }
     },
