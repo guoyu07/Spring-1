@@ -38,7 +38,7 @@
               <template scope="scope">
                 <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
                 <el-collapse accordion @change="onAccordionChange">
-                  <el-collapse-item v-for="task in scope.row.task_list" :title="task.tname">
+                  <el-collapse-item v-for="task in scope.row.task_list" :title="task.tname" v-if="task.tkey !== 'start'">
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
