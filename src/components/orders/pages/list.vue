@@ -13,16 +13,38 @@
           v-for="col in filterData.show"
           :prop="col.key_path"
           :label="col.label"></el-table-column>
+        <el-table-column
+          inline-template
+          width="80"
+          fixed="right"
+          :context="_self"
+          label="操作">
+          <template>
+            <el-button size="small" @click="onView(row)">详情</el-button>
+          </template>
+        </el-table-column>
       </el-table>
     </el-card>
+    <order-dialog :order-view-data="orderViewData"></order-dialog>
   </div>
 </template>
 
 <script>
+  import orderDialog from './_plugins/_orderDialog'
+
   import getFilteredTasks from './../../../mixins/getFilteredTasks'
 
   export default {
     mixins: [ getFilteredTasks ],
+
+    data () {
+      return {
+        orderViewData: {
+          visible: false,
+          order: {}
+        }
+      }
+    },
 
     watch: {
       '$route.params.id' (id) {
@@ -32,6 +54,16 @@
 
     mounted () {
       this.getFilterData(this.orderId)
+    },
+
+    methods: {
+      onView (order) {
+        Object.assign(this.orderViewData, { visible: true, order })
+      }
+    },
+
+    components: {
+      orderDialog
     }
   }
 </script>
