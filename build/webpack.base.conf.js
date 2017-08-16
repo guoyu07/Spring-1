@@ -40,7 +40,7 @@ module.exports = {
       {
         test: /\.vue$/,
         loader: 'eslint',
-        include: projectRoot,
+        // include: projectRoot,
         exclude: /node_modules/
       },
       {
