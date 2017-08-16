@@ -276,6 +276,28 @@ h1, h2, h3, h4, h5, h6, p {
   white-space: nowrap;
 }
 
+.expanded-form {
+  font-size: 0;
+
+  label {
+    width: 90px;
+    color: #99a9bf;
+    padding-top: 7px;
+    padding-bottom: 7px;
+    vertical-align: initial;
+  }
+
+  .el-form-item {
+    margin-right: 0;
+    margin-bottom: 0;
+    width: 50%;
+
+    &__content {
+      line-height: 28px;
+    }
+  }
+}
+
 .device-data-table {
   border-top: 1px solid @borderColor;
   border-left: 1px solid @borderColor;

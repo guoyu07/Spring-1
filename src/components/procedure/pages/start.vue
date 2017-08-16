@@ -619,7 +619,17 @@
         document.body.scrollTop = anchor.offsetTop
       },
       onUploadExcel (res, file, fileList) {
-        console.log(res.data)
+        console.log(res.data[0])
+        let postData = {
+          action: 'import_server',
+          method: 'POST',
+          data: { file_name: res.data[0].file_name }
+        }
+        this.http.post('/api/data/', postData).then((res) => {
+          if (res.status === 200) {
+            console.log(res.data.data)
+          }
+        })
       }
     },
     components: {
