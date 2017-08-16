@@ -122,4 +122,9 @@
       flex: 1;
     }
   }
+
+  .order-form {
+    max-height: 50vh;
+    overflow-y: scroll;
+  }
 </style>

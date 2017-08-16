@@ -115,7 +115,12 @@
 <style lang="less">
   .column-conf {
     .el-tag {
-      cursor: move;
+      
+      &:hover {
+        cursor: move;
+        transform: translateY(-2px);
+      }
+
       & + .el-tag {
         margin-left: 6px;
       }

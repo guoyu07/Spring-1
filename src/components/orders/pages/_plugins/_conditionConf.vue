@@ -71,6 +71,13 @@
               :value="group"></el-option>
           </el-select>
         </template>
+
+        <template v-if="filter.type === 'bool'">
+          <el-switch
+            v-model="filter.filter"
+            on-text="是"
+            off-text="否"></el-switch>
+        </template>
       </el-tab-pane>
     </el-tabs>
 

@@ -40,7 +40,7 @@
     data () {
       return {
         filterList: [],
-        filterLoading: false
+        filterLoading: true
       }
     },
 
