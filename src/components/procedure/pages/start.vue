@@ -120,11 +120,18 @@
                   </div>
                 </el-tab-pane>
               </el-tabs>
-              <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
-                <el-button class="btn-block margin-bottom" type="primary" icon="plus" @click="addTab(tabsValue)">
-                  增加
-                </el-button>
-              </div>
+              <el-row v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
+                <el-button class="margin-bottom" type="primary" icon="plus" size="small" :plain="true" @click="addTab(tabsValue)">新表单</el-button>
+              </el-row>
+
+              <el-upload
+                action="/api/upload_file/"
+                accept=".xls,.xlsx"
+                :on-success="onUploadExcel"
+                v-if="$route.params.pname === '服务器入库'">
+                <el-button size="small" icon="document" type="primary">上传入库单</el-button>
+                <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
+              </el-upload>
             </template>
           </el-form>
         </el-card>
@@ -610,6 +617,9 @@
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
         document.body.scrollTop = anchor.offsetTop
+      },
+      onUploadExcel (res, file, fileList) {
+        console.log(res.data)
       }
     },
     components: {
