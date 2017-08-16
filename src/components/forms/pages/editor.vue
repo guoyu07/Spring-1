@@ -128,6 +128,13 @@
           <el-row class="form-block">
             <h4>Body 配置 ({{formConfig.form.body.body_list.length}})</h4>
             <el-row>
+              <h5>Body 样式选择</h5>
+              <el-select v-model="formConfig.form.body.style">
+                <el-option label="标签页" :value="1"></el-option>
+                <el-option label="独立卡片" :value="2"></el-option>
+              </el-select>
+            </el-row>
+            <el-row>
               <h5>Body 个数配置</h5>
               <el-select v-model="formConfig.form.body.count.type" @change="countConfig">
                 <el-option label="静态" value="static"></el-option>

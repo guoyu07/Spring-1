@@ -51,7 +51,9 @@
             multiple
             placeholder="请选择用户"
             value-key="nick">
-            <!-- <el-option label="当前处理人" key="assign"></el-option> -->
+            <el-option
+              label="当前用户"
+              :value="{ nick: '当前用户', userId: '$current_user' }"></el-option>
             <el-option
               v-for="user in userDicts"
               :label="user.nick"
