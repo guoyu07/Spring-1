@@ -51,6 +51,7 @@
             multiple
             placeholder="请选择用户"
             value-key="nick">
+            <!-- <el-option label="当前处理人" key="assign"></el-option> -->
             <el-option
               v-for="user in userDicts"
               :label="user.nick"
@@ -69,6 +70,13 @@
               :label="group.name"
               :value="group"></el-option>
           </el-select>
+        </template>
+
+        <template v-if="filter.type === 'bool'">
+          <el-switch
+            v-model="filter.filter"
+            on-text="是"
+            off-text="否"></el-switch>
         </template>
       </el-tab-pane>
     </el-tabs>

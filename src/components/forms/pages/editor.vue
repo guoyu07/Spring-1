@@ -228,6 +228,7 @@ export default {
 
   data () {
     return {
+      mounting: false,
       fieldsets: [],
       id: '',
       // 操作按钮
@@ -254,6 +255,9 @@ export default {
     selectedManual () {
       return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
     }
+  },
+  beforeMount () {
+    this.mounting = true
   },
   activated () {
     this.getPresetList()

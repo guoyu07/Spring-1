@@ -195,7 +195,12 @@
       <template v-if="optionPresets && optionPresets.length">
         <el-card>
           <el-select placeholder="API 预设集" v-model="selectedPreset" value-key="name" @change="onSelectPreset">
-            <el-option v-for="preset in optionPresets" :label="preset.name" :value="preset"></el-option>
+            <el-option-group
+              v-for="group in optionPresets"
+              :key="group.name"
+              :label="group.name">
+              <el-option v-for="preset in group.list" :label="preset.name" :value="preset"></el-option>
+            </el-option-group>
           </el-select>
         </el-card>
         <!-- <el-radio-group v-model="selectedOption" @change="onSelectPreset">
