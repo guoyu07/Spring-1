@@ -5,7 +5,7 @@
         <el-card class="box-card">
           <h3 class="form-title">
             <i class="el-icon-fa-server color-primary"></i> {{ routerInfo.name }}
-            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">历史</el-button>
+            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">工作流</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -17,9 +17,9 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
-            <!-- 表头信息显示 -->
+            <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
-            <div class="history-block" v-if="!isEmptyObj(applyData.header)">
+            <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
@@ -70,17 +70,154 @@
               </div>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
-              <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
-                <!-- body 信息显示 -->
-                <div class="history-block" v-if="!isEmptyObj(data)">
-                  <div v-for="task in form">
-                    <div v-for="taskbody in task.form.form.body.body_list">
-                      <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
-                        <p class="h5">{{task.tname}}</p>
-                        <!-- header 信息显示 -->
-                        <!-- <div v-if="task.form.header.length >= 1">
-                          <div v-for="taskformheader in task.form.form.header">
+            <div class="clear">
+              <el-button class="fr" size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
+            </div>
+            <template v-if="taskForm.body && taskForm.body.style === 1">
+              <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
+                <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
+                  <!-- body 信息显示 -->
+                  <!-- 这个是当 body 有历史信息时 -->
+                  <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-if="!isEmptyObj(data)">
+                    <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
+                    <div v-for="task in form">
+                      <div v-for="taskbody in task.form.form.body.body_list">
+                        <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
+                          <p class="h5">{{task.tname}}</p>
+                          <!-- header 信息显示 -->
+                          <div v-if="task.form.header.length >= 1">
+                            <div v-for="taskformheader in task.form.form.header">
+                              <span v-for="valueheader in taskformheader.value">
+                                <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                                  <header-form-display
+                                    :item="applyData.header"
+                                    :form-item="valueheader">
+                                  </header-form-display>
+                                </span>
+                              </span>
+                            </div>
+                          </div>
+                          <form-structure-display
+                            :item="data"
+                            :form-data="taskbody.attr_list"
+                            :index="index"
+                            :post-form="assignForm"
+                            :message-data="applyData"
+                            :current-task="routerInfo.tkey"
+                            :history-task="task.tkey">
+                          </form-structure-display>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- 这个是当 body 没有历史信息时 而 header 有历史信息 -->
+                  <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-else-if="!isEmptyObj(applyData.header)">
+                    <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
+                    <div v-for="taskheader in form">
+                      <div v-if="taskheader.form.form.header.length >= 1">
+                        <p class="h5">{{taskheader.tname}}</p>
+                        <div v-for="taskformheader in taskheader.form.form.header">
+                          <span v-for="valueheader in taskformheader.value">
+                            <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                              <header-form-display
+                                :item="applyData.header"
+                                :form-item="valueheader">
+                              </header-form-display>
+                            </span>
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- body 表单填写 -->
+                  <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                    <div v-for="taskFormData in taskForm.body.body_list">
+                        <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                          <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                            <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
+                            <span v-for="formItem in formBlock.value">
+                              <!-- {{isEdting}} -->
+                              <form-body
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                :item="assignForm.body[index]"
+                                :form-item="formItem"
+                                :whole="assignForm"
+                                :index="index"
+                                :isEditing="isEditing"
+                                :message="applyData"
+                                keep-alive>
+                              </form-body>
+                              <search-bar
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
+                                :index="index"
+                                :post-form="assignForm"
+                                :hosts="assignForm.body[index]"
+                                :attr-list="formItem"
+                                :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                                @on-hosts-change="onHostsChange">
+                              </search-bar>
+                              <body-table
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
+                                :form-data="formItem"
+                                :item="assignForm.body[index]"
+                                :post-form="assignForm"
+                                :message-data="applyData"
+                                :index="index"
+                                :bodyTable="true">
+                              </body-table>
+                            </span>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
+            </template>
+            <template v-if="taskForm.body && taskForm.body.style === 2">
+              <div v-if="applyData.body && applyData.body.length">
+                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body">
+                  <el-tab-pane :label="bodyLableName[index]">
+                    <!-- body 信息显示 -->
+                    <!-- 这个是当 body 有历史信息时 -->
+                    <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-if="!isEmptyObj(data)">
+                      <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
+                      <div v-for="task in form">
+                        <div v-for="taskbody in task.form.form.body.body_list">
+                          <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
+                            <p class="h5">{{task.tname}}</p>
+                            <!-- header 信息显示 -->
+                            <div v-if="task.form.header.length >= 1">
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                                    <header-form-display
+                                      :item="applyData.header"
+                                      :form-item="valueheader">
+                                    </header-form-display>
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                            <form-structure-display
+                              :item="data"
+                              :form-data="taskbody.attr_list"
+                              :index="index"
+                              :post-form="assignForm"
+                              :message-data="applyData"
+                              :current-task="routerInfo.tkey"
+                              :history-task="task.tkey">
+                            </form-structure-display>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- 这个是当 body 没有历史信息时 而 header 有历史信息 -->
+                    <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-else-if="!isEmptyObj(applyData.header)">
+                      <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
+                      <div v-for="taskheader in form">
+                        <div v-if="taskheader.form.form.header.length >= 1">
+                          <p class="h5">{{taskheader.tname}}</p>
+                          <div v-for="taskformheader in taskheader.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
                                 <header-form-display
@@ -90,63 +227,57 @@
                               </span>
                             </span>
                           </div>
-                        </div> -->
-                        <form-structure-display
-                          :item="data"
-                          :form-data="taskbody.attr_list"
-                          :index="index"
-                          :post-form="assignForm"
-                          :message-data="applyData"
-                          :current-task="routerInfo.tkey"
-                          :history-task="task.tkey">
-                        </form-structure-display>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-                <!-- body 表单填写 -->
-                <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
-                  <div v-for="taskFormData in taskForm.body.body_list">
-                      <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
-                        <div class="form-block" v-for="formBlock in taskFormData.attr_list">
-                          <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
-                          <span v-for="formItem in formBlock.value">
-                            <!-- {{isEdting}} -->
-                            <form-body
-                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
-                              :item="assignForm.body[index]"
-                              :form-item="formItem"
-                              :whole="assignForm"
-                              :index="index"
-                              :isEditing="isEditing"
-                              :message="applyData"
-                              keep-alive>
-                            </form-body>
-                            <search-bar
-                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
-                              :index="index"
-                              :post-form="assignForm"
-                              :hosts="assignForm.body[index]"
-                              :attr-list="formItem"
-                              :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
-                              @on-hosts-change="onHostsChange">
-                            </search-bar>
-                            <body-table
-                              v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
-                              :form-data="formItem"
-                              :item="assignForm.body[index]"
-                              :post-form="assignForm"
-                              :message-data="applyData"
-                              :index="index"
-                              :bodyTable="true">
-                            </body-table>
-                          </span>
                         </div>
                       </div>
-                  </div>
-                </div>
-              </el-tab-pane>
-            </el-tabs>
+                    </div>
+                    <!-- body 表单填写 -->
+                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                      <div v-for="taskFormData in taskForm.body.body_list">
+                          <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                            <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                              <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
+                              <span v-for="formItem in formBlock.value">
+                                <!-- {{isEdting}} -->
+                                <form-body
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                  :item="assignForm.body[index]"
+                                  :form-item="formItem"
+                                  :whole="assignForm"
+                                  :index="index"
+                                  :isEditing="isEditing"
+                                  :message="applyData"
+                                  keep-alive>
+                                </form-body>
+                                <search-bar
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
+                                  :index="index"
+                                  :post-form="assignForm"
+                                  :hosts="assignForm.body[index]"
+                                  :attr-list="formItem"
+                                  :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                                  @on-hosts-change="onHostsChange">
+                                </search-bar>
+                                <body-table
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
+                                  :form-data="formItem"
+                                  :item="assignForm.body[index]"
+                                  :post-form="assignForm"
+                                  :message-data="applyData"
+                                  :index="index"
+                                  :bodyTable="true">
+                                </body-table>
+                              </span>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+                </el-tabs>
+              </div>
+              <div class="anchorNav">
+                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+              </div>
+            </template>
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
@@ -214,7 +345,9 @@
         },
         tabIndex: 0,
         path_list: [],
-        submitLoading: false
+        submitLoading: false,
+        infoShow: {},
+        infoHideAll: false
       }
     },
     created () {
@@ -232,9 +365,26 @@
       'taskForm': {
         handler: 'renderBodyLabel',
         deep: true
+      },
+      'applyData.body' (oldVal, newVal) {
+        this.applyData.body.map((body, index) => {
+          // this.infoShow[index] = true
+          this.$set(this.infoShow, index, true)
+        })
+      },
+      'infoShow': {
+        handler: 'infoShowFunction',
+        deep: true
       }
     },
     methods: {
+      infoShowFunction (newVal) {
+        const infoShow = []
+        for (const i in newVal) {
+          infoShow.push(newVal[i])
+        }
+        this.infoHideAll = infoShow.some(info => { return info === false })
+      },
       renderBodyLabel (val) {
         this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
       },
@@ -789,6 +939,23 @@
       },
       cancel () {
         this.$router.go(-1) // 跳转历史的上一页
+      },
+      goAnchor (selector) {
+        const anchor = this.$el.querySelector(selector)
+        // console.log(anchor)
+        document.body.scrollTop = anchor.offsetTop
+      },
+      retractInfo (index) {
+        const selector = this.$el.querySelectorAll('.history-block')
+        const leng = selector.length
+        if (index === true) {
+          for (let i = 0; i < leng; i++) {
+            this.infoShow[i] = this.infoHideAll
+          }
+        } else {
+          console.log(this.infoShow[index])
+          this.infoShow[index] = !this.infoShow[index]
+        }
       }
     },
     components: {
@@ -966,12 +1133,16 @@
   padding: 10px;
   margin-bottom: 15px;
   position: relative;
-  // overflow: hidden;
   .form-block {
     background-color: none!important;
   }
   .el-form-item {
     margin-bottom: 0;
+  }
+  .history-btn {
+    position: absolute;
+    top: 2px;
+    right: 5px;
   }
   &:before {
     content: '历史信息';
@@ -987,6 +1158,13 @@
     background: #fbfcfd;
     color: #ccc;
     border-radius: 3px;
+  }
+  &.hidden {
+    overflow: hidden;
+    height: 30px;
+    &:before {
+      top: 3px;
+    }
   }
   // &:after {
   //   content: '历史信息';

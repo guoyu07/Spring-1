@@ -34,95 +34,99 @@
               </div>
             </div>
             <!-- body 表单填写 -->
-            <!-- <template v-if="postForm.body && postForm.body.length !== 0">
-              <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
-                <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
-                  增加
-                </el-button>
-                <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
-              </div>
-              <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :name="index + ''" :closable="postForm.body.length !== 1">
-                  <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
-                    <div v-for="bodyList in taskFormData.body.body_list">
-                        <div v-if="showBodyList(bodyList, postForm, applyData, index)">
-                          <div class="form-block" v-for="formBlock in bodyList.attr_list">
-                            <h5>{{formBlock.name}}</h5>
-                            <span v-for="formItem in formBlock.value">
-                              <form-body
-                                v-if="showFormItem(formItem, postForm)"
-                                :item="postForm.body[index]"
-                                :form-item="formItem"
-                                :whole="postForm"
-                                :index="+index">
-                              </form-body>
-                              <search-bar
-                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
-                                :index="index"
-                                :hosts="postForm.body[index]"
-                                :attr-list="formItem"
-                                :limit="getLimitQuantity(formItem, postForm, applyData, index)"
-                                @on-hosts-change="onHostsChange">
-                              </search-bar>
-                              <body-table
-                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
-                                :form-data="formItem"
-                                :item="postForm.body[index]"
-                                :post-form="postForm"
-                                :index="index"
-                                :bodyTable="true">
-                              </body-table>
-                            </span>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
-                </el-tab-pane>
-              </el-tabs>
-            </template> -->
-            <!-- body 表单新样式 填写 -->
             <template v-if="postForm.body && postForm.body.length !== 0">
-              <el-tabs v-for="(data, index) in postForm.body" :id="'anchor-'+index" type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" editable @edit="addTab(tabsValue, index)">
-                <el-tab-pane :label="bodyLableName[index]" :closable="postForm.body.length !== 1">
-                  <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
-                    <div v-for="bodyList in taskFormData.body.body_list">
-                        <div v-if="showBodyList(bodyList, postForm, applyData, index)">
-                          <div class="form-block" v-for="formBlock in bodyList.attr_list">
-                            <h5>{{formBlock.name}}</h5>
-                            <span v-for="formItem in formBlock.value">
-                              <form-body
-                                v-if="showFormItem(formItem, postForm)"
-                                :item="postForm.body[index]"
-                                :form-item="formItem"
-                                :whole="postForm"
-                                :index="+index">
-                              </form-body>
-                              <search-bar
-                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
-                                :index="index"
-                                :hosts="postForm.body[index]"
-                                :attr-list="formItem"
-                                :limit="getLimitQuantity(formItem, postForm, applyData, index)"
-                                @on-hosts-change="onHostsChange">
-                              </search-bar>
-                              <body-table
-                                v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
-                                :form-data="formItem"
-                                :item="postForm.body[index]"
-                                :post-form="postForm"
-                                :index="index"
-                                :bodyTable="true">
-                              </body-table>
-                            </span>
+              <template v-if="taskFormData.body && taskFormData.body.style === 1">
+                <div v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
+                  <el-button type="primary" size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+                    增加
+                  </el-button>
+                  <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
+                </div>
+                <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
+                  <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :name="index + ''" :closable="postForm.body.length !== 1">
+                    <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
+                      <div v-for="bodyList in taskFormData.body.body_list">
+                          <div v-if="showBodyList(bodyList, postForm, applyData, index)">
+                            <div class="form-block" v-for="formBlock in bodyList.attr_list">
+                              <h5>{{formBlock.name}}</h5>
+                              <span v-for="formItem in formBlock.value">
+                                <form-body
+                                  v-if="showFormItem(formItem, postForm)"
+                                  :item="postForm.body[index]"
+                                  :form-item="formItem"
+                                  :whole="postForm"
+                                  :index="+index">
+                                </form-body>
+                                <search-bar
+                                  v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
+                                  :index="index"
+                                  :hosts="postForm.body[index]"
+                                  :attr-list="formItem"
+                                  :limit="getLimitQuantity(formItem, postForm, applyData, index)"
+                                  @on-hosts-change="onHostsChange">
+                                </search-bar>
+                                <body-table
+                                  v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
+                                  :form-data="formItem"
+                                  :item="postForm.body[index]"
+                                  :post-form="postForm"
+                                  :index="index"
+                                  :bodyTable="true">
+                                </body-table>
+                              </span>
+                            </div>
                           </div>
-                        </div>
+                      </div>
                     </div>
-                  </div>
-                </el-tab-pane>
-              </el-tabs>
-              <el-row v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
-                <el-button class="margin-bottom" type="primary" icon="plus" size="small" :plain="true" @click="addTab(tabsValue)">新表单</el-button>
-              </el-row>
+                  </el-tab-pane>
+                </el-tabs>
+              </template>
+              <template v-if="taskFormData.body && taskFormData.body.style === 2">
+                <div class="tab-wrap" v-for="(data, index) in postForm.body">
+                  <el-button size="small" @click="addTab(tabsValue, index)" icon="plus" class="add-tab">复制当前表单</el-button>
+                  <el-tabs :id="'anchor-'+index" type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="postForm.body.length !== 1">
+                    <el-tab-pane :label="bodyLableName[index]">
+                      <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
+                        <div v-for="bodyList in taskFormData.body.body_list">
+                            <div v-if="showBodyList(bodyList, postForm, applyData, index)">
+                              <div class="form-block" v-for="formBlock in bodyList.attr_list">
+                                <h5>{{formBlock.name}}</h5>
+                                <span v-for="formItem in formBlock.value">
+                                  <form-body
+                                    v-if="showFormItem(formItem, postForm)"
+                                    :item="postForm.body[index]"
+                                    :form-item="formItem"
+                                    :whole="postForm"
+                                    :index="+index">
+                                  </form-body>
+                                  <search-bar
+                                    v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
+                                    :index="index"
+                                    :hosts="postForm.body[index]"
+                                    :attr-list="formItem"
+                                    :limit="getLimitQuantity(formItem, postForm, applyData, index)"
+                                    @on-hosts-change="onHostsChange">
+                                  </search-bar>
+                                  <body-table
+                                    v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
+                                    :form-data="formItem"
+                                    :item="postForm.body[index]"
+                                    :post-form="postForm"
+                                    :index="index"
+                                    :bodyTable="true">
+                                  </body-table>
+                                </span>
+                              </div>
+                            </div>
+                        </div>
+                      </div>
+                    </el-tab-pane>
+                  </el-tabs>
+                </div>
+                <el-row v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
+                  <el-button class="margin-bottom" type="primary" icon="plus" size="small" :plain="true" @click="addTab(tabsValue)">新表单</el-button>
+                </el-row>
+              </template>
 
               <el-upload
                 action="/api/upload_file/"
@@ -136,12 +140,11 @@
           </el-form>
         </el-card>
         <!-- 新样式才有锚点 -->
-        <div class="anchorNav">
+        <div class="anchorNav" v-if="taskFormData.body && taskFormData.body.style === 2">
           <a href="javascript:void(0)" v-for="(data, index) in postForm.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
         </div>
         <div class="btn-area">
           <el-button type="primary" @click="onSubmit" icon="check" :loading="submitLoading">确认</el-button>
-          <!-- <el-button type="primary" @click="onModify" icon="check" v-if="isEditing">确认</el-button> -->
           <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
         </div>
       </el-col>
