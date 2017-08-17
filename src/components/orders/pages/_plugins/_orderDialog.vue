@@ -42,8 +42,8 @@
          pkey: orderViewData.order.pinstance.pkey,
          taskList: orderViewData.order.pinstance.task_list
          }"></progress-wrap>
-        <h5 class="sub-title" v-if="orderViewData.order.pinstance.history_list"><i class="el-icon-information"></i> 完整历史步骤（{{ orderViewData.order.pinstance.history_list.length }}）</h5>
-        <el-collapse v-if="orderViewData.order.pinstance.history_list" class="history-list">
+        <h5 class="sub-title" v-if="orderViewData.order.pinstance.history_list.length"><i class="el-icon-information"></i> 完整历史步骤（{{ orderViewData.order.pinstance.history_list.length }}）</h5>
+        <el-collapse v-if="orderViewData.order.pinstance.history_list.length" class="history-list">
           <el-collapse-item v-for="(task, key) in orderViewData.order.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name">
             <el-form label-position="left" label-width="90px" inline class="expanded-form">
               <el-form-item v-if="task.task_key" label="任务 Key：">
@@ -67,8 +67,13 @@
       <el-button
         v-if="filterName === '待认领'"
         type="info"
-        @click="onClaim()" icon="check">认领</el-button>
+        @click="onClaim(orderViewData.order)" icon="check">认领</el-button>
       <router-link
+        v-else
+        :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}${!isAssignee || isEnded ? '-info' : ''}/${orderViewData.order.pinstance.pkey}/${orderViewData.order.ptask.tkey}/${orderViewData.order.tid}/${orderViewData.order.ptask.tname}` }">
+        <el-button :plain="true" icon="more">查看</el-button>
+      </router-link>
+      <!-- <router-link
         v-else-if="['host'].includes(orderViewData.order.pinstance.pkey) && filterName === '待处理'" 
         :to="{ path: `/guosen/${orderViewData.order.pinstance.pkey}/${orderViewData.order.ptask.tkey}/${orderViewData.order.tid}/${orderViewData.order.ptask.tname}`}" >
         <el-button :plain="true" icon="more">查看</el-button>
@@ -99,7 +104,7 @@
           :to="{ path: `/procedure-info/${orderViewData.order.pinstance.pkey}/${orderViewData.order.pinstance.pid}` }">
           <el-button :plain="true" icon="more">查看</el-button>
         </router-link>
-      </template>
+      </template> -->
     </span>
   </el-dialog>
 </template>
@@ -113,8 +118,45 @@
       filterName: String
     },
 
+    computed: {
+      isEnded () {
+        return this.orderViewData.order.isend
+      },
+
+      isAssignee () {
+        return this.orderViewData.order.assign === window.localStorage.userName || JSON.parse(window.localStorage.groups).some(_ => this.orderViewData.order.assign_group.includes(_))
+      },
+
+      isGuosen () {
+        return ['host', 'host_my'].includes(this.orderViewData.order.pinstance.pkey)
+      }
+    },
+
     components: {
       progressWrap
+    },
+
+    methods: {
+      onClaim (task) {
+        this.$confirm(`确定认领任务「${task.ptask.tname}」吗？`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }).then(() => {
+          let postData = {
+            action: 'task_assign',
+            method: 'POST',
+            data: { tid: task.tid }
+          }
+          this.http.post('/flow/', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.deviceViewData.visible = false
+              this.$message.success('已认领！')
+            }
+            this.$router.replace(`/procedure/${task.pkey}/${task.taskDefinitionKey}/${task.id}/${task.name}`)
+          })
+        })
+      }
     }
   }
 </script>
