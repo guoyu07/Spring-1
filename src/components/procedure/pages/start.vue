@@ -4,6 +4,16 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
+
+          <el-upload
+            action="/api/upload_file/"
+            accept=".xls,.xlsx"
+            :on-success="onUploadExcel"
+            v-if="$route.params.pname === '服务器入库'">
+            <el-button icon="document" type="primary">上传入库单</el-button>
+            <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
+          </el-upload>
+
           <el-form label-position="right" ref="postForm" :model="postForm" :inline="true" label-width="100px">
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
@@ -123,15 +133,6 @@
               <el-row v-if="taskFormData.body && taskFormData.body.count.type ==='static' && taskFormData.body.count.max > 1">
                 <el-button class="margin-bottom" type="primary" icon="plus" size="small" :plain="true" @click="addTab(tabsValue)">新表单</el-button>
               </el-row>
-
-              <el-upload
-                action="/api/upload_file/"
-                accept=".xls,.xlsx"
-                :on-success="onUploadExcel"
-                v-if="$route.params.pname === '服务器入库'">
-                <el-button size="small" icon="document" type="primary">上传入库单</el-button>
-                <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
-              </el-upload>
             </template>
           </el-form>
         </el-card>
