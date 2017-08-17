@@ -9,7 +9,8 @@
             action="/api/upload_file/"
             accept=".xls,.xlsx"
             :on-success="onUploadExcel"
-            v-if="$route.params.pname === '服务器入库'">
+            v-if="$route.params.pname === '服务器入库'"
+            class="margin-bottom">
             <el-button icon="document" type="primary">上传入库单</el-button>
             <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
           </el-upload>
