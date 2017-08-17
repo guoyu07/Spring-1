@@ -138,7 +138,7 @@
 
     <el-dialog :title="candidateData.type === 'user' ? '加入候选人' : '加入候选组（角色）'" v-model="candidateData.visible" @close="candidateData.toAdd = []">
       <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{candidateData.type === 'user' ? '候选人' : '候选组'}}的{{candidateData.type === 'user' ? '用户' : '角色'}}：</h5>
-      <el-select v-model="candidateData.toAdd" filterable multiple placeholder="可搜索" class="fw">
+      <el-select v-model="candidateData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
         <template v-if="candidateData.type === 'user'">
           <el-option
             v-for="user in userList"
@@ -167,7 +167,7 @@
 
     <el-dialog title="指定受指派人" v-model="assigneeData.visible">
       <h5 class="sub-title"><i class="el-icon-information"></i> 选中欲指定为受指派人的用户：</h5>
-      <el-select v-model="assigneeData.assignee" filterable placeholder="可搜索" :disabled="assigneeData.initiator" class="fw">
+      <el-select v-model="assigneeData.assignee" filterable placeholder="可搜索" :disabled="assigneeData.initiator" style="width: 80%">
         <el-option
           v-for="user in userList"
           :key="user.userId"

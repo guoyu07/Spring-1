@@ -25,7 +25,7 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <order-dialog :order-view-data="orderViewData"></order-dialog>
+    <order-dialog :order-view-data="orderViewData" :filter-name="filterData.name"></order-dialog>
   </div>
 </template>
 

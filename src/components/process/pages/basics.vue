@@ -40,7 +40,7 @@
                 <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 特权类型：</h5>
                 <el-collapse accordion @change="onAccordionChange">
                   <el-collapse-item title="特权用户">
-                    <el-row>
+                    <el-row v-if="!isOnlyAdmin">
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
                           <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户（{{scope.row.users.length || '0'}}）</h5>
@@ -100,7 +100,7 @@
                   </el-collapse-item>
 
                   <el-collapse-item title="特权用户组（角色）">
-                    <el-row>
+                    <el-row v-if="!isOnlyAdmin">
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
                           <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 管理员用户组（角色）（{{scope.row.groups.length || '0'}}）</h5>
@@ -170,7 +170,7 @@
 
     <el-dialog :title="adminData.type === 'user' ? '加入管理员用户' : '加入管理员用户组（角色）'" v-model="adminData.visible" @close="adminData.toAdd = []">
       <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为管理员的{{adminData.type === 'user' ? '用户' : '用户组（角色）'}}：</h5>
-      <el-select v-model="adminData.toAdd" filterable multiple placeholder="可搜索" class="fw">
+      <el-select v-model="adminData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
         <template v-if="adminData.type === 'user'">
           <el-option
             v-for="user in userList"
@@ -199,7 +199,7 @@
 
     <el-dialog :title="initiatorData.type === 'user' ? '加入启动候选人用户' : '加入启动候选组（角色）'" v-model="initiatorData.visible" @close="initiatorData.toAdd = []">
       <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{initiatorData.type === 'user' ? '启动候选人的用户' : '启动候选组的角色'}}：</h5>
-      <el-select v-model="initiatorData.toAdd" filterable multiple placeholder="可搜索" class="fw">
+      <el-select v-model="initiatorData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
         <template v-if="initiatorData.type === 'user'">
           <el-option
             v-for="user in userList"
@@ -235,6 +235,12 @@
 
   export default {
     mixins: [getPermittedRoleList, getPermittedUserList, getPermittedProcessList],
+
+    computed: {
+      isOnlyAdmin () {
+        return !window.localStorage.isSuperAdmin && window.localStorage.isAdmin
+      }
+    },
 
     data () {
       return {

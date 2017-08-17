@@ -4,6 +4,17 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
+
+          <el-upload
+            action="/api/upload_file/"
+            accept=".xls,.xlsx"
+            :on-success="onUploadExcel"
+            v-if="$route.params.pname === '服务器入库'"
+            class="margin-bottom">
+            <el-button icon="document" type="primary">上传入库单</el-button>
+            <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
+          </el-upload>
+
           <el-form label-position="right" ref="postForm" :model="postForm" :inline="true" label-width="100px">
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
@@ -622,7 +633,17 @@
         document.body.scrollTop = anchor.offsetTop
       },
       onUploadExcel (res, file, fileList) {
-        console.log(res.data)
+        console.log(res.data[0])
+        let postData = {
+          action: 'import_server',
+          method: 'POST',
+          data: { file_name: res.data[0].file_name }
+        }
+        this.http.post('/api/data/', postData).then((res) => {
+          if (res.status === 200) {
+            console.log(res.data.data)
+          }
+        })
       }
     },
     components: {

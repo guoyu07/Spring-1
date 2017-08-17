@@ -179,12 +179,13 @@
         // height: 30px;
         position: absolute;
         top: 0;
-        left: 14px;
+        left: 12px;
         z-index: 2;
+        padding-left: 4px;
         transform: rotate(-35deg);
         transform-origin: -120% -30%;
         white-space: nowrap;
-        color: #696969;
+        color: lighten(@activeColor, 20%);
         text-align: center;
         font-size: 13px;
 
@@ -199,13 +200,14 @@
       &.active {
         .detail {
           font-size: 13px;
-          color: @activeColor;
+          color: @success;
         }
 
         &::before {
-          background-color: @activeColor;
+          background-color: @success;
           border: none;
-          content: '\2714';
+          content: "\f00c";
+          font: normal normal normal 14px/1 FontAwesome;
           color: #fff;
           font-size: 10px;
           text-align: center;
@@ -214,11 +216,11 @@
 
       &.ing {
         .detail {
-          color: @success;
+          color: @activeColor;
         }
 
         &::before {
-          background-color: @success;
+          background-color: @activeColor;
           animation: ing .8s infinite;
           border: none;
         }
@@ -227,7 +229,7 @@
       &::before {
         content: '';
         position: absolute;
-        top: -6px;
+        top: -7px;
         // left: 8px;
         display: block;
         // margin-top: -6px;
@@ -235,8 +237,8 @@
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 2px solid #fff;
-        background-color: #9e9e9e;
+        border: 2px solid @activeColor;
+        background-color: #fff;
       }
     }
   }
