@@ -612,7 +612,7 @@
           action: 'task',
           method: 'GET',
           data: {
-            tid: this.routerInfo.id
+            tid: this.routerInfo.tid
           }
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
@@ -640,7 +640,7 @@
           action: 'task/form/groups',
           method: 'GET',
           data: {
-            tid: this.routerInfo.id,
+            pid: this.routerInfo.pid,
             tkey_list: this.path_list
           }
         }
