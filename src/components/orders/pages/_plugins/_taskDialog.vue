@@ -9,6 +9,9 @@
           <el-form-item v-if="taskViewData.order.pinstance.pd.pname" label="任务名称：">
             <span>{{taskViewData.order.pinstance.pd.pname}}</span>
           </el-form-item>
+          <el-form-item v-if="taskViewData.order.pinstance.pd.pname" label="所属流程：">
+            <span>{{taskViewData.order.pinstance.pd.pname}}</span>
+          </el-form-item>
           <el-form-item v-if="taskViewData.order.pinstance.pnum" label="流程单号：">
             <span>{{taskViewData.order.pinstance.pnum}}</span>
           </el-form-item>
@@ -132,10 +135,6 @@
       }
     },
 
-    components: {
-      progressWrap
-    },
-
     methods: {
       onClaim (task) {
         this.$confirm(`确定认领任务「${task.ptask.tname}」吗？`, '提示', {
@@ -157,6 +156,10 @@
           })
         })
       }
+    },
+
+    components: {
+      progressWrap
     }
   }
 </script>
