@@ -49,13 +49,10 @@ const routes = [{
       path: '/guosen/on',
       component: require('./components/guosen/pages/on')
     }, {
-      path: '/guosen/:pkey/:tkey/:id/:name',
+      path: '/guosen/:pid/:tid/:name',
       component: require('./components/guosen/pages/step')
     }, {
-      path: '/guosen-info/:pkey/:tkey/:id/:name',
-      component: require('./components/guosen/pages/stepInfo')
-    }, {
-      path: '/guosen-info/:pkey/:id',
+      path: '/guosen-info/:pid/:name',
       component: require('./components/guosen/pages/stepInfo')
     }]
   }, {

@@ -73,7 +73,7 @@
         @click="onClaim(taskViewData.order)" icon="check">认领</el-button>
       <router-link
         v-else
-        :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}${!isAssignee || isEnded ? '-info' : ''}/${taskViewData.order.pinstance.pkey}/${taskViewData.order.ptask.tkey}/${taskViewData.order.tid}/${taskViewData.order.ptask.tname}` }">
+        :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}${!isAssignee || isEnded ? '-info' : ''}/${taskViewData.order.pinstance.pid}${!isAssignee || isEnded ? '/' + taskViewData.order.tid : ''}/${taskViewData.order.ptask.tname}` }">
         <el-button :plain="true" icon="more">查看</el-button>
       </router-link>
       <!-- <router-link
