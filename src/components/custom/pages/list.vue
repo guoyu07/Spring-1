@@ -96,7 +96,7 @@
       getCategoryList () {
         let postData = {
           action: 'process/category',
-          method: 'POST',
+          method: 'get',
           data: {}
         }
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
@@ -109,7 +109,7 @@
       onEditCategory ({ pkey, category }) {
         let postData = {
           action: 'process/define',
-          method: 'PUT',
+          method: 'put',
           data: {
             category,
             pkey

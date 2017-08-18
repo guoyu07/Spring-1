@@ -132,8 +132,8 @@
           this.$set(this.searchKeys[key.id], 'value', '')
           this.$set(this.searchKeys[key.id], 'op', 'reg') // 默认为包含 reg
         }
-        // // 一开始先渲染所有的数据回来
-        // this.onSearchDevices()
+        // 一开始先渲染所有的数据回来
+        this.onSearchDevices()
       }
       //   }
       // }
@@ -153,10 +153,9 @@
     methods: {
       onSearchDevices () {
         let searchData = {}
-        searchData.query = Object.assign(this.searchData, this.filterObj(this.searchKeys))
+        searchData.query = Object.assign({}, this.searchData, this.filterObj(this.searchKeys))
         searchData.page = this.currentPage
         searchData.page_size = this.pageSize
-        // console.log(searchData)
         if (this.isEmptyObj(searchData.query)) {
           this.$message.info('搜索条件不能为空！')
           return false
