@@ -25,12 +25,14 @@
         </el-table-column>
       </el-table>
     </el-card>
-    <order-dialog :order-view-data="orderViewData" :filter-name="filterData.name"></order-dialog>
+    <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData" :filter-name="filterData.name"></task-dialog>
+    <process-dialog v-if="processViewData.visible" :process-view-data="processViewData" :filter-name="filterData.name"></process-dialog>
   </div>
 </template>
 
 <script>
-  import orderDialog from './_plugins/_orderDialog'
+  import taskDialog from './_plugins/_taskDialog'
+  import processDialog from './_plugins/_processDialog'
 
   import getFilteredTasks from './../../../mixins/getFilteredTasks'
 
@@ -39,7 +41,11 @@
 
     data () {
       return {
-        orderViewData: {
+        taskViewData: {
+          visible: false,
+          order: {}
+        },
+        processViewData: {
           visible: false,
           order: {}
         }
@@ -58,12 +64,13 @@
 
     methods: {
       onView (order) {
-        Object.assign(this.orderViewData, { visible: true, order })
+        this.filterData.name === '已完成' ? Object.assign(this.processViewData, { visible: true, order }) : Object.assign(this.taskViewData, { visible: true, order })
       }
     },
 
     components: {
-      orderDialog
+      taskDialog,
+      processDialog
     }
   }
 </script>
