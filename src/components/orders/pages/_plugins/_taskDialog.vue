@@ -73,21 +73,21 @@
         @click="onClaim(taskViewData.order)" icon="check">认领</el-button>
       <router-link
         v-else
-        :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}${!isAssignee || isEnded ? '-info' : ''}/${taskViewData.order.pinstance.pid}${!isAssignee || isEnded ? '/' + taskViewData.order.tid : ''}/${taskViewData.order.ptask.tname}` }">
+        :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}${!isAssignee || isEnded ? '-info' : ''}/${taskViewData.order.pinstance.pid}${!isAssignee || isEnded ? '' : ('/' + taskViewData.order.tid)}/${taskViewData.order.ptask.tname}` }">
         <el-button :plain="true" icon="more">查看</el-button>
       </router-link>
       <!-- <router-link
-        v-else-if="['host'].includes(taskViewData.order.pinstance.pkey) && filterName === '待处理'" 
+        v-else-if="['host'].includes(taskViewData.order.pinstance.pkey) && filterName === '待处理'"
         :to="{ path: `/guosen/${taskViewData.order.pinstance.pkey}/${taskViewData.order.ptask.tkey}/${taskViewData.order.tid}/${taskViewData.order.ptask.tname}`}" >
         <el-button :plain="true" icon="more">查看</el-button>
       </router-link>
       <router-link
-        v-else-if="['host'].includes(taskViewData.order.pinstance.pkey) && filterName === '已参与'" 
+        v-else-if="['host'].includes(taskViewData.order.pinstance.pkey) && filterName === '已参与'"
         :to="{ path: `/guosen-info/${taskViewData.order.pinstance.pkey}/${taskViewData.order.ptask.tkey}/${taskViewData.order.pinstance.pid}/${taskViewData.order.ptask.tname}`} ">
         <el-button :plain="true" icon="more">查看</el-button>
       </router-link>
       <router-link
-        v-else-if="['host'].includes(taskViewData.order.pinstance.pkey) && filterName === '历史参与'" 
+        v-else-if="['host'].includes(taskViewData.order.pinstance.pkey) && filterName === '历史参与'"
         :to="{ path: `/guosen-info/${taskViewData.order.pinstance.pkey}/${taskViewData.order.pinstance.pid}`} ">
         <el-button :plain="true" icon="more">查看</el-button>
       </router-link>
