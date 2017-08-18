@@ -185,7 +185,7 @@
         transform: rotate(-35deg);
         transform-origin: -120% -30%;
         white-space: nowrap;
-        color: lighten(@activeColor, 20%);
+        color: #e4e8f1;
         text-align: center;
         font-size: 13px;
 
@@ -200,11 +200,11 @@
       &.active {
         .detail {
           font-size: 13px;
-          color: @success;
+          color: lighten(@activeColor, 20%);
         }
 
         &::before {
-          background-color: @success;
+          background-color: lighten(@activeColor, 20%);
           border: none;
           content: "\f00c";
           font: normal normal normal 14px/1 FontAwesome;
@@ -237,7 +237,7 @@
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 2px solid @activeColor;
+        border: 2px solid #e4e8f1;
         background-color: #fff;
       }
     }
