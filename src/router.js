@@ -33,16 +33,13 @@ const routes = [{
       path: '/procedure/start/:pkey/:pname',
       component: require('./components/procedure/pages/start')
     }, {
-      path: '/procedure/modify/:pid/:pkey/:pname/:tid/:tkey',
+      path: '/procedure/modify/:pid/:tid/:name',
       component: require('./components/procedure/pages/start')
     }, {
-      path: '/procedure/:pkey/:tkey/:id/:name',
+      path: '/procedure/:pid/:tid/:name',
       component: require('./components/procedure/pages/step')
     }, {
-      path: '/procedure-info/:pkey/:tkey/:id/:name',
-      component: require('./components/procedure/pages/stepInfo')
-    }, {
-      path: '/procedure-info/:pkey/:id',
+      path: '/procedure-info/:pid/:name',
       component: require('./components/procedure/pages/stepInfo')
     }]
   }, {

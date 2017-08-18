@@ -9,6 +9,7 @@
         :data="currentList"
         v-loading="loading"
         width="100%"
+        stripe
         border>
         <el-table-column
           v-for="col in filterData.show"
