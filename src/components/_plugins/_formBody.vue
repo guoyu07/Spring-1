@@ -345,7 +345,8 @@
             const reg = new RegExp(ele)
             return value.some(val => { return !val.match(reg) }) // 要value数组里每一个值都通过正则，否则报错
           }
-          if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch)) {
+          // arr 才需要验证正则
+          if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch) && formItem.value.type === 'arr') {
             return cb(new Error(`请输入正确的${formItem.name}`))
           }
           if (this.limitMaxNum) { // static时，有一个范围值

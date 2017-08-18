@@ -13,7 +13,7 @@
                 :on-success="onUploadExcel"
                 :on-change="excelFileChange"
                 :file-list="excelList"
-                v-if="$route.params.pname === '服务器入库'"
+                v-if="$route.params.pkey === 'Storage'"
                 class="margin-bottom">
                 <el-button icon="document" type="primary">上传入库单</el-button>
                 <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
@@ -151,14 +151,14 @@
                 </el-row>
               </template>
 
-              <el-upload
+             <!--  <el-upload
                 action="/api/upload_file/"
                 accept=".xls,.xlsx"
                 :on-success="onUploadExcel"
-                v-if="$route.params.pname === '服务器入库'">
+                v-if="$route.params.pkey === 'Storage'">
                 <el-button size="small" icon="document" type="primary">上传入库单</el-button>
                 <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
-              </el-upload>
+              </el-upload> -->
             </template>
           </el-form>
         </el-card>
@@ -200,7 +200,7 @@
     },
     computed: {
       isEditing () {
-        return !!this.$route.params.tid || this.$route.params.pname === '服务器入库'
+        return !!this.$route.params.tid || this.$route.params.pkey === 'Storage'
       }
     },
     created () {
@@ -346,7 +346,7 @@
             }
           })
           console.log(this.postForm.body)
-          if (this.isEditing && !this.$route.params.pname === '服务器入库') this.injectValues() // 是编辑
+          if (this.isEditing && !this.$route.params.pkey === 'Storage') this.injectValues() // 是编辑
         })
       },
       injectValues () {
@@ -449,6 +449,10 @@
                     this.postForm.header[item.id] = this.hostList
                   }
                 }
+              }
+            } else {
+              if (item.value.type === 'search_bar') {
+                this.postForm.header[item.id] = this.hostList
               }
             }
           })

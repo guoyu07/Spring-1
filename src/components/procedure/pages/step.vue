@@ -17,9 +17,14 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
+            <div v-if="applyData.body && applyData.body.length" class="clear">
+              <el-button class="fr" size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
+            </div>
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
+             <!-- :class="infoShow[index] ? 'show' : 'hidden'" -->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
+              <!-- <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button> -->
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
@@ -70,9 +75,6 @@
               </div>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
-            <div class="clear">
-              <el-button class="fr" size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
-            </div>
             <template v-if="taskForm.body && taskForm.body.style === 1">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
                 <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
@@ -393,7 +395,7 @@
           action: 'task/form/group',
           method: 'GET',
           data: {
-            tid: this.routerInfo.id
+            tid: this.routerInfo.tid
           }
         }
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
@@ -729,7 +731,7 @@
                     }
                   }
                 }
-                this.postMethod(this.routerInfo.id, postFormData)
+                this.postMethod(this.routerInfo.tid, postFormData)
                 // console.dir(this.assignForm)
               } else {
                 console.log('error submit!!')
@@ -754,7 +756,7 @@
                         }
                       })
                     } else {
-                      this.postMethod(this.routerInfo.id, postFormData)
+                      this.postMethod(this.routerInfo.tid, postFormData)
                     }
                   })
                 }
@@ -770,12 +772,12 @@
                     }
                   })
                 } else {
-                  this.postMethod(this.routerInfo.id, postFormData)
+                  this.postMethod(this.routerInfo.tid, postFormData)
                 }
               })
             } else {
               console.log('hahhahahahha')
-              this.postMethod(this.routerInfo.id, postFormData)
+              this.postMethod(this.routerInfo.tid, postFormData)
             }
 
             // if (!this.assignForm.body.some(data => {
@@ -783,7 +785,7 @@
             //     return Array.isArray(data[item]) && data[item].length === 0
             //   }
             // })) {
-            //   this.postMethod(this.routerInfo.id, postFormData)
+            //   this.postMethod(this.routerInfo.tid, postFormData)
             //   // console.dir(this.assignForm)
             // } else {
             //   this.$message.warning('未分配完！')
@@ -892,7 +894,7 @@
           method: 'POST',
           data: {
             form: this.assignForm,
-            tid: this.routerInfo.id,
+            tid: this.routerInfo.tid,
             action_id: action.id
           }
         }
@@ -909,7 +911,7 @@
         })
       },
       onReject (task, action) {
-        console.log(task, action.pass)
+        // console.log(task, action.pass)
         this.$prompt('请输入' + action.name + '意见：', '确定' + action.name + '？', {
           confirmButtonText: '确定',
           cancelButtonText: '取消'
@@ -923,7 +925,7 @@
             action: 'task',
             method: 'POST',
             data: {
-              tid: this.routerInfo.id,
+              tid: this.routerInfo.tid,
               form: { value },
               pass: action.pass
             }
