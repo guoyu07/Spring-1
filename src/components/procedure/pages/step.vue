@@ -294,7 +294,7 @@
       </el-col>
     </el-row>
     <el-dialog
-      title="历史"
+      title="工作流"
       v-model="showHistory">
       <el-collapse v-if="taskData && taskData.pinstance">
         <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name">

@@ -138,11 +138,58 @@
           this.renderOptions()
         }, { deep: true })
       } else {
-        // console.log(this.strucData.name, 'hello')
         this.renderOptions()
       }
     },
+    watch: {
+      // 这个 watch 是为了上传Excel文档时，填入对应的值
+      'vmodel': {
+        handler: 'renderData',
+        deep: true
+      }
+    },
     methods: {
+      renderData () {
+        setTimeout(() => {
+          // 将默认值(对象类型)放回值里面
+          if (this.vmodel[this.strucData.id]) {
+            if (Array.isArray(this.vmodel[this.strucData.id])) {
+              this.vmodel[this.strucData.id].map((item, itemindex) => {
+                if (item[this.strucData.value.source.res.show_key[0]]) {
+                  this.optionList.map(option => {
+                    if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
+                      // item = option
+                      this.vmodel[this.strucData.id][itemindex] = option
+                    } else {
+                      if (!this.optionList.includes(item)) {
+                        this.optionList.push(item)
+                      }
+                    }
+                  })
+                }
+              })
+            } else {
+              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                let isIncludes
+                for (var option of this.optionList) {
+                  if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                    this.vmodel[this.strucData.id] = option
+                    isIncludes = true
+                    return false
+                  }
+                }
+                setTimeout(() => {
+                  if (!isIncludes) {
+                    if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                      this.optionList.push(this.vmodel[this.strucData.id])
+                    }
+                  }
+                }, 100)
+              }
+            }
+          }
+        }, 100)
+      },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
           return option[this.strucData.value.source.res.show_key[0]]
@@ -168,19 +215,6 @@
         }
       },
       renderOptions () {
-        // this.whole 区分是不是快速编辑 快速编辑 不传 whole, 需要原值
-        // console.log(this.isEditing)
-        // if (!this.strucData.default.type && this.whole) { // 没有默认值时，每次 watch 发一次请求之前都重置值，有默认值则不需要重置值
-        //   console.log('hello dicts')
-        //   if (this.strucData.value.type === 'dicts') {
-        //     this.vmodel[this.strucData.id] = []
-        //   } else {
-        //     this.vmodel[this.strucData.id] = null
-        //   }
-        // } else {
-        //   // 这个是默认值
-        //   // console.log(this.vmodel[this.strucData.id], this.strucData)
-        // }
         if (!this.strucData.value.source) {
           this.$message({
             showClose: true,
@@ -246,7 +280,6 @@
             }
           }
         }
-        // console.log(this.strucData.name, params)
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
@@ -360,56 +393,7 @@
               }
             }
           }
-          setTimeout(() => {
-            // 将默认值(对象类型)放回值里面
-            if (this.vmodel[this.strucData.id]) {
-              if (Array.isArray(this.vmodel[this.strucData.id])) {
-                this.vmodel[this.strucData.id].map((item, itemindex) => {
-                  if (item[this.strucData.value.source.res.show_key[0]]) {
-                    this.optionList.map(option => {
-                      if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
-                        // item = option
-                        this.vmodel[this.strucData.id][itemindex] = option
-                      } else {
-                        if (!this.optionList.includes(item)) {
-                          this.optionList.push(item)
-                        }
-                      }
-                    })
-                  }
-                })
-              } else {
-                if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                  // this.optionList.map(option => {
-                  //   if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                  //     this.vmodel[this.strucData.id] = option
-                  //     return false
-                  //   } else {
-                  //     if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
-                  //       // console.log('???')
-                  //       this.optionList.push(this.vmodel[this.strucData.id])
-                  //     }
-                  //   }
-                  // })
-                  let isIncludes
-                  for (var option of this.optionList) {
-                    if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                      this.vmodel[this.strucData.id] = option
-                      isIncludes = true
-                      return false
-                    }
-                  }
-                  setTimeout(() => {
-                    if (!isIncludes) {
-                      if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
-                        this.optionList.push(this.vmodel[this.strucData.id])
-                      }
-                    }
-                  }, 100)
-                }
-              }
-            }
-          }, 100)
+          this.renderData()
         })
       }
     }

@@ -5,15 +5,21 @@
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
 
-          <el-upload
-            action="/api/upload_file/"
-            accept=".xls,.xlsx"
-            :on-success="onUploadExcel"
-            v-if="$route.params.pname === '服务器入库'"
-            class="margin-bottom">
-            <el-button icon="document" type="primary">上传入库单</el-button>
-            <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
-          </el-upload>
+          <el-row>
+            <el-col :sm="12" :md="8" :lg="4">
+              <el-upload
+                action="/api/upload_file/"
+                accept=".xls,.xlsx"
+                :on-success="onUploadExcel"
+                :on-change="excelFileChange"
+                :file-list="excelList"
+                v-if="$route.params.pname === '服务器入库'"
+                class="margin-bottom">
+                <el-button icon="document" type="primary">上传入库单</el-button>
+                <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
+              </el-upload>
+            </el-col>
+          </el-row>
 
           <el-form label-position="right" ref="postForm" :model="postForm" :inline="true" label-width="100px">
             <!-- header 表单填写 -->
@@ -66,6 +72,7 @@
                                   :item="postForm.body[index]"
                                   :form-item="formItem"
                                   :whole="postForm"
+                                  :is-editing="isEditing"
                                   :index="+index">
                                 </form-body>
                                 <search-bar
@@ -73,6 +80,7 @@
                                   :index="index"
                                   :hosts="postForm.body[index]"
                                   :attr-list="formItem"
+                                  :is-editing="isEditing"
                                   :limit="getLimitQuantity(formItem, postForm, applyData, index)"
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
@@ -82,6 +90,7 @@
                                   :item="postForm.body[index]"
                                   :post-form="postForm"
                                   :index="index"
+                                  :is-editing="isEditing"
                                   :bodyTable="true">
                                 </body-table>
                               </span>
@@ -108,6 +117,7 @@
                                     :item="postForm.body[index]"
                                     :form-item="formItem"
                                     :whole="postForm"
+                                    :is-editing="isEditing"
                                     :index="+index">
                                   </form-body>
                                   <search-bar
@@ -115,6 +125,7 @@
                                     :index="index"
                                     :hosts="postForm.body[index]"
                                     :attr-list="formItem"
+                                    :is-editing="isEditing"
                                     :limit="getLimitQuantity(formItem, postForm, applyData, index)"
                                     @on-hosts-change="onHostsChange">
                                   </search-bar>
@@ -123,6 +134,7 @@
                                     :form-data="formItem"
                                     :item="postForm.body[index]"
                                     :post-form="postForm"
+                                    :is-editing="isEditing"
                                     :index="index"
                                     :bodyTable="true">
                                   </body-table>
@@ -188,7 +200,7 @@
     },
     computed: {
       isEditing () {
-        return !!this.$route.params.tid
+        return !!this.$route.params.tid || this.$route.params.pname === '服务器入库'
       }
     },
     created () {
@@ -201,6 +213,9 @@
       }
     },
     methods: {
+      excelFileChange (file, fileList) {
+        this.excelList = fileList.slice(-1)
+      },
       renderBodyLabel (val) {
         this.bodyLabel(this.taskFormData, val, val, this.bodyLableName)
       },
@@ -331,7 +346,7 @@
             }
           })
           console.log(this.postForm.body)
-          if (this.isEditing) this.injectValues() // 是编辑
+          if (this.isEditing && !this.$route.params.pname === '服务器入库') this.injectValues() // 是编辑
         })
       },
       injectValues () {
@@ -641,7 +656,14 @@
         }
         this.http.post('/api/data/', postData).then((res) => {
           if (res.status === 200) {
-            console.log(res.data.data)
+            // console.log(res.data.data)
+            this.postForm.body = res.data.data.body
+            // setTimeout(() => {
+            //   // this.postForm.body = this.postForm.body.map((body, bodyindex) => {
+            //   //   return Object.assign({}, body, res.data.data.body[bodyindex])
+            //   // })
+            // }, 100)
+            this.tabsValue = '0'
           }
         })
       }
