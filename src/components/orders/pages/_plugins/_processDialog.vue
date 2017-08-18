@@ -62,6 +62,12 @@
         </el-collapse>
       </el-col>
     </el-row>
+    <span class="dialog-footer" slot="footer">
+      <router-link
+        :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}-info/${processViewData.order.pid}/${processViewData.order.pd.pname}` }">
+        <el-button :plain="true" icon="more">查看</el-button>
+      </router-link>
+    </span>
   </el-dialog>
 </template>
 
