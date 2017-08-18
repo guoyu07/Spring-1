@@ -18,6 +18,7 @@ export default {
       window.localStorage.setItem('isAdmin', response.data.data.admin)
       window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)
       window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)
+      window.localStorage.setItem('groups', JSON.stringify(response.data.data.groups))
       store.dispatch('update_userinfo', {
         userinfo: response.data.data
       })

@@ -282,13 +282,13 @@
       },
       renderInstanceDetail () {
         let postData = {
-          action: 'history/process',
+          action: 'task',
           method: 'GET',
           data: {
-            pid: this.routerInfo.id
+            tid: this.routerInfo.id
           }
         }
-        this.http.post('', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
           console.log(res)
           const message = res.data.data.variables.message
           res.data.data.path_list.map(list => {
