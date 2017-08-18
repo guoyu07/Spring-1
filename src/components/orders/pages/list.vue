@@ -6,27 +6,37 @@
         <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
       </el-button>
       <el-table
-        :data="filteredTasks.list"
+        :data="currentList"
         v-loading="loading"
+        width="100%"
         border>
         <el-table-column
           v-for="col in filterData.show"
           :prop="col.key_path"
           :label="col.label"></el-table-column>
         <el-table-column
-          inline-template
           width="80"
-          fixed="right"
-          :context="_self"
-          label="操作">
+          label="操作"
+          inline-template
+          :context="_self">
           <template>
-            <el-button size="small" @click="onView(row)">详情</el-button>
+            <el-button v-if="filterData.name === '已完成'" size="small" @click="onViewProcess(row)">详情</el-button>
+            <el-button v-else size="small" @click="onViewTask(row)">详情</el-button>
           </template>
         </el-table-column>
       </el-table>
+      <el-pagination
+        class="margin-top margin-bottom fr"
+        @current-change="onCurrentChange"
+        @size-change="onSizeChange"
+        :current-page="currentPage"
+        :page-sizes="[10, 15, 20, 25, 30]"
+        :page-size="currentSize"
+        layout="total, sizes, prev, pager, next, jumper"
+        :total="filteredTasks.total"></el-pagination>
     </el-card>
     <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData" :filter-name="filterData.name"></task-dialog>
-    <process-dialog v-if="processViewData.visible" :process-view-data="processViewData" :filter-name="filterData.name"></process-dialog>
+    <process-dialog v-if="processViewData.visible" :process-view-data="processViewData"></process-dialog>
   </div>
 </template>
 
@@ -55,6 +65,7 @@
     watch: {
       '$route.params.id' (id) {
         this.getFilterData(id)
+        this.currentPage = 1
       }
     },
 
@@ -63,8 +74,12 @@
     },
 
     methods: {
-      onView (order) {
-        this.filterData.name === '已完成' ? Object.assign(this.processViewData, { visible: true, order }) : Object.assign(this.taskViewData, { visible: true, order })
+      onViewTask (order) {
+        Object.assign(this.taskViewData, { visible: true, order })
+      },
+
+      onViewProcess (order) {
+        Object.assign(this.processViewData, { visible: true, order })
       }
     },
 

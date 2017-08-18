@@ -6,7 +6,10 @@ export default {
       columnList: [],
       filterData: {},
       filteredTasks: {},
-      filteredColumnList: []
+      filteredColumnList: [],
+      currentList: [],
+      currentPage: 1,
+      currentSize: 10
     }
   },
 
@@ -47,8 +50,21 @@ export default {
           this.filteredTasks = res.data.data
           // this.getColumnList()
           this.loading = false
+          this.onCurrentChange(1)
         }
       })
+    },
+
+    onCurrentChange (val) {
+      this.currentPage = val
+      const offset = (this.currentPage - 1) * this.currentSize
+      const array = this.filteredTasks.list
+      this.currentList = (offset + this.currentSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentSize)
+    },
+
+    onSizeChange (val) {
+      this.currentSize = val
+      this.onCurrentChange(this.currentPage)
     }
 
     // getColumnList () {
