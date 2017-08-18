@@ -14,7 +14,8 @@ export default {
   login (context, creds, redirect) {
     console.log(creds)
     context.http.post('/base/', creds).then(response => {
-      window.localStorage.setItem('userName', response.data.data.userId)
+      window.localStorage.setItem('userName', response.data.data.nick)
+      window.localStorage.setItem('userId', response.data.data.userId)
       window.localStorage.setItem('isAdmin', response.data.data.admin)
       window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)
       window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)

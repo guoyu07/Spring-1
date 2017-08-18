@@ -127,7 +127,7 @@
       },
 
       isAssignee () {
-        return this.taskViewData.order.assign === window.localStorage.userName || JSON.parse(window.localStorage.groups).some(_ => this.taskViewData.order.assign_group.includes(_))
+        return this.taskViewData.order.assign.userId === window.localStorage.userId || JSON.parse(window.localStorage.groups).some(_ => this.taskViewData.order.assign_group.includes(_))
       },
 
       isGuosen () {
