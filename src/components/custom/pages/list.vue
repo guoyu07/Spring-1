@@ -23,7 +23,19 @@
           <div class="btn-area clear">
             <el-button type="info" :plain="true" @click="onNewBpmn" icon="plus">新建流程 BPMN</el-button>
           </div>
-          <el-table
+
+          <draggable v-model="orderedProcesses" @start="drag=true" @end="drag=false" class="draggable">
+            <div v-for="(item, index) in orderedProcesses" class="draggable-item">
+              <input type="checkbox" :id="index">
+              <label :for="index" class="draggable-item__label">
+                {{item.name}}
+              </label>
+              <section class="draggable-item__inner">
+                
+              </section>
+            </div>
+          </draggable>
+          <!-- <el-table
             :data="permittedProcessList"
             border>
             <el-table-column
@@ -56,7 +68,7 @@
                 <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
               </template>
             </el-table-column>
-          </el-table>
+          </el-table> -->
         </el-card>
       </el-col>
     </el-row>
@@ -65,29 +77,46 @@
 </template>
 
 <script>
-  import getPermittedProcessList from './../../../mixins/getPermittedProcessList'
+  import draggable from 'vuedraggable'
   import scriptEditor from './../../_plugins/_scriptEditor'
 
   export default {
-    mixins: [getPermittedProcessList],
-
     data () {
       return {
+        orderedProcesses: [],
+        rearrangedOrders: [],
         editorProps: {
           visible: false,
           pkey: '',
           data: ''
         },
-        categoryList: []
+        categoryList: [],
+        orderConfVisible: false
       }
     },
 
     created () {
-      this.getPermittedProcessList()
+      this.getOrderedProcesses()
       // this.getCategoryList()
     },
 
     methods: {
+      getOrderedProcesses () {
+        let postData = {
+          action: 'process/category',
+          method: 'GET',
+          data: {
+            include_pds: true,
+            pd_detail: true
+          }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.orderedProcesses = res.data.data.list
+          }
+        })
+      },
+
       onNewBpmn () {
         window.localStorage.removeItem('bpmn')
         this.$router.replace('/custom/new')
@@ -118,7 +147,8 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已修改！')
-            this.getPermittedProcessList()
+            // this.getPermittedProcessList()
+            this.getOrderedProcesses()
           }
         })
       },
@@ -143,6 +173,7 @@
     },
 
     components: {
+      draggable,
       scriptEditor
     }
   }

@@ -160,7 +160,7 @@
                   </el-form-item>
                   <el-form-item label="默认值">
                     <el-popover placement="right" trigger="click">
-                      <default-conf :dialog-props="itemConf"></default-conf>
+                      <default-conf :dialog-props="itemConf" :is-body="isBody"></default-conf>
                       <el-button size="small" slot="reference">配置默认值</el-button>
                     </el-popover>
                     <el-tooltip placement="top" v-if="itemConf.default">
@@ -444,7 +444,7 @@ export default {
 
   computed: {
     isBody () {
-      return !!this.bodyIndex
+      return this.bodyIndex !== undefined
     }
   },
 

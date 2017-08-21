@@ -42,12 +42,19 @@
 <script>
   export default {
     props: {
-      dialogProps: Object
+      dialogProps: Object,
+      isBody: Boolean
     },
 
     computed: {
       countConfig () {
-        return this.dialogProps.value.type === 'table' ? [ 'form_header', 'form_body', 'message_header', 'message_body' ] : [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'api' ]
+        if (this.dialogProps.value.type === 'table') {
+          return [ 'form_header', 'form_body', 'message_header', 'message_body' ]
+        } else if (this.dialogProps.value.type === 'search_bar' && !this.isBody) {
+          return [ 'static', 'form_header', 'message_header', 'api' ]
+        } else {
+          return [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'api' ]
+        }
       }
     },
 
