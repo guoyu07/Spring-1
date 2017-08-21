@@ -22,9 +22,7 @@
             </div>
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
-             <!-- :class="infoShow[index] ? 'show' : 'hidden'" -->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
-              <!-- <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button> -->
               <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
@@ -87,10 +85,10 @@
                         <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
                           <p class="h5">{{task.tname}}</p>
                           <!-- header 信息显示 -->
-                          <div v-if="task.form.header.length >= 1">
+                          <div v-if="task.form.form.header.length >= 1">
                             <div v-for="taskformheader in task.form.form.header">
                               <span v-for="valueheader in taskformheader.value">
-                                <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                                <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, routerInfo.tkey)">
                                   <header-form-display
                                     :item="applyData.header"
                                     :form-item="valueheader">
@@ -188,10 +186,10 @@
                           <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
                             <p class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
-                            <div v-if="task.form.header.length >= 1">
+                            <div v-if="task.form.form.header.length >= 1">
                               <div v-for="taskformheader in task.form.form.header">
                                 <span v-for="valueheader in taskformheader.value">
-                                  <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, routerInfo.tkey)">
                                     <header-form-display
                                       :item="applyData.header"
                                       :form-item="valueheader">
