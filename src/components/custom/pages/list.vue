@@ -24,51 +24,53 @@
             <el-button type="info" :plain="true" @click="onNewBpmn" icon="plus">新建流程 BPMN</el-button>
           </div>
 
-          <draggable v-model="orderedProcesses" @start="drag=true" @end="drag=false" class="draggable">
+          <draggable v-model="orderedProcesses" @end="onDragEnd" class="draggable">
             <div v-for="(item, index) in orderedProcesses" class="draggable-item">
               <input type="checkbox" :id="index">
               <label :for="index" class="draggable-item__label">
                 {{item.name}}
               </label>
-              <section class="draggable-item__inner">
-                
+              <section>
+                <div class="draggable-item__inner">
+                  <el-table
+                    :data="item.list"
+                    border>
+                    <el-table-column
+                      prop="pname"
+                      label="流程名称"></el-table-column>
+                    <el-table-column
+                      label="类别"
+                      inline-template
+                      :context="_self">
+                      <template>
+                        <el-select
+                          v-show="row.editing"
+                          v-model="row.category"
+                          size="small"
+                          filterable
+                          allow-create>
+                          <el-option v-for="cat in categoryList" :key="cat" :label="cat" :value="cat"></el-option>
+                        </el-select>
+                        <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
+                        <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row.editing)"></i>
+                        <span v-show="!row.editing">{{row.category}}</span>
+                        <i class="el-icon-edit text-info" v-show="!row.editing" @click="row.editing = true;getCategoryList()"></i>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="操作"
+                      inline-template
+                      :context="_self">
+                      <template>
+                        <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
+                        <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
+                      </template>
+                    </el-table-column>
+                  </el-table>
+                </div>
               </section>
             </div>
           </draggable>
-          <!-- <el-table
-            :data="permittedProcessList"
-            border>
-            <el-table-column
-              prop="pname"
-              label="流程名称"></el-table-column>
-            <el-table-column
-              label="类别"
-              inline-template
-              :context="_self">
-              <template>
-                <el-select
-                  v-show="row.editing"
-                  v-model="row.category"
-                  filterable
-                  allow-create>
-                  <el-option v-for="cat in categoryList" :key="cat" :label="cat" :value="cat"></el-option>
-                </el-select>
-                <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
-                <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row.editing)"></i>
-                <span v-show="!row.editing">{{row.category}}</span>
-                <i class="el-icon-edit text-info" v-show="!row.editing" @click="row.editing = true;getCategoryList()"></i>
-              </template>
-            </el-table-column>
-            <el-table-column
-              label="操作"
-              inline-template
-              :context="_self">
-              <template>
-                <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
-                <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
-              </template>
-            </el-table-column>
-          </el-table> -->
         </el-card>
       </el-col>
     </el-row>
@@ -115,6 +117,10 @@
             this.orderedProcesses = res.data.data.list
           }
         })
+      },
+
+      onDragEnd () {
+        console.log('end')
       },
 
       onNewBpmn () {
