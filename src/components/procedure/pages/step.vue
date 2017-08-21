@@ -28,7 +28,7 @@
                   <p class="h5">{{taskheader.tname}}</p>
                   <div v-for="taskformheader in taskheader.form.form.header">
                     <span v-for="valueheader in taskformheader.value">
-                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
                         <header-form-display
                           :item="applyData.header"
                           :form-item="valueheader">
@@ -82,13 +82,13 @@
                     <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
                     <div v-for="task in form">
                       <div v-for="taskbody in task.form.form.body.body_list">
-                        <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
+                        <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
                           <p class="h5">{{task.tname}}</p>
                           <!-- header 信息显示 -->
                           <div v-if="task.form.form.header.length >= 1">
                             <div v-for="taskformheader in task.form.form.header">
                               <span v-for="valueheader in taskformheader.value">
-                                <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, routerInfo.tkey)">
+                                <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                   <header-form-display
                                     :item="applyData.header"
                                     :form-item="valueheader">
@@ -103,7 +103,7 @@
                             :index="index"
                             :post-form="assignForm"
                             :message-data="applyData"
-                            :current-task="routerInfo.tkey"
+                            :current-task="taskData.ptask.tkey"
                             :history-task="task.tkey">
                           </form-structure-display>
                         </div>
@@ -118,7 +118,7 @@
                         <p class="h5">{{taskheader.tname}}</p>
                         <div v-for="taskformheader in taskheader.form.form.header">
                           <span v-for="valueheader in taskformheader.value">
-                            <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                            <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
                               <header-form-display
                                 :item="applyData.header"
                                 :form-item="valueheader">
@@ -183,13 +183,13 @@
                       <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
                       <div v-for="task in form">
                         <div v-for="taskbody in task.form.form.body.body_list">
-                          <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, routerInfo.pkey)">
+                          <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
                             <p class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
                               <div v-for="taskformheader in task.form.form.header">
                                 <span v-for="valueheader in taskformheader.value">
-                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, routerInfo.tkey)">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                     <header-form-display
                                       :item="applyData.header"
                                       :form-item="valueheader">
@@ -204,7 +204,7 @@
                               :index="index"
                               :post-form="assignForm"
                               :message-data="applyData"
-                              :current-task="routerInfo.tkey"
+                              :current-task="taskData.ptask.tkey"
                               :history-task="task.tkey">
                             </form-structure-display>
                           </div>
@@ -219,7 +219,7 @@
                           <p class="h5">{{taskheader.tname}}</p>
                           <div v-for="taskformheader in taskheader.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
-                              <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
+                              <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
                                 <header-form-display
                                   :item="applyData.header"
                                   :form-item="valueheader">
@@ -347,13 +347,14 @@
         path_list: [],
         submitLoading: false,
         infoShow: {},
-        infoHideAll: false
+        infoHideAll: false,
+        hostList: []
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
-      if (this.routerInfo.pkey === 'host_apply' && this.routerInfo.tkey === 'start') {
+      if (this.taskData.pinstance.pkey === 'host_apply' && this.taskData.ptask.tkey === 'start') {
         this.$watch('assignForm.body', (val, oldVal) => {
           for (const data of val) {
             data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
@@ -378,6 +379,12 @@
       }
     },
     methods: {
+      onHostsChange (val) {
+        console.log(val)
+        this.hostList = []
+        this.hostList = val
+        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+      },
       infoShowFunction (newVal) {
         const infoShow = []
         for (const i in newVal) {
@@ -582,7 +589,7 @@
           // 判断是否为驳回信息
           let newDataBody
           for (var message of this.taskData.message) {
-            if (message.task_key === this.routerInfo.tkey) {
+            if (message.task_key === this.taskData.ptask.tkey) {
               this.isEditing = true
               this.edtingInfo = this.taskData.message[this.taskData.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
@@ -631,7 +638,6 @@
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
-          this.applyData.version = res.data.data.version
           this.renderTaskForm()
         })
       },
@@ -665,6 +671,10 @@
                     this.assignForm.header[item.id] = this.hostList
                   }
                 }
+              }
+            } else {
+              if (item.value.type === 'search_bar') {
+                this.assignForm.header[item.id] = this.hostList
               }
             }
           })
@@ -799,25 +809,28 @@
       },
       postMethod (id, data) {
         this.submitLoading = true
+        let postFormData = {
+          header: {},
+          body: []
+        }
         for (const headerid in data.header) {
-          // console.log(headerid, data.header[headerid], !data.header[headerid])
-          if (Array.isArray(data.header[headerid]) && data.header[headerid].length === 0) {
-            delete data.header[headerid]
-          }
-          if (!data.header[headerid]) {
-            // console.log(headerid)
-            delete data.header[headerid] // 删除头部空值
+          if (Array.isArray(data.header[headerid])) {
+            if (data.header[headerid].length !== 0) {
+              postFormData.header[headerid] = data.header[headerid]
+            }
+          } else if (data.header[headerid]) {
+            postFormData.header[headerid] = data.header[headerid]
           }
         }
-        data.body.map(body => {
+        data.body.map((body, bodyIndex) => {
+          postFormData.body[bodyIndex] = {}
           for (const bodyid in body) {
-            // console.log(bodyid, data.header[bodyid], !data.header[bodyid])
-            if (Array.isArray(body[bodyid]) && body[bodyid].length === 0) {
-              delete body[bodyid]
-            }
-            if (!body[bodyid]) {
-              // console.log(bodyid)
-              delete body[bodyid] // 删除body空值
+            if (Array.isArray(body[bodyid])) {
+              if (body[bodyid].length !== 0) {
+                postFormData.body[bodyIndex][bodyid] = body[bodyid]
+              }
+            } else if (body[bodyid]) {
+              postFormData.body[bodyIndex][bodyid] = body[bodyid]
             }
           }
         })
@@ -826,7 +839,7 @@
           method: 'POST',
           data: {
             tid: id,
-            form: data // 通过审批 需要判断一下登录的账号的角色身份
+            form: postFormData // 通过审批 需要判断一下登录的账号的角色身份
               // pass: "流程走向控制变量,整型(可选,默认为0)"
           }
         }
@@ -838,7 +851,7 @@
                 type: 'success',
                 message: '成功!'
               })
-              if (this.routerInfo.pkey === 'easyops_monitor') {
+              if (this.taskData.pinstance.pkey === 'easyops_monitor') {
                 this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
               } else {
                 this.$router.replace('/home') // 跳转运维目录
