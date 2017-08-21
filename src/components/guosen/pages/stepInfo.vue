@@ -6,8 +6,7 @@
           <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 -->
-            <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
-            <!-- <div v-for="taskheader in form">
+            <div v-for="taskheader in form">
               <div v-if="taskheader.form.form.header.length >= 1">
                 <p class="h5">{{taskheader.tname}}</p>
                 <div v-for="taskformheader in taskheader.form.form.header">
@@ -21,7 +20,7 @@
                   </span>
                 </div>
               </div>
-            </div> -->
+            </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
               <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
