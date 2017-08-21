@@ -144,6 +144,8 @@
       margin: 12px 0;
 
       &.draggable {
+        border: none;
+        
         .order-sidebar__item {
           &::before {
             content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAALCAYAAAC3ZUeVAAAAJUlEQVQI12OYOXPmfyhmgLEZcAliYAbitf//D8EgQRibgV62AwAP/odG9/7LRgAAAABJRU5ErkJggg==);

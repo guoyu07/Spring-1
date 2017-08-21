@@ -86,7 +86,7 @@
     data () {
       return {
         orderedProcesses: [],
-        rearrangedOrders: [],
+        orderedProcessesBuffer: '',
         editorProps: {
           visible: false,
           pkey: '',
@@ -115,12 +115,25 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.orderedProcesses = res.data.data.list
+            this.orderedProcessesBuffer = JSON.stringify(this.orderedProcesses)
           }
         })
       },
 
       onDragEnd () {
-        console.log('end')
+        const order = this.orderedProcesses.map(_ => _.name)
+        let postData = {
+          action: 'process/category',
+          method: 'PUT',
+          data: {
+            name_list: order
+          }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已更新排序！')
+          }
+        })
       },
 
       onNewBpmn () {
@@ -160,7 +173,7 @@
       },
 
       onCancelEdit (editing) {
-        this.permittedProcessList = JSON.parse(this.permittedProcessListBuffer)
+        this.orderedProcesses = JSON.parse(this.orderedProcessesBuffer)
         editing = false
       },
 
