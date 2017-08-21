@@ -28,7 +28,7 @@
             <div v-for="(item, index) in orderedProcesses" class="draggable-item">
               <input type="checkbox" :id="index">
               <label :for="index" class="draggable-item__label">
-                {{item.name}}
+                <b>{{item.name}}</b> - ({{item.list.length}})
               </label>
               <section>
                 <div class="draggable-item__inner">
