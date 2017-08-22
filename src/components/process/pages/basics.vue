@@ -64,7 +64,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="adminData.toRemove" :class="{ uncheckable: !adminData.isCheckable }">
-                          <el-checkbox v-for="user in scope.row.users" :label="user.userId">{{user.nick}}</el-checkbox>
+                          <el-checkbox v-for="user in scope.row.users" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -93,7 +93,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="initiatorData.toRemove" :class="{ uncheckable: !initiatorData.isCheckable }">
-                          <el-checkbox v-for="user in scope.row.start_users" :label="user.userId">{{user.nick}}</el-checkbox>
+                          <el-checkbox v-for="user in scope.row.start_users" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -124,7 +124,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="adminData.toRemove" :class="{ uncheckable: !adminData.isCheckable }">
-                          <el-checkbox v-for="group in scope.row.groups" :label="group.key">{{group.name}}</el-checkbox>
+                          <el-checkbox v-for="group in scope.row.groups" :key="group.key" :label="group.key">{{group.name}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -152,7 +152,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="initiatorData.toRemove" :class="{ uncheckable: !initiatorData.isCheckable }">
-                          <el-checkbox v-for="group in scope.row.start_groups" :label="group.key">{{group.name}}</el-checkbox>
+                          <el-checkbox v-for="group in scope.row.start_groups" :key="group.key" :label="group.key">{{group.name}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>

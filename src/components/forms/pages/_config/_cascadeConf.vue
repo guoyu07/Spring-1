@@ -22,7 +22,7 @@
 <template>
   <div class="conf-contain">
     <el-collapse>
-      <el-collapse-item v-for="(layerA, index) in confArr" :title="layerA.label">
+      <el-collapse-item v-for="(layerA, index) in confArr" :title="layerA.label" :key="index">
         <el-form label-width="80px" :inline="true">
           <el-form-item label="Label">
             <el-input size="small" v-model="layerA.label"></el-input>
@@ -42,7 +42,7 @@
           </el-form-item>
         </el-form>
         <el-collapse v-if="layerA.children">
-          <el-collapse-item v-for="(layerB, index) in layerA.children" :title="layerB.label">
+          <el-collapse-item v-for="(layerB, index) in layerA.children" :title="layerB.label" :key="layerB.label">
             <el-form label-width="80px" :inline="true">
               <el-form-item label="Label">
                 <el-form-item label="Label">
@@ -64,7 +64,7 @@
               </el-form-item>
             </el-form>
             <el-collapse v-if="layerB.children">
-              <el-collapse-item v-for="(layerC, index) in layerB.children" :title="layerC.label">
+              <el-collapse-item v-for="(layerC, index) in layerB.children" :title="layerC.label" :key="layerC.label">
                 <el-form label-width="80px" :inline="true">
                   <el-form-item label="Label">
                     <el-input size="small" v-model="layerC.label"></el-input>

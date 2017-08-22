@@ -38,7 +38,7 @@
               <template scope="scope">
                 <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
                 <el-collapse accordion @change="onAccordionChange">
-                  <el-collapse-item v-for="task in scope.row.task_list" :title="task.tname" v-if="task.tkey !== 'start'">
+                  <el-collapse-item v-for="task in scope.row.task_list" :key="task.tkey" :title="task.tname" v-if="task.tkey !== 'start'">
                     <el-row>
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
@@ -63,7 +63,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isUserCheckable }">
-                          <el-checkbox v-for="user in task.users" :label="user.userId">{{user.nick}}</el-checkbox>
+                          <el-checkbox v-for="user in task.users" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>
@@ -92,7 +92,7 @@
                           </el-tooltip>
                         </div>
                         <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isGroupCheckable }">
-                          <el-checkbox v-for="group in task.groups" :label="group.key">{{group.name}}</el-checkbox>
+                          <el-checkbox v-for="group in task.groups" :key="group.key" :label="group.key">{{group.name}}</el-checkbox>
                         </el-checkbox-group>
                       </el-col>
                     </el-row>

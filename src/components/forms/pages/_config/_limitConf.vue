@@ -12,7 +12,7 @@
     <el-form label-width="100px">
       <el-form-item label="个数限制来源">
         <el-select size="small" v-model="dialogProps.limit.type">
-          <el-option v-for="item in countConfig" :value="item"></el-option>
+          <el-option v-for="item in countConfig" :value="item" :key="item"></el-option>
         </el-select>
       </el-form-item>
       <template v-if="dialogProps.limit.type === 'static'">

@@ -68,7 +68,7 @@
               <br>
               <el-form-item label="操作按钮" v-if="$route.query.tkey !== 'start'">
                 <el-checkbox-group v-model="checkedActions" @change="actionChange">
-                  <el-checkbox v-for="ac of actions" :label="ac.type"></el-checkbox>
+                  <el-checkbox v-for="(ac, index) of actions" :key="index" :label="ac.type"></el-checkbox>
                 </el-checkbox-group>
               </el-form-item>
               <template v-if="formConfig.action.find(_ => _.type === 'target') || checkedActions.includes('target')">
@@ -87,7 +87,7 @@
                 <!-- <br> -->
                 <el-form-item label="自动触发">
                   <el-select v-model="selectedAuto.name" @change="onChangeAuto">
-                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.name"></el-option>
+                    <el-option v-for="(ac, index) of actionDefList" :key="index" :label="ac.name" :value="ac.name"></el-option>
                   </el-select>
                 </el-form-item>
               </template>
@@ -95,7 +95,7 @@
                 <!-- <br> -->
                 <el-form-item label="手动触发">
                   <el-select v-model="selectedManual.name" @change="onChangeManual">
-                    <el-option v-for="ac of actionDefList" :label="ac.name" :value="ac.name"></el-option>
+                    <el-option v-for="(ac, index) of actionDefList" :key="index" :label="ac.name" :value="ac.name"></el-option>
                   </el-select>
                 </el-form-item>
                 <br>
@@ -164,7 +164,7 @@
                 <el-button slot="reference">配置</el-button>
               </el-popover>
             </el-row>
-            <el-row v-for="(body, index) in formConfig.form.body.body_list">
+            <el-row v-for="(body, index) in formConfig.form.body.body_list" :key="index">
               <h5>Body #{{index + 1}} {{body.name}}</h5>
               <el-card>
                 <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
@@ -180,7 +180,7 @@
             <el-dropdown trigger="click" @command="selectClonedBody">
               <el-button type="primary" :plain="true" size="small"><i class="el-icon-fa-clone"></i> 克隆 Body</el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="(body, index) of formConfig.form.body.body_list" :command="index.toString()">Body #{{index + 1}}</el-dropdown-item>
+                <el-dropdown-item v-for="(body, index) of formConfig.form.body.body_list" :key="index" :command="index.toString()">Body #{{index + 1}}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-row>

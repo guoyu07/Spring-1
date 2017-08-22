@@ -13,11 +13,11 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
-              <div v-for="taskheader in form">
+              <div v-for="taskheader in form" :key="taskheader.tkey">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
-                  <div v-for="taskformheader in taskheader.form.form.header">
-                    <span v-for="valueheader in taskformheader.value">
+                  <div v-for="taskformheader in taskheader.form.form.header" :key="taskformheader.name">
+                    <span v-for="valueheader in taskformheader.value" :key="valueheader.id">
                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, false)">
                         <header-form-display
                           :item="applyData.header"
@@ -31,18 +31,18 @@
             </div>
             <template v-if="bodyStyle === '1'">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
-                <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
+                <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]" :key="index">
                   <!-- body 信息显示 -->
                   <div class="history-block">
-                    <div v-for="task in form">
+                    <div v-for="task in form" :key="task.tkey">
                       <div v-if="task.form.form.body.body_list.length">
-                        <div v-for="taskbody in task.form.form.body.body_list">
+                        <div v-for="(taskbody, index) in task.form.form.body.body_list" :key="index">
                           <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
                             <p class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
-                              <div v-for="taskformheader in task.form.form.header">
-                                <span v-for="valueheader in taskformheader.value">
+                              <div v-for="taskformheader in task.form.form.header" :key="taskformheader.name">
+                                <span v-for="valueheader in taskformheader.value" :key="valueheader.id">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                     <header-form-display
                                       :item="applyData.header"
@@ -68,8 +68,8 @@
                         <!-- header 信息显示 -->
                         <p class="h5">{{task.tname}}</p>
                         <div v-if="task.form.form.header.length >= 1">
-                          <div v-for="taskformheader in task.form.form.header">
-                            <span v-for="valueheader in taskformheader.value">
+                          <div v-for="taskformheader in task.form.form.header" :key="taskformheader.name">
+                            <span v-for="valueheader in taskformheader.value" :key="valueheader.id">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                 <header-form-display
                                   :item="applyData.header"

@@ -12,7 +12,7 @@
     <el-form label-width="100px">
       <el-form-item label="默认值类型">
         <el-select size="small" v-model="dialogProps.default.type">
-          <el-option v-for="item in countConfig" :value="item"></el-option>
+          <el-option v-for="item in countConfig" :value="item" :key="item"></el-option>
         </el-select>
       </el-form-item>
       <template v-if="['static', 'api'].includes(dialogProps.default.type)">

@@ -25,10 +25,10 @@
             <span>{{taskViewData.order.assign_group.name}}</span>
           </el-form-item>
           <el-form-item v-if="taskViewData.order.candidate_users.length" label="候选人">
-            <el-tag v-for="user in taskViewData.order.candidate_users" type="gray">{{user.nick}}</el-tag>
+            <el-tag v-for="user in taskViewData.order.candidate_users" :key="user.userId" type="gray">{{user.nick}}</el-tag>
           </el-form-item>
           <el-form-item v-if="taskViewData.order.candidate_groups.length" label="候选人">
-            <el-tag v-for="group in taskViewData.order.candidate_groups" type="gray">{{group.name}}</el-tag>
+            <el-tag v-for="group in taskViewData.order.candidate_groups" :key="group.name" type="gray">{{group.name}}</el-tag>
           </el-form-item>
           <el-form-item v-if="taskViewData.order.ctime" label="创建时间">
             <span>{{taskViewData.order.ctime}}</span>
@@ -47,7 +47,7 @@
          }"></progress-wrap>
         <h5 class="sub-title" v-if="taskViewData.order.pinstance.history_list.length"><i class="el-icon-information"></i> 完整历史步骤（{{ taskViewData.order.pinstance.history_list.length }}）</h5>
         <el-collapse v-if="taskViewData.order.pinstance.history_list.length" class="history-list">
-          <el-collapse-item v-for="(task, key) in taskViewData.order.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name">
+          <el-collapse-item v-for="(task, key) in taskViewData.order.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name" :key="key">
             <el-form label-position="left" label-width="90px" inline class="expanded-form">
               <el-form-item v-if="task.task_key" label="任务 Key">
                 <code>{{task.task_key}}</code>
