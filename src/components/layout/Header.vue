@@ -144,7 +144,7 @@
   <header class="header fw">
     <el-menu default-active="1" mode="horizontal">
       <el-menu-item index="1" class="logo">
-        <router-link to="/echarts">
+        <router-link to="/dashboard">
           <!-- <b>EasyOps</b> 运维管理系统 -->
           <div class="logo-img">
             <img src="../../assets/logo-lg.png" alt="">
@@ -152,7 +152,7 @@
         </router-link>
       </el-menu-item>
       <el-menu-item index="2">
-        <router-link class="link-block" :to="{ path: '/home' }">运维服务目录</router-link>
+        <router-link class="link-block" :to="{ path: '/menu' }">运维服务目录</router-link>
       </el-menu-item>
       <el-menu-item index="3">
         <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>

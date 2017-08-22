@@ -1,265 +1,200 @@
-<style lang="less" scoped>
-  @import url("../../../assets/css/variables");
-
-  .dashboard {
-    padding: .4em 1.2em;
-  }
-
-  .grid {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-start;
-    list-style: none;
-    padding: 0;
-    margin: .2em 0 1.6em;
-  }
-
-  .category {
-    font-weight: 400;
-    margin-bottom: 0;
-  }
-
-  .hot-category {
-    font-size: 14px;
-    color: #888;
-  }
-
-  .entry {
-    flex: none;
-    padding: 1.5em 0 0 1.5em;
-    margin-right: 1.5em;
-    color: @eoTextColor;
-    width: 100px;
-
-    &__icon {
-      display: flex;
-      justify-content: center;
-      align-items: center;
-      line-height: 0;
-      margin-bottom: .6em;
-
-      span {
-        font-size: 36px !important;
-        color: #fff;
-        width: 64px;
-        height: 64px;
-        background: @eoThemeColor;
-        border-radius: 100%;
-        text-align: center;
-        display: inline-flex;
-        justify-content: center;
-        align-items: center;
-      }
-    }
-
-    &__title {
-      font-size: 14px;
-      line-height: 1.3;
-      text-align: center;
-      max-width: 100px;
-    }
-
-    &:hover {
-      cursor: pointer;
-
-      .entry__icon span {
-        background-color: @primary;
-      }
-
-      .entry__title {
-        color: @textColor;
-      }
-    }
-  }
-</style>
-
 <template>
-  <div class="dashboard">
-    <el-row>
-      <el-col :sm="24" :md="24" :lg="20">
-        <el-col :sm="24" style="margin-bottom: 20px;">
-          <el-col :md="8" :lg="4">
-            <el-input
-              placeholder="请搜索流程名称"
-              icon="search"
-              v-model="searchProcedure"
-              @change="onChangeSearch">
-            </el-input>
-          </el-col>
+  <div>
+    <section class="chart">
+      <el-row>
+        <el-col :span="12">
+          <div id="chartColumn" style="width:100%; height:400px;"></div>
         </el-col>
-        <template v-if="!searchProcedure" v-for="top in topList">
-          <el-col :sm="24">
-            <h4 class="category hot-category">{{top.category}}</h4>
-            <ul class="grid">
-              <li v-for="child in top.children" class="entry" @click="onEntryClick(child.path)">
-                <div class="entry__icon">
-                  <span :class="'el-icon-' + child.icon"></span>
-                </div>
-                <div class="entry__title">{{child.title}}</div>
-              </li>
-            </ul>
-          </el-col>
-        </template>
-        <template v-for="entry in searchResult">
-          <!-- 屏蔽 应用发布更新 -->
-          <el-col :sm="24">
-            <h4 class="category">{{entry.category}}</h4>
-            <ul class="grid">
-              <li v-for="child in entry.children" class="entry" @click="onEntryClick(child.path)">
-                <div class="entry__icon">
-                  <span :class="'el-icon-' + child.icon"></span>
-                </div>
-                <div class="entry__title">{{child.title}}</div>
-              </li>
-            </ul>
-          </el-col>
-        </template>
-      </el-col>
-    </el-row>
+        <el-col :span="12">
+          <div id="chartPie" style="width:100%; height:400px;"></div>
+        </el-col>
+        <el-col :span="12">
+          <div id="chartLine" style="width:100%; height:400px;"></div>
+        </el-col>
+        <el-col :span="12">
+          <div id="chartBar" style="width:100%; height:400px;"></div>
+        </el-col>
+      </el-row>
+    </section>
   </div>
 </template>
 
 <script>
+  // import echarts from 'echarts'
+  // 引入 ECharts 主模块
+  var echarts = require('echarts/lib/echarts')
+  // 引入柱状图
+  require('echarts/lib/chart/bar')
+  // 引入折线图
+  require('echarts/lib/chart/line')
+  // 引入饼图
+  require('echarts/lib/chart/pie')
+
+  // 引入提示框和标题组件
+  require('echarts/lib/component/tooltip')
+  require('echarts/lib/component/title')
+  require('echarts/lib/component/grid')
+
   export default {
     data () {
       return {
-        searchProcedure: '',
-        entries: [],
-        searchResult: [],
-        topList: []
+        chartColumn: null,
+        chartBar: null,
+        chartLine: null,
+        chartPie: null
       }
     },
+    mounted () {
+      // 基于准备好的dom，初始化echarts实例
+      this.chartColumn = echarts.init(document.getElementById('chartColumn'))
+      this.chartBar = echarts.init(document.getElementById('chartBar'))
+      this.chartLine = echarts.init(document.getElementById('chartLine'))
+      this.chartPie = echarts.init(document.getElementById('chartPie'))
 
-    created () {
-      const postHeadvData = {
-        action: 'start/process',
-        method: 'get',
-        data: {
-          group: true
-        }
-      }
-      this.http.post('/flow/', this.parseData(postHeadvData))
-      .then((response) => {
-        console.log(response.data.data.list)
-        const res = response.data.data.list
-        res.map(categ => {
-          this.entries.push({
-            category: categ.category,
-            children: []
-          })
-          this.entries.map(entry => {
-            if (entry.category === categ.category) {
-              categ.list.map(list => {
-                if (list.pkey === 'host_apply') {
-                  entry.children.push({
-                    icon: 'fa-star',
-                    title: list.pname,
-                    path: `/system/apply`
-                  })
-                } else if (list.pkey === 'systemOnline') {
-                  entry.children.push({
-                    icon: 'fa-star',
-                    title: list.pname,
-                    path: `/system/onlinelist`
-                  })
-                } else if (list.pkey === 'host') {
-                  entry.children.push({
-                    icon: 'fa-star',
-                    title: list.pname,
-                    path: `/guosen/on`
-                  })
-                } else {
-                  entry.children.push({
-                    icon: 'fa-star',
-                    title: list.pname,
-                    path: `/procedure/start/${list.pkey}/${list.pname}`
-                  })
-                }
-              })
-            }
-          })
-          // this.searchResult = this.searchResult.concat(this.entries)
-          this.searchResult = this.entries
-        })
-      })
-      const topData = {
-        action: 'start/process/top',
-        method: 'get',
-        data: {
-          top: 5
-        }
-      }
-      this.http.post('/flow/', this.parseData(topData))
-      .then((response) => {
-        const res = response.data.data.list
-        this.topList = [{
-          category: '最常使用的流程',
-          children: []
+      this.chartColumn.setOption({
+        title: {
+          text: '工单中心统计'
+        },
+        tooltip: {},
+        xAxis: {
+          data: ['已处理', '待处理', '待指派', '已完成']
+        },
+        yAxis: {},
+        series: [{
+          name: '销量',
+          type: 'bar',
+          data: [5, 20, 36, 10]
         }]
-        res.map(list => {
-          if (list.pkey === 'host_apply') {
-            this.topList[0].children.push({
-              icon: 'fa-star',
-              title: list.pname,
-              path: `/system/apply`
-            })
-          } else if (list.pkey === 'systemOnline') {
-            this.topList[0].children.push({
-              icon: 'fa-star',
-              title: list.pname,
-              path: `/system/onlinelist`
-            })
-          } else if (list.pkey === 'host') {
-            this.topList[0].children.push({
-              icon: 'fa-star',
-              title: list.pname,
-              path: `/guosen/on`
-            })
-          } else {
-            this.topList[0].children.push({
-              icon: 'fa-star',
-              title: list.pname,
-              path: `/procedure/start/${list.pkey}/${list.pname}`
-            })
+      })
+
+      this.chartBar.setOption({
+        title: {
+          text: '每月统计',
+          subtext: '纯属虚构'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
           }
-          // this.topList[0].children.push({
-          //   icon: 'fa-star',
-          //   title: list.pname,
-          //   path: `/procedure/start/${list.pkey}/${list.pname}`
-          // })
-        })
+        },
+        legend: {
+          data: ['2017年6月', '2017年7月']
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          data: ['已参与', '待处理', '已完成', '指派', '待认领', '总数']
+        },
+        yAxis: {
+          type: 'value',
+          boundaryGap: [0, 0.01]
+        },
+        series: [{
+          name: '2017年6月',
+          type: 'bar',
+          data: [18203, 23489, 29034, 104970, 131744, 630230]
+        }, {
+          name: '2017年7月',
+          type: 'bar',
+          data: [19325, 23438, 31000, 121594, 134141, 681807]
+        }]
+      })
+
+      this.chartLine.setOption({
+        title: {
+          text: '每日统计'
+        },
+        tooltip: {
+          trigger: 'axis'
+        },
+        legend: {
+          data: ['待处理', '已处理', '已完成']
+        },
+        grid: {
+          left: '3%',
+          right: '4%',
+          bottom: '3%',
+          containLabel: true
+        },
+        xAxis: {
+          type: 'category',
+          boundaryGap: false,
+          data: ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [{
+          name: '待处理',
+          type: 'line',
+          stack: '总量',
+          data: [120, 132, 101, 134, 90, 230, 210]
+        }, {
+          name: '已处理',
+          type: 'line',
+          stack: '总量',
+          data: [220, 182, 191, 234, 290, 330, 310]
+        }, {
+          name: '已完成',
+          type: 'line',
+          stack: '总量',
+          data: [820, 932, 901, 934, 1290, 1330, 1320]
+        }]
+      })
+
+      this.chartPie.setOption({
+        title: {
+          text: '饼图统计',
+          subtext: '纯属虚构',
+          x: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : {c} ({d}%)'
+        },
+        legend: {
+          orient: 'vertical',
+          left: 'left',
+          data: ['待处理', '已参与', '已完成', '待认领', '指派']
+        },
+        series: [{
+          name: '工单中心',
+          type: 'pie',
+          radius: '55%',
+          center: ['50%', '60%'],
+          data: [{
+            value: 335,
+            name: '待处理'
+          }, {
+            value: 310,
+            name: '已参与'
+          }, {
+            value: 234,
+            name: '已完成'
+          }, {
+            value: 135,
+            name: '待认领'
+          }, {
+            value: 1548,
+            name: '指派'
+          }],
+          itemStyle: {
+            emphasis: {
+              shadowBlur: 10,
+              shadowOffsetX: 0,
+              shadowColor: 'rgba(0, 0, 0, 0.5)'
+            }
+          }
+        }]
       })
     },
-
     methods: {
-      onEntryClick (path) {
-        this.$router.push(path)
-      },
-      onChangeSearch () {
-        if (this.searchProcedure === '') {
-          this.searchResult = this.entries
-        } else {
-          this.searchResult = []
-          this.entries.map(categ => {
-            categ.children.map(list => {
-              if (list.title.includes(this.searchProcedure)) {
-                if (this.searchResult.some(result => { return result.category === categ.category })) {
-                  this.searchResult.map(result => {
-                    if (result.category === categ.category) {
-                      result.children.push(list)
-                    }
-                  })
-                } else {
-                  this.searchResult.push({
-                    category: categ.category,
-                    children: [list]
-                  })
-                }
-              }
-            })
-          })
-        }
-      }
     }
   }
 </script>

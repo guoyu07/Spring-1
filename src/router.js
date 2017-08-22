@@ -18,16 +18,16 @@ const routes = [{
 }, {
   path: '/',
   component: require('./components/Home'),
-  redirect: { path: '/home' },
+  redirect: { path: '/dashboard' },
   children: [{
     path: '/',
     component: require('./components/dashboard/index'),
     children: [{
-      path: '/home',
-      component: require('./components/dashboard/pages/dashboard')
+      path: '/menu',
+      component: require('./components/dashboard/pages/menu')
     }, {
-      path: '/echarts',
-      component: require('./components/dashboard/pages/echarts')
+      path: '/dashboard',
+      component: require('./components/dashboard/pages/dashboard')
     }]
   }, {
     path: '/procedure',
