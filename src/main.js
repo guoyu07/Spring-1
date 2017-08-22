@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import VueResource from 'vue-resource'
+// import VueResource from 'vue-resource'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-default/index.css'
 
@@ -23,7 +23,7 @@ import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css'
 import 'bpmn-js-properties-panel/styles/properties.less'
 
 Vue.use(ElementUI)
-Vue.use(VueResource)
+// Vue.use(VueResource)
 
 const http = axios.create({
   baseURL: '/api/', // 使用了代理

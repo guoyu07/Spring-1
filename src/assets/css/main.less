@@ -610,3 +610,81 @@ h1, h2, h3, h4, h5, h6, p {
     z-index: 1;
   }
 }
+
+.draggable {
+  @borderColor: #dfe6ec;
+  @fontColor: #48576a;
+  @backgroundColor: #fbfdff;
+
+  border: 1px solid @borderColor;
+  margin-bottom: 10px;
+
+  &-item {
+    color: @fontColor;
+
+    &:last-child {
+      margin-bottom: -1px;
+    }
+
+    section {
+      background-color: @backgroundColor;
+      border-bottom: 1px solid @borderColor;
+      font-size: 0;
+      line-height: 1.7;
+      transition: max-height .3s;
+      will-change: max-height;
+      max-height: 0;
+      overflow: hidden;
+
+      .el-form-item {
+        margin-bottom: 8px;
+        font-size: 13px;
+        width: 50%;
+        margin-right: 0;
+        margin-bottom: 0;
+      }
+    }
+
+    &__label {
+      display: block;
+      border-bottom: 1px solid @borderColor;
+      height: 43px;
+      line-height: 43px;
+      padding-left: 15px;
+      font-size: 13px;
+      position: relative;
+
+      &::before {
+        content: "\E602";
+        margin-right: 8px;
+        transition: transform .3s;
+        font-family: element-icons!important;
+        line-height: 1;
+        vertical-align: baseline;
+        display: inline-block;
+      }
+    }
+
+    &__inner {
+      padding: 10px 15px;
+    }
+
+    input[type="checkbox"] {
+      display: none;
+
+      &:checked {
+
+        & + label {
+
+          &::before {
+            transform: rotate(90deg);
+          }
+
+          & + section {
+            max-height: 313px;
+          }
+        }
+      }
+    }
+  }
+}
