@@ -60,7 +60,7 @@
                   <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
                 </div>
                 <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                  <el-tab-pane v-for="(data, index) in postForm.body" :label="bodyLableName[index]" :key="index" :name="index + ''" :closable="postForm.body.length !== 1">
+                  <el-tab-pane v-for="(data, index) in postForm.body" :key="index" :label="bodyLableName[index]" :name="index + ''" :closable="postForm.body.length !== 1">
                     <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                       <div v-for="bodyList in taskFormData.body.body_list" :key="bodyList.name">
                           <div v-if="showBodyList(bodyList, postForm, applyData, index)">

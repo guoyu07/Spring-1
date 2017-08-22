@@ -10,7 +10,7 @@
       <el-button v-if="(formData.limit.type && formData.limit.type === 'static' && formData.limit.type !== 'message_body' && formData.limit.type !== 'message_header')" size="mini" @click="addTab(formData)" icon="plus" class="margin-bottom">{{formData.name}}</el-button>
       <el-tabs v-model="tabsValue" type="card" @tab-remove="removeTab(formData.id)">
         <el-tab-pane
-          v-for="(table, tableindex) in item[formData.id]" :label="formData.name + (tableindex + 1)"
+          v-for="(table, tableindex) in item[formData.id]" :key="tableindex" :label="formData.name + (tableindex + 1)"
           :closable="item[formData.id].length > limitNum">
           <!-- item[formData.id].length > 1 -->
           <!-- :closable="closableIndex(tableindex, formData)" -->

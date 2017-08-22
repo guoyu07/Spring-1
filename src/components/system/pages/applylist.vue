@@ -10,7 +10,8 @@
             border
             style="width: 100%; min-width: 460px">
             <el-table-column
-              v-for="formHeader in form.header"
+              v-for="(formHeader, index) in form.header"
+              :key="index"
               :label="formHeader.name">
               <template scope="scope">
                 <span v-if="formHeader.value.type === 'FK' || formHeader.value.type === 'dict'">

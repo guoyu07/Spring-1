@@ -86,19 +86,6 @@ const routes = [{
     }, {
       path: '/system/applylist',
       component: require('./components/system/pages/applylist')
-    }, {
-      path: '/system/:step/:id/:name', // 服务器资源申请具体步骤操作
-      component: require('./components/system/pages/step')
-    }, {
-      path: '/system/offlinelist',
-      component: require('./components/system/pages/offlinelist')
-    }, {
-      path: '/system/onlinelist',
-      component: require('./components/system/pages/onlinelist')
-    }, {
-      path: '/system/online/:pkey/:tkey/:id/:name', // 上线流程具体步骤操作
-      // component: require('./components/storeManage/pages/step')
-      component: require('./components/system/pages/onlinestep')
     }]
   }, {
     path: '/auth',

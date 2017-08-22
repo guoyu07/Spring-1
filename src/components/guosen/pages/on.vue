@@ -43,7 +43,7 @@
             <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
             <el-form ref="applyForm" :model="applyForm" :rules="applyRules" label-position="top" :inline="true">
               <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
-                <el-tab-pane v-for="(item, index) in applyForm.body" :label="'body' + (index + 1)" :name="index + ''" :closable="applyForm.body.length !== 1">
+                <el-tab-pane v-for="(item, index) in applyForm.body" :key="index" :label="'body' + (index + 1)" :name="index + ''" :closable="applyForm.body.length !== 1">
                   <form-structure :form-data="form.body && form.body.body_list[0].attr_list" :item="item" :whole="applyForm" index="index"></form-structure>
                 </el-tab-pane>
               </el-tabs>

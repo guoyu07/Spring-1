@@ -83,7 +83,8 @@
       hosts: { type: Object }, // 选取设备的id
       attrList: { type: Object }, // search_bar 源数据
       postForm: { type: Object }, // 提交的数据
-      limit: { type: Object } // 设备数量选择限制
+      limit: { type: Object }, // 设备数量选择限制
+      message: { type: Object } // 历史信息
     },
 
     data () {
@@ -130,7 +131,17 @@
         for (const key of this.searchKeyList) {
           this.$set(this.searchKeys, key.id, {})
           this.$set(this.searchKeys[key.id], 'value', '')
-          this.$set(this.searchKeys[key.id], 'op', 'reg') // 默认为包含 reg
+          this.$set(this.searchKeys[key.id], 'op', 'eq') // 默认为等于 eq
+          if (key.default.type === 'get') {
+            this.searchKeys[key.id].value = this.$route.query[key.default.id] || ''
+          } else if (key.default.type === 'static') {
+            this.searchKeys[key.id].value = key.default.value
+          } else if (key.default.type === 'form_header') {
+            // 这个可能需要 watch 一下，每次当前表单更新都要执行一次
+            this.searchKeys[key.id].value = this.getPathResult(this.postForm.header, key.default.key_path)
+          } else if (key.default.type === 'message_header') {
+            this.searchKeys[key.id].value = this.getPathResult(this.message.header, key.default.key_path)
+          }
         }
         // 一开始先渲染所有的数据回来
         this.onSearchDevices()
