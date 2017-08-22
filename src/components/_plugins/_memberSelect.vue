@@ -126,7 +126,7 @@
       },
       assignToMe () {
         // console.log('分配给我')
-        const user = window.localStorage.userName
+        const user = this.$store.state.userinfo.nick
         if (this.strucData.isAlias) {
           this.groupList.map(group => {
             if (group.key === '__None__') { // 我默认分配为 所有 的分组里面

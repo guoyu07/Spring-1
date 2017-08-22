@@ -238,7 +238,7 @@
 
     computed: {
       isOnlyAdmin () {
-        return !window.localStorage.isSuperAdmin && window.localStorage.isAdmin
+        return !this.$store.state.userinfo.superadmin && this.$store.state.userinfo.admin
       }
     },
 

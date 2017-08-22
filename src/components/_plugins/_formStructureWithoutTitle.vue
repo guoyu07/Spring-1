@@ -95,9 +95,9 @@
 
     created () {
       if (this.application) {
-        this.userInfo = window.localStorage
+        this.userInfo = this.$store.state.userinfo
         this.renderApplicationList() // 渲染申请人列表
-        this.item.application = this.userInfo.userName // 默认申请人为填写人
+        this.item.application = this.userInfo.nick // 默认申请人为填写人
       }
     },
 

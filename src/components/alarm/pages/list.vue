@@ -199,7 +199,7 @@
 
     computed: {
       isProcessAdmin () {
-        return (window.localStorage.isProcessAdmin === 'true')
+        return (this.$store.state.userinfo.processadmin === true)
       }
     },
 

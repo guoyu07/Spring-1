@@ -208,7 +208,7 @@
     },
 
     created () {
-      this.userName = window.localStorage.userName
+      this.userName = this.$store.state.userinfo.nick
     },
 
     methods: {
