@@ -128,7 +128,7 @@
 
       isAssignee () {
         if (this.taskViewData.order.assign || this.taskViewData.order.assign_group) {
-          return this.taskViewData.order.assign.userId === window.localStorage.userId || JSON.parse(window.localStorage.groups).some(_ => this.taskViewData.order.assign_group.includes(_))
+          return this.taskViewData.order.assign.userId === this.$store.state.userinfo.userId || this.$store.state.userinfo.groups.some(_ => this.taskViewData.order.assign_group.includes(_))
         } else {
           return false
         }

@@ -153,7 +153,7 @@
 
     computed: {
       isQualified () {
-        return (window.localStorage.isAdmin === 'true')
+        return (this.$store.state.userinfo.admin === true)
       }
     },
 

@@ -120,7 +120,7 @@
     },
     created () {
       this.renderTaskForm()
-      this.editInfo.userName = window.localStorage.userName
+      this.editInfo.userName = this.$store.state.userinfo.nick
       if (this.$route.params.id) {
         this.editInfo.id = this.$route.params.id
         this.renderInstanceDetail()

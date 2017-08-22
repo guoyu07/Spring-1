@@ -365,7 +365,7 @@
             // })
             if (this.strucData.default && this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = window.localStorage.userName
+                const user = this.$store.state.userinfo.nick
                 this.optionList.map(option => {
                   if (option.userId === user) {
                     if (Array.isArray(this.vmodel[this.strucData.id])) {
@@ -380,7 +380,7 @@
           } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
             if (this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = window.localStorage.userName
+                const user = this.$store.state.userinfo.nick
                 this.optionList.map(option => {
                   if (option.name === user) {
                     if (Array.isArray(this.vmodel[this.strucData.id])) {

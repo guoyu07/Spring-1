@@ -14,15 +14,16 @@ export default {
   login (context, creds, redirect) {
     console.log(creds)
     context.http.post('/base/', creds).then(response => {
-      window.localStorage.setItem('userName', response.data.data.nick)
-      window.localStorage.setItem('userId', response.data.data.userId)
-      window.localStorage.setItem('isAdmin', response.data.data.admin)
-      window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)
-      window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)
-      window.localStorage.setItem('groups', JSON.stringify(response.data.data.groups))
+      // window.localStorage.setItem('userName', response.data.data.nick)
+      // window.localStorage.setItem('userId', response.data.data.userId)
+      // window.localStorage.setItem('isAdmin', response.data.data.admin)
+      // window.localStorage.setItem('isSuperAdmin', response.data.data.superadmin)
+      // window.localStorage.setItem('isProcessAdmin', response.data.data.processadmin)
+      // window.localStorage.setItem('groups', JSON.stringify(response.data.data.groups))
       store.dispatch('update_userinfo', {
         userinfo: response.data.data
       })
+      console.log(store.state.userinfo)
       this.authenticated = true
       // 跳转至指定目的
       if (redirect) {
@@ -36,16 +37,17 @@ export default {
   },
 
   logout () {
-    window.localStorage.removeItem('userName')
+    // window.localStorage.removeItem('userName')
     store.dispatch('remove_userinfo').then(() => {
-      router.push('/login')
+      router.replace('/login')
     })
-    router.replace('/login')
+    // router.replace('/login')
     this.authenticated = false
   },
 
   checkAuth () {
-    const jwt = window.localStorage.getItem('userName')
+    // const jwt = window.localStorage.getItem('userName')
+    const jwt = store.state.userinfo.nick
     if (jwt) {
       this.authenticated = true
     } else {
@@ -56,7 +58,7 @@ export default {
   // 供需要验证头部的请求使用
   getAuthHeader () {
     return {
-      'Authorization': 'Bearer' + window.localStorage.getItem('userName')
+      'Authorization': 'Bearer' + store.state.userinfo.nick
     }
   }
 }

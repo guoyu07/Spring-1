@@ -8,7 +8,7 @@ import createPersistedState from 'vuex-persistedstate'
 Vue.use(Vuex)
 
 const state = {
-  userinfo: window.localStorage || {},
+  userinfo: {},
   idcrackData: [],
   sidebarConf: {
     title: '帐号管理',
@@ -17,12 +17,12 @@ const state = {
       path: '/home',
       icon: 'fa-dashboard'
     }]
-  },
-  plugins: [createPersistedState()]
+  }
 }
 
 export default new Vuex.Store({
   state,
   mutations,
-  actions
+  actions,
+  plugins: [createPersistedState()]
 })
