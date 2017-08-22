@@ -144,13 +144,13 @@
                   <el-option v-for="item in defaultOptions" :value="item"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="默认值" v-if="param.default.type === 'static'">
+              <el-form-item label="默认值" v-if="isSearchBar && param.default.type === 'static'">
                 <el-input v-model="param.default.value" size="small"></el-input>
               </el-form-item>
-              <el-form-item label="默认值属性路径" v-if="['form_header', 'form_body', 'message_header', 'message_body'].includes(param.default.type)">
+              <el-form-item label="默认值属性路径" v-if="isSearchBar && ['form_header', 'form_body', 'message_header', 'message_body'].includes(param.default.type)">
                 <el-input v-model="param.default.key_path" size="small"></el-input>
               </el-form-item>
-              <el-form-item label="默认值 ID" v-if="['message_header', 'get'].includes(param.default.type)">
+              <el-form-item label="默认值 ID" v-if="isSearchBar && ['message_header', 'get'].includes(param.default.type)">
                 <el-input v-model="param.default.id" size="small"></el-input>
               </el-form-item>
             </el-form>
@@ -330,7 +330,7 @@
       },
 
       defaultOptions () {
-        return this.isBody ? [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'get' ] : [ 'static', 'form_header', 'form_body', 'message_header' ]
+        return this.isBody ? [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'get' ] : [ 'static', 'form_header', 'message_header', 'get' ]
       }
     },
     methods: {
