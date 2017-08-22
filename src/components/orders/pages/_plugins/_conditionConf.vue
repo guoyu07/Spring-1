@@ -4,6 +4,7 @@
       <el-tab-pane
         v-for="(filter, index) in selectedFilters"
         :label="filter.label"
+        :key="filter.label"
         :name="filter.label">
         <template v-if="filter.type === 'str'">
           <el-select
@@ -57,6 +58,7 @@
             <el-option
               v-for="user in userDicts"
               :label="user.nick"
+              :key="user.userId"
               :value="user"></el-option>
           </el-select>
         </template>
@@ -69,6 +71,7 @@
             value-key="name">
             <el-option
               v-for="group in groupDicts"
+              :key="group.name"
               :label="group.name"
               :value="group"></el-option>
           </el-select>

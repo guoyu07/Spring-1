@@ -29,7 +29,7 @@
                     @blur="addComponentData.isEditing = false"></el-input>
                   <el-button v-else class="button-new-tag" size="small" icon="plus" @click="onAttemptToAddComponent">新事件分类</el-button>
                 </el-row>
-                <el-row class="form-block" v-for="(module, name, index) in groupedGenericModuleMap" v-if="name !== '通用'">
+                <el-row class="form-block" v-for="(module, name, index) in groupedGenericModuleMap" :key="index" v-if="name !== '通用'">
                   <h4>{{name}} <span v-show="!['概要', '工单信息', '人员', '描述', '附件'].includes(name)" class="el-icon-edit" @click="onEditGenericModuleName(name)"></span></h4>
                   <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onGenericModuleChange"></form-conf>
                   <el-button class="button-del-mod" type="danger" size="small" icon="delete" @click="onDeleteGenericModule(name)"></el-button>
@@ -57,7 +57,7 @@
                   <h4>事件详情</h4>
                   <form-conf :config-data="eventDetailList" :presets="presetList"></form-conf>
                 </el-row> -->
-                <el-row class="form-block" v-for="(module, name, index) in groupedCustomModuleMap">
+                <el-row class="form-block" v-for="(module, name, index) in groupedCustomModuleMap" :key="index">
                   <h4>{{name}} <span v-show="name !== '事件详情'" class="el-icon-edit" @click="onEditCustomModuleName(name)"></span></h4>
                   <form-conf :config-data="module" :presets="presetList" :option-presets="optionPresets" :body-index="index" :category="name" @on-config-change="onCustomModuleChange"></form-conf>
                   <el-button class="button-del-mod" type="danger" size="small" icon="delete" @click="onDeleteCustomModule(name)"></el-button>

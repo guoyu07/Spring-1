@@ -12,7 +12,7 @@
 
 <template>
   <div class="conf-contain">
-    <el-row v-for="(op, index) of confArr">
+    <el-row v-for="(op, index) of confArr" :key="index">
       <label>选项</label>
       <el-input v-model="confArr[index]" size="mini" placeholder="输入 Label" />
       <el-button size="mini" icon="delete" type="danger" @click="opDelBtn(op)" />

@@ -108,7 +108,7 @@
 
       <h5 v-if="itemConf.value.source.data.params.length">接口请求参数：</h5>
       <el-collapse v-if="itemConf.value.source.data.params.length">
-        <el-collapse-item v-for="param in itemConf.value.source.data.params">
+        <el-collapse-item v-for="param in itemConf.value.source.data.params" :key="param.id">
           <template slot="title">
             <span>{{ param.value.type }}>{{ param.id }}</span>
             <el-button size="mini" icon="delete" type="danger" class="del-btn"
@@ -141,16 +141,16 @@
               </el-form-item>
               <el-form-item label="默认值类型" v-if="isSearchBar && param.value.type === 'input'">
                 <el-select v-model="param.default.type" size="small">
-                  <el-option v-for="item in defaultOptions" :value="item"></el-option>
+                  <el-option v-for="item in defaultOptions" :key="item" :value="item"></el-option>
                 </el-select>
               </el-form-item>
-              <el-form-item label="默认值" v-if="isSearchBar && param.default.type === 'static'">
+              <el-form-item label="默认值" v-if="isSearchBar && param.value.type === 'input' && param.default.type === 'static'">
                 <el-input v-model="param.default.value" size="small"></el-input>
               </el-form-item>
-              <el-form-item label="默认值属性路径" v-if="isSearchBar && ['form_header', 'form_body', 'message_header', 'message_body'].includes(param.default.type)">
+              <el-form-item label="默认值属性路径" v-if="isSearchBar && param.value.type === 'input' && ['form_header', 'form_body', 'message_header', 'message_body'].includes(param.default.type)">
                 <el-input v-model="param.default.key_path" size="small"></el-input>
               </el-form-item>
-              <el-form-item label="默认值 ID" v-if="isSearchBar && ['message_header', 'get'].includes(param.default.type)">
+              <el-form-item label="默认值 ID" v-if="isSearchBar && param.value.type === 'input' && ['message_header', 'get'].includes(param.default.type)">
                 <el-input v-model="param.default.id" size="small"></el-input>
               </el-form-item>
             </el-form>
@@ -213,7 +213,7 @@
               v-for="group in optionPresets"
               :key="group.name"
               :label="group.name">
-              <el-option v-for="preset in group.list" :label="preset.name" :value="preset"></el-option>
+              <el-option v-for="preset in group.list" :label="preset.name" :key="preset.name" :value="preset"></el-option>
             </el-option-group>
           </el-select>
         </el-card>
@@ -374,7 +374,7 @@
                 value: ''
               },
               default: {
-                type: 'static',
+                type: '',
                 value: '',
                 key_path: '',
                 id: ''

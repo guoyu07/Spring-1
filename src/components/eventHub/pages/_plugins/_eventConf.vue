@@ -23,13 +23,14 @@
         <el-input v-model="eventData.summary"></el-input>
       </el-form-item>
       <el-form-item label="通知人" class="hybrid-form__item">
-        <el-select v-model="eventData.reporter" :placeholder="isEditing ? '' : '请选择'">
+        <el-select v-model="eventData.reporter" :placeholder="isEditing ? '' : '请选择'" value-key="code">
           <el-option
             v-for="user in userList"
-            :label="user.code"
+            :label="user.nick"
+            :key="user.userId"
             :value="user"></el-option>
         </el-select>
-        <span class="initial-value" v-if="eventData.reporter">{{eventData.reporter.code}}</span>
+        <span class="initial-value" v-if="eventData.reporter">{{eventData.reporter.nick}}</span>
       </el-form-item>
       <el-form-item label="分类" class="hybrid-form__item">
         <el-select
@@ -74,22 +75,24 @@
         <el-select v-model="eventData.issue"></el-select>
       </el-form-item>
       <el-form-item label="被指派处理人" class="hybrid-form__item">
-        <el-select v-model="eventData.assignee" :placeholder="isEditing ? '' : '请选择'">
+        <el-select v-model="eventData.assignee" :placeholder="isEditing ? '' : '请选择'" value-key="code">
           <el-option
             v-for="user in userList"
-            :label="user.code"
+            :key="user.userId"
+            :label="user.nick"
             :value="user"></el-option>
         </el-select>
-        <span class="initial-value" v-if="eventData.assignee">{{eventData.assignee.code}}</span>
+        <span class="initial-value" v-if="eventData.assignee">{{eventData.assignee.nick}}</span>
       </el-form-item>
       <el-form-item label="审核人" class="hybrid-form__item">
-        <el-select v-model="eventData.approver" :placeholder="isEditing ? '' : '请选择'">
+        <el-select v-model="eventData.approver" :placeholder="isEditing ? '' : '请选择'" value-key="nick">
           <el-option
             v-for="user in userList"
-            :label="user.code"
+            :key="user.userId"
+            :label="user.nick"
             :value="user"></el-option>
         </el-select>
-        <span class="initial-value" v-if="eventData.approver">{{eventData.approver.code}}</span>
+        <span class="initial-value" v-if="eventData.approver">{{eventData.approver.nick}}</span>
       </el-form-item>
       <el-form-item label="优先级" class="hybrid-form__item">
         <el-select v-model="eventData.priority">

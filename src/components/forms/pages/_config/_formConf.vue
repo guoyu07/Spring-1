@@ -57,7 +57,7 @@
     <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
     <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
     <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
-      <div v-for="(itemConf, index) in configData2" class="draggable-item">
+      <div v-for="(itemConf, index) in configData2" class="draggable-item" :key="index">
         <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`">
         <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section>
@@ -218,7 +218,7 @@
     <el-button v-if="!category" type="info" :plain="true" size="small" @click="isBody ? showCloneBodyFieldVisible = true : showCloneHeaderFieldVisible = true"><i class="el-icon-fa-clone"></i> 克隆字段</el-button>
     <el-row style="margin-top: 12px">
       <el-select size="small" v-model="selectedPreset" placeholder="选择预设集" value-key="name">
-        <el-option v-for="obj in presets" :value="obj" :label="obj.name"></el-option>
+        <el-option v-for="obj in presets" :value="obj" :label="obj.name" :key="obj.name"></el-option>
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
@@ -232,6 +232,7 @@
           placement="top"
           trigger="hover"
           v-for="(attr, index) in configData2"
+          :key="attr.name"
           :title="attr.name">
           <el-form label-position="right" label-width="60px" class="detail-popover">
             <el-form-item label="ID"><span>{{attr.id}}</span></el-form-item>
@@ -250,12 +251,13 @@
     <el-dialog :title="`克隆字段至 Body #${bodyIndex + 1}`" v-model="showCloneBodyFieldVisible" v-if="fieldsets">
       <h4>请在下面选择其他 body 的字段<small>（鼠标悬浮于属性名，可察看属性详情）</small></h4>
       <el-form label-position="left" label-width="80px">
-        <el-form-item v-for="(attrList, index) in fieldsets" :label="`Body #${index + 1}`">
+        <el-form-item v-for="(attrList, index) in fieldsets" :label="`Body #${index + 1}`" :key="index">
           <el-checkbox-group v-model="selectedFields">
             <el-popover
               placement="top"
               trigger="hover"
               v-for="attr in attrList"
+              :key="attr.name"
               :title="attr.name">
               <el-form label-position="right" label-width="60px" class="detail-popover">
                 <el-form-item label="ID"><span>{{attr.id}}</span></el-form-item>
@@ -278,7 +280,7 @@
       <el-form label-width="100px">
         <el-form-item label="比较变量">
           <el-select v-model="editItem.show.type">
-            <el-option v-for="item in countConfig" :value="item"></el-option>
+            <el-option v-for="item in countConfig" :key="item" :value="item"></el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="流程节点 ID" v-if="['message_header', 'message_body'].includes(editItem.show.type)">

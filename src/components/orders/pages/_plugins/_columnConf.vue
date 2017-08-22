@@ -9,6 +9,7 @@
     <draggable v-model="selectedColumns" @start="drag=true" @end="drag=false">
       <el-tag
         v-for="col in selectedColumns"
+        :key="col.label"
         :closable="true"
         type="gray"
         @close="onRemoveColumn(col)">
