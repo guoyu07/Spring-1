@@ -600,7 +600,7 @@
         })
         let postData
         let { pid, pkey, tkey, tid } = this.$route.params
-        if (this.isEditing) {
+        if (this.isEditing && this.$route.params.pkey !== 'Storage') {
           postData = {
             action: 'modify/form/data',
             method: 'POST',
