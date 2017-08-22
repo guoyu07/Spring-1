@@ -1,49 +1,240 @@
 <template>
-  <div id="item1-side" class="wrapper">
+  <div class="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
+          <div class="clear">
+            <h3 class="form-title fl"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
+            <!-- <el-radio-group class="fr" v-model="bodyStyle">
+              <el-radio-button label="1">标签页</el-radio-button>
+              <el-radio-button label="2">卡片式</el-radio-button>
+            </el-radio-group> -->
+          </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
-            <!-- 表头信息显示 -->
-            <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
-            <div v-for="taskheader in form">
-              <div v-if="taskheader.form.form.header.length >= 1">
-                <p class="h5">{{taskheader.tname}}</p>
-                <div v-for="taskformheader in taskheader.form.form.header">
-                  <span v-for="valueheader in taskformheader.value">
-                    <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, routerInfo.tkey)">
-                      <header-form-display
-                        :item="applyData.header"
-                        :form-item="valueheader">
-                      </header-form-display>
+            <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
+            <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
+              <div v-for="taskheader in form">
+                <div v-if="taskheader.form.form.header.length >= 1">
+                  <p class="h5">{{taskheader.tname}}</p>
+                  <div v-for="taskformheader in taskheader.form.form.header">
+                    <span v-for="valueheader in taskformheader.value">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, false)">
+                        <header-form-display
+                          :item="applyData.header"
+                          :form-item="valueheader">
+                        </header-form-display>
+                      </span>
                     </span>
-                  </span>
+                  </div>
                 </div>
               </div>
             </div>
-            <!-- taskForm.body.body_list.length !== 0 && -->
-            <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length !== 0">
-              <el-tab-pane v-for="(data, index) in applyData.body" :label="'body' + (index+1)">
-                <!-- body 信息显示 -->
-                <div v-for="task in form">
-                  <div v-for="taskbody in task.form.form.body.body_list">
-                    <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
-                      <p class="h5">{{task.tname}}</p>
-                      <form-structure-display
-                        :item="data"
-                        :form-data="taskbody.attr_list"
-                        :index="index"
-                        :post-form="assignForm"
-                        :message-data="applyData"
-                        :current-task="routerInfo.tkey"
-                        :history-task="task.tkey">
-                      </form-structure-display>
+            <template v-if="bodyStyle === '1'">
+              <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
+                <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
+                  <!-- body 信息显示 -->
+                  <div class="history-block">
+                    <div v-for="task in form">
+                      <div v-if="task.form.form.body.body_list.length">
+                        <div v-for="taskbody in task.form.form.body.body_list">
+                          <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
+                            <p class="h5">{{task.tname}}</p>
+                            <!-- header 信息显示 -->
+                            <div v-if="task.form.form.header.length >= 1">
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
+                                    <header-form-display
+                                      :item="applyData.header"
+                                      :form-item="valueheader">
+                                    </header-form-display>
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                            <form-structure-display
+                              :item="data"
+                              :form-data="taskbody.attr_list"
+                              :index="index"
+                              :post-form="assignForm"
+                              :message-data="applyData"
+                              :current-task="'false'"
+                              :history-task="task.tkey">
+                            </form-structure-display>
+                          </div>
+                        </div>
+                      </div>
+                      <div v-else>
+                        <!-- header 信息显示 -->
+                        <p class="h5">{{task.tname}}</p>
+                        <div v-if="task.form.form.header.length >= 1">
+                          <div v-for="taskformheader in task.form.form.header">
+                            <span v-for="valueheader in taskformheader.value">
+                              <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
+                                <header-form-display
+                                  :item="applyData.header"
+                                  :form-item="valueheader">
+                                </header-form-display>
+                              </span>
+                            </span>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                   </div>
-                </div>
-              </el-tab-pane>
-            </el-tabs>
+                  <!-- body 表单填写 -->
+                  <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                    <div v-for="taskFormData in taskForm.body.body_list">
+                        <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                          <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                            <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
+                            <span v-for="formItem in formBlock.value">
+                              <!-- {{isEdting}} -->
+                              <form-body
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                :item="assignForm.body[index]"
+                                :form-item="formItem"
+                                :whole="assignForm"
+                                :index="index"
+                                :isEditing="isEditing"
+                                :message="applyData"
+                                keep-alive>
+                              </form-body>
+                              <search-bar
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
+                                :index="index"
+                                :post-form="assignForm"
+                                :hosts="assignForm.body[index]"
+                                :attr-list="formItem"
+                                :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                                @on-hosts-change="onHostsChange">
+                              </search-bar>
+                              <body-table
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
+                                :form-data="formItem"
+                                :item="assignForm.body[index]"
+                                :post-form="assignForm"
+                                :message-data="applyData"
+                                :index="index"
+                                :bodyTable="true">
+                              </body-table>
+                            </span>
+                          </div>
+                        </div>
+                    </div>
+                  </div>
+                </el-tab-pane>
+              </el-tabs>
+            </template>
+            <template v-if="bodyStyle === '2'">
+              <div v-if="applyData.body && applyData.body.length">
+                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body">
+                  <el-tab-pane :label="bodyLableName[index]">
+                    <!-- body 信息显示 -->
+                    <div class="history-block">
+                      <div v-for="task in form">
+                        <div v-if="task.form.form.body.body_list.length">
+                          <div v-for="taskbody in task.form.form.body.body_list">
+                            <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
+                              <p class="h5">{{task.tname}}</p>
+                              <!-- header 信息显示 -->
+                              <div v-if="task.form.form.header.length >= 1">
+                                <div v-for="taskformheader in task.form.form.header">
+                                  <span v-for="valueheader in taskformheader.value">
+                                    <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
+                                      <header-form-display
+                                        :item="applyData.header"
+                                        :form-item="valueheader">
+                                      </header-form-display>
+                                    </span>
+                                  </span>
+                                </div>
+                              </div>
+                              <form-structure-display
+                                :item="data"
+                                :form-data="taskbody.attr_list"
+                                :index="index"
+                                :post-form="assignForm"
+                                :message-data="applyData"
+                                :current-task="'false'"
+                                :history-task="task.tkey">
+                              </form-structure-display>
+                            </div>
+                          </div>
+                        </div>
+                        <div v-else>
+                          <!-- header 信息显示 -->
+                          <p class="h5">{{task.tname}}</p>
+                          <div v-if="task.form.form.header.length >= 1">
+                            <div v-for="taskformheader in task.form.form.header">
+                              <span v-for="valueheader in taskformheader.value">
+                                <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
+                                  <header-form-display
+                                    :item="applyData.header"
+                                    :form-item="valueheader">
+                                  </header-form-display>
+                                </span>
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <!-- body 表单填写 -->
+                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                      <div v-for="taskFormData in taskForm.body.body_list">
+                          <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
+                            <div class="form-block" v-for="formBlock in taskFormData.attr_list">
+                              <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
+                              <span v-for="formItem in formBlock.value">
+                                <!-- {{isEdting}} -->
+                                <form-body
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                  :item="assignForm.body[index]"
+                                  :form-item="formItem"
+                                  :whole="assignForm"
+                                  :index="index"
+                                  :isEditing="isEditing"
+                                  :message="applyData"
+                                  keep-alive>
+                                </form-body>
+                                <search-bar
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
+                                  :index="index"
+                                  :post-form="assignForm"
+                                  :hosts="assignForm.body[index]"
+                                  :attr-list="formItem"
+                                  :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                                  @on-hosts-change="onHostsChange">
+                                </search-bar>
+                                <body-table
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
+                                  :form-data="formItem"
+                                  :item="assignForm.body[index]"
+                                  :post-form="assignForm"
+                                  :message-data="applyData"
+                                  :index="index"
+                                  :bodyTable="true">
+                                </body-table>
+                              </span>
+                            </div>
+                          </div>
+                      </div>
+                    </div>
+                  </el-tab-pane>
+                </el-tabs>
+              </div>
+              <div class="anchorNav">
+                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+              </div>
+            </template>
+            <div v-if="allData.isend">
+              <div v-for="jumper in allData.jumpers">
+                <!-- <router-link :to="toJumper(jumper)"> -->
+                <el-button type="primary" @click="toJumper(jumper)">{{jumper.name}}</el-button>
+                <!-- </router-link> -->
+              </div>
+            </div>
           </el-form>
         </el-card>
       </el-col>
@@ -55,11 +246,6 @@
   import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
-  import formStructure from '../../_plugins/_formStructure'
-  import headerFormStructure from '../../_plugins/_headerFormStructure'
-  import formBody from '../../_plugins/_formBody'
-  import searchBar from '../../_plugins/_searchBar'
-  import bodyTable from '../../_plugins/_bodyTable'
 
   export default {
     data () {
@@ -68,7 +254,6 @@
         applyData: {},
         form: {},
         taskForm: {},
-        bodylistIndex: [], // 可删
         showTaskForm: [],
         assignForm: {
           header: {},
@@ -80,14 +265,46 @@
         searchKeys: {},
         searchData: {},
         path_list: [],
-        hostList: []
+        hostList: [],
+        bodyStyle: '',
+        bodyLableName: [],
+        allData: {}
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
     },
+    watch: {
+      'form': {
+        handler: 'renderBodyLabel',
+        deep: true
+      }
+    },
     methods: {
+      renderBodyLabel (val) {
+        console.log(val[val.length - 1].form.form)
+        this.bodyLabel(val[val.length - 1].form.form, this.assignForm, this.applyData, this.bodyLableName)
+      },
+      toJumper (jumper) {
+        let path = ''
+        let query = {}
+        if (jumper.value.type === 'start_process') {
+          path = `/procedure/start/${jumper.value.pkey}/${jumper.value.pname}`
+        } else if (jumper.value.type === 'static') {
+          path = jumper.value.url
+          // window.location.href = 'http://www.Baidu.com'
+          // window.open()
+        }
+        jumper.params.map(param => {
+          if (param.type === 'dynamic') {
+            query[param.id] = this.getPathResult(this.allData, param.key_path) ? this.getPathResult(this.allData, param.key_path) : null
+          } else if (param.type === 'static') {
+            query[param.id] = param.value
+          }
+        })
+        this.$router.push({ path: path, query: query })
+      },
       renderInstanceDetail () {
         let postData = {
           action: 'process',
@@ -111,7 +328,7 @@
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
-          this.applyData.version = res.data.data.version
+          this.allData = res.data.data
           this.renderForm()
           // this.renderTaskForm()
         })
@@ -128,6 +345,7 @@
         // this.loading = true
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
           this.form = res.data.data.list
+          this.bodyStyle = this.form[this.form.length - 1].form.form.body.style + ''
         })
       },
       handleClick (tab, event) {
@@ -151,15 +369,9 @@
       }
     },
     components: {
-      // searchFormStructure,
       headerFormStructureDisplay,
       headerFormDisplay,
-      formStructureDisplay,
-      formStructure,
-      headerFormStructure,
-      formBody,
-      searchBar,
-      bodyTable
+      formStructureDisplay
     }
   }
 </script>

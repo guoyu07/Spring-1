@@ -77,54 +77,52 @@
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
                 <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
-                  <!-- 这个是当 body 有历史信息时 -->
-                  <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-if="!isEmptyObj(data)">
+                  <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                     <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
                     <div v-for="task in form">
-                      <div v-for="taskbody in task.form.form.body.body_list">
-                        <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
-                          <p class="h5">{{task.tname}}</p>
-                          <!-- header 信息显示 -->
-                          <div v-if="task.form.form.header.length >= 1">
-                            <div v-for="taskformheader in task.form.form.header">
-                              <span v-for="valueheader in taskformheader.value">
-                                <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
-                                  <header-form-display
-                                    :item="applyData.header"
-                                    :form-item="valueheader">
-                                  </header-form-display>
+                      <div v-if="task.form.form.body.body_list.length">
+                        <div v-for="taskbody in task.form.form.body.body_list">
+                          <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
+                            <p class="h5">{{task.tname}}</p>
+                            <!-- header 信息显示 -->
+                            <div v-if="task.form.form.header.length >= 1">
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
+                                    <header-form-display
+                                      :item="applyData.header"
+                                      :form-item="valueheader">
+                                    </header-form-display>
+                                  </span>
                                 </span>
-                              </span>
+                              </div>
                             </div>
+                            <form-structure-display
+                              :item="data"
+                              :form-data="taskbody.attr_list"
+                              :index="index"
+                              :post-form="assignForm"
+                              :message-data="applyData"
+                              :current-task="taskData.ptask.tkey"
+                              :history-task="task.tkey">
+                            </form-structure-display>
                           </div>
-                          <form-structure-display
-                            :item="data"
-                            :form-data="taskbody.attr_list"
-                            :index="index"
-                            :post-form="assignForm"
-                            :message-data="applyData"
-                            :current-task="taskData.ptask.tkey"
-                            :history-task="task.tkey">
-                          </form-structure-display>
                         </div>
                       </div>
-                    </div>
-                  </div>
-                  <!-- 这个是当 body 没有历史信息时 而 header 有历史信息 -->
-                  <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-else-if="!isEmptyObj(applyData.header)">
-                    <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
-                    <div v-for="taskheader in form">
-                      <div v-if="taskheader.form.form.header.length >= 1">
-                        <p class="h5">{{taskheader.tname}}</p>
-                        <div v-for="taskformheader in taskheader.form.form.header">
-                          <span v-for="valueheader in taskformheader.value">
-                            <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
-                              <header-form-display
-                                :item="applyData.header"
-                                :form-item="valueheader">
-                              </header-form-display>
+                      <div v-else>
+                        <!-- header 信息显示 -->
+                        <p class="h5">{{task.tname}}</p>
+                        <div v-if="task.form.form.header.length >= 1">
+                          <div v-for="taskformheader in task.form.form.header">
+                            <span v-for="valueheader in taskformheader.value">
+                              <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
+                                <header-form-display
+                                  :item="applyData.header"
+                                  :form-item="valueheader">
+                                </header-form-display>
+                              </span>
                             </span>
-                          </span>
+                          </div>
                         </div>
                       </div>
                     </div>
@@ -178,54 +176,52 @@
                 <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body">
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
-                    <!-- 这个是当 body 有历史信息时 -->
-                    <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-if="!isEmptyObj(data)">
+                    <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                       <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
                       <div v-for="task in form">
-                        <div v-for="taskbody in task.form.form.body.body_list">
-                          <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
-                            <p class="h5">{{task.tname}}</p>
-                            <!-- header 信息显示 -->
-                            <div v-if="task.form.form.header.length >= 1">
-                              <div v-for="taskformheader in task.form.form.header">
-                                <span v-for="valueheader in taskformheader.value">
-                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
-                                    <header-form-display
-                                      :item="applyData.header"
-                                      :form-item="valueheader">
-                                    </header-form-display>
+                        <div v-if="task.form.form.body.body_list.length">
+                          <div v-for="taskbody in task.form.form.body.body_list">
+                            <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
+                              <p class="h5">{{task.tname}}</p>
+                              <!-- header 信息显示 -->
+                              <div v-if="task.form.form.header.length >= 1">
+                                <div v-for="taskformheader in task.form.form.header">
+                                  <span v-for="valueheader in taskformheader.value">
+                                    <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
+                                      <header-form-display
+                                        :item="applyData.header"
+                                        :form-item="valueheader">
+                                      </header-form-display>
+                                    </span>
                                   </span>
-                                </span>
+                                </div>
                               </div>
+                              <form-structure-display
+                                :item="data"
+                                :form-data="taskbody.attr_list"
+                                :index="index"
+                                :post-form="assignForm"
+                                :message-data="applyData"
+                                :current-task="taskData.ptask.tkey"
+                                :history-task="task.tkey">
+                              </form-structure-display>
                             </div>
-                            <form-structure-display
-                              :item="data"
-                              :form-data="taskbody.attr_list"
-                              :index="index"
-                              :post-form="assignForm"
-                              :message-data="applyData"
-                              :current-task="taskData.ptask.tkey"
-                              :history-task="task.tkey">
-                            </form-structure-display>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <!-- 这个是当 body 没有历史信息时 而 header 有历史信息 -->
-                    <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'" v-else-if="!isEmptyObj(applyData.header)">
-                      <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
-                      <div v-for="taskheader in form">
-                        <div v-if="taskheader.form.form.header.length >= 1">
-                          <p class="h5">{{taskheader.tname}}</p>
-                          <div v-for="taskformheader in taskheader.form.form.header">
-                            <span v-for="valueheader in taskformheader.value">
-                              <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
-                                <header-form-display
-                                  :item="applyData.header"
-                                  :form-item="valueheader">
-                                </header-form-display>
+                        <div v-else>
+                          <!-- header 信息显示 -->
+                          <p class="h5">{{task.tname}}</p>
+                          <div v-if="task.form.form.header.length >= 1">
+                            <div v-for="taskformheader in task.form.form.header">
+                              <span v-for="valueheader in taskformheader.value">
+                                <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
+                                  <header-form-display
+                                    :item="applyData.header"
+                                    :form-item="valueheader">
+                                  </header-form-display>
+                                </span>
                               </span>
-                            </span>
+                            </div>
                           </div>
                         </div>
                       </div>
