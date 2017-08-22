@@ -25,6 +25,9 @@ const routes = [{
     children: [{
       path: '/home',
       component: require('./components/dashboard/pages/dashboard')
+    }, {
+      path: '/echarts',
+      component: require('./components/dashboard/pages/echarts')
     }]
   }, {
     path: '/procedure',

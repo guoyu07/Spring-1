@@ -38,47 +38,9 @@
   export default {
     data () {
       return {
-        dynamicForm: {
-          domains: [{
-            value: ''
-          }],
-          email: ''
-        },
-        dynamicRule: {
-          email: [
-            { required: true, message: '请输入邮箱地址', trigger: 'blur' },
-            { type: 'email', message: '请输入正确的邮箱地址', trigger: 'blur,change' }
-          ]
-        }
       }
     },
     methods: {
-      handleSubmit3 (ev) {
-        console.log(this.$refs.dynamicForm.fields['domains.0.value'].fieldValue)
-        // this.$refs.dynamicForm.validate((valid) => {
-        //   if (valid) {
-        //     console.log('submit!')
-        //   } else {
-        //     console.log('error submit!!')
-        //     return false;
-        //   }
-        // })
-      },
-      handleReset3 () {
-        this.$refs.dynamicForm.resetFields()
-      },
-      removeDomain (item) {
-        var index = this.dynamicForm.domains.indexOf(item)
-        if (index !== -1) {
-          this.dynamicForm.domains.splice(index, 1)
-        }
-      },
-      addDomain () {
-        this.dynamicForm.domains.push({
-          value: '',
-          key: Date.now()
-        })
-      }
     },
     components: {
       HeaderWarp,
