@@ -4,25 +4,25 @@
     <h4 class="order-sidebar__title">系统内置</h4>
     <ul class="order-sidebar__list">
       <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: $route.params.id === filter.id }">
-        <router-link :to="{ path: `/orders/queues/${filter.id}` }">
+        <a href="###" @click="toList(filter.id)">
           <span class="filter-name">{{filter.name}}</span>
           <span style="padding-right: 14px;">
             <i class="filter-number">{{filter.count}}</i>
           </span>
-        </router-link>
+        </a>
       </li>
     </ul>
 
     <h4 class="order-sidebar__title">用户自定义</h4>
     <draggable v-model="filterList[1].list" @start="drag=true" @end="drag=false" class="order-sidebar__list draggable">
       <div class="order-sidebar__item" v-for="filter in filterList[1].list" :class="{ active: parseInt($route.params.id) === filter.id }">
-        <router-link :to="{ path: `/orders/queues/${filter.id}` }">
+        <a href="###" @click="toList(filter.id)">
           <span class="filter-name">{{filter.name}}</span>
           <span>
             <i class="filter-number">{{filter.count}}</i>
             <i class="filter-close el-icon-fa-times" @click.stop.prevent="onDeleteFilter(filter)"></i>
           </span>
-        </router-link>
+        </a>
       </div>
     </draggable>
     <router-link :to="{ path: '/orders/queues/custom/new' }">
@@ -72,6 +72,10 @@
     },
 
     methods: {
+      toList (id) {
+        this.$router.push(`/orders/queues/${id}`)
+        // this.$router.go(0)
+      },
       getFilterList () {
         let postData = {
           action: 'filters',
@@ -145,7 +149,7 @@
 
       &.draggable {
         border: none;
-        
+
         .order-sidebar__item {
           &::before {
             content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAALCAYAAAC3ZUeVAAAAJUlEQVQI12OYOXPmfyhmgLEZcAliYAbitf//D8EgQRibgV62AwAP/odG9/7LRgAAAABJRU5ErkJggg==);

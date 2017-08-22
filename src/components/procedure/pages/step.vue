@@ -59,6 +59,7 @@
                     :hosts="assignForm.header"
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
+                    :message="applyData"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
@@ -75,7 +76,7 @@
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
-                <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
+                <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                     <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
@@ -152,6 +153,7 @@
                                 :hosts="assignForm.body[index]"
                                 :attr-list="formItem"
                                 :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                                :message="applyData"
                                 @on-hosts-change="onHostsChange">
                               </search-bar>
                               <body-table
@@ -173,7 +175,7 @@
             </template>
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
-                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body">
+                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body" :key="index">
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
@@ -251,6 +253,7 @@
                                   :hosts="assignForm.body[index]"
                                   :attr-list="formItem"
                                   :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
+                                  :message="applyData"
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
                                 <body-table
@@ -271,7 +274,7 @@
                 </el-tabs>
               </div>
               <div class="anchorNav">
-                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" :key="index" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
               </div>
             </template>
             <!-- 按钮区域 -->
@@ -293,7 +296,7 @@
       title="工作流"
       v-model="showHistory">
       <el-collapse v-if="taskData && taskData.pinstance">
-        <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name">
+        <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :key="index" :title="(key + 1).toString() + '. ' + task.name">
           <el-form label-position="left" label-width="90px" inline class="expanded-form">
             <el-form-item v-if="task.task_key" label="任务 Key：">
               <code>{{task.task_key}}</code>

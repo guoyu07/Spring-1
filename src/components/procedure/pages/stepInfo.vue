@@ -31,7 +31,7 @@
             </div>
             <template v-if="bodyStyle === '1'">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
-                <el-tab-pane v-for="(data, index) in applyData.body" :label="bodyLableName[index]">
+                <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block">
                     <div v-for="task in form">
@@ -128,7 +128,7 @@
             </template>
             <template v-if="bodyStyle === '2'">
               <div v-if="applyData.body && applyData.body.length">
-                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body">
+                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body" :key="index">
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block">
@@ -225,7 +225,7 @@
                 </el-tabs>
               </div>
               <div class="anchorNav">
-                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" :key="index" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
               </div>
             </template>
             <div v-if="allData.isend">
