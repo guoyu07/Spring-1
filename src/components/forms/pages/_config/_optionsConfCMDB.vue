@@ -88,7 +88,7 @@
           <el-input size="small" class="code-input" v-model="itemConf.value.source.data.method" placeholder="方法"></el-input>
         </el-form-item>
         <el-form-item label="Params">
-          <el-dropdown trigger="click" @command="selectParams">
+          <el-dropdown trigger="click" @command="selectedParams">
             <el-button size="small" type="primary" :plain="true" icon="plus">添加参数</el-button>
             <el-dropdown-menu slot="dropdown">
               <el-dropdown-item command="static">静态输入</el-dropdown-item>
@@ -100,7 +100,7 @@
             </el-dropdown-menu>
           </el-dropdown>
         </el-form-item>
-        <el-form-item label="允许新增选项" v-if="itemConf.value.type !== 'search_bar'">
+        <el-form-item label="允许新增选项" v-if="!isSearchBar">
           <el-radio v-model="itemConf.value.allow_create" :label="true">是</el-radio>
           <el-radio v-model="itemConf.value.allow_create" :label="false">否</el-radio>
         </el-form-item>
@@ -138,6 +138,20 @@
               </el-form-item>
               <el-form-item label="属性路径" v-if="param.value.type !== 'static' && !isSearchBar">
                 <el-input size="small" v-model="param.value.key_path" class="code-input"></el-input>
+              </el-form-item>
+              <el-form-item label="默认值类型" v-if="isSearchBar && param.value.type === 'input'">
+                <el-select v-model="param.default.type" size="small">
+                  <el-option v-for="item in defaultOptions" :value="item"></el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="默认值" v-if="param.default.type === 'static'">
+                <el-input v-model="param.default.value" size="small"></el-input>
+              </el-form-item>
+              <el-form-item label="默认值属性路径" v-if="['form_header', 'form_body', 'message_header', 'message_body'].includes(param.default.type)">
+                <el-input v-model="param.default.key_path" size="small"></el-input>
+              </el-form-item>
+              <el-form-item label="默认值 ID" v-if="['message_header', 'get'].includes(param.default.type)">
+                <el-input v-model="param.default.id" size="small"></el-input>
               </el-form-item>
             </el-form>
           </el-row>
@@ -290,7 +304,8 @@
   export default {
     props: {
       itemConf: Object,
-      optionPresets: Array
+      optionPresets: Array,
+      isBody: Boolean
     },
     mounted () {
       if (this.itemConf.value.external) {
@@ -312,6 +327,10 @@
     computed: {
       isSearchBar () {
         return this.itemConf.value.type === 'search_bar'
+      },
+
+      defaultOptions () {
+        return this.isBody ? [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'get' ] : [ 'static', 'form_header', 'form_body', 'message_header' ]
       }
     },
     methods: {
@@ -333,7 +352,7 @@
       //   Object.assign(this.itemConf.value.source.res, { data_path: val.data_path })
       //   this.itemConf.value.source.url = val.url
       // },
-      selectParams (cmd) {
+      selectedParams (cmd) {
         let param = null
         switch (cmd) {
           case 'static':
@@ -353,6 +372,12 @@
               value: {
                 type: 'input',
                 value: ''
+              },
+              default: {
+                type: 'static',
+                value: '',
+                key_path: '',
+                id: ''
               }
             }
             break
@@ -444,7 +469,7 @@
       },
 
       onClose () {
-        if (this.itemConf.value.type !== 'search_bar') {
+        if (!this.isSearchBar) {
           this.itemConf.value.allow_create = this.allowCreate
         }
         this.itemConf.value.confVisible = false

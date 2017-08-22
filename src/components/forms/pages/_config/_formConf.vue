@@ -142,7 +142,7 @@
                     <!--动态选项（cmdb）-->
                     <!-- <template v-if="['dict', 'dicts'].includes(itemConf.value.type)"> -->
                     <el-popover v-if="['dict', 'dicts', 'search_bar'].includes(itemConf.value.type)" placement="left" trigger="click" @show="showCMDBConf(itemConf)">
-                      <options-conf-cmdb :item-conf="itemConf" :option-presets="optionPresets"></options-conf-cmdb>
+                      <options-conf-cmdb :item-conf="itemConf" :option-presets="optionPresets" :is-body="isBody"></options-conf-cmdb>
                       <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover>
                     <!-- </template> -->
