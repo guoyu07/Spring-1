@@ -330,7 +330,7 @@
       },
 
       defaultOptions () {
-        return this.isBody ? [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'get' ] : [ 'static', 'form_header', 'form_body', 'message_header' ]
+        return this.isBody ? [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'get' ] : [ 'static', 'form_header', 'message_header', 'get' ]
       }
     },
     methods: {
