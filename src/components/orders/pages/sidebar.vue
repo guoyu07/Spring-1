@@ -9,7 +9,7 @@
           <span style="padding-right: 14px;">
             <i class="filter-number">{{filter.count}}</i>
           </span>
-        </a>
+        </router-link>
       </li>
     </ul>
 
@@ -74,10 +74,6 @@
     },
 
     methods: {
-      toList (id) {
-        this.$router.push(`/orders/queues/${id}`)
-        // this.$router.go(0)
-      },
       getFilterList () {
         let postData = {
           action: 'filters',

@@ -2,65 +2,75 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import auth from './auth'
+import SidebarConf from './sidebar-conf'
 
 import NProgress from 'nprogress'
-
-// import Home from './components/Home'
-// import LogTime from './components/LogTime'
-// import TimeEntries from './components/TimeEntries'
-import NotFound from './components/NotFound'
 
 Vue.use(VueRouter)
 
 const routes = [{
   path: '/login',
-  component: require('./components/Login')
+  component: require('./components/login')
 }, {
   path: '/',
-  component: require('./components/Home'),
-  redirect: { path: '/home' },
+  component: require('./components/home'),
+  redirect: { path: '/dashboard' },
+  meta: {
+    requiresAuth: true
+  },
   children: [{
-    path: '/',
-    component: require('./components/dashboard/index'),
-    children: [{
-      path: '/home',
-      component: require('./components/dashboard/pages/dashboard')
-    }, {
-      path: '/echarts',
-      component: require('./components/dashboard/pages/echarts')
-    }]
+    path: '/menu',
+    component: require('./components/dashboard/pages/menu'),
+    meta: {
+      sidebar: SidebarConf.Process
+    }
+  }, {
+    path: '/dashboard',
+    component: require('./components/dashboard/pages/dashboard'),
+    meta: {
+      sidebar: SidebarConf.Homepage
+    }
   }, {
     path: '/procedure',
     component: require('./components/procedure/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
     children: [{
       path: '/procedure/start/:pkey/:pname',
-      component: require('./components/procedure/pages/start')
+      component: resolve => require(['./components/procedure/pages/start'], resolve)
     }, {
       path: '/procedure/modify/:pid/:tid/:name',
-      component: require('./components/procedure/pages/start')
+      component: resolve => require(['./components/procedure/pages/start'], resolve)
     }, {
       path: '/procedure/:pid/:tid/:name',
-      component: require('./components/procedure/pages/step')
+      component: resolve => require(['./components/procedure/pages/step'], resolve)
     }, {
       path: '/procedure-info/:pid/:name',
-      component: require('./components/procedure/pages/stepInfo')
+      component: resolve => require(['./components/procedure/pages/stepInfo'], resolve)
     }]
   }, {
     path: '/guosen',
     component: require('./components/guosen/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
     children: [{
       path: '/guosen/on',
-      component: require('./components/guosen/pages/on')
+      component: resolve => require(['./components/guosen/pages/on'], resolve)
     }, {
       path: '/guosen/:pid/:tid/:name',
-      component: require('./components/guosen/pages/step')
+      component: resolve => require(['./components/guosen/pages/step'], resolve)
     }, {
       path: '/guosen-info/:pid/:name',
-      component: require('./components/guosen/pages/stepInfo')
+      component: resolve => require(['./components/guosen/pages/stepInfo'], resolve)
     }]
   }, {
     path: '/event-hub',
     component: require('./components/eventHub/index'),
+    meta: {
+      sidebar: SidebarConf.Event
+    },
     children: [{
       path: '',
       component: resolve => require(['./components/eventHub/pages/list'], resolve)
@@ -77,6 +87,9 @@ const routes = [{
   }, {
     path: '/system',
     component: require('./components/system/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
     children: [{
       path: '/system/apply',
       component: require('./components/system/pages/apply')
@@ -90,6 +103,9 @@ const routes = [{
   }, {
     path: '/auth',
     component: require('./components/auth/index'),
+    meta: {
+      sidebar: SidebarConf.Accounts
+    },
     children: [{
       path: '/auth/users',
       component: resolve => require(['./components/auth/pages/users'], resolve)
@@ -100,6 +116,9 @@ const routes = [{
   }, {
     path: '/process-admin',
     component: require('./components/process/index'),
+    meta: {
+      sidebar: SidebarConf.Auth
+    },
     children: [{
       path: '/process-admin/basics',
       component: resolve => require(['./components/process/pages/basics'], resolve)
@@ -110,6 +129,9 @@ const routes = [{
   }, { // 流程设计 删
     path: '/custom',
     component: require('./components/custom/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
     children: [{
       path: '/custom',
       component: resolve => require(['./components/custom/pages/list'], resolve)
@@ -121,17 +143,13 @@ const routes = [{
       component: resolve => require(['./components/custom/pages/bpmn'], resolve)
     }]
   }, {
-  //   path: '/orders',
-  //   component: require('./components/orders/index'),
-  //   children: [{
-  //     path: '',
-  //     component: resolve => require(['./components/orders/pages/list'], resolve)
-  //   }]
-  // }, {
     path: '/orders',
     component: require('./components/orders/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
     children: [{
-      path: '/orders',
+      path: '',
       component: require('./components/orders/pages/placeholder')
     }, {
       path: '/orders/queues/:id',
@@ -152,6 +170,9 @@ const routes = [{
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
     component: require('./components/forms/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
     children: [{
       path: '',
       component: resolve => require(['./components/forms/pages/list'], resolve)
@@ -161,18 +182,14 @@ const routes = [{
     }]
   }, {
     path: '/event-config/details',
+    meta: {
+      sidebar: SidebarConf.Event
+    },
     component: resolve => require(['./components/eventConfig/pages/details'], resolve)
-    // children: [{
-    //   path: '/event-config/details',
-    //   components: EventConfPages.Details
-    // }]
-  }],
-  meta: {
-    requiresAuth: true
-  }
+  }]
 }, {
   path: '*',
-  component: NotFound
+  component: resolve => require(['./components/NotFound'], resolve)
 }]
 
 const router = new VueRouter({
@@ -192,8 +209,10 @@ router.beforeEach((to, from, next) => {
   NProgress.done()
 })
 
-router.afterEach(() => {
+router.afterEach((to, from) => {
   NProgress.start()
+  // console.log(to)
+  Object.assign(to.meta, to.matched.find(m => m.meta.sidebar).meta)
 })
 
 export default router

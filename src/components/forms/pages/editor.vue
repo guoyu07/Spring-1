@@ -138,8 +138,8 @@
               <h5>Body 个数配置</h5>
               <el-select v-model="formConfig.form.body.count.type" @change="countConfig">
                 <el-option label="静态" value="static"></el-option>
-                <el-option label="来自以往节点 header" value="form_header"></el-option>
-                <el-option label="来自当前节点 header" value="message_header"></el-option>
+                <el-option label="来自当前节点 header" value="form_header"></el-option>
+                <el-option label="来自以往节点 header" value="message_header"></el-option>
               </el-select>
               <el-popover v-if="formConfig.form.body.count.type === 'static'"
                 placement="right" trigger="click">

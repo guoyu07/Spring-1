@@ -108,7 +108,7 @@
 
       <h5 v-if="itemConf.value.source.data.params.length">接口请求参数：</h5>
       <el-collapse v-if="itemConf.value.source.data.params.length">
-        <el-collapse-item v-for="param in itemConf.value.source.data.params" :key="param.id">
+        <el-collapse-item v-for="(param, index) in itemConf.value.source.data.params" :key="index">
           <template slot="title">
             <span>{{ param.value.type }}>{{ param.id }}</span>
             <el-button size="mini" icon="delete" type="danger" class="del-btn"

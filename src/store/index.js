@@ -9,15 +9,7 @@ Vue.use(Vuex)
 
 const state = {
   userinfo: {},
-  idcrackData: [],
-  sidebarConf: {
-    title: '帐号管理',
-    routes: [{
-      name: '运维服务目录',
-      path: '/home',
-      icon: 'fa-dashboard'
-    }]
-  }
+  idcrackData: []
 }
 
 export default new Vuex.Store({

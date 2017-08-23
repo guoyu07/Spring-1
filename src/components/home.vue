@@ -32,7 +32,7 @@
 
 <script>
   import HeaderWarp from './layout/Header'
-  import SideWarp from './layout/SideBar'
+  import SideWarp from './layout/SideBar2'
   import FooterWarp from './layout/Footer'
 
   export default {
