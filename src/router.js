@@ -38,16 +38,16 @@ const routes = [{
     },
     children: [{
       path: '/procedure/start/:pkey/:pname',
-      component: require('./components/procedure/pages/start')
+      component: resolve => require(['./components/procedure/pages/start'], resolve)
     }, {
       path: '/procedure/modify/:pid/:tid/:name',
-      component: require('./components/procedure/pages/start')
+      component: resolve => require(['./components/procedure/pages/start'], resolve)
     }, {
       path: '/procedure/:pid/:tid/:name',
-      component: require('./components/procedure/pages/step')
+      component: resolve => require(['./components/procedure/pages/step'], resolve)
     }, {
       path: '/procedure-info/:pid/:name',
-      component: require('./components/procedure/pages/stepInfo')
+      component: resolve => require(['./components/procedure/pages/stepInfo'], resolve)
     }]
   }, {
     path: '/guosen',
@@ -57,13 +57,13 @@ const routes = [{
     },
     children: [{
       path: '/guosen/on',
-      component: require('./components/guosen/pages/on')
+      component: resolve => require(['./components/guosen/pages/on'], resolve)
     }, {
       path: '/guosen/:pid/:tid/:name',
-      component: require('./components/guosen/pages/step')
+      component: resolve => require(['./components/guosen/pages/step'], resolve)
     }, {
       path: '/guosen-info/:pid/:name',
-      component: require('./components/guosen/pages/stepInfo')
+      component: resolve => require(['./components/guosen/pages/stepInfo'], resolve)
     }]
   }, {
     path: '/event-hub',
