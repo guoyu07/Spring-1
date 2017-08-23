@@ -690,7 +690,7 @@
 </template>
 
 <script>
-  import { quillEditor } from 'vue-quill-editor/dist/vue-quill-editor.min.js'
+  import { quillEditor } from 'vue-quill-editor/dist/index'
 
   import eventConf from './_plugins/_eventConf.vue'
   import activityTab from './_plugins/_activityTab.vue'
