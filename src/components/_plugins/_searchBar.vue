@@ -3,12 +3,13 @@
     <div v-if="mainInfo.value.type === 'search_bar'" class="form-block">
       <h5>{{mainInfo.name}}</h5>
       <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-        <el-form-item v-for="search in searchKeyList" :label="search.name" :prop="search.id">
+        <el-form-item v-for="search in searchKeyList" :key="search.id" :label="search.name" :prop="search.id">
           <div class="form-unit">
             <el-select
               v-model="searchKeys[search.id].op"
               size="small">
               <el-option v-for="option in oplist"
+                :key="option.id"
                 :label="option.name"
                 :value="option.id">
               </el-option>
@@ -34,6 +35,7 @@
         </el-table-column>
         <el-table-column
           v-for="item in searchKeyList"
+          :key="item.id"
           :prop="item.id"
           :label="item.name"></el-table-column>
       </el-table>
@@ -67,6 +69,7 @@
 
         <el-table-column
           v-for="item in searchKeyList"
+          :key="item.id"
           :prop="item.id"
           :label="item.name">
         </el-table-column>

@@ -44,7 +44,7 @@
                   </el-tooltip>
                 </div>
                 <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                  <el-checkbox v-for="user in props.row.users" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
+                  <el-checkbox v-for="user in props.row.users" :key="user.userId" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
                 </el-checkbox-group>
               </template>
             </el-table-column>
@@ -68,7 +68,7 @@
     <el-dialog title="加入用户" size="tiny" v-model="userViewData.visible">
       <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
       <el-checkbox-group v-model="usersToAdd">
-        <el-checkbox v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
+        <el-checkbox v-for="user in userList" :key="user.userId" :label="user.userId">{{user.code}}</el-checkbox>
       </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
         <el-button :disabled="!isQualified" @click="onAddUser" size="small" icon="check" type="success" :loading="userViewData.loading">确认加入</el-button>
@@ -153,7 +153,7 @@
 
     computed: {
       isQualified () {
-        return (this.$store.state.userinfo.admin === true)
+        return (this.$store.state.userinfo.admin === true || this.$store.state.userinfo.superadmin === true)
       }
     },
 

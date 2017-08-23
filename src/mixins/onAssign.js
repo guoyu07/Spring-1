@@ -2,28 +2,28 @@ export default {
   data () {
     return {
       newAssignee: '',
-      newAssigneeGroup: [],
+      newcandidateGroup: [],
       isAssignable: false
     }
   },
 
   methods: {
-    onAssign (tid, assignee, assigneeGroup) {
+    onAssign (tid, assignee, candidateGroup) {
       let postData = {
         action: 'task_assign', // runtime/task/assignee
-        method: 'POST',
-        data: { tid, assignee }
+        method: 'put',
+        data: { tid, userId: assignee }
       }
-      this.assignViewData.loading = true
+      this.assignViewLoading = true
       this.http.post('/flow/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
-          if (assigneeGroup.length) {
+          if (candidateGroup.length) {
             let postData = {
-              action: 'runtime/task/assignee/group',
-              method: 'POST',
-              data: { tid, groupId: assigneeGroup }
+              action: 'task/candidate',
+              method: 'post',
+              data: { tid, group_keys: candidateGroup }
             }
-            this.http.post('', this.parseData(postData)).then((res) => {
+            this.http.post('/flow/', this.parseData(postData)).then((res) => {
               if (res.status === 200) {
                 _finish()
               }
@@ -35,12 +35,12 @@ export default {
       })
 
       const _finish = () => {
-        this.assignViewData.loading = false
-        this.assignViewData.visible = false
-        this.isAssignable = false
+        this.assignViewLoading = false
+        // this.assignViewData.visible = false
+        // this.isAssignable = false
         this.$message.success('指派成功！')
         // this.getTaskList()
-        this.$router.go(0) // 刷新页面
+        this.$router.go(-1) // 返回列表吧
       }
     }
   }

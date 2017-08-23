@@ -31,7 +31,7 @@
               inline-template
               :context="_self">
               <template>
-                <el-tag v-for="group in row.groups">{{group.name}}</el-tag>
+                <el-tag v-for="group in row.groups" :key="group.name">{{group.name}}</el-tag>
                 <span v-if="!row.groups.length">无</span>
               </template>
             </el-table-column>
@@ -129,7 +129,7 @@
 
     computed: {
       isQualified () {
-        return (this.$store.state.userinfo.admin === true)
+        return (this.$store.state.userinfo.admin === true || this.$store.state.userinfo.superadmin === true)
       }
     },
 

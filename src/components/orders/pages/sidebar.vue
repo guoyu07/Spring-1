@@ -3,7 +3,7 @@
     <spinner v-show="filterLoading"></spinner>
     <h4 class="order-sidebar__title">系统内置</h4>
     <ul class="order-sidebar__list">
-      <li class="order-sidebar__item" v-for="filter in filterList[0].list" :class="{ active: $route.params.id === filter.id }">
+      <li class="order-sidebar__item" v-for="filter in (filterList[0] && filterList[0].list)" :class="{ active: $route.params.id === filter.id }">
         <a href="###" @click="toList(filter.id)">
           <span class="filter-name">{{filter.name}}</span>
           <span style="padding-right: 14px;">
@@ -14,17 +14,19 @@
     </ul>
 
     <h4 class="order-sidebar__title">用户自定义</h4>
-    <draggable v-model="filterList[1].list" @start="drag=true" @end="drag=false" class="order-sidebar__list draggable">
-      <div class="order-sidebar__item" v-for="filter in filterList[1].list" :class="{ active: parseInt($route.params.id) === filter.id }">
-        <a href="###" @click="toList(filter.id)">
-          <span class="filter-name">{{filter.name}}</span>
-          <span>
-            <i class="filter-number">{{filter.count}}</i>
-            <i class="filter-close el-icon-fa-times" @click.stop.prevent="onDeleteFilter(filter)"></i>
-          </span>
-        </a>
-      </div>
-    </draggable>
+    <template v-if="filterList[1]">
+      <draggable v-model="filterList[1].list" @start="drag=true" @end="drag=false" class="order-sidebar__list draggable">
+        <div class="order-sidebar__item" v-for="filter in filterList[1].list" :class="{ active: parseInt($route.params.id) === filter.id }">
+          <a href="###" @click="toList(filter.id)">
+            <span class="filter-name">{{filter.name}}</span>
+            <span>
+              <i class="filter-number">{{filter.count}}</i>
+              <i class="filter-close el-icon-fa-times" @click.stop.prevent="onDeleteFilter(filter)"></i>
+            </span>
+          </a>
+        </div>
+      </draggable>
+    </template>
     <router-link :to="{ path: '/orders/queues/custom/new' }">
       <el-button class="order-sidebar__plus" type="text" size="small" icon="plus">新队列</el-button>
     </router-link>

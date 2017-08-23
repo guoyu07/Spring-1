@@ -253,7 +253,7 @@
       <!-- </el-col>
       <el-col :span="8" :xs="24"> -->
         <el-button-group>
-          <el-button v-for="operation in operationArray" @click="showDialog(operation)" :icon="buttonIcon(operation)">
+          <el-button v-for="operation in operationArray" :key="operation" @click="showDialog(operation)" :icon="buttonIcon(operation)">
             {{operation}}
             <!-- <router-link :to="{ path: `/procedure/incident/${eventData.taskDefinitionKey}/${eventData.id}/${eventData.name}` }">{{operation}}</router-link> -->
           </el-button>
@@ -311,7 +311,7 @@
               <el-form-item label="标签" v-if="eventData.variables && eventData.variables.message[0].form.header.labels">
                   <div class="editable-field">
                     <div v-if="!isEditing.labels" @click="toggleEditable('labels')">
-                      <el-tag type="primary" v-for="label in eventData.variables && eventData.variables.message[0].form.header.labels">{{label.value}}</el-tag>
+                      <el-tag type="primary" v-for="label in eventData.variables && eventData.variables.message[0].form.header.labels" :key="label.value">{{label.value}}</el-tag>
                       <i class="editable-field__indicator el-icon-edit text-info"></i>
                     </div>
 
@@ -378,12 +378,12 @@
 
         <!-- 分类的自定义模块 -->
         <div class="margin-bottom" v-if="eventData.variables && eventData.variables.message[0].form.body && eventData.variables.message[0].form.body.length !== 0">
-          <div v-for="(data, index) in eventData.variables && eventData.variables.message[0].form.body">
+          <div v-for="(data, index) in eventData.variables && eventData.variables.message[0].form.body" :key="index">
             <div v-if="startFormData && startFormData.body">
               <div v-for="taskbody in startFormData.body.body_list">
                 <div v-if="showBodyList(taskbody, {}, eventData.variables.message[0].form, index, true, false)">
                   <!-- .filter(cate => { return cate.name !== '事件详情'}) -->
-                  <el-form v-for="tasktask in taskbody.attr_list" :inline="true" label-width="100px">
+                  <el-form v-for="(tasktask, taskindex) in taskbody.attr_list" :key="taskindex" :inline="true" label-width="100px">
                     <div class="detail-block">
                       <div class="detail-block__heading">
                         <h4>{{tasktask.name}}</h4>
@@ -482,7 +482,7 @@
               <el-tab-pane label="工作流" name="history">
                 <!-- <h5 class="sub-title"><i class="el-icon-information"></i> 完整历史步骤</h5> -->
                 <el-collapse>
-                  <el-collapse-item v-for="(task, key) in eventData.history_list" :title="(key + 1).toString() + '. ' + task.task_name">
+                  <el-collapse-item v-for="(task, key) in eventData.history_list" :key="key" :title="(key + 1).toString() + '. ' + task.task_name">
                     <el-form label-position="left" label-width="90px" inline class="expanded-form">
                       <el-form-item v-if="task.task_key" label="任务 Key：">
                         <code>{{task.task_key}}</code>

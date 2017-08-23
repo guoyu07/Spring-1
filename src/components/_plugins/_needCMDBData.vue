@@ -8,7 +8,8 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable>
-          <el-option  v-for="option in optionList"
+          <el-option  v-for="(option, optionIndex) in optionList"
+                      :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
                       <span>{{ showLabel(option) }}</span>
@@ -19,7 +20,7 @@
         v-else
         v-model="vmodel[strucData.id]"
         :disabled="strucData.readonly">
-        <el-radio v-for="option in optionList" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
+        <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
       </el-radio-group>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
@@ -30,7 +31,8 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         multiple>
-          <el-option  v-for="option in optionList"
+          <el-option  v-for="(option, optionIndex) in optionList"
+                      :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
                       <span>{{ showLabel(option) }}</span>
@@ -41,7 +43,7 @@
         v-else
         v-model="vmodel[strucData.id]"
         :disabled="strucData.readonly">
-        <el-checkbox v-for="option in optionList" :label="option" :name="strucData.id">{{option[strucData.value.source.res.show_key[0]]}}</el-checkbox>
+        <el-checkbox v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option" :name="strucData.id">{{option[strucData.value.source.res.show_key[0]]}}</el-checkbox>
       </el-checkbox-group>
     </template>
   </div>
