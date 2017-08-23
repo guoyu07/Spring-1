@@ -36,7 +36,7 @@ const SidebarConf = {
         icon: 'fa-dashboard'
       }, {
         name: '工单列表',
-        path: '/orders',
+        path: '/orders/queues/filter_type_handle',
         icon: 'fa-calendar-o'
       }, {
         name: '统计中心',
