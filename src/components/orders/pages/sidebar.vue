@@ -9,7 +9,7 @@
           <span style="padding-right: 14px;">
             <i class="filter-number">{{filter.count}}</i>
           </span>
-        </router-link>
+        </a>
       </li>
     </ul>
 
