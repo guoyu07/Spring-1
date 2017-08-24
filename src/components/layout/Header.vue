@@ -183,8 +183,7 @@
       </el-submenu>
       <el-menu-item index="6" class="fr">
         <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
-          <a class="link-block" href="http://192.168.10.102/">
-          <!-- <a class="link-block" href="http://preview.easyops.cn/"> -->
+          <a class="link-block" :href="$store.state.userinfo._easyops_url">
             <img src="../../assets/logo.png" alt="" class="menu-img">
           </a>
         </el-tooltip>

@@ -60,6 +60,7 @@
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
+                    :postForm="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
@@ -853,7 +854,7 @@
               if (this.taskData.pinstance.pkey === 'easyops_monitor') {
                 this.$router.replace('/alarm') // 告警处理成功后跳转告警事件
               } else {
-                this.$router.replace('/home') // 跳转运维目录
+                this.$router.replace('/menu') // 跳转运维目录
               }
             }
           })

@@ -54,12 +54,14 @@
                     :message="applyData"
                     :header="true">
                   </form-body>
+                  <!-- {{showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'}} -->
                   <search-bar
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
                     :hosts="assignForm.header"
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
+                    :postForm="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table

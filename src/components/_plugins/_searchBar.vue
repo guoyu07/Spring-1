@@ -140,8 +140,11 @@
           } else if (key.default.type === 'static') {
             this.searchKeys[key.id].value = key.default.value
           } else if (key.default.type === 'form_header') {
-            // 这个可能需要 watch 一下，每次当前表单更新都要执行一次
             this.searchKeys[key.id].value = this.getPathResult(this.postForm.header, key.default.key_path)
+            this.$watch('postForm.header', (newVal, oldVal) => {
+              this.searchKeys[key.id].value = this.getPathResult(newVal, key.default.key_path)
+              this.onSearchDevices()
+            }, { deep: true })
           } else if (key.default.type === 'message_header') {
             this.searchKeys[key.id].value = this.getPathResult(this.message.header, key.default.key_path)
           }

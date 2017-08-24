@@ -212,7 +212,7 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   NProgress.start()
   // console.log(to)
-  Object.assign(to.meta, to.matched.find(m => m.meta.sidebar).meta)
+  // Object.assign(to.meta, to.matched.find(m => m.meta.sidebar).meta)
 })
 
 export default router
