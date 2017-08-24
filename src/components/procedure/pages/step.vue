@@ -406,35 +406,14 @@
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
           this.taskForm = res.data.data.form
           this.taskFormAll = res.data.data
-          // console.log(this.applyData)
           // 渲染 body 个数
           if (this.applyData.body.length === 0) {
-            // TODO: 只写了两种 count.type
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
-              const keyData = this.getPathResult(this.applyData.header, this.taskForm.body.count.key_path)
-              if (Array.isArray(keyData)) {
-                // this.applyData.body.length = keyData.length
-                const num = keyData.length
-                for (let i = 0; i < num; i++) {
-                  this.applyData.body.push({})
-                }
-              } else if (typeof keyData === 'number') {
-                // this.applyData.body.length = keyData
-                const num = keyData
-                for (let i = 0; i < num; i++) {
-                  this.applyData.body.push({})
-                }
-              } else if (typeof keyData === 'string') {
-                if (typeof +keyData === 'number') {
-                  // this.applyData.body.length = +keyData
-                  const num = +keyData
-                  for (let i = 0; i < num; i++) {
-                    this.applyData.body.push({})
-                  }
-                } else {
-                  this.$message('数据有错')
-                }
-              }
+              this.renderBodyLength(this.applyData.header)
+            } else if (this.taskForm.body.count.type === 'form_header') {
+              this.$watch('assignForm.header', (newVal, oldVal) => {
+                this.renderBodyLength(newVal)
+              }, { deep: true })
             } else if (this.taskForm.body.count.type === 'static') {
               for (let i = 0; i < this.taskForm.body.count.min; i++) {
                 this.applyData.body.push({})
@@ -613,6 +592,33 @@
             }
           }
         })
+      },
+      renderBodyLength (data) {
+        this.applyData.body = []
+        const keyData = this.getPathResult(data, this.taskForm.body.count.key_path)
+        if (Array.isArray(keyData)) {
+          // this.applyData.body.length = keyData.length
+          const num = keyData.length
+          for (let i = 0; i < num; i++) {
+            this.applyData.body.push({})
+          }
+        } else if (typeof keyData === 'number') {
+          // this.applyData.body.length = keyData
+          const num = keyData
+          for (let i = 0; i < num; i++) {
+            this.applyData.body.push({})
+          }
+        } else if (typeof keyData === 'string') {
+          if (typeof +keyData === 'number') {
+            // this.applyData.body.length = +keyData
+            const num = +keyData
+            for (let i = 0; i < num; i++) {
+              this.applyData.body.push({})
+            }
+          } else {
+            this.$message('数据有错')
+          }
+        }
       },
       renderInstanceDetail () {
         let postData = {

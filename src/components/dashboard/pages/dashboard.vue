@@ -14,6 +14,9 @@
         <el-col :span="12">
           <div id="chartBar" style="width:100%; height:400px;"></div>
         </el-col>
+        <el-col :span="24">
+          <div id="categoryBar" style="width:100%; height:400px;"></div>
+        </el-col>
       </el-row>
     </section>
   </div>
@@ -22,18 +25,24 @@
 <script>
   // import echarts from 'echarts'
   // 引入 ECharts 主模块
-  var echarts = require('echarts/lib/echarts')
+  const echarts = require('echarts/lib/echarts')
   // 引入柱状图
   require('echarts/lib/chart/bar')
   // 引入折线图
   require('echarts/lib/chart/line')
   // 引入饼图
   require('echarts/lib/chart/pie')
+  // K线图
+  require('echarts/lib/chart/custom')
 
-  // 引入提示框和标题组件
-  require('echarts/lib/component/tooltip')
-  require('echarts/lib/component/title')
-  require('echarts/lib/component/grid')
+  // 引入组件
+  require('echarts/lib/component/tooltip') // 提示框
+  require('echarts/lib/component/title') // 标题
+  require('echarts/lib/component/legendScroll') // 分类
+  require('echarts/lib/component/grid') // 绘图区域
+  require('echarts/lib/component/dataZoom') // 可拖动数据区域
+  // require('echarts/lib/component/toolbox')
+  // require('echarts/lib/component/brush')
 
   export default {
     data () {
@@ -50,6 +59,7 @@
       this.chartBar = echarts.init(document.getElementById('chartBar'))
       this.chartLine = echarts.init(document.getElementById('chartLine'))
       this.chartPie = echarts.init(document.getElementById('chartPie'))
+      this.categoryBar = echarts.init(document.getElementById('categoryBar'))
 
       this.chartColumn.setOption({
         title: {
@@ -191,6 +201,117 @@
               shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
           }
+        }]
+      })
+
+      let categoryData = []
+      let errorData = []
+      let barData = []
+      let dataCount = 100
+      for (let i = 0; i < dataCount; i++) {
+        let val = Math.random() * 1000
+        categoryData.push('category' + i)
+        errorData.push([
+          i,
+          echarts.number.round(Math.max(0, val - Math.random() * 100)),
+          echarts.number.round(val + Math.random() * 80)
+        ])
+        barData.push(echarts.number.round(val, 2))
+      }
+
+      const renderItem = (params, api) => {
+        let xValue = api.value(0)
+        let highPoint = api.coord([xValue, api.value(1)])
+        let lowPoint = api.coord([xValue, api.value(2)])
+        let halfWidth = api.size([1, 0])[0] * 0.1
+        let style = api.style({
+          stroke: api.visual('color'),
+          fill: null
+        })
+
+        return {
+          type: 'group',
+          children: [{
+            type: 'line',
+            shape: {
+              x1: highPoint[0] - halfWidth,
+              y1: highPoint[1],
+              x2: highPoint[0] + halfWidth,
+              y2: highPoint[1]
+            },
+            style: style
+          }, {
+            type: 'line',
+            shape: {
+              x1: highPoint[0],
+              y1: highPoint[1],
+              x2: lowPoint[0],
+              y2: lowPoint[1]
+            },
+            style: style
+          }, {
+            type: 'line',
+            shape: {
+              x1: lowPoint[0] - halfWidth,
+              y1: lowPoint[1],
+              x2: lowPoint[0] + halfWidth,
+              y2: lowPoint[1]
+            },
+            style: style
+          }]
+        }
+      }
+
+      this.categoryBar.setOption({
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'shadow'
+          }
+        },
+        title: {
+          text: '可拖动数据'
+        },
+        legend: {
+          data: ['bar', 'error']
+        },
+        dataZoom: [{
+          type: 'slider',
+          start: 50,
+          end: 70
+        }, {
+          type: 'inside',
+          start: 50,
+          end: 70
+        }],
+        xAxis: {
+          data: categoryData
+        },
+        yAxis: {},
+        series: [{
+          type: 'bar',
+          name: 'bar',
+          data: barData,
+          itemStyle: {
+            normal: {
+              color: '#77bef7'
+            }
+          }
+        }, {
+          type: 'custom',
+          name: 'error',
+          itemStyle: {
+            normal: {
+              borderWidth: 1.5
+            }
+          },
+          renderItem: renderItem,
+          encode: {
+            x: 0,
+            y: [1, 2]
+          },
+          data: errorData,
+          z: 100
         }]
       })
     },
