@@ -3,7 +3,7 @@
 
   .header {
     position: fixed;
-    z-index: @floating;
+    z-index: @flying;
     height: @headerHeight;
     -webkit-box-shadow: 0 1px 2px #b6b6b6;
     box-shadow: 0 1px 2px #b6b6b6;

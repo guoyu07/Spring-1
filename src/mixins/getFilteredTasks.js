@@ -1,4 +1,5 @@
 // const keypath = require('keypather')()
+
 export default {
   data () {
     return {
@@ -7,7 +8,6 @@ export default {
       filterData: {},
       filteredTasks: {},
       filteredColumnList: [],
-      currentList: [],
       currentPage: 1,
       currentSize: 10
     }
@@ -41,7 +41,9 @@ export default {
         method: 'GET',
         data: {
           filters,
-          order
+          order,
+          page: this.currentPage,
+          page_size: this.currentSize
         }
       }
       this.loading = true
@@ -50,16 +52,18 @@ export default {
           this.filteredTasks = res.data.data
           // this.getColumnList()
           this.loading = false
-          this.onCurrentChange(1)
+          // this.filteredTasks.list.forEach((task) => {
+          //   this.filterData.show.forEach((col) => {
+          //     console.log(keypath.get(task, col.key_path))
+          //   })
+          // })
         }
       })
     },
 
     onCurrentChange (val) {
       this.currentPage = val
-      const offset = (this.currentPage - 1) * this.currentSize
-      const array = this.filteredTasks.list
-      this.currentList = (offset + this.currentSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentSize)
+      this.getFilteredTasks()
     },
 
     onSizeChange (val) {
