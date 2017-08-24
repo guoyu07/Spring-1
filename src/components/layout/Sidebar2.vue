@@ -74,7 +74,7 @@
   <div>
     <aside class="sibebar">
       <div class="sidebar-title">{{sidebarConf.title}}</div>
-      <el-menu mode="vertical" router="router" :default-active="$route.path">
+      <el-menu mode="vertical" router="router" :default-active="indexPath">
         <el-menu-item-group
           v-for="cat in sidebarConf.routes"
           :key="cat.label"
@@ -99,6 +99,9 @@
     },
 
     computed: {
+      indexPath ($route) {
+        return '/' + this.$route.path.split('/')[1]
+      },
       sidebarConf () {
         return this.$route.meta.sidebar
       }
