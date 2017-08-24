@@ -3,12 +3,13 @@
     <div v-if="mainInfo.value.type === 'search_bar'" class="form-block">
       <h5>{{mainInfo.name}}</h5>
       <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-        <el-form-item v-for="search in searchKeyList" :label="search.name" :prop="search.id">
+        <el-form-item v-for="search in searchKeyList" :key="search.id" :label="search.name" :prop="search.id">
           <div class="form-unit">
             <el-select
               v-model="searchKeys[search.id].op"
               size="small">
               <el-option v-for="option in oplist"
+                :key="option.id"
                 :label="option.name"
                 :value="option.id">
               </el-option>
@@ -34,6 +35,7 @@
         </el-table-column>
         <el-table-column
           v-for="item in searchKeyList"
+          :key="item.id"
           :prop="item.id"
           :label="item.name"></el-table-column>
       </el-table>
@@ -67,6 +69,7 @@
 
         <el-table-column
           v-for="item in searchKeyList"
+          :key="item.id"
           :prop="item.id"
           :label="item.name">
         </el-table-column>
@@ -137,8 +140,11 @@
           } else if (key.default.type === 'static') {
             this.searchKeys[key.id].value = key.default.value
           } else if (key.default.type === 'form_header') {
-            // 这个可能需要 watch 一下，每次当前表单更新都要执行一次
             this.searchKeys[key.id].value = this.getPathResult(this.postForm.header, key.default.key_path)
+            this.$watch('postForm.header', (newVal, oldVal) => {
+              this.searchKeys[key.id].value = this.getPathResult(newVal, key.default.key_path)
+              this.onSearchDevices()
+            }, { deep: true })
           } else if (key.default.type === 'message_header') {
             this.searchKeys[key.id].value = this.getPathResult(this.message.header, key.default.key_path)
           }

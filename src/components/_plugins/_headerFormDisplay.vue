@@ -69,6 +69,7 @@
           :data="item[formItem.id]">
           <el-table-column
             v-for="col in formItem.value.attr_list"
+            :key="col.name"
             :label="col.name">
             <template scope="scope">
               <!-- <pre>{{scope.row}}</pre> -->
@@ -96,6 +97,7 @@
           :data="item[formItem.id]">
           <el-table-column
             v-for="col in formItem.value.source.data.params.filter(param => {return param.value.type === 'input'})"
+            :key="col.id"
             :prop="col.id"
             :label="col.name">
           </el-table-column>

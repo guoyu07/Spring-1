@@ -28,6 +28,7 @@
       style="margin-top: 12px; opacity: .4;">
       <el-table-column
         v-for="col in filterData.show"
+        :key="col.key_path"
         :prop="col.key_path"
         :label="col.label"></el-table-column>
     </el-table>

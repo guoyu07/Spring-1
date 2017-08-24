@@ -1,7 +1,7 @@
 <template>
   <div>
     <el-select v-model="selectedOrder" filterable value-key="key">
-      <el-option v-for="field in orderList" :label="field.label" :value="field"></el-option>
+      <el-option v-for="field in orderList" :key="field.label" :label="field.label" :value="field"></el-option>
     </el-select>
     <span :class="[arrowClass, 'order-arrow']" @click="onToggleOrder"></span>
   </div>

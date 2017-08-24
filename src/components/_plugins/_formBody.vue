@@ -97,6 +97,7 @@
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]">
         <el-option v-for="option in formItem.value.regex"
+          :key="option"
           :label="option"
           :value="option"></el-option>
       </el-select>
@@ -104,7 +105,7 @@
         v-else
         v-model="item[formItem.id]"
         :disabled="formItem.readonly">
-        <el-radio v-for="option in formItem.value.regex" :label="option"></el-radio>
+        <el-radio v-for="option in formItem.value.regex" :key="option" :label="option"></el-radio>
       </el-radio-group>
     </template>
     <template v-else-if="formItem.value.type === 'enums'">
@@ -116,6 +117,7 @@
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]">
         <el-option v-for="option in formItem.value.regex"
+          :key="option"
           :label="option"
           :value="option"></el-option>
       </el-select>
@@ -123,7 +125,7 @@
         v-else
         v-model="item[formItem.id]"
         :disabled="formItem.readonly">
-        <el-checkbox v-for="option in formItem.value.regex" :label="option" :name="option">{{option}}</el-checkbox>
+        <el-checkbox v-for="option in formItem.value.regex" :key="option" :label="option" :name="option">{{option}}</el-checkbox>
       </el-checkbox-group>
     </template>
     <el-select

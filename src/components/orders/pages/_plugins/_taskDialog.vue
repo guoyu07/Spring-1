@@ -67,10 +67,11 @@
       </el-col>
     </el-row>
     <span class="dialog-footer" slot="footer">
-      <el-button
-        v-if="filterName === '待认领'"
-        type="info"
-        @click="onClaim(taskViewData.order)" icon="check">认领</el-button>
+      <router-link
+        v-if="filterName === '待认领' || filterName === '指派'"
+        :to="{ path: `/procedure-info/${taskViewData.order.pinstance.pid}/${taskViewData.order.ptask.tname}`, query: { tid: taskViewData.order.tid, filter: filterName }}">
+        <el-button type="info" icon="more">查看</el-button>
+      </router-link>
       <router-link
         v-else
         :to="{ path: `/${isGuosen ? 'guosen' : 'procedure'}${!isAssignee || isEnded ? '-info' : ''}/${taskViewData.order.pinstance.pid}${!isAssignee || isEnded ? '' : ('/' + taskViewData.order.tid)}/${taskViewData.order.ptask.tname}` }">

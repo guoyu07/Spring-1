@@ -160,7 +160,7 @@
       <el-submenu index="4">
         <template slot="title">流程中心</template>
         <el-menu-item index="4-1">
-          <router-link class="link-block" :to="{ path: '/orders' }">流程中心</router-link>
+          <router-link class="link-block" :to="{ path: '/orders/queues/filter_type_handle' }">流程中心</router-link>
         </el-menu-item>
         <el-menu-item index="4-2">
           <router-link class="link-block" :to="{ path: '/process-admin/basics' }">流程管理</router-link>
@@ -183,8 +183,7 @@
       </el-submenu>
       <el-menu-item index="6" class="fr">
         <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
-          <a class="link-block" href="http://192.168.10.102/">
-          <!-- <a class="link-block" href="http://preview.easyops.cn/"> -->
+          <a class="link-block" :href="$store.state.userinfo._easyops_url">
             <img src="../../assets/logo.png" alt="" class="menu-img">
           </a>
         </el-tooltip>

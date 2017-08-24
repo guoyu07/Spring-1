@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-card class="box-card">
+    <el-card class="box-card" v-if="currentList.length">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
       <el-button icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
         <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
@@ -13,6 +13,7 @@
         border>
         <el-table-column
           v-for="col in filterData.show"
+          :key="col.key_path"
           :prop="col.key_path"
           :label="col.label"></el-table-column>
         <el-table-column
@@ -36,6 +37,10 @@
         layout="total, sizes, prev, pager, next, jumper"
         :total="filteredTasks.total"></el-pagination>
     </el-card>
+    <div v-else class="placeholder-card">
+      <i class="el-icon-fa-coffee"></i>
+      <h3>你的队列为空，可以喝杯咖啡去！</h3>
+    </div>
     <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData" :filter-name="filterData.name"></task-dialog>
     <process-dialog v-if="processViewData.visible" :process-view-data="processViewData"></process-dialog>
   </div>

@@ -1,23 +1,49 @@
 <template>
-  <div id="item1-side" class="wrapper">
+  <div class="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
-          <div class="clear">
-            <h3 class="form-title fl"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
+          <div class="flex-box">
+            <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
             <!-- <el-radio-group class="fr" v-model="bodyStyle">
               <el-radio-button label="1">标签页</el-radio-button>
               <el-radio-button label="2">卡片式</el-radio-button>
             </el-radio-group> -->
+            <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
+            <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
+              <el-form-item label="用户" :inline="true">
+                <el-select v-model="newAssignee" filterable clearable placeholder="请选择用户">
+                  <el-option
+                    v-for="user in userList"
+                    :key="user.userId"
+                    :label="user.nick"
+                    :value="user.userId">
+                    <p>{{ user.userId }}</p>
+                    <p style="color: #8492a6; font-size: 13px">{{ user.email }}</p>
+                 </el-option>
+                </el-select>
+              </el-form-item>
+              <el-form-item label="候选组">
+                <el-select v-model="newcandidateGroup" multiple filterable placeholder="请选择候选组">
+                  <el-option
+                    v-for="role in roleList"
+                    :key="role.key"
+                    :label="role.name"
+                    :value="role.key">
+                  </el-option>
+                </el-select>
+              </el-form-item>
+              <el-button :loading="assignViewLoading" type="info" @click="onAssign($route.query.tid, newAssignee, newcandidateGroup)">指派</el-button>
+            </el-form>
           </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
-              <div v-for="taskheader in form" :key="taskheader.tkey">
+              <div v-for="taskheader in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
                   <p class="h5">{{taskheader.tname}}</p>
-                  <div v-for="taskformheader in taskheader.form.form.header" :key="taskformheader.name">
-                    <span v-for="valueheader in taskformheader.value" :key="valueheader.id">
+                  <div v-for="taskformheader in taskheader.form.form.header">
+                    <span v-for="valueheader in taskformheader.value">
                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, false)">
                         <header-form-display
                           :item="applyData.header"
@@ -34,15 +60,15 @@
                 <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block">
-                    <div v-for="task in form" :key="task.tkey">
+                    <div v-for="task in form">
                       <div v-if="task.form.form.body.body_list.length">
-                        <div v-for="(taskbody, index) in task.form.form.body.body_list" :key="index">
+                        <div v-for="taskbody in task.form.form.body.body_list">
                           <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
                             <p class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
-                              <div v-for="taskformheader in task.form.form.header" :key="taskformheader.name">
-                                <span v-for="valueheader in taskformheader.value" :key="valueheader.id">
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                     <header-form-display
                                       :item="applyData.header"
@@ -68,8 +94,8 @@
                         <!-- header 信息显示 -->
                         <p class="h5">{{task.tname}}</p>
                         <div v-if="task.form.form.header.length >= 1">
-                          <div v-for="taskformheader in task.form.form.header" :key="taskformheader.name">
-                            <span v-for="valueheader in taskformheader.value" :key="valueheader.id">
+                          <div v-for="taskformheader in task.form.form.header">
+                            <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                 <header-form-display
                                   :item="applyData.header"
@@ -225,9 +251,12 @@
                 </el-tabs>
               </div>
               <div class="anchorNav">
-                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" :key="index" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
               </div>
             </template>
+            <!-- <router-link :to="toJumper(jumper)"> -->
+            <el-button v-if="allData.isend" v-for="(jumper, index) in allData.jumpers" :key="index" type="primary" @click="toJumper(jumper)">{{jumper.name}}</el-button>
+            <!-- </router-link> -->
           </el-form>
         </el-card>
       </el-col>
@@ -239,8 +268,12 @@
   import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
+  import getPermittedUserList from './../../../mixins/getPermittedUserList'
+  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
+  import onAssign from './../../../mixins/onAssign'
 
   export default {
+    mixins: [getPermittedUserList, getPermittedRoleList, onAssign],
     data () {
       return {
         routerInfo: {},
@@ -253,19 +286,41 @@
           body: []
         },
         index: 0,
-        selectedDevices: [],
-        searchKeyList: [],
-        searchKeys: {},
-        searchData: {},
         path_list: [],
         hostList: [],
         bodyStyle: '',
-        bodyLableName: []
+        bodyLableName: [],
+        allData: {},
+        taskData: {},
+        newAssignee: '',
+        newcandidateGroup: [],
+        assignViewLoading: false
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
+      if (this.$route.query.tid) {
+        let postData = {
+          action: 'task/action/dict',
+          method: 'get',
+          data: { tid: this.$route.query.tid }
+        }
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.taskData = res.data.data
+            this.newcandidateGroup = []
+            this.taskData.candidate_groups.map(group => {
+              this.newcandidateGroup.push(group.key)
+            })
+            if (this.taskData.can_manage) {
+              this.getPermittedUserList()
+              this.getPermittedRoleList()
+              this.newAssignee = this.taskData.assign.userId
+            }
+          }
+        })
+      }
     },
     watch: {
       'form': {
@@ -277,6 +332,25 @@
       renderBodyLabel (val) {
         console.log(val[val.length - 1].form.form)
         this.bodyLabel(val[val.length - 1].form.form, this.assignForm, this.applyData, this.bodyLableName)
+      },
+      toJumper (jumper) {
+        let path = ''
+        let query = {}
+        if (jumper.value.type === 'start_process') {
+          path = `/procedure/start/${jumper.value.pkey}/${jumper.value.pname}`
+        } else if (jumper.value.type === 'static') {
+          path = jumper.value.url
+          // window.location.href = 'http://www.Baidu.com'
+          // window.open()
+        }
+        jumper.params.map(param => {
+          if (param.type === 'dynamic') {
+            query[param.id] = this.getPathResult(this.allData, param.key_path) ? this.getPathResult(this.allData, param.key_path) : null
+          } else if (param.type === 'static') {
+            query[param.id] = param.value
+          }
+        })
+        this.$router.push({ path: path, query: query })
       },
       renderInstanceDetail () {
         let postData = {
@@ -301,7 +375,7 @@
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
-          this.applyData.version = res.data.data.version
+          this.allData = res.data.data
           this.renderForm()
           // this.renderTaskForm()
         })
@@ -339,6 +413,31 @@
       },
       cancel () {
         this.$router.go(-1) // 跳转历史的上一页
+      },
+      onClaim () {
+        this.$confirm(`确定认领该任务吗？`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'info'
+        }).then(() => {
+          let postData = {
+            action: 'task_assign',
+            method: 'POST',
+            data: { tid: this.$route.query.tid }
+          }
+          this.http.post('/flow/', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.deviceViewData.visible = false
+              this.$message.success('已认领！')
+            }
+            this.$router.replace(`/procedure/${this.allData.pid}/${this.$route.query.tid}/${this.$route.query.tname}`)
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '取消认领'
+          })
+        })
       }
     },
     components: {
@@ -520,5 +619,9 @@
 .total-page {
   font-size: 12px;
   color: #616161;
+}
+.flex-box {
+  display: flex;
+  justify-content: space-between;
 }
 </style>

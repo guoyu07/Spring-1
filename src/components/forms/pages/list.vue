@@ -13,6 +13,7 @@
           <el-select v-model="selectedProcess" placeholder="请先选择流程…" class="process-select" value-key="pname">
             <el-option
               v-for="process in processList"
+              :key="process.name"
               :label="process.pname"
               :value="process">
             </el-option>
