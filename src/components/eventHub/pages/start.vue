@@ -600,7 +600,7 @@
               } else if (this.$route.params.pkey === 'incident') {
                 this.$router.push('/event-hub') // 跳转事件管理
               } else {
-                this.$router.push('/home') // 跳转运维目录
+                this.$router.push('/menu') // 跳转运维目录
               }
             } else if (res && res.status === 406) {
               this.$message.error(res.errorMessage)
