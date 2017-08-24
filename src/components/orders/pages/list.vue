@@ -14,8 +14,16 @@
         <el-table-column
           v-for="col in filterData.show"
           :key="col.key_path"
-          :prop="col.key_path"
-          :label="col.label"></el-table-column>
+          inline-template
+          :context="_self"
+          :label="col.label">
+          <template>
+            <span v-if="Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
+              {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
+            </span>
+            <span v-else>{{row.columns.find(c => c.key_path === col.key_path).value}}</span>
+          </template>
+        </el-table-column>
         <el-table-column
           width="80"
           inline-template

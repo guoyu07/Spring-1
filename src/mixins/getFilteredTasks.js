@@ -1,10 +1,9 @@
-// const keypath = require('keypather')()
+const keypath = require('keypather')()
 
 export default {
   data () {
     return {
       loading: false,
-      columnList: [],
       filterData: {},
       filteredTasks: {},
       filteredColumnList: [],
@@ -52,11 +51,18 @@ export default {
           this.filteredTasks = res.data.data
           // this.getColumnList()
           this.loading = false
-          // this.filteredTasks.list.forEach((task) => {
-          //   this.filterData.show.forEach((col) => {
-          //     console.log(keypath.get(task, col.key_path))
-          //   })
-          // })
+          this.filteredTasks.list = this.filteredTasks.list.map(task => { return { ...task, ...{ columns: [] } } }) // 给每个任务条目加个 columns 数组成员
+          this.filterData.show.forEach((col) => {
+            this.filteredTasks.list.forEach((task) => {
+              let value
+              if (Array.isArray(task[col.key_path.split('.')[0]])) {
+                value = task[col.key_path.split('.')[0]].map(item => keypath.get(item, col.key_path.split('.').slice(1)))
+              } else {
+                value = keypath.get(task, col.key_path)
+              }
+              task.columns.push(Object.assign({}, col, { value }))// 将 columns 赋值为带值的 col 对象
+            })
+          })
         }
       })
     },
