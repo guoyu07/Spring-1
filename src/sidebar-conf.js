@@ -16,13 +16,13 @@ const SidebarConf = {
         path: '/orders',
         icon: 'fa-calendar-o'
       }, {
-        name: '统计中心',
-        path: '/statistics',
-        icon: 'fa-pie-chart'
-      }, {
         name: '配置中心',
         path: '/custom',
         icon: 'fa-cogs'
+      }, {
+        name: '统计中心',
+        path: '/statistics',
+        icon: 'fa-pie-chart'
       }]
     }]
   },
@@ -235,7 +235,8 @@ const SidebarConf = {
       path: '',
       icon: 'fa-sliders'
     }]
-  }, {
+  },
+  {
     label: '系统设置',
     list: [{
       name: 'API 预选集设置',

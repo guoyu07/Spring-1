@@ -1,10 +1,15 @@
 <template>
-  <span>
+  <el-form-item
+    :prop="header ? 'header.' + attrList.id : 'body.' + index + '.' + attrList.id"
+    :rules="rules(attrList)"
+    label=""
+    class="blockElement">
     <div v-if="mainInfo.value.type === 'search_bar'" class="form-block">
       <h5>{{mainInfo.name}}</h5>
-      <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-        <el-form-item v-for="search in searchKeyList" :key="search.id" :label="search.name" :prop="search.id">
-          <div class="form-unit">
+      <!-- <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
+        <el-form-item v-for="search in searchKeyList" :key="search.id" :label="search.name" :prop="search.id"> -->
+          <div class="form-unit" v-for="search in searchKeyList" :key="search.id">
+            <span class="form-unit__label">{{search.name}}</span>
             <el-select
               v-model="searchKeys[search.id].op"
               size="small">
@@ -16,13 +21,13 @@
             </el-select>
             <el-input size="small" v-model="searchKeys[search.id].value"></el-input>
           </div>
-        </el-form-item>
-        <br>
-        <el-form-item>
+          <br>
+        <!-- </el-form-item> -->
+        <!-- <el-form-item> -->
           <el-button size="small" type="primary" @click="onSearchDevices()">搜索</el-button>
           <!-- <el-button size="small" @click="resetForm('searchKeys')">清空</el-button> -->
-        </el-form-item>
-      </el-form>
+        <!-- </el-form-item>
+      </el-form> -->
       <el-table
         :data="deviceTable"
         border
@@ -50,12 +55,13 @@
         </el-pagination>
       </div>
       <div class="btn-area">
-        <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至设备列表</el-button>
+        <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至{{mainInfo.name}}列表</el-button>
       </div>
       <h5>列表</h5>
       <el-table
         :data="hostList"
         border
+        class="search-bar"
         style="width: 100%; min-width: 460px">
         <el-table-column
           inline-template
@@ -76,13 +82,14 @@
 
       </el-table>
     </div>
-  </span>
+  </el-form-item>
 </template>
 
 <script>
   export default {
     props: {
       index: { type: Number }, // body 的 index
+      header: { type: Boolean },
       hosts: { type: Object }, // 选取设备的id
       attrList: { type: Object }, // search_bar 源数据
       postForm: { type: Object }, // 提交的数据
@@ -134,15 +141,15 @@
         for (const key of this.searchKeyList) {
           this.$set(this.searchKeys, key.id, {})
           this.$set(this.searchKeys[key.id], 'value', '')
-          this.$set(this.searchKeys[key.id], 'op', 'eq') // 默认为等于 eq
+          this.$set(this.searchKeys[key.id], 'op', 'reg') // 默认为包含
           if (key.default.type === 'get') {
             this.searchKeys[key.id].value = this.$route.query[key.default.id] || ''
           } else if (key.default.type === 'static') {
             this.searchKeys[key.id].value = key.default.value
           } else if (key.default.type === 'form_header') {
-            this.searchKeys[key.id].value = this.getPathResult(this.postForm.header, key.default.key_path)
+            this.searchKeys[key.id].value = this.getPathResult(this.postForm.header, key.default.key_path) ? this.getPathResult(this.postForm.header, key.default.key_path) : ''
             this.$watch('postForm.header', (newVal, oldVal) => {
-              this.searchKeys[key.id].value = this.getPathResult(newVal, key.default.key_path)
+              this.searchKeys[key.id].value = this.getPathResult(newVal, key.default.key_path) ? this.getPathResult(newVal, key.default.key_path) : ''
               this.onSearchDevices()
             }, { deep: true })
           } else if (key.default.type === 'message_header') {
@@ -168,6 +175,30 @@
     },
 
     methods: {
+      rules (formItem) {
+        var validateSearchBar = (rule, value, cb) => {
+          if (!value) {
+            return cb(new Error(`${this.mainInfo.name}不能为空`))
+          } else if (this.limit.max) { // static时，有一个范围值
+            if (value.length < this.limit.min) {
+              return cb(new Error(`至少需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
+            } else if (value.length > this.limit.max) {
+              return cb(new Error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`))
+            }
+          } else { // 除static外，其他都是一个固定的数值，不准多不准少
+            if (value.length < this.limit.min) {
+              return cb(new Error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
+            } else if (value.length > this.limit.min) {
+              return cb(new Error(`只需要${this.limit.min}个${this.mainInfo.name},请删除${value.length - this.limit.min}个`))
+            }
+          }
+        }
+        return {
+          validator: validateSearchBar,
+          required: formItem.required,
+          trigger: 'change'
+        }
+      },
       onSearchDevices () {
         let searchData = {}
         searchData.query = Object.assign({}, this.searchData, this.filterObj(this.searchKeys))

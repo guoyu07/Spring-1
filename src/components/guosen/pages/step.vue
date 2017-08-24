@@ -4,7 +4,8 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">
-            <i class="el-icon-fa-server color-primary"></i> {{ routerInfo.name }}
+            <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
+            <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">工作流</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
@@ -17,8 +18,9 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
-            <div v-if="applyData.body && applyData.body.length" class="clear">
-              <el-button class="fr" size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
+            <div v-if="applyData.body && applyData.body.length" class="flex-box">
+              <div></div>
+              <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
             </div>
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
@@ -905,17 +907,6 @@
           if (ref) { // 有表单的情况下，表单的自验证
             this.$refs['assignForm'].validate((valid) => {
               if (valid) {
-                // console.log(this.assignForm.body)
-                if (this.assignForm.body) {
-                  for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
-                    for (const item in data) {
-                      if (Array.isArray(data[item]) && data[item].length === 0) {
-                        this.$message.warning('未完成！')
-                        return false
-                      }
-                    }
-                  }
-                }
                 this.postMethod(this.routerInfo.tid, postFormData)
                 // console.dir(this.assignForm)
               } else {
@@ -924,58 +915,6 @@
                 return false
               }
             })
-          } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            if (this.taskForm.body.body_list.length && this.taskForm.header.length) {
-              this.taskForm.body.body_list.map(bodyList => {
-                if (!bodyList.show.type) {
-                  bodyList.attr_list.map(attrList => {
-                    if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
-                      attrList.value.map(value => {
-                        if (value.value.type === 'search_bar') {
-                          this.assignForm.body.map((postbody, postbodyIndex) => {
-                            if (postbody[value.id].length === 0) {
-                              this.$message.warning('未分配完！')
-                              return false
-                            }
-                          })
-                        }
-                      })
-                    } else {
-                      this.postMethod(this.routerInfo.tid, postFormData)
-                    }
-                  })
-                }
-              })
-              this.taskForm.header.map(header => {
-                if (header.value.some(value => { return value.value.type === 'search_bar' })) {
-                  header.value.map(value => {
-                    if (value.value.type === 'search_bar') {
-                      if (this.assignForm.header[value.id].length === 0) {
-                        this.$message.warning('未分配完！')
-                        return false
-                      }
-                    }
-                  })
-                } else {
-                  this.postMethod(this.routerInfo.tid, postFormData)
-                }
-              })
-            } else {
-              console.log('hahhahahahha')
-              this.postMethod(this.routerInfo.tid, postFormData)
-            }
-
-            // if (!this.assignForm.body.some(data => {
-            //   for (const item in data) {
-            //     return Array.isArray(data[item]) && data[item].length === 0
-            //   }
-            // })) {
-            //   this.postMethod(this.routerInfo.tid, postFormData)
-            //   // console.dir(this.assignForm)
-            // } else {
-            //   this.$message.warning('未分配完！')
-            //   return false
-            // }
           }
         }).catch(() => {
           this.$message({
@@ -1060,19 +999,6 @@
               return false
             }
           })
-        } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-          console.log(this.taskform)
-          // if (!this.assignForm.body.some(data => {
-          //   for (const item in data) {
-          //     return Array.isArray(data[item]) && data[item].length === 0
-          //   }
-          // })) {
-          //   this.manualMethod(action)
-          //   // console.dir(this.assignForm)
-          // } else {
-          //   this.$message.warning('未分配完！')
-          //   return false
-          // }
         }
       },
       manualMethod (action) {

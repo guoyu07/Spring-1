@@ -201,15 +201,34 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 .form-unit {
-  display: flex;
+  display: inline-flex;
   align-items: center;
-
+  min-width: 380px;
+  &__label {
+    width: 100px;
+    text-align: right;
+    margin-right: 10px;
+    color: #233141;
+  }
   .el-select {
-    width: 30%;
+    width: 25%;
     margin-right: 10px;
   }
   .el-input {
     width: auto;
+  }
+}
+
+.el-form-item {
+  &.is-error {
+    .form-unit {
+      .el-input__inner {
+        border-color: #bfcbd9;
+      }
+    }
+    .search-bar {
+      outline: 1px solid red;
+    }
   }
 }
 
@@ -727,4 +746,9 @@ h1, h2, h3, h4, h5, h6, p {
   .el-loading-mask {
     z-index: @floating;
   }
+}
+
+.flex-box {
+  display: flex;
+  justify-content: space-between;
 }
