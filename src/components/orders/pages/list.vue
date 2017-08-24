@@ -6,7 +6,7 @@
         <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
       </el-button>
       <el-table
-        :data="currentList"
+        :data="filteredTasks.list"
         v-loading="loading"
         width="100%"
         stripe
@@ -17,9 +17,9 @@
           :label="col.label"></el-table-column>
         <el-table-column
           width="80"
-          label="操作"
           inline-template
-          :context="_self">
+          :context="_self"
+          label="操作">
           <template>
             <el-button v-if="filterData.name === '已完成'" size="small" @click="onViewProcess(row)">详情</el-button>
             <el-button v-else size="small" @click="onViewTask(row)">详情</el-button>
@@ -31,7 +31,7 @@
         @current-change="onCurrentChange"
         @size-change="onSizeChange"
         :current-page="currentPage"
-        :page-sizes="[10, 15, 20, 25, 30]"
+        :page-sizes="[10, 20, 50]"
         :page-size="currentSize"
         layout="total, sizes, prev, pager, next, jumper"
         :total="filteredTasks.total"></el-pagination>

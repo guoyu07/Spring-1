@@ -37,7 +37,7 @@ const SidebarConf = {
       }, {
         name: '工单列表',
         path: '/orders',
-        icon: 'fa-calendar-o'
+        icon: 'fa-list-ul'
       }, {
         name: '统计中心',
         path: '/statistics',
@@ -79,7 +79,7 @@ const SidebarConf = {
       }, {
         name: '事件列表',
         path: '/event-hub',
-        icon: 'fa-bullhorn'
+        icon: 'fa-list-ul'
       }, {
         name: '统计中心',
         path: '/statistics',
@@ -163,11 +163,11 @@ const SidebarConf = {
       list: [{
         name: '基本信息',
         path: '/account/basics',
-        icon: 'fa-user-o'
+        icon: 'fa-info-circle'
       }, {
         name: '修改密码',
         path: '/account/password',
-        icon: 'fa-unlock-alt'
+        icon: 'fa-key'
       }]
     }]
   },
@@ -224,7 +224,7 @@ const SidebarConf = {
     list: [{
       name: '事件自定义',
       path: '/event-config/details',
-      icon: 'fa-cogs'
+      icon: 'fa-gear'
     }, {
       name: 'SLA',
       path: '/sla',

@@ -189,6 +189,9 @@ const routes = [{
   }]
 }, {
   path: '*',
+  meta: {
+    sidebar: SidebarConf.Homepage
+  },
   component: resolve => require(['./components/NotFound'], resolve)
 }]
 
