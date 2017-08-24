@@ -100,7 +100,8 @@
 
     computed: {
       indexPath ($route) {
-        return '/' + this.$route.path.split('/')[1]
+        var reg = /\/\w*/
+        return this.$route.path.match(reg)[0]
       },
       sidebarConf () {
         return this.$route.meta.sidebar
@@ -108,4 +109,3 @@
     }
   }
 </script>
-8
