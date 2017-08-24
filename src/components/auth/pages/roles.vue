@@ -44,7 +44,7 @@
                   </el-tooltip>
                 </div>
                 <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                  <el-checkbox v-for="user in props.row.users" :key="user.userId" :label="user.userId" :disabled="user.existing">{{user.code}}</el-checkbox>
+                  <el-checkbox v-for="user in props.row.users" :key="user.userId" :label="user.userId" :disabled="user.existing">{{user.nick}}</el-checkbox>
                 </el-checkbox-group>
               </template>
             </el-table-column>
@@ -68,7 +68,7 @@
     <el-dialog title="加入用户" size="tiny" v-model="userViewData.visible">
       <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
       <el-checkbox-group v-model="usersToAdd">
-        <el-checkbox v-for="user in userList" :key="user.userId" :label="user.userId">{{user.code}}</el-checkbox>
+        <el-checkbox v-for="user in userList" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
       </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
         <el-button :disabled="!isQualified" @click="onAddUser" size="small" icon="check" type="success" :loading="userViewData.loading">确认加入</el-button>
@@ -93,8 +93,13 @@
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
       <el-form :rules="roleFormRules" label-width="100px">
         <el-form-item label="角色标签" prop="roleTags">
-          <!-- <el-input v-model="addedRoleData.role.tags[0]" placeholder="请填写角色标签"></el-input> -->
-          <el-select v-model="addedRoleData.role.tags" multiple allow-create placeholder="请填写角色标签"></el-select>
+          <el-select
+            v-model="addedRoleData.role.tags"
+            multiple
+            filterable
+            allow-create
+            placeholder="请填写角色标签">
+          </el-select>
         </el-form-item>
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="addedRoleData.role.name" placeholder="请填写角色名称"></el-input>
@@ -190,7 +195,7 @@
         //   return
         // }
         let postData = {
-          action: 'permission/role',
+          action: 'group',
           method: 'PUT',
           data: { tags, name, key }
         }

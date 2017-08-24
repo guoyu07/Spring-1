@@ -39,6 +39,8 @@
                     :hosts="postForm.header"
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, postForm)"
+                    :post-form="postForm"
+                    :header="true"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
@@ -82,6 +84,7 @@
                                   :attr-list="formItem"
                                   :is-editing="isEditing"
                                   :limit="getLimitQuantity(formItem, postForm, applyData, index)"
+                                  :post-form="postForm"
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
                                 <body-table
@@ -466,82 +469,12 @@
           if (ref) { // 有表单的情况下，表单的自验证
             this.$refs['postForm'].validate((valid) => {
               if (valid) {
-                console.log(this.postForm.body)
-                if (this.postForm.body) {
-                  for (const data of this.postForm.body) { // 用 for...of 可以轻松退出循环
-                    for (const item in data) {
-                      if (Array.isArray(data[item]) && data[item].length === 0) {
-                        // 判断这个数组是不是必填
-                        for (const body of this.taskFormData.body.body_list) {
-                          for (const attr of body.attr_list) {
-                            for (const value of attr.value) {
-                              if (value.id === item && value.required) {
-                                this.$message.warning(`${value.name}未填写！`)
-                                return false
-                              }
-                            }
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
-                if (this.postForm.header) {
-                  for (const item in this.postForm.header) {
-                    if (Array.isArray(this.postForm.header[item]) && this.postForm.header[item].length === 0) {
-                      // 判断这个数组是不是必填
-                      for (const header of this.taskFormData.header) {
-                        for (const value of header.value) {
-                          if (value.id === item && value.required) {
-                            this.$message.warning(`${value.name}未填写！`)
-                            return false
-                          }
-                        }
-                      }
-                    }
-                  }
-                }
                 this.postMethod(this.postForm)
                 // console.dir(this.postForm)
               } else {
                 console.log('error submit!!')
                 this.$message.warning('表单未填写完成！')
                 return false
-              }
-            })
-          } else { // 无表单时，需要验证有无选设备，因为选设备不在表单验证范围
-            this.taskFormData.body.body_list.map(bodyList => {
-              if (!bodyList.show.type) {
-                bodyList.attr_list.map(attrList => {
-                  if (attrList.value.some(value => { return value.value.type === 'search_bar' })) {
-                    attrList.value.map(value => {
-                      if (value.value.type === 'search_bar') {
-                        this.postForm.body.map((postbody, postbodyIndex) => {
-                          if (postbody[value.id].length === 0) {
-                            this.$message.warning(`未选择${value.name}`)
-                            return false
-                          }
-                        })
-                      }
-                    })
-                  } else {
-                    this.postMethod(this.postForm)
-                  }
-                })
-              }
-            })
-            this.taskFormData.header.map(header => {
-              if (header.value.some(value => { return value.value.type === 'search_bar' })) {
-                header.value.map(value => {
-                  if (value.value.type === 'search_bar') {
-                    if (this.postForm.header[value.id].length === 0) {
-                      this.$message.warning(`未选择${value.name}`)
-                      return false
-                    }
-                  }
-                })
-              } else {
-                this.postMethod(this.postForm)
               }
             })
           }
@@ -630,7 +563,7 @@
                 message: '成功!',
                 type: 'success'
               })
-              if (this.isEditing) {
+              if (this.isEditing && this.$route.params.pkey !== 'Storage') {
                 this.$router.push(`/event-hub/event/${tid}`)
               } else if (this.$route.params.pkey === 'easyops_monitor') {
                 this.$router.push('/alarm') // 告警处理成功后跳转告警事件

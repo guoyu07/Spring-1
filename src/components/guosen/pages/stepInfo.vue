@@ -620,8 +620,4 @@
   font-size: 12px;
   color: #616161;
 }
-.flex-box {
-  display: flex;
-  justify-content: space-between;
-}
 </style>

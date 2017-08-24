@@ -144,7 +144,7 @@
   <header class="header fw">
     <el-menu default-active="1" mode="horizontal">
       <el-menu-item index="1" class="logo">
-        <router-link to="/dashboard">
+        <router-link to="/menu">
           <!-- <b>EasyOps</b> 运维管理系统 -->
           <div class="logo-img">
             <img src="../../assets/logo-lg.png" alt="">
