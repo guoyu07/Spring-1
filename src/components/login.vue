@@ -117,7 +117,7 @@
         }
         // 传入组件的上下文、验证信息及跳转目地
         // 以便 auth.login 发起登录请求
-        auth.login(this, credentials, '/echarts')
+        auth.login(this, credentials, '/dashboard')
       }
     },
 

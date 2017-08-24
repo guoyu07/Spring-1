@@ -37,13 +37,13 @@ const routes = [{
       sidebar: SidebarConf.Process
     },
     children: [{
-      path: '/procedure/start/:pkey/:pname',
+      path: 'start/:pkey/:pname',
       component: resolve => require(['./components/procedure/pages/start'], resolve)
     }, {
-      path: '/procedure/modify/:pid/:tid/:name',
+      path: 'modify/:pid/:tid/:name',
       component: resolve => require(['./components/procedure/pages/start'], resolve)
     }, {
-      path: '/procedure/:pid/:tid/:name',
+      path: ':pid/:tid/:name',
       component: resolve => require(['./components/procedure/pages/step'], resolve)
     }, {
       path: '/procedure-info/:pid/:name',
@@ -56,10 +56,10 @@ const routes = [{
       sidebar: SidebarConf.Process
     },
     children: [{
-      path: '/guosen/on',
+      path: 'on',
       component: resolve => require(['./components/guosen/pages/on'], resolve)
     }, {
-      path: '/guosen/:pid/:tid/:name',
+      path: ':pid/:tid/:name',
       component: resolve => require(['./components/guosen/pages/step'], resolve)
     }, {
       path: '/guosen-info/:pid/:name',
@@ -75,13 +75,13 @@ const routes = [{
       path: '',
       component: resolve => require(['./components/eventHub/pages/list'], resolve)
     }, {
-      path: '/event-hub/event/:tkey',
+      path: 'event/:tkey',
       component: resolve => require(['./components/eventHub/pages/event'], resolve)
     }, {
-      path: '/event-hub/start/:pkey/:pname',
+      path: 'start/:pkey/:pname',
       component: resolve => require(['./components/eventHub/pages/start'], resolve)
     }, {
-      path: '/event-hub/modify/:pkey/:pname/:pid/:tid/:tkey',
+      path: 'modify/:pkey/:pname/:pid/:tid/:tkey',
       component: resolve => require(['./components/eventHub/pages/start'], resolve)
     }]
   }, {
@@ -91,13 +91,13 @@ const routes = [{
       sidebar: SidebarConf.Process
     },
     children: [{
-      path: '/system/apply',
+      path: 'apply',
       component: require('./components/system/pages/apply')
     }, {
-      path: '/system/apply/:id',
+      path: 'apply/:id',
       component: require('./components/system/pages/apply')
     }, {
-      path: '/system/applylist',
+      path: 'applylist',
       component: require('./components/system/pages/applylist')
     }]
   }, {
@@ -107,10 +107,10 @@ const routes = [{
       sidebar: SidebarConf.Accounts
     },
     children: [{
-      path: '/auth/users',
+      path: 'users',
       component: resolve => require(['./components/auth/pages/users'], resolve)
     }, {
-      path: '/auth/roles',
+      path: 'roles',
       component: resolve => require(['./components/auth/pages/roles'], resolve)
     }]
   }, {
@@ -120,10 +120,10 @@ const routes = [{
       sidebar: SidebarConf.Auth
     },
     children: [{
-      path: '/process-admin/basics',
+      path: 'basics',
       component: resolve => require(['./components/process/pages/basics'], resolve)
     }, {
-      path: '/process-admin/steps',
+      path: 'steps',
       component: resolve => require(['./components/process/pages/steps'], resolve)
     }]
   }, { // 流程设计 删
@@ -133,13 +133,13 @@ const routes = [{
       sidebar: SidebarConf.Process
     },
     children: [{
-      path: '/custom',
+      path: '',
       component: resolve => require(['./components/custom/pages/list'], resolve)
     }, {
-      path: '/custom/new',
+      path: 'new',
       component: resolve => require(['./components/custom/pages/bpmn'], resolve)
     }, {
-      path: '/custom/bpmn/:pkey',
+      path: 'bpmn/:pkey',
       component: resolve => require(['./components/custom/pages/bpmn'], resolve)
     }]
   }, {
@@ -152,16 +152,16 @@ const routes = [{
       path: '',
       component: require('./components/orders/pages/placeholder')
     }, {
-      path: '/orders/queues/:id',
+      path: 'queues/:id',
       component: resolve => require(['./components/orders/pages/list'], resolve)
     }, {
-      path: '/orders/queues/:id/edit',
+      path: 'queues/:id/edit',
       component: resolve => require(['./components/orders/pages/edit'], resolve),
       meta: {
         isEdit: true
       }
     }, {
-      path: '/orders/queues/custom/new',
+      path: 'queues/custom/new',
       component: resolve => require(['./components/orders/pages/edit'], resolve),
       meta: {
         isEdit: false
@@ -177,7 +177,7 @@ const routes = [{
       path: '',
       component: resolve => require(['./components/forms/pages/list'], resolve)
     }, {
-      path: '/forms/editor',
+      path: 'editor',
       component: resolve => require(['./components/forms/pages/editor'], resolve)
     }]
   }, {
@@ -189,9 +189,6 @@ const routes = [{
   }]
 }, {
   path: '*',
-  meta: {
-    sidebar: SidebarConf.Homepage
-  },
   component: resolve => require(['./components/NotFound'], resolve)
 }]
 
@@ -203,9 +200,16 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   const requiresAuth = to.matched.some(m => m.meta.requiresAuth)
   auth.checkAuth() // 取 this.$store.state.userinfo
-  if (requiresAuth && !auth.authenticated) {  // 如果目的路由需要验证、而用户尚未验证时
+  if (requiresAuth) {  // 如果目的路由需要验证、而用户尚未验证时
     // 跳转至登录页
-    next('/login')
+    if (!auth.authenticated) {
+      next({path: '/login',
+        query: { redirect: to.fullname }
+      })
+      console.log(requiresAuth)
+    } else {
+      next()
+    }
   } else {
     next()
   }
@@ -214,8 +218,8 @@ router.beforeEach((to, from, next) => {
 
 router.afterEach((to, from) => {
   NProgress.start()
-  // console.log(to)
-  // Object.assign(to.meta, to.matched.find(m => m.meta.sidebar).meta)
+  console.log(to)
+  Object.assign(to.meta, to.matched.find(m => m.meta.sidebar).meta)
 })
 
 export default router
