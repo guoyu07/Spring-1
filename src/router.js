@@ -148,6 +148,7 @@ const routes = [{
     meta: {
       sidebar: SidebarConf.Process
     },
+    // redirect: { path: '/orders/queues/filter_type_handle' },
     children: [{
       path: '',
       component: require('./components/orders/pages/placeholder')
@@ -186,6 +187,17 @@ const routes = [{
       sidebar: SidebarConf.Event
     },
     component: resolve => require(['./components/eventConfig/pages/details'], resolve)
+  }, {
+    path: '/statistics',
+    component: require('./components/statistics/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
+    redirect: { path: '/statistics/process' },
+    children: [{
+      path: 'process',
+      component: resolve => require(['./components/statistics/pages/process'], resolve)
+    }]
   }]
 }, {
   path: '*',
