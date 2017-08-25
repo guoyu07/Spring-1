@@ -6,8 +6,9 @@
     class="blockElement">
     <div v-if="mainInfo.value.type === 'search_bar'" class="form-block">
       <h5>{{mainInfo.name}}</h5>
-      <!-- <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true">
-        <el-form-item v-for="search in searchKeyList" :key="search.id" :label="search.name" :prop="search.id"> -->
+      <!-- <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true"> -->
+        <!-- <el-form-item v-for="search in searchKeyList" :key="search.id" :label="search.name" :prop="search.id"> -->
+        <div class="advance-search-form">
           <div class="form-unit" v-for="search in searchKeyList" :key="search.id">
             <span class="form-unit__label">{{search.name}}</span>
             <el-select
@@ -26,8 +27,9 @@
         <!-- <el-form-item> -->
           <el-button size="small" type="primary" @click="onSearchDevices()">搜索</el-button>
           <!-- <el-button size="small" @click="resetForm('searchKeys')">清空</el-button> -->
-        <!-- </el-form-item>
-      </el-form> -->
+        <!-- </el-form-item> -->
+      <!-- </el-form> -->
+      </div>
       <el-table
         :data="deviceTable"
         border
@@ -177,20 +179,14 @@
     methods: {
       rules (formItem) {
         var validateSearchBar = (rule, value, cb) => {
-          if (!value) {
+          if (!value.length) {
             return cb(new Error(`${this.mainInfo.name}不能为空`))
-          } else if (this.limit.max) { // static时，有一个范围值
-            if (value.length < this.limit.min) {
-              return cb(new Error(`至少需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
-            } else if (value.length > this.limit.max) {
-              return cb(new Error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`))
-            }
-          } else { // 除static外，其他都是一个固定的数值，不准多不准少
-            if (value.length < this.limit.min) {
-              return cb(new Error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
-            } else if (value.length > this.limit.min) {
-              return cb(new Error(`只需要${this.limit.min}个${this.mainInfo.name},请删除${value.length - this.limit.min}个`))
-            }
+          } else if (value.length < this.limit.min) {
+            return cb(new Error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
+          } else if (this.limit.max && (value.length > this.limit.max)) {
+            return cb(new Error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`))
+          } else {
+            cb()
           }
         }
         return {

@@ -465,19 +465,17 @@
           cancelButtonText: '取消',
           type: 'info'
         }).then(() => {
-          const ref = this.$refs['postForm'].fields.length !== 0
-          if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs['postForm'].validate((valid) => {
-              if (valid) {
-                this.postMethod(this.postForm)
-                // console.dir(this.postForm)
-              } else {
-                console.log('error submit!!')
-                this.$message.warning('表单未填写完成！')
-                return false
-              }
-            })
-          }
+          this.$refs['postForm'].validate((valid) => {
+            console.log(valid)
+            if (valid) {
+              this.postMethod(this.postForm)
+              // console.dir(this.postForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('表单未填写完成！')
+              return false
+            }
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
