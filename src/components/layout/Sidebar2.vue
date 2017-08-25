@@ -94,15 +94,37 @@
   export default {
     data () {
       return {
-        router: true
+        router: true,
+        indexPath: ''
       }
     },
-
+    watch: {
+      sidebarConf () {
+        this.getIndexPath()
+      }
+    },
+    methods: {
+      getIndexPath () {
+        console.log('123')
+        var iroutes = this.$route.meta.sidebar.routes
+        var routesArr = []
+        for (let i in iroutes) {
+          var temp = iroutes[i].list
+          for (let i in temp) {
+            let tempValue = temp[i].path
+            routesArr.push(tempValue)
+          }
+        }
+        console.log(routesArr.indexOf(this.$route.path) > -1)
+        if (routesArr.indexOf(this.$route.path) > -1) {
+          this.indexPath = this.$route.path
+        } else {
+          var reg = /^\/\w*/
+          this.indexPath = this.$route.path.match(reg)[0]
+        }
+      }
+    },
     computed: {
-      indexPath ($route) {
-        var reg = /\/\w*/
-        return this.$route.path.match(reg)[0]
-      },
       sidebarConf () {
         return this.$route.meta.sidebar
       }

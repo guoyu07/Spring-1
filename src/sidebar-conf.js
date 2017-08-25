@@ -144,15 +144,15 @@ const SidebarConf = {
       label: undefined,
       list: [{
         name: '流程统计',
-        path: '',
+        path: '/statistics/process',
         icon: 'fa-sitemap'
       }, {
         name: '事件统计',
-        path: '',
+        path: '/statistics/event',
         icon: 'fa-bullhorn'
       }, {
         name: '自定义统计',
-        path: '',
+        path: '/statistics/custom',
         icon: 'fa-gear'
       }]
     }]

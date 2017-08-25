@@ -191,7 +191,7 @@ const routes = [{
     path: '/statistics',
     component: require('./components/statistics/index'),
     meta: {
-      sidebar: SidebarConf.Process
+      sidebar: SidebarConf.Statistics
     },
     redirect: { path: '/statistics/process' },
     children: [{

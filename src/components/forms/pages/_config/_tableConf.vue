@@ -15,7 +15,7 @@
   <!-- <el-dialog title="表格配置" v-model="dialogProps.value.confVisible" v-if="dialogProps.value.attr_list"> -->
   <div class="conf-table-contain" v-if="dialogProps.value.attr_list">
     <el-collapse v-if="dialogProps.value.attr_list.length">
-      <el-collapse-item v-for="attr of dialogProps.value.attr_list" :title="attr.name" :key="attr.name">
+      <el-collapse-item v-for="(attr, index) of dialogProps.value.attr_list" :title="attr.name">
         <el-form label-position="left" :inline="true">
           <el-form-item style="width: 100%">
             <el-checkbox v-model="attr.required">必填</el-checkbox>
