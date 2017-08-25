@@ -101,6 +101,9 @@
     mounted () {
       this.getIndexPath()
     },
+    updated () {
+      this.getIndexPath()
+    },
     methods: {
       getIndexPath () {
         console.log('123')
