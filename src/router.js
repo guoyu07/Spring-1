@@ -14,7 +14,7 @@ const routes = [{
 }, {
   path: '/',
   component: require('./components/home'),
-  redirect: { path: '/dashboard' },
+  redirect: { path: '/menu' },
   meta: {
     requiresAuth: true
   },

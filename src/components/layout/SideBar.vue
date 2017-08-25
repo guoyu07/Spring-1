@@ -75,7 +75,7 @@
     <aside class="sibebar">
       <div class="sidebar-title">{{this.$store.state.sidebarConf.title}}</div>
       <el-menu mode="vertical" router="router" :default-active="$route.path">
-        <el-menu-item v-for="item in this.$store.state.sidebarConf.routes" :key="item.path" :index="item.path"><i :class="`el-icon-${item.icon}`"></i>{{item.name}}</el-menu-item>
+        <el-menu-item v-for="item in this.$store.state.sidebarConf.routes" :key="item.path" :index="item.path" v-if="item.path"><i :class="`el-icon-${item.icon}`"></i>{{item.name}}</el-menu-item>
       </el-menu>
     </aside>
   </div>
