@@ -53,7 +53,6 @@ export default {
 
   data () {
     return {
-      selectedProcess: null,
       formList: [],
       formListLoading: false
     }
