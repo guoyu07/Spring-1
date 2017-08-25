@@ -94,12 +94,16 @@
   export default {
     data () {
       return {
-        router: true
+        router: true,
+        indexPath: ''
       }
     },
-
-    computed: {
-      indexPath ($route) {
+    mounted () {
+      this.getIndexPath()
+    },
+    methods: {
+      getIndexPath () {
+        console.log('123')
         var iroutes = this.$route.meta.sidebar.routes
         var routesArr = []
         for (let i in iroutes) {
@@ -109,13 +113,16 @@
             routesArr.push(tempValue)
           }
         }
+        console.log(routesArr.indexOf(this.$route.path) > -1)
         if (routesArr.indexOf(this.$route.path) > -1) {
-          return this.$router.path
+          this.indexPath = this.$route.path
         } else {
           var reg = /^\/\w*/
-          return this.$route.path.match(reg)[0]
+          this.indexPath = this.$route.path.match(reg)[0]
         }
-      },
+      }
+    },
+    computed: {
       sidebarConf () {
         return this.$route.meta.sidebar
       }
