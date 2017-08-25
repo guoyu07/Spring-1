@@ -98,8 +98,10 @@
         indexPath: ''
       }
     },
-    mounted () {
-      this.getIndexPath()
+    watch: {
+      sidebarConf () {
+        this.getIndexPath()
+      }
     },
     methods: {
       getIndexPath () {
