@@ -16,15 +16,15 @@
         </template>
 
         <template v-if="filter.type === 'time'">
-          <el-select v-model="filter.filter.type">
+          <el-select v-model="filter.filter.type" size="small">
             <el-option label="在过去的 ${time} 之内" value="before"></el-option>
             <el-option label="超过 ${time} 之前" value="after"></el-option>
             <el-option label="在 ${start} 和 ${end} 之间" value="range"></el-option>
           </el-select>
           <template v-if="['before', 'after'].includes(filter.filter.type)">
             <span>{{ filter.filter.type === 'before' ? '在过去的' : '超过' }}</span>
-            <el-input-number v-model="filter.filter.time" :min="1"></el-input-number>
-            <el-select v-model="filter.filter.unit">
+            <el-input-number v-model="filter.filter.time" :min="1" size="small"></el-input-number>
+            <el-select v-model="filter.filter.unit" size="small">
               <el-option label="分" value="min">分</el-option>
               <el-option label="小时" value="h"></el-option>
               <el-option label="天" value="d"></el-option>
@@ -37,12 +37,14 @@
             <el-date-picker
               v-model="filter.filter.s_date"
               type="date"
-              placeholder="起始日期"></el-date-picker>
+              placeholder="起始日期"
+              size="small"></el-date-picker>
             至
             <el-date-picker
               v-model="filter.filter.e_date"
               type="date"
-              placeholder="终止日期"></el-date-picker>
+              placeholder="终止日期"
+              size="small"></el-date-picker>
           </template>
         </template>
 
