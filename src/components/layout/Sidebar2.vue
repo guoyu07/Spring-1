@@ -100,8 +100,21 @@
 
     computed: {
       indexPath ($route) {
-        var reg = /\/\w*/
-        return this.$route.path.match(reg)[0]
+        var iroutes = this.$route.meta.sidebar.routes
+        var routesArr = []
+        for (let i in iroutes) {
+          var temp = iroutes[i].list
+          for (let i in temp) {
+            let tempValue = temp[i].path
+            routesArr.push(tempValue)
+          }
+        }
+        if (routesArr.indexOf(this.$route.path) > -1) {
+          return this.$router.path
+        } else {
+          var reg = /^\/\w*/
+          return this.$route.path.match(reg)[0]
+        }
       },
       sidebarConf () {
         return this.$route.meta.sidebar
