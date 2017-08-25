@@ -154,7 +154,7 @@
       <el-menu-item index="2">
         <router-link class="link-block" :to="{ path: '/menu' }">运维服务目录</router-link>
       </el-menu-item>
-      <el-menu-item index="3">
+      <el-menu-item v-if="$store.state.userinfo.org !== 'guoxin'" index="3">
         <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>
       </el-menu-item>
       <el-submenu index="4">

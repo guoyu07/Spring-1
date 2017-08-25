@@ -184,18 +184,20 @@ h1, h2, h3, h4, h5, h6, p {
 }
 
 /* 其他样式 */
-.advance-search-form {
-  margin-bottom: 24px;
+.el-form-item {
+  .advance-search-form {
+    margin-bottom: 15px;
 
-  .el-form-item__label {
-    font-size: 13px;
-  }
+    .el-form-item__label {
+      font-size: 13px;
+    }
 
-  .el-form-item {
-    margin-bottom: 8px;
-
-    &:nth-last-child(2) {
+    .el-form-item {
       margin-bottom: 8px;
+
+      &:nth-last-child(2) {
+        margin-bottom: 8px;
+      }
     }
   }
 }
@@ -208,7 +210,7 @@ h1, h2, h3, h4, h5, h6, p {
     width: 100px;
     text-align: right;
     margin-right: 10px;
-    color: #233141;
+    color: @textColor;
   }
   .el-select {
     width: 25%;

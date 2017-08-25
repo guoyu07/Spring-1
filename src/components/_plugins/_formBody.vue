@@ -7,10 +7,6 @@
     :rules="rules(formItem)"
     class="formbody"
     :class="((formItem.isAlias && formItem.value.type !== 'users') || ['file', 'files'].includes(formItem.value.type)) ? 'blockElement' : ''">
-    <!-- <el-input
-      v-if="formItem.value.type === 'str'"
-      v-model="item[formItem.id]">
-    </el-input> -->
     <span v-if="formItem.value.type === 'str'">
       <!-- 普通表单填写 不管需不需要提交 都是这样 -->
       <el-input
@@ -455,22 +451,27 @@
           }
         } else {
           let type
+          let trigger
           if (formItem.value.type === 'arr' || formItem.value.type === 'dicts' || formItem.value.type === 'enums' || formItem.value.type === 'files' || formItem.value.type === 'cascade') {
             // console.log(formItem.name)
             type = 'array'
+            trigger = 'change, blur'
           } else if (formItem.value.type === 'int') {
             type = 'number'
+            trigger = 'blur'
           } else if (formItem.value.type === 'dict' || formItem.value.type === 'file' || (formItem.value.type === 'users' && !formItem.isAlias)) {
             type = 'object'
+            trigger = 'change, blur'
           } else {
             // console.log(formItem.value.type)
             type = 'string'
+            trigger = 'blur'
           }
           return {
             type: type,
             required: formItem.required,
             message: formItem.name + '不能为空',
-            trigger: 'blur'
+            trigger: trigger
           }
         }
       },
