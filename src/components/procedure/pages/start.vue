@@ -348,7 +348,7 @@
               })
             }
           })
-          console.log(this.postForm.body)
+          // console.log(this.postForm.body)
           if (this.isEditing && !this.$route.params.pkey === 'Storage') this.injectValues() // 是编辑
         })
       },

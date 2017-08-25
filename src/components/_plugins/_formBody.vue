@@ -238,7 +238,7 @@
       }
     },
     created () {
-      console.log(this.isEditing)
+      // console.log(this.isEditing)
       // console.log('formbody' + this.formItem.name)
     },
     computed: {

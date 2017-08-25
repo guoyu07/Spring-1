@@ -902,20 +902,16 @@
           cancelButtonText: '取消',
           type: 'info'
         }).then(() => {
-          const ref = this.$refs['assignForm'].fields.length !== 0
-          console.log(ref)
-          if (ref) { // 有表单的情况下，表单的自验证
-            this.$refs['assignForm'].validate((valid) => {
-              if (valid) {
-                this.postMethod(this.routerInfo.tid, postFormData)
-                // console.dir(this.assignForm)
-              } else {
-                console.log('error submit!!')
-                this.$message.warning('未完成！')
-                return false
-              }
-            })
-          }
+          this.$refs['assignForm'].validate((valid) => {
+            if (valid) {
+              this.postMethod(this.routerInfo.tid, postFormData)
+              // console.dir(this.assignForm)
+            } else {
+              console.log('error submit!!')
+              this.$message.warning('未完成！')
+              return false
+            }
+          })
         }).catch(() => {
           this.$message({
             type: 'info',
@@ -976,30 +972,27 @@
           })
       },
       onManual (action) {
-        const ref = this.$refs['assignForm'].fields.length !== 0
-        if (ref) { // 有表单的情况下，表单的自验证
-          this.$refs['assignForm'].validate((valid) => {
-            if (valid) {
-              console.log(this.assignForm.body)
-              if (this.assignForm.body) {
-                for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
-                  for (const item in data) {
-                    if (Array.isArray(data[item]) && data[item].length === 0) {
-                      this.$message.warning('未完成！')
-                      return false
-                    }
+        this.$refs['assignForm'].validate((valid) => {
+          if (valid) {
+            console.log(this.assignForm.body)
+            if (this.assignForm.body) {
+              for (const data of this.assignForm.body) { // 用 for...of 可以轻松退出循环
+                for (const item in data) {
+                  if (Array.isArray(data[item]) && data[item].length === 0) {
+                    this.$message.warning('未完成！')
+                    return false
                   }
                 }
               }
-              this.manualMethod(action)
-              // console.dir(this.assignForm)
-            } else {
-              console.log('error submit!!')
-              this.$message.warning('未完成！')
-              return false
             }
-          })
-        }
+            this.manualMethod(action)
+            // console.dir(this.assignForm)
+          } else {
+            console.log('error submit!!')
+            this.$message.warning('未完成！')
+            return false
+          }
+        })
       },
       manualMethod (action) {
         this.submitLoading = true
