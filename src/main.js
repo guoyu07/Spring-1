@@ -177,7 +177,7 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
 
 Vue.prototype.setDataType = (original, goalData) => {
   if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
-    console.log(original.name)
+    // console.log(original.name)
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     Vue.prototype.$set(goalData, original.id, undefined)

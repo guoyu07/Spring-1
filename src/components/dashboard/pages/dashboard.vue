@@ -3,10 +3,16 @@
     <section class="chart">
       <el-row>
         <el-col :span="12">
-          <div id="chartColumn" style="width:100%; height:400px;"></div>
+          <pie :id="'123'" :title="'待处理vs待认领vs已参与'" :subtext="'个人'" :user-id="$store.state.userinfo.userId"></pie>
+        </el-col>
+        <el-col :span="12">
+          <pie :id="'456'" :title="'待处理vs待认领vs已参与'" :subtext="'角色'" :groups="$store.state.userinfo.groups[0]"></pie>
         </el-col>
         <el-col :span="12">
           <div id="chartPie" style="width:100%; height:400px;"></div>
+        </el-col>
+        <el-col :span="12">
+          <div id="chartColumn" style="width:100%; height:400px;"></div>
         </el-col>
         <el-col :span="12">
           <div id="chartLine" style="width:100%; height:400px;"></div>
@@ -43,6 +49,7 @@
   require('echarts/lib/component/dataZoom') // 可拖动数据区域
   // require('echarts/lib/component/toolbox')
   // require('echarts/lib/component/brush')
+  import Pie from './_charts/_pie.vue'
 
   export default {
     data () {
@@ -52,6 +59,8 @@
         chartLine: null,
         chartPie: null
       }
+    },
+    created () {
     },
     mounted () {
       // 基于准备好的dom，初始化echarts实例
@@ -316,6 +325,10 @@
       })
     },
     methods: {
+    },
+
+    components: {
+      Pie
     }
   }
 </script>

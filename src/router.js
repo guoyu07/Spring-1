@@ -14,7 +14,7 @@ const routes = [{
 }, {
   path: '/',
   component: require('./components/home'),
-  redirect: { path: '/dashboard' },
+  redirect: { path: '/menu' },
   meta: {
     requiresAuth: true
   },
@@ -197,6 +197,9 @@ const routes = [{
     children: [{
       path: 'process',
       component: resolve => require(['./components/statistics/pages/process'], resolve)
+    }, {
+      path: 'user',
+      component: resolve => require(['./components/statistics/pages/user'], resolve)
     }]
   }]
 }, {

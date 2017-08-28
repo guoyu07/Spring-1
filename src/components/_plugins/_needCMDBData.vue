@@ -74,11 +74,11 @@
         this.showToolTip = true
       }
       for (const para of this.strucData.value.source.data.params) {
-        let keyPath
+        // let keyPath
         if (para.value.key_path) {
-          keyPath = para.value.key_path.split('.')
+          // keyPath = para.value.key_path.split('.')
           if (para.value.type === 'form_header') {
-            this.$watch('whole.header.' + keyPath[0], (newVal, oldVal) => {
+            this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
               if (!this.isEditing) {
                 if (this.strucData.value.type === 'dicts') {
                   this.vmodel[this.strucData.id] = []
@@ -90,10 +90,10 @@
               //   this.vmodel[this.strucData.id] = null
               // }
               this.renderOptions()
-            }, { deep: true })
+            })
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
-              this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
+              this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
                   if (this.strucData.value.type === 'dicts') {
                     this.vmodel[this.strucData.id] = []
@@ -105,10 +105,11 @@
                 //   this.vmodel[this.strucData.id] = null
                 // }
                 this.renderOptions()
-              }, { deep: true })
+              })
             } else {
-              this.$watch('whole.body.' + this.index + '.' + keyPath[0], (newVal, oldVal) => {
+              this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
+                  console.log('chongzhi?', this.vmodel[this.strucData.id], this.strucData.name, this.index)
                   if (this.strucData.value.type === 'dicts') {
                     this.vmodel[this.strucData.id] = []
                   } else {
@@ -119,7 +120,7 @@
                 //   this.vmodel[this.strucData.id] = null
                 // }
                 this.renderOptions()
-              }, { deep: true })
+              })
             }
           }
         }
@@ -226,14 +227,22 @@
           })
           return false
         }
+        function isRender (result) {
+          if (result === '' || result === undefined) {
+            return false
+          } else { // null 和 0 发送请求
+            return true
+          }
+        }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
+          console.log(this.strucData.name)
           for (const para of this.strucData.value.source.data.params) {
-            // console.log(para.value.type)
+            console.log(para.value.type)
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {
-              if (this.whole && this.getPathResult(this.whole.header, para.value.key_path) !== undefined) {
+              if (this.whole && isRender(this.getPathResult(this.whole.header, para.value.key_path))) {
                 // 这里要区分一下 this.whole.header 的 id 的值是对象还是数组, 数组的话，getPathResult 还有一个参数 k
                 params[para.id] = this.getPathResult(this.whole.header, para.value.key_path)
               } else {
@@ -241,7 +250,7 @@
               }
             } else if (para.value.type === 'form_body') {
               if (this.bodyTable || this.headerTable) {
-                if (this.getPathResult(this.whole, para.value.key_path) !== undefined) {
+                if (isRender(this.getPathResult(this.whole, para.value.key_path))) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole, para.value.key_path)
                 } else {
@@ -249,22 +258,20 @@
                 }
               } else {
                 const keyPath = para.value.key_path.split('.')
-                if (keyPath.length > 1 && !this.getPathResult(this.whole.body[this.index], keyPath[0])) {
-                  // console.log('第一个就取不到了？')
+                if (keyPath.length && !this.getPathResult(this.whole.body[this.index], keyPath[0])) {
                   return false
                 }
-                // console.log(this.whole, this.index, para.value.key_path)
-                if (this.whole && this.getPathResult(this.whole.body[this.index], para.value.key_path) !== undefined) {
+                console.log(this.whole, this.index, para.value.key_path)
+                if (this.whole && isRender(this.getPathResult(this.whole.body[this.index], para.value.key_path))) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
                   // console.log(this.strucData.name, params[para.id])
                 } else {
-                  // console.log(para.value.key_path)
                   return false // 如果没取到值就不发请求
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.message && this.getPathResult(this.message.header, para.value.key_path) !== undefined) {
+              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path))) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
               } else {
@@ -272,7 +279,7 @@
               }
             } else if (para.value.type === 'message_body') {
               // console.log(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))
-              if (this.message && this.getPathResult(this.message.body[this.index], para.value.key_path, 0) !== false) {
+              if (this.message && isRender(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
                 params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0)
               } else {
