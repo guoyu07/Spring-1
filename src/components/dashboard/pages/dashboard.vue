@@ -95,7 +95,7 @@
   require('echarts/lib/component/dataZoom') // 可拖动数据区域
   // require('echarts/lib/component/toolbox')
   // require('echarts/lib/component/brush')
-  import Pie from './_charts/_pie.vue'
+  import Pie from './_charts/_pie'
 
   export default {
     data () {
@@ -116,7 +116,7 @@
         task_status_group: {
           id: 'task_status_group',
           title: '待处理vs待认领vs已参与',
-          subtext: this.$store.state.userinfo.groups[0].key || '',
+          subtext: this.$store.state.userinfo.groups.length && this.$store.state.userinfo.groups[0].key || '',
           hover_title: '工单数',
           data_list: []
         }
@@ -126,7 +126,7 @@
       this.getUserList()
       this.getGroupList()
       this.getTaskStatusDataList(this.$store.state.userinfo.userId, undefined, undefined)
-      this.getTaskStatusDataList(undefined, this.$store.state.userinfo.groups[0].key, undefined)
+      this.getTaskStatusDataList(undefined, this.$store.state.userinfo.groups.length && this.$store.state.userinfo.groups[0].key, undefined)
     },
     mounted () {
       // 基于准备好的dom，初始化echarts实例
@@ -451,11 +451,11 @@
     },
     watch: {
       'task_status_user.subtext' (newVal, oldVal) {
-        console.log(newVal)
+        // console.log(newVal)
         this.getTaskStatusDataList(newVal, undefined, undefined)
       },
       'task_status_group.subtext' (newVal, oldVal) {
-        console.log(newVal)
+        // console.log(newVal)
         this.getTaskStatusDataList(undefined, newVal, undefined)
       }
     },

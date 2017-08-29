@@ -5,19 +5,21 @@
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
 
-          <el-row>
-            <el-col :sm="12" :md="8" :lg="4">
+          <el-row type="flex" justify="space-between" v-if="$route.params.pkey === 'Storage'">
+            <el-col>
               <el-upload
                 action="/api/upload_file/"
                 accept=".xls,.xlsx"
                 :on-success="onUploadExcel"
                 :on-change="excelFileChange"
                 :file-list="excelList"
-                v-if="$route.params.pkey === 'Storage'"
                 class="margin-bottom">
                 <el-button icon="document" type="primary">上传入库单</el-button>
                 <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
               </el-upload>
+            </el-col>
+            <el-col style="text-align: right;">
+              <a class="el-button el-button--info is-plain" href="/api/data/?action=download/import/server/excel" target="_blank">下载示例文件</a>
             </el-col>
           </el-row>
 
@@ -602,6 +604,17 @@
           }
         })
       }
+      // downloadExcel () {
+      //   // let postData = {
+      //   //   action: 'download/import/server/excel',
+      //   //   method: 'get'
+      //   // }
+      //   this.http.get('/data/?action=download/import/server/excel').then((res) => {
+      //     if (res.status === 200) {
+      //       this.$message.success('成功下载！')
+      //     }
+      //   })
+      // }
     },
     components: {
       bodyTable,

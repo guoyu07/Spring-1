@@ -127,7 +127,7 @@
       }
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          // console.log(this.strucData.watch)
+          console.log(this.strucData.watch)
           if (!this.isEditing) {
             if (this.strucData.value.type === 'dicts') {
               this.vmodel[this.strucData.id] = []
@@ -142,6 +142,14 @@
         }, { deep: true })
       } else {
         this.renderOptions()
+      }
+      // 配置默认值
+      if (this.strucData.default && this.strucData.default.type) {
+        if (this.strucData.default.type === 'form_body') {
+          this.$watch('whole.body.' + this.index + '.' + this.strucData.default.key_path, (newVal, oldVal) => {
+            this.whole.body[this.index][this.strucData.id] = newVal
+          }, { deep: true })
+        }
       }
     },
     watch: {
