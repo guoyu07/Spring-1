@@ -151,6 +151,10 @@ const SidebarConf = {
         path: '/statistics/event',
         icon: 'fa-bullhorn'
       }, {
+        name: '用户统计',
+        path: '/statistics/user',
+        icon: 'fa-bullhorn'
+      }, {
         name: '自定义统计',
         path: '/statistics/custom',
         icon: 'fa-gear'

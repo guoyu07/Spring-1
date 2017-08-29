@@ -197,6 +197,9 @@ const routes = [{
     children: [{
       path: 'process',
       component: resolve => require(['./components/statistics/pages/process'], resolve)
+    }, {
+      path: 'user',
+      component: resolve => require(['./components/statistics/pages/user'], resolve)
     }]
   }]
 }, {

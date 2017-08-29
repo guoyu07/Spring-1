@@ -4,7 +4,7 @@
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
           <time-query :time-query="timeQuery" @change-timequery="onTimeQueryChange"></time-query>
-          <h3><i class="el-icon-fa-pie-chart icon-lg"></i> 流程统计</h3>
+          <h3><i class="el-icon-fa-sitemap icon-lg"></i> 流程统计</h3>
           <el-select v-model="selectedProcess" placeholder="请先选择流程…" class="margin-bottom" value-key="pname">
             <el-option
               v-for="process in processList"
