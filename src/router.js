@@ -97,8 +97,8 @@ const routes = [{
       path: 'apply/:id',
       component: require('./components/system/pages/apply')
     }, {
-      path: 'applylist',
-      component: require('./components/system/pages/applylist')
+      path: 'onlinelist',
+      component: require('./components/system/pages/onlinelist')
     }]
   }, {
     path: '/auth',

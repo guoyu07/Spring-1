@@ -156,11 +156,16 @@
                     title: list.pname,
                     path: `/system/apply`
                   })
-                } else if (list.pkey === 'systemOnline') {
+                } else if (['appAddCluster', 'systemOnline'].includes(list.pkey)) {
                   entry.children.push({
                     icon: 'fa-star',
                     title: list.pname,
-                    path: `/system/onlinelist`
+                    path: {
+                      path: '/system/onlinelist',
+                      query: {
+                        pkey: list.pkey
+                      }
+                    }
                   })
                 } else if (list.pkey === 'host') {
                   entry.children.push({
@@ -203,11 +208,16 @@
               title: list.pname,
               path: `/system/apply`
             })
-          } else if (list.pkey === 'systemOnline') {
+          } else if (['appAddCluster', 'systemOnline'].includes(list.pkey)) {
             this.topList[0].children.push({
               icon: 'fa-star',
               title: list.pname,
-              path: `/system/onlinelist`
+              path: {
+                path: '/system/onlinelist',
+                query: {
+                  pkey: list.pkey
+                }
+              }
             })
           } else if (list.pkey === 'host') {
             this.topList[0].children.push({
@@ -241,7 +251,9 @@
         } else {
           this.searchResult = []
           this.entries.map(categ => {
+            console.log(categ)
             categ.children.map(list => {
+              console.log(list)
               if (list.title.includes(this.searchProcedure)) {
                 if (this.searchResult.some(result => { return result.category === categ.category })) {
                   this.searchResult.map(result => {

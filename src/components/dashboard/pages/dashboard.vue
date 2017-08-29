@@ -1,27 +1,73 @@
 <template>
   <div>
     <section class="chart">
-      <el-row>
+      <el-row :gutter="10">
         <el-col :span="12">
-          <pie :id="'123'" :title="'待处理vs待认领vs已参与'" :subtext="'个人'" :user-id="$store.state.userinfo.userId"></pie>
+          <div class="chart-zone">
+            <pie
+              :id='task_status_user.id'
+              :title='task_status_user.title'
+              :subtext='task_status_user.subtext'
+              :hoverTitle='task_status_user.hover_title'
+              :dataList='task_status_user.data_list'>
+            </pie>
+            <div class="select-zone">
+              <el-select size="small" v-model="task_status_user.subtext" placeholder="请选择用户">
+                <el-option
+                  v-for="item in userList"
+                  :key="item.userId"
+                  :label="item.nick"
+                  :value="item.userId">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
         </el-col>
         <el-col :span="12">
-          <pie :id="'456'" :title="'待处理vs待认领vs已参与'" :subtext="'角色'" :groups="$store.state.userinfo.groups[0]"></pie>
+          <div class="chart-zone">
+            <pie
+              :id='task_status_group.id'
+              :title='task_status_group.title'
+              :subtext='task_status_group.subtext'
+              :hoverTitle='task_status_group.hover_title'
+              :dataList='task_status_group.data_list'>
+            </pie>
+            <div class="select-zone">
+              <el-select size="small" v-model="task_status_group.subtext" placeholder="请选择角色">
+                <el-option
+                  v-for="item in groupList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.key">
+                </el-option>
+              </el-select>
+            </div>
+          </div>
         </el-col>
         <el-col :span="12">
-          <div id="chartPie" style="width:100%; height:400px;"></div>
+          <div class="chart-zone">
+            <div id="chartPie" style="width:100%; height:400px;"></div>
+          </div>
         </el-col>
         <el-col :span="12">
-          <div id="chartColumn" style="width:100%; height:400px;"></div>
+          <div class="chart-zone">
+            <div id="chartColumn" style="width:100%; height:400px;"></div>
+          </div>
         </el-col>
         <el-col :span="12">
-          <div id="chartLine" style="width:100%; height:400px;"></div>
+          <div class="chart-zone">
+            <div id="chartLine" style="width:100%; height:400px;"></div>
+          </div>
         </el-col>
         <el-col :span="12">
-          <div id="chartBar" style="width:100%; height:400px;"></div>
+          <div class="chart-zone">
+            <div id="chartBar" style="width:100%; height:400px;"></div>
+          </div>
         </el-col>
         <el-col :span="24">
-          <div id="categoryBar" style="width:100%; height:400px;"></div>
+          <div class="chart-zone">
+            <div id="categoryBar" style="width:100%; height:400px;"></div>
+          </div>
         </el-col>
       </el-row>
     </section>
@@ -57,10 +103,30 @@
         chartColumn: null,
         chartBar: null,
         chartLine: null,
-        chartPie: null
+        chartPie: null,
+        userList: [],
+        groupList: [],
+        task_status_user: {
+          id: 'task_status_user',
+          title: '待处理vs待认领vs已参与',
+          subtext: this.$store.state.userinfo.userId,
+          hover_title: '工单数',
+          data_list: []
+        },
+        task_status_group: {
+          id: 'task_status_group',
+          title: '待处理vs待认领vs已参与',
+          subtext: this.$store.state.userinfo.groups[0].key || '',
+          hover_title: '工单数',
+          data_list: []
+        }
       }
     },
     created () {
+      this.getUserList()
+      this.getGroupList()
+      this.getTaskStatusDataList(this.$store.state.userinfo.userId, undefined, undefined)
+      this.getTaskStatusDataList(undefined, this.$store.state.userinfo.groups[0].key, undefined)
     },
     mounted () {
       // 基于准备好的dom，初始化echarts实例
@@ -80,7 +146,7 @@
         },
         yAxis: {},
         series: [{
-          name: '销量',
+          name: '工单量',
           type: 'bar',
           data: [5, 20, 36, 10]
         }]
@@ -325,6 +391,73 @@
       })
     },
     methods: {
+      getTaskStatusDataList (userId, groupKey, timeQuery) {
+        const postData = {
+          action: 'task/status/report',
+          method: 'GET',
+          data: {
+            userId: userId,
+            group_key: groupKey,
+            time_query: { // 默认过去 7天 到现在
+              type: 'after',
+              time: 7,
+              unit: 'd'
+            }
+          }
+        }
+        this.http.post('/report/', this.parseData(postData)).then((res) => {
+          // console.log(res.data.data)
+          let key = userId ? 'user' : 'group'
+          this['task_status_' + key].data_list = []
+          for (const id in res.data.data) {
+            let name
+            switch (id) {
+              case 'claim_count':
+                name = '待认领'
+                break
+              case 'handle_count':
+                name = '待处理'
+                break
+              case 'partin_count':
+                name = '已参与'
+                break
+              default:
+            }
+            this['task_status_' + key].data_list.push({
+              value: res.data.data[id],
+              name: name
+            })
+          }
+        })
+      },
+      getUserList () {
+        const postData = {
+          action: 'users/all',
+          method: 'GET'
+        }
+        this.http.post('/base/', this.parseData(postData)).then((res) => {
+          this.userList = res.data.data.list
+        })
+      },
+      getGroupList () {
+        const postData = {
+          action: 'groups/all/base',
+          method: 'GET'
+        }
+        this.http.post('/base/', this.parseData(postData)).then((res) => {
+          this.groupList = res.data.data.list.filter(list => { return typeof list.key === 'number' })
+        })
+      }
+    },
+    watch: {
+      'task_status_user.subtext' (newVal, oldVal) {
+        console.log(newVal)
+        this.getTaskStatusDataList(newVal, undefined, undefined)
+      },
+      'task_status_group.subtext' (newVal, oldVal) {
+        console.log(newVal)
+        this.getTaskStatusDataList(undefined, newVal, undefined)
+      }
     },
 
     components: {
@@ -332,3 +465,24 @@
     }
   }
 </script>
+
+<style lang="less" scoped>
+// #content {
+//   background-color: #f8f8f8;
+// }
+.chart {
+  .chart-zone {
+    min-height: 400px;
+    background-color: #f8f8f8;
+    border-radius: 5px;
+    position: relative;
+    margin-bottom: 10px;
+    .select-zone {
+      position: absolute;
+      top: 25px;
+      right: 5px;
+    }
+  }
+}
+
+</style>

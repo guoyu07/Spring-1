@@ -20,62 +20,25 @@ export default {
     },
     title: [String, Number],
     subtext: [String, Number],
-    userId: [String, Number],
-    groups: Object
+    hoverTitle: [String, Number],
+    dataList: {
+      type: Array,
+      required: true
+    }
   },
 
   data () {
     return {
-      dataList: [],
-      textList: [],
-      chartDom: null
-    }
-  },
-
-  mounted () {
-    let role = {}
-    if (this.userId) {
-      role.userId = this.userId
-    } else {
-      role.group_key = this.groups.key + ''
-    }
-    const postData = {
-      action: 'task/status/report',
-      method: 'GET',
+      chartDom: null,
       data: {
-        ...role,
-        time_query: { // 周
-          type: 'week',
-          time: 0 // 0本周, 1上周 ...
-        }
+        id: this.id,
+        title: this.title,
+        subtext: this.subtext,
+        hover_title: this.hoverTitle,
+        data_list: this.dataList,
+        text_list: []
       }
     }
-    this.http.post('/report/', this.parseData(postData)).then((res) => {
-      // console.log(res.data.data)
-      this.dataList = []
-      for (const id in res.data.data) {
-        let name
-        switch (id) {
-          case 'claim_count':
-            name = '待认领'
-            break
-          case 'handle_count':
-            name = '待处理'
-            break
-          case 'partin_count':
-            name = '已参与'
-            break
-          default:
-        }
-        this.textList.push(name)
-        this.dataList.push({
-          value: res.data.data[id],
-          name: name
-        })
-      }
-      this.init()
-          .update()
-    })
   },
 
   created () {
@@ -85,7 +48,7 @@ export default {
     init () {
       // 基于准备好的dom，初始化echarts实例
       if (this.id) {
-        this.chartDom = echarts.init(document.getElementById(this.id))
+        this.chartDom = echarts.init(document.getElementById(this.data.id))
       }
       return this
     },
@@ -95,25 +58,27 @@ export default {
       }
       this.chartDom.setOption({
         title: {
-          text: this.title,
-          subtext: this.subtext,
+          text: this.data.title,
+          subtext: this.data.subtext,
           x: 'center'
         },
         tooltip: {
           trigger: 'item',
           formatter: '{a} <br/>{b} : {c} ({d}%)'
         },
+        // color: ['red', 'green', 'blueviolet'], // 设置饼图颜色
         legend: {
           orient: 'vertical',
           left: 'left',
-          data: this.textList
+          data: this.data.text_list
         },
         series: [{
-          name: this.userId ? this.userId : (this.groups ? this.groups.name : 'groups'),
+          name: this.data.hover_title,
           type: 'pie',
+          selectedMode: 'multiple',
           radius: '55%',
           // center: ['50%', '60%'],
-          data: this.dataList,
+          data: this.data.data_list,
           itemStyle: {
             emphasis: {
               shadowBlur: 10,
@@ -123,6 +88,37 @@ export default {
           }
         }]
       })
+    },
+    updateTextList () {
+      var data = this.data.data_list
+      this.data.text_list = []
+      for (var i = 0; i < data.length; i++) {
+        this.data.text_list.push(data[i].name)
+      }
+      return this
+    }
+  },
+  mounted () {
+    this.updateTextList()
+        .init()
+        .update()
+  },
+  watch: {
+    dataList (v) {
+      this.data.data_list = v
+      this.updateTextList().update()
+    },
+    title (v) {
+      this.data.title = v
+      this.update()
+    },
+    subtext (v) {
+      this.data.subtext = v
+      this.update()
+    },
+    hoverTitle (v) {
+      this.data.hover_title = v
+      this.update()
     }
   }
 }

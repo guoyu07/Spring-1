@@ -5,8 +5,19 @@
     position: fixed;
     z-index: @flying;
     height: @headerHeight;
+    background-color: @eoThemeColor;
     -webkit-box-shadow: 0 1px 2px #b6b6b6;
     box-shadow: 0 1px 2px #b6b6b6;
+
+    .right {
+      padding-right: 8px;
+      .mine {
+        width: 100px;
+        .el-submenu__title {
+          text-align: center;
+        }
+      }
+    }
 
     .logo {
       // font-size: 16px;
@@ -141,7 +152,7 @@
 </style>
 
 <template>
-  <header class="header fw">
+  <header class="header fw flex-box">
     <el-menu default-active="1" mode="horizontal">
       <el-menu-item index="1" class="logo">
         <router-link to="/menu">
@@ -166,7 +177,19 @@
           <router-link class="link-block" :to="{ path: '/process-admin/basics' }">流程管理</router-link>
         </el-menu-item>
       </el-submenu>
-      <el-submenu index="5" class="fr">
+    </el-menu>
+    <el-menu class="right" mode="horizontal">
+      <el-menu-item index="7" class="screenfull" @click="onScreenFull">
+        <i class="el-icon-fa-arrows-alt"></i>
+      </el-menu-item>
+      <el-menu-item index="6">
+        <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
+          <a class="link-block" :href="$store.state.userinfo._easyops_url">
+            <img src="../../assets/logo.png" alt="" class="menu-img">
+          </a>
+        </el-tooltip>
+      </el-menu-item>
+      <el-submenu class="mine" index="5">
         <template slot="title">{{userName}}</template>
         <el-menu-item index="5-1">
           <a href=""><i class="el-icon-fa-user"></i> 我的账户</a>
@@ -181,16 +204,6 @@
           <a class="link-block" @click="logout"><i class="el-icon-fa-sign-out"></i> 退出</a>
         </el-menu-item>
       </el-submenu>
-      <el-menu-item index="6" class="fr">
-        <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
-          <a class="link-block" :href="$store.state.userinfo._easyops_url">
-            <img src="../../assets/logo.png" alt="" class="menu-img">
-          </a>
-        </el-tooltip>
-      </el-menu-item>
-      <el-menu-item index="7" class="fr screenfull" @click="onScreenFull">
-        <i class="el-icon-fa-arrows-alt"></i>
-      </el-menu-item>
     </el-menu>
   </header>
 </template>
