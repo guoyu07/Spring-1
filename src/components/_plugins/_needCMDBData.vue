@@ -143,6 +143,14 @@
       } else {
         this.renderOptions()
       }
+      // 配置默认值
+      if (this.strucData.default && this.strucData.default.type) {
+        if (this.strucData.default.type === 'form_body') {
+          this.$watch('whole.body.' + this.index + '.' + this.strucData.default.key_path, (newVal, oldVal) => {
+            this.whole.body[this.index][this.strucData.id] = newVal
+          }, { deep: true })
+        }
+      }
     },
     watch: {
       // 这个 watch 是为了上传Excel文档时，填入对应的值
