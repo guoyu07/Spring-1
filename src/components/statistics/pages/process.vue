@@ -14,7 +14,7 @@
             </el-option>
           </el-select>
           <small class="process-desc"><i class="el-icon-information"></i> 此处仅为你可管理的流程</small>
-          <el-table :data="statistics">
+          <el-table :data="statistics" :default-expand-all="true">
             <el-table-column type="expand">
               <template scope="props">
                 <el-table :data="props.row.task_list" stripe border>
@@ -57,7 +57,7 @@
         timeQuery: {
           type: 'before',
           time: 1,
-          unit: 'min',
+          unit: 'h',
           s_date: '',
           e_date: ''
         },

@@ -8,8 +8,8 @@
       <el-form label-width="80px" label-position="top">
         <el-form-item label="时间类型">
           <el-select v-model="timeQueryBuffer.type" size="small">
-            <el-option label="在过去 ${time} 之内" value="before"></el-option>
-            <el-option label="超过 ${time} 之前" value="after"></el-option>
+            <el-option label="超过 ${time} 之前" value="before"></el-option>
+            <el-option label="在过去 ${time} 之内" value="after"></el-option>
             <el-option label="在 ${start} 和 ${end} 之间" value="range"></el-option>
           </el-select>
         </el-form-item>
@@ -18,7 +18,6 @@
             <span>{{ timeQueryBuffer.type === 'before' ? '在过去的' : '超过' }}</span>
             <el-input-number v-model="timeQueryBuffer.time" :min="1" size="small"></el-input-number>
             <el-select v-model="timeQueryBuffer.unit" size="small" style="width: 80px">
-              <el-option label="分" value="min">分</el-option>
               <el-option label="小时" value="h"></el-option>
               <el-option label="天" value="d"></el-option>
               <el-option label="周" value="w"></el-option>
