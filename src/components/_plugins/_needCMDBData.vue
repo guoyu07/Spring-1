@@ -127,7 +127,7 @@
       }
       if (this.strucData.watch) {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          // console.log(this.strucData.watch)
+          console.log(this.strucData.watch)
           if (!this.isEditing) {
             if (this.strucData.value.type === 'dicts') {
               this.vmodel[this.strucData.id] = []
