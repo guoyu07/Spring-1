@@ -35,8 +35,16 @@
             </el-select>
           </el-row>
 
-          <user-table v-if="userOrRole === 'user'" :statistics="statistics"></user-table>
-          <group-table v-else :statistics="statistics"></group-table>
+          <user-table
+            v-if="userOrRole === 'user'"
+            :statistics="statistics"
+            :processes="processList"
+            @on-select-process="onSelectProcess"></user-table>
+          <group-table
+            v-else
+            :statistics="statistics"
+            :processes="processList"
+            @on-select-process="onSelectProcess"></group-table>
         </el-card>
       </el-col>
     </el-row>
@@ -46,19 +54,20 @@
 <script>
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
+  import getProcessList from './../../../mixins/getProcessList'
   import timeQuery from './_plugins/_timeQuery'
   import userTable from './_plugins/_userTable'
   import groupTable from './_plugins/_groupTable'
 
   export default {
-    mixins: [getPermittedRoleList, getPermittedUserList],
+    mixins: [getPermittedRoleList, getPermittedUserList, getProcessList],
 
     data () {
       return {
         timeQuery: {
           type: 'before',
           time: 1,
-          unit: 'min',
+          unit: 'h',
           s_date: '',
           e_date: ''
         },
@@ -77,6 +86,7 @@
     mounted () {
       this.getPermittedRoleList()
       this.getPermittedUserList()
+      this.getProcessList()
     },
 
     methods: {
@@ -91,9 +101,9 @@
         }
       },
 
-      getUserStatistics () {
+      getUserStatistics (pkey = null) {
         let params = {
-          pkey: null,
+          pkey: pkey,
           userId: this.userOrRole === 'user' ? this.selectedUserOrGroup.userId : '',
           group_key: this.userOrRole === 'group' ? this.selectedUserOrGroup.key : '',
           time_query: this.timeQuery
@@ -109,6 +119,10 @@
             this.statistics = this.userOrRole === 'user' ? [{ ...res.data.data, ...{ userName: this.selectedUserOrGroup.nick, userId: this.selectedUserOrGroup.userId, groups: this.selectedUserOrGroup.groups } }] : [{ ...res.data.data, ...{ groupName: this.selectedUserOrGroup.name, users: this.selectedUserOrGroup.users, tags: this.selectedUserOrGroup.tags } }]
           }
         })
+      },
+
+      onSelectProcess (args) {
+        this.getUserStatistics(args.val.pkey)
       },
 
       _validateTimequery () {
