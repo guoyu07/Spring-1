@@ -153,7 +153,7 @@ const SidebarConf = {
       }, {
         name: '用户统计',
         path: '/statistics/user',
-        icon: 'fa-bullhorn'
+        icon: 'fa-user-circle-o'
       }, {
         name: '自定义统计',
         path: '/statistics/custom',
