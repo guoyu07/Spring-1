@@ -721,8 +721,8 @@
                 ].join('') + '-' + this.applyData.header.component.abbreviation
               } else if (this.taskData.pinstance.pkey === 'host_my') {
                 prefix = [
-                  this.applyData.body[k].idc.abbreviation,
-                  this.applyData.body[k].host_type.abbreviation,
+                  this.applyData.header.idc.abbreviation,
+                  this.applyData.header.hosts[k].hosttype.abbreviation,
                   this.applyData.body[k].app.abbreviation
                 ].join('') + '-' + this.applyData.body[k].component.abbreviation
               }
