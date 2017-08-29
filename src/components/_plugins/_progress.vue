@@ -42,15 +42,16 @@
       renderPro () {
         this.proConfig = []
         let alltasks = []
-        let alltasksIndex = []
+        // let alltasksIndex = []
+        let valueIndex = 0
         this.proConfig = this.progress.taskList.reduce((pre, cur, index, arr) => {
           if (!alltasks.includes(cur.tkey)) {
             alltasks.push(cur.tkey)
-            let valueIndex = index
-            if (alltasksIndex.includes(index)) valueIndex = index + 1
-            alltasksIndex.push(valueIndex)
+            // let valueIndex = index
+            // if (alltasksIndex.includes(index)) valueIndex = index + 1
+            // alltasksIndex.push(valueIndex)
             pre.push({
-              value: valueIndex,
+              value: valueIndex++,
               list: [{
                 tkey: cur.tkey,
                 tname: cur.tname
@@ -62,8 +63,9 @@
               const leng = cur.action.length
               for (var i = 0; i < leng; i++) {
                 if (cur.action[i].expression === 'pass==0') {
-                  alltasksIndex.push(index + 1)
-                  data.value = index + 1
+                  // alltasksIndex.push(index + 1)
+                  // data.value = index + 1
+                  data.value = valueIndex++
                   alltasks.push(cur.action[i].target)
                   arr.map(task => {
                     if (task.tkey === cur.action[i].target) {

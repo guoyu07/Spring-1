@@ -74,7 +74,7 @@
   <div>
     <aside class="sibebar">
       <div class="sidebar-title">{{sidebarConf.title}}</div>
-      <el-menu mode="vertical" router="router" :default-active="indexPath">
+      <el-menu mode="vertical" router="router" :default-active="IndexPath">
         <el-menu-item-group
           v-for="cat in sidebarConf.routes"
           :key="cat.label"
@@ -94,21 +94,12 @@
   export default {
     data () {
       return {
-        router: true,
-        indexPath: ''
+        router: true
       }
     },
-    watch: {
-      sidebarConf () {
-        this.getIndexPath()
-      }
-    },
-    updated () {
-      this.getIndexPath()
-    },
-    methods: {
-      getIndexPath () {
-        console.log('123')
+    computed: {
+      IndexPath () {
+        console.log('run')
         var iroutes = this.$route.meta.sidebar.routes
         var routesArr = []
         for (let i in iroutes) {
@@ -120,14 +111,14 @@
         }
         console.log(routesArr.indexOf(this.$route.path) > -1)
         if (routesArr.indexOf(this.$route.path) > -1) {
-          this.indexPath = this.$route.path
+          console.log(this.$route.path)
+          return this.$route.path
         } else {
           var reg = /^\/\w*/
-          this.indexPath = this.$route.path.match(reg)[0]
+          console.log(this.$route.path.match(reg)[0])
+          return this.$route.path.match(reg)[0]
         }
-      }
-    },
-    computed: {
+      },
       sidebarConf () {
         return this.$route.meta.sidebar
       }

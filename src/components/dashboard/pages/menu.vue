@@ -241,7 +241,9 @@
         } else {
           this.searchResult = []
           this.entries.map(categ => {
+            console.log(categ)
             categ.children.map(list => {
+              console.log(list)
               if (list.title.includes(this.searchProcedure)) {
                 if (this.searchResult.some(result => { return result.category === categ.category })) {
                   this.searchResult.map(result => {
