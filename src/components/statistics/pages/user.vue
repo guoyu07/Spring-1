@@ -35,63 +35,8 @@
             </el-select>
           </el-row>
 
-          <el-table :data="statistics">
-            <el-table-column type="expand">
-              <template scope="props">
-                <el-table :data="props.row.list" stripe border>
-                  <el-table-column
-                    label="环节名称"
-                    prop="tname"></el-table-column>
-                  <el-table-column
-                    label="执行次数"
-                    prop="num"></el-table-column>
-                  <el-table-column
-                    label="平均耗时"
-                    prop="avg_duration"></el-table-column>
-                </el-table>
-              </template>
-            </el-table-column>
-            <template v-if="userOrRole === 'user'">
-              <el-table-column
-                label="用户名"
-                prop="userName"></el-table-column>
-              <el-table-column
-                label="用户 ID"
-                prop="userId"></el-table-column>
-              <el-table-column
-                label="所属群组"
-                inline-template
-                :context="_self">
-                <el-tag
-                  v-for="group in row.groups"
-                  :key="group.key"
-                  type="primary">{{group.name}}</el-tag>
-              </el-table-column>
-            </template>
-            <template v-else>
-              <el-table-column
-                label="群组名"
-                prop="groupName"></el-table-column>
-              <el-table-column
-                label="所含用户"
-                inline-template
-                :context="_self">
-                <el-tag
-                  v-for="user in row.users"
-                  :key="user.userId"
-                  type="primary">{{user.nick}}</el-tag>
-              </el-table-column>
-              <el-table-column
-                label="标签"
-                inline-template
-                :context="_self">
-                <el-tag
-                  v-for="tag in row.tags"
-                  :key="tag"
-                  type="success">{{tag}}</el-tag>
-              </el-table-column>
-            </template>
-          </el-table>
+          <user-table v-if="userOrRole === 'user'" :statistics="statistics"></user-table>
+          <group-table v-else :statistics="statistics"></group-table>
         </el-card>
       </el-col>
     </el-row>
@@ -102,6 +47,8 @@
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import timeQuery from './_plugins/_timeQuery'
+  import userTable from './_plugins/_userTable'
+  import groupTable from './_plugins/_groupTable'
 
   export default {
     mixins: [getPermittedRoleList, getPermittedUserList],
@@ -145,17 +92,18 @@
       },
 
       getUserStatistics () {
+        let params = {
+          pkey: null,
+          userId: this.userOrRole === 'user' ? this.selectedUserOrGroup.userId : '',
+          group_key: this.userOrRole === 'group' ? this.selectedUserOrGroup.key : '',
+          time_query: this.timeQuery
+        }
         let postData = {
           action: 'task/report',
           method: 'GET',
-          data: {
-            pkey: null,
-            userId: this.userOrRole === 'user' ? this.selectedUserOrGroup.userId : '',
-            group_key: this.userOrRole === 'group' ? this.selectedUserOrGroup.key : '',
-            time_query: this.timeQuery
-          }
+          data: params
         }
-        if (!this._validateTimequery) return
+        if (!this._validateTimequery || !params.userId && !params.group_key) return
         this.http.post('/report/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.statistics = this.userOrRole === 'user' ? [{ ...res.data.data, ...{ userName: this.selectedUserOrGroup.nick, userId: this.selectedUserOrGroup.userId, groups: this.selectedUserOrGroup.groups } }] : [{ ...res.data.data, ...{ groupName: this.selectedUserOrGroup.name, users: this.selectedUserOrGroup.users, tags: this.selectedUserOrGroup.tags } }]
@@ -164,16 +112,20 @@
       },
 
       _validateTimequery () {
-        if (this.timeQuery.type === 'range' &&
-            this.timeQuery.s_date &&
-            this.timeQuery.e_date) {
-          return true
-        } else {
-          return false
+        switch (this.timeQuery.type) {
+          case 'range':
+            if (this.timeQuery.s_date && this.timeQuery.e_date) return true
+            break
+          case 'before':
+          case 'after':
+            if (this.timeQuery.time) return true
+            break
+          default:
+            return false
         }
       }
     },
 
-    components: { timeQuery }
+    components: { timeQuery, userTable, groupTable }
   }
 </script>
