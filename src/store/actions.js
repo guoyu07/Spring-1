@@ -42,5 +42,18 @@ module.exports = {
       })
       resolve()
     })
+  },
+
+  editing_fields: ({
+    commit
+  }, {
+    editingFields
+  }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.EDITING_FIELDS, {
+        editingFields
+      })
+      resolve()
+    })
   }
 }
