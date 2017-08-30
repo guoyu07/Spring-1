@@ -250,18 +250,6 @@
     },
 
     methods: {
-      pnameFilters (data) {
-        let filters = []
-        data.map(item => {
-          if (filters.every(filter => { return filter.value !== item.pkey })) {
-            filters.push({text: item.pname, value: item.pkey})
-          }
-        })
-        return filters
-      },
-      filterPname (value, row) {
-        return row.pkey === value
-      },
       onAccordionChange () {
         Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
       },
