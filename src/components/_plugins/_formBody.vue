@@ -462,8 +462,10 @@
           } else if (formItem.value.type === 'dict' || formItem.value.type === 'file' || (formItem.value.type === 'users' && !formItem.isAlias)) {
             type = 'object'
             trigger = 'change, blur'
+          } else if (formItem.value.type === 'enum') {
+            type = 'string'
+            trigger = 'change'
           } else {
-            // console.log(formItem.value.type)
             type = 'string'
             trigger = 'blur'
           }
