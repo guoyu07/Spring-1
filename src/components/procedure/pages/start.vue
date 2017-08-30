@@ -107,9 +107,9 @@
                 </el-tabs>
               </template>
               <template v-if="taskFormData.body && taskFormData.body.style === 2">
-                <div class="tab-wrap" v-for="(data, index) in postForm.body" :key="index">
+                <div class="tab-wrap" v-for="(data, index) in postForm.body" :key="index" :id="'anchor-'+index">
                   <el-button size="small" @click="addTab(tabsValue, index)" icon="plus" class="add-tab">复制当前表单</el-button>
-                  <el-tabs :id="'anchor-'+index" type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="postForm.body.length !== 1">
+                  <el-tabs type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="postForm.body.length !== 1">
                     <el-tab-pane :label="bodyLableName[index]">
                       <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                         <div v-for="bodyList in taskFormData.body.body_list" :key="bodyList.name">
@@ -583,6 +583,7 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
+        console.log(anchor.offsetTop)
         document.body.scrollTop = anchor.offsetTop
       },
       onUploadExcel (res, file, fileList) {
