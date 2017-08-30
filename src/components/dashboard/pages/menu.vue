@@ -167,12 +167,6 @@
                       }
                     }
                   })
-                } else if (list.pkey === 'host') {
-                  entry.children.push({
-                    icon: 'fa-star',
-                    title: list.pname,
-                    path: `/guosen/on`
-                  })
                 } else {
                   entry.children.push({
                     icon: 'fa-star',
@@ -219,12 +213,6 @@
                 }
               }
             })
-          } else if (list.pkey === 'host') {
-            this.topList[0].children.push({
-              icon: 'fa-star',
-              title: list.pname,
-              path: `/guosen/on`
-            })
           } else {
             this.topList[0].children.push({
               icon: 'fa-star',
@@ -232,11 +220,6 @@
               path: `/procedure/start/${list.pkey}/${list.pname}`
             })
           }
-          // this.topList[0].children.push({
-          //   icon: 'fa-star',
-          //   title: list.pname,
-          //   path: `/procedure/start/${list.pkey}/${list.pname}`
-          // })
         })
       })
     },

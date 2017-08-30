@@ -469,9 +469,29 @@
         }
       },
       onHostsChange (val) {
-        console.log(val)
-        this.hostList = []
-        this.hostList = val
+        // console.log(val)
+        // this.hostList = []
+        // this.hostList = val
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.show.type) {
+              // show.type 有四种类型
+              if (item.show.type === 'form_header') {
+                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
+                  if (item.value.type === 'search_bar') {
+                    this.assignForm.header[item.id] = []
+                    this.assignForm.header[item.id] = val
+                  }
+                }
+              }
+            } else {
+              if (item.value.type === 'search_bar') {
+                this.assignForm.header[item.id] = []
+                this.assignForm.header[item.id] = val
+              }
+            }
+          })
+        })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
       },
       infoShowFunction (newVal) {
@@ -852,24 +872,6 @@
         // console.log(this.tabIndex)
       },
       onSubmit (assignForm) {
-        this.taskForm.header.map(header => {
-          header.value.map(item => {
-            if (item.show.type) {
-              // show.type 有四种类型
-              if (item.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
-                  if (item.value.type === 'search_bar') {
-                    this.assignForm.header[item.id] = this.hostList
-                  }
-                }
-              }
-            } else {
-              if (item.value.type === 'search_bar') {
-                this.assignForm.header[item.id] = this.hostList
-              }
-            }
-          })
-        })
         let postFormData = {
           header: {},
           body: []

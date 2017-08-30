@@ -55,9 +55,6 @@ const routes = [{
       sidebar: SidebarConf.Process
     },
     children: [{
-      path: 'on',
-      component: resolve => require(['./components/guosen/pages/on'], resolve)
-    }, {
       path: ':pid/:tid/:name',
       component: resolve => require(['./components/guosen/pages/step'], resolve)
     }, {
