@@ -179,6 +179,7 @@
     methods: {
       rules (formItem) {
         var validateSearchBar = (rule, value, cb) => {
+          console.log(value.length)
           if (!value.length) {
             return cb(new Error(`${this.mainInfo.name}不能为空`))
           } else if (value.length < this.limit.min) {
@@ -263,7 +264,7 @@
       },
       handleSelectionChange (val) {
         this.selectedDevices = val
-        console.log(this.selectedDevices, val)
+        // console.log(this.selectedDevices, val)
       },
       onRemove (row) {
         const index = this.hostList.indexOf(row)

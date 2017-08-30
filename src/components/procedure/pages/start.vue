@@ -583,7 +583,6 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        console.log(anchor.offsetTop)
         document.body.scrollTop = anchor.offsetTop
       },
       onUploadExcel (res, file, fileList) {
