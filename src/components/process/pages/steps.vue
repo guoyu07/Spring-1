@@ -36,7 +36,7 @@
             v-loading.body="permittedProcessLoading">
             <el-table-column type="expand">
               <template scope="scope">
-                <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
+                <!-- <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
                 <el-collapse accordion @change="onAccordionChange">
                   <el-collapse-item v-for="task in scope.row.task_list" :key="task.tkey" :title="task.tname" v-if="task.tkey !== 'start'">
                     <el-row>
@@ -101,7 +101,6 @@
                       <el-col :span="20" :offset="2">
                         <div class="btn-area clear">
                           <h5 class="sub-title fl"><i class="el-icon-fa-user-secret"></i> 受指派人：<span style="color: #1f2d3d; font-size: 14px; font-weight: normal;">{{task.assign || '无'}}</span></h5>
-                          <!-- <el-tooltip content="移除受指派人" placement="top" class="fr" v-if="task.assign !== null"> -->
                           <el-button
                             icon="minus"
                             type="danger"
@@ -110,8 +109,6 @@
                             class="fr"
                             @click="prepareRemoveAssignee(scope.row.pkey, task.tkey, task.assign)">
                           </el-button>
-                          <!-- </el-tooltip> -->
-                          <!-- <el-tooltip content="指定受指派人" placement="top" class="fr"> -->
                           <el-button
                             :icon="task.assign ? 'edit' : 'plus'"
                             type="success"
@@ -120,12 +117,34 @@
                             size="small"
                             @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey }); currentTask = task">
                           </el-button>
-                          <!-- </el-tooltip> -->
                         </div>
                       </el-col>
                     </el-row>
                   </el-collapse-item>
-                </el-collapse>
+                </el-collapse> -->
+                <el-table
+                  :data="scope.row.task_list">
+                    <el-table-column
+                      prop="tname"
+                      label="环节">
+                    </el-table-column>
+                    <el-table-column
+                      label="候选人">
+                      <template scope="scope">
+                        <span v-for="user in scope.row.users">{{user.nick}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      label="候选组">
+                      <template scope="scope">
+                        <span v-for="group in scope.row.groups">{{group.name}}</span>
+                      </template>
+                    </el-table-column>
+                    <el-table-column
+                      prop="assign"
+                      label="受指派人">
+                    </el-table-column>
+                  </el-table>
               </template>
             </el-table-column>
             <el-table-column
@@ -231,6 +250,18 @@
     },
 
     methods: {
+      pnameFilters (data) {
+        let filters = []
+        data.map(item => {
+          if (filters.every(filter => { return filter.value !== item.pkey })) {
+            filters.push({text: item.pname, value: item.pkey})
+          }
+        })
+        return filters
+      },
+      filterPname (value, row) {
+        return row.pkey === value
+      },
       onAccordionChange () {
         Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
       },

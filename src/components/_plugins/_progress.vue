@@ -187,7 +187,7 @@
         transform: rotate(-35deg);
         transform-origin: -120% -30%;
         white-space: nowrap;
-        color: #e4e8f1;
+        color: lighten(@textColor, 30%);
         text-align: center;
         font-size: 13px;
 
@@ -239,7 +239,7 @@
         width: 18px;
         height: 18px;
         border-radius: 50%;
-        border: 2px solid #e4e8f1;
+        border: 2px solid lighten(@textColor, 30%);
         background-color: #fff;
       }
     }
