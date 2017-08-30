@@ -19,7 +19,7 @@
     "lodash": "^4.17.4",
     "nprogress": "^0.2.0",
     "screenfull": "^3.3.1",
-    "sortablejs": "^1.5.1",
+    "sortablejs": "^1.6.1",
     "vue": "^2.1.0",
     "vue-codemirror": "^3.0.5",
     "vue-quill-editor": "^2.2.1",

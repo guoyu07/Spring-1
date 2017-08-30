@@ -32,9 +32,17 @@
               </label>
               <section>
                 <div class="draggable-item__inner">
-                  <el-table
+                  <process-table
+                    :item="item"
+                    :categories="categoryList"
+                    @should-update-categories="getCategoryList"
+                    @should-update-processes="getOrderedProcesses"
+                    @on-edit-script="onEditScript"
+                    @on-cancel-edit="onCancelEdit"></process-table>
+                  <!-- <el-table
                     :data="item.list"
-                    border>
+                    border
+                    :ref="`table${index}`">
                     <el-table-column
                       prop="pname"
                       label="流程名称"></el-table-column>
@@ -66,7 +74,7 @@
                         <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
                       </template>
                     </el-table-column>
-                  </el-table>
+                  </el-table> -->
                 </div>
               </section>
             </div>
@@ -81,6 +89,9 @@
 <script>
   import draggable from 'vuedraggable'
   import scriptEditor from './../../_plugins/_scriptEditor'
+  import processTable from './_plugins/_processTable'
+
+  const EDITING_FIELDS = 'editingFields'
 
   export default {
     data () {
@@ -99,6 +110,7 @@
 
     created () {
       this.getOrderedProcesses()
+      window.localStorage.setItem(EDITING_FIELDS, '')
       // this.getCategoryList()
     },
 
@@ -116,6 +128,7 @@
           if (res.status === 200) {
             this.orderedProcesses = res.data.data.list
             this.orderedProcessesBuffer = JSON.stringify(this.orderedProcesses)
+            this._onRestoreEditing()
           }
         })
       },
@@ -154,7 +167,8 @@
         })
       },
 
-      onEditCategory ({ pkey, category }) {
+      onEditCategory (process) {
+        let { category, pkey } = process
         let postData = {
           action: 'process/define',
           method: 'put',
@@ -166,7 +180,9 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已修改！')
-            // this.getPermittedProcessList()
+            // this.nextTick(() => {
+            //   this.$set(process, 'editing', false)
+            // })
             this.getOrderedProcesses()
           }
         })
@@ -175,25 +191,43 @@
       onCancelEdit (editing) {
         this.orderedProcesses = JSON.parse(this.orderedProcessesBuffer)
         editing = false
+        this._onRestoreEditing()
       },
 
-      onEditScript (pkey) {
+      onEditScript (args) {
         let postData = {
           action: 'process/script',
           method: 'GET',
-          data: { pkey }
+          data: { pkey: args.pkey }
         }
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.editorProps = { visible: true, pkey, data: res.data.data }
+            this.editorProps = { visible: true, pkey: args.pkey, data: res.data.data }
           }
         })
+      },
+
+      _onRestoreEditing () {
+        if (window.localStorage[EDITING_FIELDS]) {
+          let editingFields = window.localStorage[EDITING_FIELDS]
+          console.log(editingFields)
+          this.orderedProcesses.forEach((category) => {
+            category.list.forEach((item) => {
+              if (editingFields.includes(item.pkey)) {
+                item.editing = true
+              }
+            })
+          })
+        } else {
+          return
+        }
       }
     },
 
     components: {
       draggable,
-      scriptEditor
+      scriptEditor,
+      processTable
     }
   }
 </script>
