@@ -37,7 +37,9 @@
 </template>
 
 <script>
-  const EDITING_FIELDS = 'editingFields'
+  import Sortable from 'sortablejs'
+
+  // const EDITING_FIELDS = 'editingFields'
 
   export default {
     props: {
@@ -45,13 +47,55 @@
       categories: Array
     },
 
-    computed: {
-      processes () {
-        return this.item.list
+    data () {
+      return {
+        sortable: null,
+        newList: []
       }
     },
 
+    computed: {
+      processes () {
+        return this.item.list
+      },
+
+      editingFields: {
+        get () {
+          return this.$store.state.editingFields
+        },
+        set (val) {}
+      }
+    },
+
+    mounted () {
+      this.newList = this.item.list.slice()
+      this.$nextTick(() => {
+        this.setSort()
+      })
+    },
+
     methods: {
+      setSort () {
+        const el = document.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
+        this.sortable = Sortable.create(el, {
+          onEnd: evt => {
+            const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
+            this.newList.splice(evt.newIndex, 0, tempIndex)
+            let order = this.newList.map(item => item.pkey)
+            let postData = {
+              action: 'process/order',
+              method: 'POST',
+              data: { pkey_list: order }
+            }
+            this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+              if (res.status === 200) {
+                this.$message.success('已更新流程排序！')
+              }
+            })
+          }
+        })
+      },
+
       onEditScript (pkey) {
         this.$emit('on-edit-script', { pkey })
       },
@@ -88,16 +132,19 @@
       },
 
       _storeEditing (pkey) {
-        let editingFields = window.localStorage[EDITING_FIELDS] ? JSON.parse(window.localStorage[EDITING_FIELDS]) : []
-        if (!editingFields[pkey]) {
-          editingFields.push(pkey)
+        // let editingFields = window.localStorage[EDITING_FIELDS] ? JSON.parse(window.localStorage[EDITING_FIELDS]) : []
+        if (!this.editingFields[pkey]) {
+          this.editingFields.push(pkey)
         }
-        window.localStorage.setItem(EDITING_FIELDS, JSON.stringify(editingFields))
+        // window.localStorage.setItem(EDITING_FIELDS, JSON.stringify(editingFields))
+        this.$store.dispatch('editing_fields', { editingFields: this.editingFields })
       },
 
       _removeStoredEditing (pkey) {
-        let editingFields = window.localStorage[EDITING_FIELDS] ? JSON.parse(window.localStorage[EDITING_FIELDS]) : []
-        window.localStorage.setItem(EDITING_FIELDS, JSON.stringify(editingFields.filter(item => item !== pkey)))
+        // let editingFields = window.localStorage[EDITING_FIELDS] ? JSON.parse(window.localStorage[EDITING_FIELDS]) : []
+        let buffer = this.editingFields.filter(item => item !== pkey)
+        this.$store.dispatch('editing_fields', { editingFields: buffer })
+        // window.localStorage.setItem(EDITING_FIELDS, JSON.stringify(editingFields.filter(item => item !== pkey)))
       },
 
       onCancelEdit ({ pkey, editing }) {

@@ -9,7 +9,8 @@ Vue.use(Vuex)
 
 const state = {
   userinfo: {},
-  idcrackData: []
+  idcrackData: [],
+  editingFields: []
 }
 
 export default new Vuex.Store({

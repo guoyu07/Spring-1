@@ -91,8 +91,6 @@
   import scriptEditor from './../../_plugins/_scriptEditor'
   import processTable from './_plugins/_processTable'
 
-  const EDITING_FIELDS = 'editingFields'
-
   export default {
     data () {
       return {
@@ -108,9 +106,16 @@
       }
     },
 
+    computed: {
+      editingFields () {
+        return this.$store.state.editingFields
+      }
+    },
+
     created () {
       this.getOrderedProcesses()
-      window.localStorage.setItem(EDITING_FIELDS, '')
+      // window.localStorage.setItem(EDITING_FIELDS, '')
+      this.$store.dispatch('editing_fields', { editingFields: [] })
       // this.getCategoryList()
     },
 
@@ -144,7 +149,7 @@
         }
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.$message.success('已更新排序！')
+            this.$message.success('已更新分类排序！')
           }
         })
       },
@@ -208,12 +213,13 @@
       },
 
       _onRestoreEditing () {
-        if (window.localStorage[EDITING_FIELDS]) {
-          let editingFields = window.localStorage[EDITING_FIELDS]
-          console.log(editingFields)
+        // if (window.localStorage[EDITING_FIELDS]) {
+        if (this.editingFields) {
+          // let editingFields = window.localStorage[EDITING_FIELDS]
+          // console.log(editingFields)
           this.orderedProcesses.forEach((category) => {
             category.list.forEach((item) => {
-              if (editingFields.includes(item.pkey)) {
+              if (this.editingFields.includes(item.pkey)) {
                 item.editing = true
               }
             })

@@ -14,5 +14,9 @@ export default {
 
   [types.IDCRACK_DATA] (state, data) {
     state.idcrackData = data.idcrackData
+  },
+
+  [types.EDITING_FIELDS] (state, data) {
+    state.editingFields = data.editingFields
   }
 }
