@@ -33,7 +33,7 @@
                       :class="{ empty: !isCheckable }"
                       @click="onDeleteUser(props.row.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
                   </el-tooltip>
-                  <el-tooltip v-if="props.row.users.length" content="加入用户" placement="left" class="fr">
+                  <el-tooltip content="加入用户" placement="left" class="fr">
                     <el-button
                       :disabled="!isQualified"
                       icon="plus"
