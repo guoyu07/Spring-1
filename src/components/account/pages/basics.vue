@@ -5,16 +5,16 @@
      <el-card>
       <h3><i class="el-icon-setting"></i>设置基本信息</h3>
       <el-form :model='basicsForm' ref='basicsForm' :rules="basicsCheck" >
-      <el-form-item label="用户名：" >
+      <el-form-item label="用户名" >
        <el-input v-model='basicsForm.userId' disabled></el-input>
       </el-form-item>
-      <el-form-item label="昵称：" >
+      <el-form-item label="昵称" >
        <el-input v-model="basicsForm.nick" ></el-input>
       </el-form-item>
-      <el-form-item label="邮箱：" prop="email">
+      <el-form-item label="邮箱" prop="email">
        <el-input v-model="basicsForm.email" ></el-input>
       </el-form-item>
-      <el-form-item label="手机：" prop="phone">
+      <el-form-item label="手机" prop="phone">
        <el-input v-model="basicsForm.phone" ></el-input>
       </el-form-item>
       <el-button type="primary" @click="submitForm('basicsForm')">保存</el-button>
