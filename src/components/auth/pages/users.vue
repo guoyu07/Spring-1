@@ -156,7 +156,8 @@
             nick: '',
             level: '',
             password: '',
-            checkPass: ''
+            checkPass: '',
+            email: ''
           }
         },
         editUserData: {

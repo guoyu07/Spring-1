@@ -7,7 +7,6 @@ import SidebarConf from './sidebar-conf'
 import NProgress from 'nprogress'
 
 Vue.use(VueRouter)
-
 const routes = [{
   path: '/login',
   component: require('./components/login')
@@ -99,6 +98,19 @@ const routes = [{
     }, {
       path: 'onlinelist',
       component: require('./components/system/pages/onlinelist')
+    }]
+  }, {
+    path: '/account',
+    component: require('./components/account/index'),
+    meta: {
+      sidebar: SidebarConf.Personal
+    },
+    children: [{
+      path: 'password',
+      component: require('./components/account/pages/password')
+    }, {
+      path: 'basics',
+      component: require('./components/account/pages/basics')
     }]
   }, {
     path: '/auth',

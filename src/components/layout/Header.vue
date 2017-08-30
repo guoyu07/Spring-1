@@ -192,7 +192,7 @@
       <el-submenu class="mine" index="5">
         <template slot="title">{{userName}}</template>
         <el-menu-item index="5-1">
-          <a href=""><i class="el-icon-fa-user"></i> 我的账户</a>
+          <router-link class="link-block" :to="{ path: '/account' }"><i class="el-icon-fa-user"></i> 我的账户</router-link>
         </el-menu-item>
         <el-menu-item index="5-2">
           <router-link class="link-block" :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 账户管理</router-link>
