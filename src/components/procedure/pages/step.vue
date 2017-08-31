@@ -406,6 +406,7 @@
           })
         })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+        this.$refs['postForm'].validate((valid) => {}) // 调用验证
       },
       infoShowFunction (newVal) {
         const infoShow = []

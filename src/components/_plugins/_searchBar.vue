@@ -169,7 +169,6 @@
       'hosts' (newVal, oldVal) {
         console.log(newVal)
         this.hostList = [] // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中  val
-        // this.onSearchDevices()
       },
       'hostList' (val) {
         this.$emit('on-hosts-change', val, this.index) // ③组件内对 hostList 变更后向外部发送事件通知
@@ -213,7 +212,7 @@
           method: this.mainInfo.value.source.data.method,
           data: searchData || {}
         }
-        this.deviceLoading = false
+        this.deviceLoading = true
         this.http.post(this.mainInfo.value.source.url.substring(4), this.parseData(postData)).then((res) => {
           if (!res.data.data.total) {
             this.$message.warning('找不到结果！')
