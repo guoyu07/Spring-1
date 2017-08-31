@@ -32,11 +32,15 @@
               </label>
               <section>
                 <div class="draggable-item__inner">
-                  <!-- <el-input
+                  <el-input
                     placeholder="修改流程分类名称"
-                    :value="item.name">
+                    size="small"
+                    v-model="item.name"
+                    @focus="onFocusCategory"
+                    class="margin-bottom"
+                    style="width: 250px;">
                     <el-button slot="append" icon="check" @click="onEditCategoryName(item.name)"></el-button>
-                  </el-input> -->
+                  </el-input>
                   <process-table
                     :item="item"
                     :categories="categoryList"
@@ -44,42 +48,6 @@
                     @should-update-processes="getOrderedProcesses"
                     @on-edit-script="onEditScript"
                     @on-cancel-edit="onCancelEdit"></process-table>
-                  <!-- <el-table
-                    :data="item.list"
-                    border
-                    :ref="`table${index}`">
-                    <el-table-column
-                      prop="pname"
-                      label="流程名称"></el-table-column>
-                    <el-table-column
-                      label="类别"
-                      inline-template
-                      :context="_self">
-                      <template>
-                        <el-select
-                          v-show="row.editing"
-                          v-model="row.category"
-                          size="small"
-                          filterable
-                          allow-create>
-                          <el-option v-for="cat in categoryList" :key="cat" :label="cat" :value="cat"></el-option>
-                        </el-select>
-                        <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
-                        <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row.editing)"></i>
-                        <span v-show="!row.editing">{{row.category}}</span>
-                        <i class="el-icon-edit text-info" v-show="!row.editing" @click="row.editing = true;getCategoryList()"></i>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="操作"
-                      inline-template
-                      :context="_self">
-                      <template>
-                        <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
-                        <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
-                      </template>
-                    </el-table-column>
-                  </el-table> -->
                 </div>
               </section>
             </div>
@@ -153,6 +121,28 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已更新分类排序！')
+          }
+        })
+      },
+
+      onFocusCategory (evt) {
+        const oldName = evt.target.value
+        this.$store.dispatch('store_category', { oldName })
+      },
+
+      onEditCategoryName (name) {
+        let postData = {
+          action: 'process/category',
+          method: 'PUT',
+          data: {
+            old_name: this.$store.state.oldCategoryName,
+            name
+          }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已改名！')
+            this.getOrderedProcesses()
           }
         })
       },
