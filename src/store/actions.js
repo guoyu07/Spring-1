@@ -44,13 +44,13 @@ module.exports = {
     })
   },
 
-  editing_fields: ({
+  store_processes: ({
     commit
   }, {
     editingFields
   }) => {
     return new Promise((resolve, reject) => {
-      commit(types.EDITING_FIELDS, {
+      commit(types.STORE_PROCESSES, {
         editingFields
       })
       resolve()

@@ -8,4 +8,4 @@ export const REMOVE_USERINFO = 'REMOVE_USERINFO'
 export const IDCRACK_DATA = 'IDCRACK_DATA'
 
 // 行内编辑字段
-export const EDITING_FIELDS = 'EDITING_FIELDS'
+export const STORE_PROCESSES = 'STORE_PROCESSES'

@@ -16,7 +16,7 @@ export default {
     state.idcrackData = data.idcrackData
   },
 
-  [types.EDITING_FIELDS] (state, data) {
-    state.editingFields = data.editingFields
+  [types.STORE_PROCESSES] (state, data) {
+    state.editingProcesses = data.editingFields
   }
 }
