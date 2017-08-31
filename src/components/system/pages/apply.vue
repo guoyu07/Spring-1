@@ -301,11 +301,12 @@
                 .then((res) => {
                   // console.log(res, res.data.data)
                   if ((res && res.status === 200) || (res && res.status === 201)) {
-                    this.$notify.success({
-                      title: '成功',
-                      message: '已成功创建申请单'
-                    })
-                    this.$router.push('/home')
+                    // this.$notify.success({
+                    //   title: '成功',
+                    //   message: '已成功创建申请单'
+                    // })
+                    this.$message.success(`已成功创建申请单`)
+                    this.$router.push('/menu')
                   }
                 })
               } else {

@@ -225,9 +225,10 @@
         this.bodyLabel(this.taskFormData, val, val, this.bodyLableName)
       },
       onHostsChange (val) {
-        console.log(val)
-        this.hostList = []
-        this.hostList = val
+        // console.log(val)
+        // this.hostList = []
+        // this.hostList = val
+        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
         this.taskFormData.header.map(header => {
           header.value.map(item => {
             if (item.show.type) {
@@ -248,7 +249,6 @@
             }
           })
         })
-        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
         this.$refs['postForm'].validate((valid) => {}) // 调用验证
       },
       renderForm () {
