@@ -347,6 +347,7 @@
           if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch) && formItem.value.type === 'arr') {
             return cb(new Error(`请输入正确的${formItem.name}`))
           }
+          console.log('yanyanyanyanyan')
           if (this.limitMaxNum) { // static时，有一个范围值
             if (value.length < this.limitNum) {
               return cb(new Error(`至少需要输入${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))

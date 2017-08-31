@@ -225,9 +225,9 @@
         this.bodyLabel(this.taskFormData, val, val, this.bodyLableName)
       },
       onHostsChange (val) {
-        // console.log(val)
-        // this.hostList = []
-        // this.hostList = val
+        console.log(val)
+        this.hostList = []
+        this.hostList = val
         this.taskFormData.header.map(header => {
           header.value.map(item => {
             if (item.show.type) {
@@ -235,20 +235,21 @@
               if (item.show.type === 'form_header') {
                 if (this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
-                    this.postForm.header[item.id] = []
+                    // this.postForm.header[item.id] = []
                     this.postForm.header[item.id] = val
                   }
                 }
               }
             } else {
               if (item.value.type === 'search_bar') {
-                this.postForm.header[item.id] = []
+                // this.postForm.header[item.id] = []
                 this.postForm.header[item.id] = val
               }
             }
           })
         })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+        this.$refs['postForm'].validate((valid) => {}) // 调用验证
       },
       renderForm () {
         const renderFromData = {
@@ -583,7 +584,6 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        console.log(anchor.offsetTop)
         document.body.scrollTop = anchor.offsetTop
       },
       onUploadExcel (res, file, fileList) {
@@ -602,6 +602,13 @@
             //   //   return Object.assign({}, body, res.data.data.body[bodyindex])
             //   // })
             // }, 100)
+            this.$refs['postForm'].validate((valid) => {
+              if (valid) {
+                // this.$message.success('成功')
+              } else {
+                this.$message.info('请补充完整当前表单')
+              }
+            })
             this.tabsValue = '0'
           }
         })
