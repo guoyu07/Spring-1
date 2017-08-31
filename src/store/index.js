@@ -10,7 +10,8 @@ Vue.use(Vuex)
 const state = {
   userinfo: {},
   idcrackData: [],
-  editingProcesses: []
+  editingProcesses: [],
+  oldCategoryName: ''
 }
 
 export default new Vuex.Store({
