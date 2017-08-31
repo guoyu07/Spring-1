@@ -50,8 +50,8 @@ module.exports = {
     editingFields
   }) => {
     return new Promise((resolve, reject) => {
-      commit(types.EDITING_FIELDS, {
-        editingProcesses
+      commit(types.STORE_PROCESSES, {
+        editingFields
       })
       resolve()
     })
