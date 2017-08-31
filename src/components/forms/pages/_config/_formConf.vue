@@ -57,8 +57,8 @@
     <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
     <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
     <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
-      <div v-for="(itemConf, index) in configData2" class="draggable-item" :key="index">
-        <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`">
+      <div v-for="(itemConf, index) in configData2" class="draggable-item" :key="index" >
+        <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`" :ref="itemConf.name+index">
         <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section>
           <div class="draggable-item__inner">
@@ -383,7 +383,22 @@ export default {
     }
   },
 
+  updated () {
+    this.collapsed()
+  },
+
   methods: {
+    // 默认展开一个
+    collapsed () {
+      console.log(this.configData2)
+      let len = this.configData2.length - 1
+      let param = this.configData2[len].name + len
+      console.log(param)
+      console.log(this.$refs[param][0])
+      if (!this.configData2[len].id) {
+        this.$refs[param][0].setAttribute('checked', 'true')
+      }
+    },
     // 初始化可拖曳手风琴
     // setSort () {
     //   const el = document.querySelector('.el-collapse')
