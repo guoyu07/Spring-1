@@ -33,13 +33,21 @@
         <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
       </template>
     </el-table-column>
+    <el-table-column
+      label=""
+      align="center"
+      width="60px"
+      inline-template
+      :context="_self">
+      <template>
+        <i class="el-icon-fa-arrows text-info"></i>
+      </template>
+    </el-table-column>
   </el-table>
 </template>
 
 <script>
   import Sortable from 'sortablejs'
-
-  // const EDITING_FIELDS = 'editingFields'
 
   export default {
     props: {
@@ -61,7 +69,7 @@
 
       editingFields: {
         get () {
-          return this.$store.state.editingFields
+          return this.$store.state.editingProcesses
         },
         set (val) {}
       }
@@ -106,7 +114,6 @@
         this.$nextTick(() => {
           this.$emit('should-update-categories')
         })
-        // process.editing = true
       },
 
       onEditCategory (process) {
@@ -122,7 +129,6 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已修改！')
-            // this.$set(process, 'editing', false)
             this._removeStoredEditing(pkey)
             this.$nextTick(() => {
               this.$emit('should-update-processes')
@@ -132,19 +138,15 @@
       },
 
       _storeEditing (pkey) {
-        // let editingFields = window.localStorage[EDITING_FIELDS] ? JSON.parse(window.localStorage[EDITING_FIELDS]) : []
         if (!this.editingFields[pkey]) {
           this.editingFields.push(pkey)
         }
-        // window.localStorage.setItem(EDITING_FIELDS, JSON.stringify(editingFields))
-        this.$store.dispatch('editing_fields', { editingFields: this.editingFields })
+        this.$store.dispatch('store_processes', { editingFields: this.editingFields })
       },
 
       _removeStoredEditing (pkey) {
-        // let editingFields = window.localStorage[EDITING_FIELDS] ? JSON.parse(window.localStorage[EDITING_FIELDS]) : []
         let buffer = this.editingFields.filter(item => item !== pkey)
-        this.$store.dispatch('editing_fields', { editingFields: buffer })
-        // window.localStorage.setItem(EDITING_FIELDS, JSON.stringify(editingFields.filter(item => item !== pkey)))
+        this.$store.dispatch('store_processes', { editingFields: buffer })
       },
 
       onCancelEdit ({ pkey, editing }) {

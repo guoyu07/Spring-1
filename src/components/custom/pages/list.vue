@@ -32,6 +32,11 @@
               </label>
               <section>
                 <div class="draggable-item__inner">
+                  <!-- <el-input
+                    placeholder="修改流程分类名称"
+                    :value="item.name">
+                    <el-button slot="append" icon="check" @click="onEditCategoryName(item.name)"></el-button>
+                  </el-input> -->
                   <process-table
                     :item="item"
                     :categories="categoryList"
@@ -108,15 +113,13 @@
 
     computed: {
       editingFields () {
-        return this.$store.state.editingFields
+        return this.$store.state.editingProcesses
       }
     },
 
     created () {
       this.getOrderedProcesses()
-      // window.localStorage.setItem(EDITING_FIELDS, '')
-      this.$store.dispatch('editing_fields', { editingFields: [] })
-      // this.getCategoryList()
+      this.$store.dispatch('store_processes', { editingFields: [] })
     },
 
     methods: {
@@ -185,9 +188,6 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('已修改！')
-            // this.nextTick(() => {
-            //   this.$set(process, 'editing', false)
-            // })
             this.getOrderedProcesses()
           }
         })
@@ -213,10 +213,7 @@
       },
 
       _onRestoreEditing () {
-        // if (window.localStorage[EDITING_FIELDS]) {
         if (this.editingFields) {
-          // let editingFields = window.localStorage[EDITING_FIELDS]
-          // console.log(editingFields)
           this.orderedProcesses.forEach((category) => {
             category.list.forEach((item) => {
               if (this.editingFields.includes(item.pkey)) {
