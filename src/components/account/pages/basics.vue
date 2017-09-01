@@ -3,8 +3,8 @@
     <el-row>
      <el-col :md="24" :lg="20">
      <el-card>
-      <h3><i class="el-icon-setting"></i>设置基本信息</h3>
-      <el-form :model='basicsForm' ref='basicsForm' :rules="basicsCheck" >
+      <h3><i class="el-icon-fa-info-circle"></i> 设置基本信息</h3>
+      <el-form :model='basicsForm' ref='basicsForm' :rules="basicsCheck" label-width="100px">
       <el-form-item label="用户名" >
        <el-input v-model='basicsForm.userId' disabled></el-input>
       </el-form-item>

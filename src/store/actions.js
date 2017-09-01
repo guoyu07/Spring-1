@@ -55,18 +55,5 @@ module.exports = {
       })
       resolve()
     })
-  },
-
-  store_category: ({
-    commit
-  }, {
-    oldName
-  }) => {
-    return new Promise((resolve, reject) => {
-      commit(types.STORE_CATEGORY, {
-        oldName
-      })
-      resolve()
-    })
   }
 }

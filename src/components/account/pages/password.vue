@@ -3,16 +3,16 @@
     <el-row>
      <el-col :md="24" :lg="20">
      <el-card class='box-card'>
-      <h3><i class="el-icon-setting"></i>修改密码</h3>
-      <el-form :model='editForm' ref='editForm' :rules='checkPass'>
+      <h3><i class="el-icon-fa-key"></i> 修改密码</h3>
+      <el-form :model='editForm' ref='editForm' :rules='checkPass' label-width="100px">
 	    <el-form-item label="旧密码" prop="old_pass">
-	  	 <el-input placeholder="请输入6至20位密码" v-model="editForm.old_pass" type='password' ></el-input>
+	  	 <el-input v-model="editForm.old_pass" type='password' ></el-input>
 	    </el-form-item>
 	    <el-form-item label="新密码" prop='new_pass'>
-	  	 <el-input placeholder="请输入6至20位密码" v-model="editForm.new_pass" type='password' ></el-input>
+	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.new_pass" type='password' ></el-input>
 	    </el-form-item>
 	    <el-form-item label="再次确认密码" prop='confirm_pass'>
-	  	 <el-input placeholder="请输入6至20位密码" v-model="editForm.confirm_pass" type='password'></el-input>
+	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.confirm_pass" type='password'></el-input>
 	    </el-form-item>
 	    <el-button type="primary" @click="submitForm('editForm')">保存</el-button>
 	  </el-form>

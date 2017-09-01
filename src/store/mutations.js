@@ -18,9 +18,5 @@ export default {
 
   [types.STORE_PROCESSES] (state, data) {
     state.editingProcesses = data.editingFields
-  },
-
-  [types.STORE_CATEGORY] (state, data) {
-    state.oldCategoryName = data.oldName
   }
 }
