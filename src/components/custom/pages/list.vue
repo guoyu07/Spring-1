@@ -28,19 +28,13 @@
             <div v-for="(item, index) in orderedProcesses" class="draggable-item">
               <input type="checkbox" :id="index" :disabled="!item.list.length" :checked="item.list.length">
               <label :for="index" class="draggable-item__label">
-                <b>{{item.name}}</b> - ({{item.list.length}})
+                <span>
+                  <b>{{item.name}}</b> - ({{item.list.length}})
+                </span>
+                <span class="el-icon-edit text-info" @click="onEditCategoryName(item.id)"></span>
               </label>
               <section>
                 <div class="draggable-item__inner">
-                  <el-input
-                    placeholder="修改流程分类名称"
-                    size="small"
-                    v-model="item.name"
-                    @focus="onFocusCategory"
-                    class="margin-bottom"
-                    style="width: 250px;">
-                    <el-button slot="append" icon="check" @click="onEditCategoryName(item.name)"></el-button>
-                  </el-input>
                   <process-table
                     :item="item"
                     :categories="categoryList"
@@ -125,25 +119,25 @@
         })
       },
 
-      onFocusCategory (evt) {
-        const oldName = evt.target.value
-        this.$store.dispatch('store_category', { oldName })
-      },
-
-      onEditCategoryName (name) {
-        let postData = {
-          action: 'process/category',
-          method: 'PUT',
-          data: {
-            old_name: this.$store.state.oldCategoryName,
-            name
+      onEditCategoryName (id) {
+        this.$prompt('修改分类名称：', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消'
+        }).then(({ value }) => {
+          let postData = {
+            action: 'process/category',
+            method: 'PUT',
+            data: {
+              id,
+              name: value
+            }
           }
-        }
-        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.$message.success('已改名！')
-            this.getOrderedProcesses()
-          }
+          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message.success('已改名！')
+              this.getOrderedProcesses()
+            }
+          })
         })
       },
 

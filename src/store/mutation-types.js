@@ -9,6 +9,3 @@ export const IDCRACK_DATA = 'IDCRACK_DATA'
 
 // 行内编辑字段
 export const STORE_PROCESSES = 'STORE_PROCESSES'
-
-// 流程分类旧名
-export const STORE_CATEGORY = 'STORE_CATEGORY'
