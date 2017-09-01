@@ -205,16 +205,13 @@
             // TODO: 优化，这个 $current_user 的值放不回去，这里是先删了，再放回去
             this.selectedFilters.map(selected => {
               if (selected.type === 'user') {
-                selected.filter.map((user, index) => {
-                  if (user.userId === '$current_user') {
-                    selected.filter.splice(index, 1)
-                    this.userDicts.map(dict => {
-                      if (dict.userId === '$current_user') {
-                        // user = dict
-                        selected.filter.push(dict)
-                      }
-                    })
-                  }
+                this.userDicts.map(dict => {
+                  selected.filter.map((user, index) => {
+                    if (user.userId === dict.userId) {
+                      selected.filter.splice(index, 1)
+                      selected.filter.push(dict)
+                    }
+                  })
                 })
               }
             })
