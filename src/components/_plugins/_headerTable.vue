@@ -21,6 +21,7 @@
               :wholeName="postFormName"
               :table-index="tableindex"
               :header-table="true"
+              :is-Editing="isEditing"
               :value-id="formData.id"
               :message="messageData">
             </form-body>
@@ -46,11 +47,19 @@
       return {
         tabsValue: '0',
         limitTable: 0,
-        limitTableMax: 0
+        limitTableMax: 0,
+        isEditing: false
       }
     },
     created () {
-
+      this.formData.value.attr_list.map(attr => {
+        if (attr.default.type === 'message_header') {
+          this.isEditing = true
+          this.item[this.formData.id].map(item => {
+            item[attr.id] = this.getPathResult(this.messageData, attr.default.key_path)
+          })
+        }
+      })
     },
 
     methods: {

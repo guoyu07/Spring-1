@@ -62,6 +62,7 @@
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
+                    :header="true"
                     :postForm="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
@@ -356,7 +357,7 @@
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
-      if (this.taskData.pinstance.pkey === 'host_apply' && this.taskData.ptask.tkey === 'start') {
+      if (this.taskData.pinstance && this.taskData.pinstance.pkey === 'host_apply' && this.taskData.ptask.tkey === 'start') {
         this.$watch('assignForm.body', (val, oldVal) => {
           for (const data of val) {
             data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
@@ -406,7 +407,7 @@
           })
         })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
-        this.$refs['postForm'].validate((valid) => {}) // 调用验证
+        this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
       infoShowFunction (newVal) {
         const infoShow = []

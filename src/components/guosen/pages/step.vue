@@ -63,6 +63,7 @@
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
+                    :header="true"
                     :postForm="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
@@ -479,21 +480,21 @@
               if (item.show.type === 'form_header') {
                 if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
-                    this.assignForm.header[item.id] = []
+                    // this.assignForm.header[item.id] = []
                     this.assignForm.header[item.id] = val
                   }
                 }
               }
             } else {
               if (item.value.type === 'search_bar') {
-                this.assignForm.header[item.id] = []
+                // this.assignForm.header[item.id] = []
                 this.assignForm.header[item.id] = val
               }
             }
           })
         })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
-        this.$refs['postForm'].validate((valid) => {}) // 调用验证
+        this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
       infoShowFunction (newVal) {
         const infoShow = []
