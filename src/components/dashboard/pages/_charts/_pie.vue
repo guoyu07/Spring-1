@@ -6,12 +6,12 @@
 <script>
 // 引入 ECharts 主模块
 const echarts = require('echarts/lib/echarts')
-// 引入饼图
-require('echarts/lib/chart/pie')
-// 引入组件
-require('echarts/lib/component/tooltip') // 提示框
-require('echarts/lib/component/title') // 标题
-require('echarts/lib/component/legendScroll') // 分类
+// // 引入饼图
+// require('echarts/lib/chart/pie')
+// // 引入组件
+// require('echarts/lib/component/tooltip') // 提示框
+// require('echarts/lib/component/title') // 标题
+// require('echarts/lib/component/legendScroll') // 分类
 export default {
   props: {
     id: {

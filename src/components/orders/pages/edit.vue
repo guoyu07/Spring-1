@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <el-card>
       <h3><i class="el-icon-fa-filter icon-lg"></i> {{ $route.meta.isEdit ? `编辑${filterData.name}` : '创建' }}筛选器</h3>
       <el-form class="order-form" label-width="100px">

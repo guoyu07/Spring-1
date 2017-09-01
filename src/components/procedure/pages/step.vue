@@ -1,5 +1,5 @@
 <template>
-  <div id="item1-side" class="wrapper">
+  <div class="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
@@ -879,7 +879,7 @@
             this.infoShow[i] = this.infoHideAll
           }
         } else {
-          console.log(this.infoShow[index])
+          // console.log(this.infoShow[index])
           this.infoShow[index] = !this.infoShow[index]
         }
       }

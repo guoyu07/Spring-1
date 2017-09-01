@@ -1,5 +1,5 @@
 <template>
- <div>
+ <div class="wrapper">
     <el-row>
      <el-col :md="24" :lg="20">
      <el-card>

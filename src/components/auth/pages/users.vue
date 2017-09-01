@@ -1,5 +1,5 @@
 <template>
-  <div class="users">
+  <div class="users wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">

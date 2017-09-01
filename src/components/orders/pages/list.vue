@@ -1,5 +1,5 @@
 <template>
-  <div class="order-list">
+  <div class="order-list wrapper">
     <el-card class="box-card" v-if="filteredTasks.list.length">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
       <el-button icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
