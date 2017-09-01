@@ -36,7 +36,7 @@
             v-loading.body="permittedProcessLoading">
             <el-table-column type="expand">
               <template scope="scope">
-                <!-- <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
+                <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
                 <el-collapse accordion @change="onAccordionChange">
                   <el-collapse-item v-for="task in scope.row.task_list" :key="task.tkey" :title="task.tname" v-if="task.tkey !== 'start'">
                     <el-row>
@@ -121,30 +121,7 @@
                       </el-col>
                     </el-row>
                   </el-collapse-item>
-                </el-collapse> -->
-                <el-table
-                  :data="scope.row.task_list">
-                    <el-table-column
-                      prop="tname"
-                      label="环节">
-                    </el-table-column>
-                    <el-table-column
-                      label="候选人">
-                      <template scope="scope">
-                        <span v-for="user in scope.row.users">{{user.nick}}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      label="候选组">
-                      <template scope="scope">
-                        <span v-for="group in scope.row.groups">{{group.name}}</span>
-                      </template>
-                    </el-table-column>
-                    <el-table-column
-                      prop="assign"
-                      label="受指派人">
-                    </el-table-column>
-                  </el-table>
+                </el-collapse>
               </template>
             </el-table-column>
             <el-table-column

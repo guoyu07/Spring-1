@@ -99,6 +99,7 @@ const routes = [{
   }, {
     path: '/account',
     component: require('./components/account/index'),
+    redirect: { path: '/account/basics' },
     meta: {
       sidebar: SidebarConf.Personal
     },
