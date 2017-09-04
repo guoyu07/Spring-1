@@ -29,6 +29,10 @@ module.exports = {
             pathRewrite: {
               '^/api': '/api'
             }
+        },
+        '/activiti_flow': {
+            target: 'ws://192.168.10.33',
+            ws: true
         }
     },
     // CSS Sourcemaps off by default because relative paths are "buggy"

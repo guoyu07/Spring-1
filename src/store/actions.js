@@ -55,5 +55,34 @@ module.exports = {
       })
       resolve()
     })
+  },
+
+  socket_onopen: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      console.log('socket open')
+      commit(types.SOCKET_ONOPEN)
+      resolve()
+    })
+  },
+
+  socket_onclose: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_ONCLOSE)
+      resolve()
+    })
+  },
+
+  socket_onmessage: ({ commit }, message) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_ONMESSAGE, message)
+      resolve()
+    })
+  },
+
+  socket_onread: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_ONREAD)
+      resolve()
+    })
   }
 }

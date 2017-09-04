@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import auth from './auth'
+import socket from './socket'
 import SidebarConf from './sidebar-conf'
 
 import NProgress from 'nprogress'
@@ -234,6 +235,7 @@ router.beforeEach((to, from, next) => {
       console.log(requiresAuth)
     } else {
       next()
+      socket.initSocket()
     }
   } else {
     next()
