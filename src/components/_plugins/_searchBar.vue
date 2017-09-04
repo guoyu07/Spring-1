@@ -59,7 +59,7 @@
       <div class="btn-area">
         <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至{{mainInfo.name}}列表</el-button>
       </div>
-      <h5>列表</h5>
+      <h5>{{mainInfo.name}}列表</h5>
       <el-table
         :data="hostList"
         border

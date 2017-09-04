@@ -197,7 +197,7 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
  * @return {object} 根据表单定义的类型生成各种类型初始化的值
 */
 Vue.prototype.setDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums') {
     // console.log(original.name)
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
@@ -208,6 +208,13 @@ Vue.prototype.setDataType = (original, goalData) => {
     Vue.prototype.$set(goalData, original.id, '')
   } else if (original.value.type === 'users' && original.isAlias) {
     Vue.prototype.$set(goalData, original.id, { group: null, user: null })
+  } else if (original.value.type === 'table') {
+    Vue.prototype.$set(goalData, original.id, [])
+    Vue.prototype.$set(goalData[original.id], 0, {})
+    let data = goalData[original.id][0]
+    original.value.attr_list.map(item => {
+      Vue.prototype.setDataType(item, data)
+    })
   }
 }
 
@@ -218,7 +225,7 @@ Vue.prototype.setDataType = (original, goalData) => {
  * @return {object} 根据表单定义的类型生成各种类型初始化的值
 */
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
@@ -228,6 +235,13 @@ Vue.prototype.setNewDataType = (original, goalData) => {
     goalData[original.id] = ''
   } else if (original.value.type === 'users' && original.isAlias) {
     goalData[original.id] = { group: null, user: null }
+  } else if (original.value.type === 'table') {
+    goalData[original.id] = []
+    goalData[original.id][0] = {}
+    let data = goalData[original.id][0]
+    original.value.attr_list.map(item => {
+      Vue.prototype.setNewDataType(item, data)
+    })
   }
 }
 

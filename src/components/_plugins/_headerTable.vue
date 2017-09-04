@@ -52,7 +52,7 @@
       }
     },
     created () {
-      this.formData.value.attr_list.map(attr => {
+      this.formData.value && this.formData.value.attr_list.map(attr => {
         if (attr.default.type === 'message_header') {
           this.isEditing = true
           this.item[this.formData.id].map(item => {

@@ -47,8 +47,9 @@
                   </search-bar>
                   <header-table
                     v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
-                    :form-data="task"
+                    :form-data="taskform"
                     :item="postForm.header"
+                    :postForm="postForm"
                     :headerTable="true">
                   </header-table>
                 </span>
@@ -268,12 +269,12 @@
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               this.setDataType(item, this.postForm.header, this)
-              if (item.value.type === 'table') {
-                // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                item.value.attr_list.map(list => {
-                  this.setDataType(list, this.postForm.header[item.id][0], this)
-                })
-              }
+              // if (item.value.type === 'table') {
+              //   // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
+              //   item.value.attr_list.map(list => {
+              //     this.setDataType(list, this.postForm.header[item.id][0], this)
+              //   })
+              // }
               if (item.show.type) {
                 if (item.show.type === 'form_header') {
                   this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
@@ -300,59 +301,15 @@
             })
           })
           // let newData = {}
-          this.taskFormData.body.body_list.forEach(body => {
-            if (body.show.type) {
-              // const keyPath = body.show.key_path.split('.')
-              if (body.show.type === 'form_header') {
-                this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
-                  this.$set(this.postForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
-                  this.taskFormData.body.body_list.map(bodyList => {
-                    if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
-                      bodyList.attr_list.map(group => {
-                        group.value.map(value => {
-                          this.setDataType(value, this.postForm.body[0], this)
-                          if (value.value.type === 'table') {
-                            // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                            this.$set(this.postForm.body[0], value.id, [])
-                            this.$set(this.postForm.body[0][value.id], 0, {})
-                            value.value.attr_list.map(item => {
-                              this.setDataType(item, this.postForm.body[0][value.id], this)
-                              // console.log(this.postForm.body[0][value.id])
-                            })
-                          }
-                          // 有默认值时 只有 form_body 和 form_header 2种
-                          if (value.default && value.default.type) {
-                            if (value.default.type === 'form_body') {
-                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.postForm.body[0][value.id] = newVal
-                              })
-                            } else if (value.default.type === 'form_header') {
-                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.postForm.body[0][value.id] = newVal
-                              })
-                            }
-                          }
-                        })
-                      })
-                    }
-                  })
-                })
-              }
-            } else {
-              this.$set(this.postForm, 'body', [{}])
+          if (this.taskFormData.body.body_list.length) {
+            this.$set(this.postForm, 'body', [{}])
+          }
+          this.taskFormData.body.body_list.forEach((body, bodyIndex) => {
+            if (this.showBodyList(body, this.postForm, this.applyData, bodyIndex)) {
               body.attr_list.map(group => {
                 group.value.map(value => {
                   if (value.need_submit) {
                     this.setDataType(value, this.postForm.body[0], this)
-                    if (value.value.type === 'table') {
-                      // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                      this.$set(this.postForm.body[0], value.id, [])
-                      this.$set(this.postForm.body[0][value.id], 0, {})
-                      value.value.attr_list.map(item => {
-                        this.setDataType(item, this.postForm.body[0][value.id], this)
-                        // console.log(this.postForm.body[0][value.id])
-                      })
-                    }
                     // 有默认值时 只有 form_body 和 form_header 2种
                     if (value.default && value.default.type) {
                       if (value.default.type === 'form_body') {

@@ -202,7 +202,7 @@
         this.http.post(url, userApi.data).then((res) => {
           if (res.status === 200) {
             this.userDicts = res.data.data.list
-            // TODO: 优化，这个 $current_user 的值放不回去，这里是先删了，再放回去
+            // TODO: 优化，是先删了，再放回去
             this.selectedFilters.map(selected => {
               if (selected.type === 'user') {
                 this.userDicts.map(dict => {
