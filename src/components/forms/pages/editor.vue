@@ -51,7 +51,7 @@
   }
 </style>
 <template>
-  <div class="editor-content" v-if="formConfig && formConfig.form">
+  <div class="editor-content wrapper" v-if="formConfig && formConfig.form">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">

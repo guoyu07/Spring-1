@@ -1,10 +1,6 @@
 <style lang="less" scoped>
   @import url("../../../assets/css/variables");
 
-  .dashboard {
-    padding: .4em 1.2em;
-  }
-
   .grid {
     display: flex;
     flex-wrap: wrap;
@@ -74,7 +70,7 @@
 </style>
 
 <template>
-  <div class="dashboard">
+  <div class="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-col :sm="24" style="margin-bottom: 20px;">

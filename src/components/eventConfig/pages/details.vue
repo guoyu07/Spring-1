@@ -1,5 +1,5 @@
 <template>
-  <div class="editor-content">
+  <div class="editor-content wrapper">
     <el-row>
       <el-col :span="24">
         <el-card class="box-card">

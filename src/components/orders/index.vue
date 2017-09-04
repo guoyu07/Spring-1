@@ -22,6 +22,7 @@
   }
 
   .order-view {
-    padding-left: 200px;
+    padding: 20px;
+    padding-left: 220px;
   }
 </style>

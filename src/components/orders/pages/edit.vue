@@ -47,6 +47,12 @@
   export default {
     mixins: [ getFilteredTasks ],
 
+    data () {
+      return {
+        filterData: {}
+      }
+    },
+
     computed: {
       isEdit () {
         return this.$route.meta.isEdit

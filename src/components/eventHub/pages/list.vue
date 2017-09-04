@@ -7,7 +7,7 @@
 </style>
 
 <template>
-  <div class="list">
+  <div class="list wrapper">
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card">

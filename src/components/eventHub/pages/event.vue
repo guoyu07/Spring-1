@@ -244,7 +244,7 @@
 </style>
 
 <template>
-  <div class="event">
+  <div class="event wrapper">
     <h3><pre class="ticket-num">事件号：<code>{{eventData.workFlowNo}}</code></pre>{{ eventData.variables && eventData.variables.message[0].form.header.summary}}</h3>
     <el-row :gutter="24" type="flex" justify="end" class="btn-row">
       <el-col :span="24" :xs="24">

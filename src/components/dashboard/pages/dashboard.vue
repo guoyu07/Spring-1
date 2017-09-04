@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="wrapper">
     <section class="chart">
       <el-row :gutter="10">
         <el-col :span="12">
@@ -467,13 +467,13 @@
 </script>
 
 <style lang="less" scoped>
-// #content {
-//   background-color: #f8f8f8;
-// }
+.wrapper {
+  background-color: #f8f8f8;
+}
 .chart {
   .chart-zone {
     min-height: 400px;
-    background-color: #f8f8f8;
+    background-color: #fff;
     border-radius: 5px;
     position: relative;
     margin-bottom: 10px;

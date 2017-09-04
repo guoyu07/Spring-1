@@ -104,6 +104,13 @@ const parseData = obj => {
 
 Vue.prototype.parseData = parseData
 
+/**
+ * @method getPathResult 取某个路径的值
+ * @param {object} result 传入一个需要取某个路径的值的对象
+ * @param {string} path 某个路径
+ * @param {number} k 若取到的值为数组，k则为数组的索引，若不为数组，k无效
+ * @return {arr, object, string, number, null, ''} 直接返回path对应的值
+*/
 const getPathResult = (result, path, k) => {
   if (!result) {
     // console.log('找不到result')
@@ -140,6 +147,14 @@ const getPathResult = (result, path, k) => {
 
 Vue.prototype.getPathResult = getPathResult
 
+/**
+ * @method getLimitQuantity 表单自定义里的个数限制，用于 search_bar
+ * @param {object} formItem 表单定义
+ * @param {object} postForm 需要提交的表单字段
+ * @param {object} messageData 历史数据
+ * @param {number} index 索引，用于有 body 的地方
+ * @return {object} 根据表单设置的各种类型直接返回限制的个数，min/max/min&max
+*/
 Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
   // console.log(formItem)
   if (formItem.limit && formItem.limit.type) {
@@ -176,8 +191,14 @@ Vue.prototype.getLimitQuantity = (formItem, postForm, messageData, index) => {
   }
 }
 
+/**
+ * @method setDataType 根据表单定义生成双向绑定的数据
+ * @param {object} original 表单定义
+ * @param {object} goalData 需要提交的表单
+ * @return {object} 根据表单定义的类型生成各种类型初始化的值
+*/
 Vue.prototype.setDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums') {
     // console.log(original.name)
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
@@ -188,11 +209,24 @@ Vue.prototype.setDataType = (original, goalData) => {
     Vue.prototype.$set(goalData, original.id, '')
   } else if (original.value.type === 'users' && original.isAlias) {
     Vue.prototype.$set(goalData, original.id, { group: null, user: null })
+  } else if (original.value.type === 'table') {
+    Vue.prototype.$set(goalData, original.id, [])
+    Vue.prototype.$set(goalData[original.id], 0, {})
+    let data = goalData[original.id][0]
+    original.value.attr_list.map(item => {
+      Vue.prototype.setDataType(item, data)
+    })
   }
 }
 
+/**
+ * @method setNewDataType 根据表单定义生成对应初始化数据，不一定用于双向绑定
+ * @param {object} original 表单定义
+ * @param {object} goalData 存储数据的对象
+ * @return {object} 根据表单定义的类型生成各种类型初始化的值
+*/
 Vue.prototype.setNewDataType = (original, goalData) => {
-  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums' || original.value.type === 'table') {
+  if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums') {
     goalData[original.id] = []
   } else if (original.value.type === 'date' || original.value.type === 'datetime' || original.value.type === 'int') {
     goalData[original.id] = undefined
@@ -202,10 +236,22 @@ Vue.prototype.setNewDataType = (original, goalData) => {
     goalData[original.id] = ''
   } else if (original.value.type === 'users' && original.isAlias) {
     goalData[original.id] = { group: null, user: null }
+  } else if (original.value.type === 'table') {
+    goalData[original.id] = []
+    goalData[original.id][0] = {}
+    let data = goalData[original.id][0]
+    original.value.attr_list.map(item => {
+      Vue.prototype.setNewDataType(item, data)
+    })
   }
 }
 
-// 逆向寻找匹配的 task_key
+/**
+ * @method findTaskMsgR 逆向寻找匹配的 task_key
+ * @param {object} arrMsg 一般为接口返回的 message
+ * @param {string} arrTaskKey 任务名称
+ * @return {object} 返回最新的任务的相关信息
+*/
 var findTaskMsgR = (arrMsg, arrTaskKey) => {
   for (let i = arrMsg.length - 1; i >= 0; i--) {
     if (arrTaskKey.indexOf(arrMsg[i]['task_key']) !== -1) {
@@ -217,7 +263,12 @@ var findTaskMsgR = (arrMsg, arrTaskKey) => {
 
 Vue.prototype.findTaskMsgR = findTaskMsgR
 
-// 收集所有最新 task_key 数据
+/**
+ * @method getTaskInfo 收集所有最新 task_key 数据（历史信息）
+ * @param {object} arrMsg 一般为接口返回的 message
+ * @param {arr} taskKeyArr 除了start的所有任务名称
+ * @return {arr} 返回所有任务的相关信息,即历史信息
+*/
 Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
   let rs = findTaskMsgR(arrMsg, ['start']).form // 这里收集 申请 的信息
   // console.log(taskKeyArr)
@@ -244,30 +295,12 @@ Vue.prototype.getTaskInfo = (arrMsg, taskKeyArr) => {
   return rs
 }
 
-// 收集所有最新 task_key 数据
-Vue.prototype.getTask = (arrMsg, taskKeyArr) => {
-  let rs = {
-    data: []
-  }
-  rs.data = findTaskMsgR(arrMsg, ['start']).form.object_list // 这里收集 申请 的信息
-  taskKeyArr
-    .filter(t => findTaskMsgR(arrMsg, [t]))
-    .map(t => findTaskMsgR(arrMsg, [t]).form.data)
-    .map(tsk => {
-      if (Array.isArray(tsk)) {
-        !rs.data.length && tsk.forEach(t => rs.data.push({}))
-        tsk.map((host, index) => Object.assign(rs.data[index], host))
-      }
-    })
-  return rs
-}
-
-// Vue.prototype.isEmptyObj = obj => {
-//   for (const id in obj) {
-//     return id
-//   }
-// }
-
+/**
+ * @method filterObj 过滤无效的搜索字段
+ * @param {object} obj 搜索值的对象集合
+ * @param {boolean} like 是否模糊搜索
+ * @return {arr} 返回搜索字段信息
+*/
 Vue.prototype.filterObj = (obj, like) => { // 过滤搜索字段
   let data = {}
   for (const key in obj) {
@@ -325,6 +358,16 @@ Vue.prototype.filterDate = value => {
   return `${date.getFullYear()}-${cv(date.getMonth() + 1)}-${cv(date.getDate())}`
 }
 
+/**
+ * @method showFormItem 根据表单定义是否显示该表单
+ * @param {object} taskform 表单定义
+ * @param {object} postForm 提交的表单
+ * @param {object} messageData 历史信息
+ * @param {string, boolean} historyTask 历史任务
+ * @param {string, boolean} currentTask 当前任务
+ * @param {number} index 索引，有 body 时需要索引
+ * @return {boolean} 是否显示该表单
+*/
 Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, currentTask, index) => {
   if (!(taskform.show && taskform.show.type)) {
     return true
@@ -362,6 +405,16 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
   }
 }
 
+/**
+ * @method showFormItem 根据表单定义是否显示该 body
+ * @param {object} taskFormData 表单定义
+ * @param {object} postForm 提交的表单
+ * @param {object} messageData 历史信息
+ * @param {number} index body 的索引
+ * @param {string, boolean} historyTask 历史任务
+ * @param {string, boolean} currentTask 当前任务
+ * @return {boolean} 是否显示该 body
+*/
 Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index, historyTask, currentTask) => {
   if (taskFormData.show && taskFormData.show.type) {
     let compareVariable
@@ -396,6 +449,14 @@ Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index, histor
   }
 }
 
+/**
+ * @method bodyLabel 根据表单定义显示该 body 的标签名称
+ * @param {object} taskForm 表单定义
+ * @param {object} postForm 提交的表单
+ * @param {object} messageData 历史信息
+ * @param {arr} labelArr 各个 body 的标签名称
+ * @return {arr} 返回 labelArr 若表单无定义 body 名称，则直接显示 ‘body’ + 索引 + 1
+*/
 Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
   // console.log(taskForm)
   if (taskForm.body.body_list.length !== 0) {

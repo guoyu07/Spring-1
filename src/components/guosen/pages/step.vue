@@ -1,5 +1,5 @@
 <template>
-  <div id="item1-side" class="wrapper">
+  <div class="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
@@ -63,6 +63,7 @@
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
+                    :header="true"
                     :postForm="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
@@ -479,21 +480,21 @@
               if (item.show.type === 'form_header') {
                 if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
                   if (item.value.type === 'search_bar') {
-                    this.assignForm.header[item.id] = []
+                    // this.assignForm.header[item.id] = []
                     this.assignForm.header[item.id] = val
                   }
                 }
               }
             } else {
               if (item.value.type === 'search_bar') {
-                this.assignForm.header[item.id] = []
+                // this.assignForm.header[item.id] = []
                 this.assignForm.header[item.id] = val
               }
             }
           })
         })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
-        this.$refs['postForm'].validate((valid) => {}) // 调用验证
+        this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
       infoShowFunction (newVal) {
         const infoShow = []
@@ -536,15 +537,7 @@
               header.value.map(value => {
                 if (value.need_submit) {
                   this.setDataType(value, this.assignForm.header, this)
-                  if (value.value.type === 'table') {
-                    this.$set(this.assignForm.header[value.id], 0, {})
-                    let data = this.assignForm.header[value.id][0]
-                    value.value.attr_list.map(item => {
-                      this.setDataType(item, data, this)
-                    })
-                  }
-                  // console.log(this.assignForm.header)
-                  // 有默认值时 TODO：默认值暂时只写了2种
+                  // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
                   if (value.default && value.default.type) {
                     if (value.default.type === 'message_header') {
                       this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
@@ -564,85 +557,12 @@
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
-            this.taskForm.body.body_list.forEach(body => {
-              if (body.show.type) {
-                const keyPath = body.show.key_path.split('.')
-                console.log(keyPath)
-                if (body.show.type === 'message_body') {
-                  console.log('message_body')
-                  if (body.show.value === item[keyPath[0]]) {
-                    // console.log(item[keyPath[0]])
-                    body.attr_list.map(group => {
-                      group.value.map(value => {
-                        // this.setNewDataType(item, newData)
-                        if (value.need_submit) {
-                          this.setNewDataType(value, newData)
-                          if (value.value.type === 'table') {
-                            // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                            newData[value.id][0] = {}
-                            let data = newData[value.id][0]
-                            value.value.attr_list.map(item => {
-                              this.setNewDataType(item, data)
-                            })
-                          }
-                          // 有默认值时 TODO：默认值暂时只写了 message_header 一种
-                          if (value.default && value.default.type) {
-                            if (value.default.type === 'message_header') {
-                              newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                            } else if (value.default.type === 'form_body') {
-                              this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                                this.assignForm.body[k][value.id] = newVal
-                              })
-                            }
-                          }
-                        }
-                      })
-                    })
-                    // console.log(newData)
-                  }
-                } else if (body.show.type === 'message_header') {
-                  body.attr_list.map(group => {
-                    group.value.map(value => {
-                      if (value.need_submit) {
-                        this.setNewDataType(value, newData)
-                        if (value.value.type === 'table') {
-                          // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                          newData[value.id][0] = {}
-                          let data = newData[value.id][0]
-                          value.value.attr_list.map(item => {
-                            this.setNewDataType(item, data)
-                          })
-                        }
-                        // 有默认值时 TODO：默认值暂时只写了 message_header 一种
-                        if (value.default && value.default.type) {
-                          if (value.default.type === 'message_header') {
-                            newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                          } else if (value.default.type === 'form_body') {
-                            this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                              console.log(newVal, k, value.id)
-                              this.assignForm.body[k][value.id] = newVal
-                            })
-                          }
-                        }
-                      }
-                    })
-                  })
-                }
-              } else {
-                // console.log(item, body)
+            this.taskForm.body.body_list.forEach((body, bodyIndex) => {
+              if (this.showBodyList(body, this.postForm, this.applyData, bodyIndex)) {
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // console.log(newData)
-                      if (value.value.type === 'table') {
-                        // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-                        newData[value.id][0] = {}
-                        let data = newData[value.id][0]
-                        value.value.attr_list.map(item => {
-                          this.setNewDataType(item, data)
-                        })
-                      }
                       // 有默认值时
                       if (value.default && value.default.type) {
                         if (value.default.type === 'message_header') {

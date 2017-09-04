@@ -22,6 +22,7 @@
               :index="index"
               :table-index="tableindex"
               :body-table="true"
+              :is-Editing="isEditing"
               :value-id="formData.id"
               :message="messageData">
             </form-body>
@@ -48,11 +49,39 @@
       return {
         tabsValue: '0',
         limitNum: 0,
-        limitTableMax: 0
+        limitTableMax: 0,
+        isEditing: false
       }
     },
     created () {
       // console.log(this.postForm)
+      this.formData.value.attr_list.map(attr => {
+        if (attr.default.type === 'message_header') {
+          this.isEditing = true
+          this.item[this.formData.id].map(item => {
+            // 所需的值为数组
+            if (Array.isArray(item[attr.id])) {
+              // 给的默认值是数组
+              if (Array.isArray(this.getPathResult(this.messageData.header, attr.default.key_path))) {
+                // 都是数组的话，合并一起
+                item[attr.id] = item[attr.id].concat(this.getPathResult(this.messageData.header, attr.default.key_path))
+              } else {
+                // 所需值为数组，默认值不是数组，就把默认值 push 进所需数组里
+                item[attr.id].push(this.getPathResult(this.messageData.header, attr.default.key_path))
+              }
+            } else {
+              // 所需的值不是数组，默认值为数组
+              if (Array.isArray(this.getPathResult(this.messageData.header, attr.default.key_path))) {
+                // 所需的值取默认值数组里的第一个
+                item[attr.id] = this.getPathResult(this.messageData.header, attr.default.key_path, 0)
+              } else {
+                // 所需的值不是数组，默认值也不是数组，直接取值
+                item[attr.id] = this.getPathResult(this.messageData.header, attr.default.key_path)
+              }
+            }
+          })
+        }
+      })
     },
 
     watch: {

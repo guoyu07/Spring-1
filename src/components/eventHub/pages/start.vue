@@ -1,5 +1,5 @@
 <template>
-  <div id="item1-side" class="wrapper">
+  <div class="wrapper">
     <el-form label-position="left" ref="postForm" :model="postForm" :inline="true" label-width="100px" :label-position="right">
       <h3 class="form-title">{{ $route.params.pname }}</h3>
       <el-row :gutter="24">

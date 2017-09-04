@@ -83,9 +83,6 @@
             placeholder="请选择用户"
             value-key="nick">
             <el-option
-              label="当前用户"
-              :value="{ nick: '当前用户', userId: '$current_user' }"></el-option>
-            <el-option
               v-for="user in userDicts"
               :label="user.nick"
               :key="user.userId"
@@ -241,6 +238,19 @@
         this.http.post(url, userApi.data).then((res) => {
           if (res.status === 200) {
             this.userDicts = res.data.data.list
+            // TODO: 优化，是先删了，再放回去
+            this.selectedFilters.map(selected => {
+              if (selected.type === 'user') {
+                this.userDicts.map(dict => {
+                  selected.filter.map((user, index) => {
+                    if (user.userId === dict.userId) {
+                      selected.filter.splice(index, 1)
+                      selected.filter.push(dict)
+                    }
+                  })
+                })
+              }
+            })
           }
         })
       },
