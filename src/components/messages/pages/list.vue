@@ -26,9 +26,9 @@
               width="50px"
               align="center">
               <template>
-                <i v-if="row.read" class="el-icon-fa-envelope-o"></i>
+                <i v-if="row.read" class="el-icon-fa-envelope-open-o"></i>
                 <el-tooltip v-else content="设为已读" placement="top">
-                  <i class="el-icon-fa-envelope text-warning"></i>
+                  <i class="el-icon-fa-envelope text-warning havent-read" @click="readMessage(row.id)"></i>
                 </el-tooltip>
               </template>
             </el-table-column>
@@ -51,7 +51,7 @@
     data () {
       return {
         messageList: [],
-        read: false,
+        // read: false,
         pagination: {
           current: 1,
           pageSize: 10,
@@ -71,7 +71,6 @@
           action: 'message',
           method: 'GET',
           data: {
-            read: this.read,
             page: this.pagination.current,
             page_size: this.pagination.pageSize
           }
@@ -88,7 +87,34 @@
       onPageChange (val) {
         this.pagination.current = val
         this.getMessageList()
+      },
+
+      readMessage (id) {
+        let postData = {
+          action: 'message',
+          method: 'POST',
+          data: {
+            ids: id ? [ id ] : null
+          }
+        }
+        this.http.post('/base/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.getMessageList()
+          }
+        })
       }
     }
   }
 </script>
+
+<style lang="less" scoped>
+  @import url("./../../../assets/css/variables.less");
+
+  .havent-read {
+    cursor: pointer;
+
+    &:hover {
+      color: lighten(@warning, 10%)
+    }
+  }
+</style>

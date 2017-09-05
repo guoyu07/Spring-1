@@ -276,7 +276,7 @@
       },
 
       getTaskDicts () {
-        const taskApi = this.filterList.find(_ => _.type === 'pname').source
+        const taskApi = this.filterList.find(_ => _.type === 'tname').source
         const url = (taskApi.url).replace('/api', '')
         this.http.post(url, taskApi.data).then((res) => {
           if (res.status === 200) {
