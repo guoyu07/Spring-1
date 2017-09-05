@@ -1,8 +1,7 @@
 <template>
  <div class="wrapper">
     <el-row>
-     <el-col :md="24" :lg="20">
-     <el-card>
+     <el-col :md="12" :lg="12">
       <h3><i class="el-icon-fa-info-circle"></i> 设置基本信息</h3>
       <el-form :model='basicsForm' ref='basicsForm' :rules="basicsCheck" label-width="100px">
       <el-form-item label="用户名" >
@@ -19,7 +18,6 @@
       </el-form-item>
       <el-button type="primary" @click="submitForm('basicsForm')">保存</el-button>
       </el-form>
-     </el-card>
      </el-col>
     </el-row>
  </div>

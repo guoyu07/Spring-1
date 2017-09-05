@@ -9,10 +9,12 @@
        </el-input><p v-if="isCap" class="capTip">大写已打开</p>
 	    </el-form-item>
 	    <el-form-item label="新密码" prop='new_pass'>
-	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.new_pass" type='password' ></el-input>
+	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.new_pass" type='password' @keypress.native="capLock($event)">  
+       </el-input><p v-if="isCap" class="capTip">大写已打开</p>
 	    </el-form-item>
 	    <el-form-item label="再次确认密码" prop='confirm_pass'>
-	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.confirm_pass" type='password'></el-input>
+	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.confirm_pass" type='password' @keypress.native="capLock($event)">  
+       </el-input><p v-if="isCap" class="capTip">大写已打开</p>
 	    </el-form-item>
 	    <el-button type="primary" @click="submitForm('editForm')">保存</el-button>
 	  </el-form>
