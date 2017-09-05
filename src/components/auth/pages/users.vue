@@ -20,10 +20,9 @@
                 v-model="search.key"
                 @change="onSearch">
               </el-input>
-              <!-- multiple -->
               <el-select v-model="search.role" @change="onSearch" clearable placeholder="请选择角色">
                 <el-option
-                  v-for="role in roleList"
+                  v-for="role in roleList.list"
                   :key="role.key"
                   :label="role.name"
                   :value="role.key">
@@ -108,7 +107,7 @@
       </el-col>
     </el-row>
 
-    <el-dialog title="新建用户" size="small" v-model="addUserData.visible">
+    <el-dialog title="添加用户" size="small" v-model="addUserData.visible">
       <el-form :rules="userFormRules" ref="addUserData.user" :model="addUserData.user" label-width="78px">
         <el-form-item label="用户名" prop="nick">
           <el-input v-model="addUserData.user.nick"></el-input>
@@ -130,6 +129,11 @@
             <el-option label="超级管理员" value="0"></el-option>
             <el-option label="管理员" value="1"></el-option>
             <el-option label="普通" value="2"></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属角色" prop="groups">
+          <el-select v-model="addUserData.user.groups" placeholder="请选择用户所属角色">
+            <el-option label="超级管理员" value="0"></el-option>
           </el-select>
         </el-form-item>
       </el-form>
@@ -173,10 +177,11 @@
 
 <script>
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
-  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
+  import getAllUserList from './../../../mixins/getAllUserList'
+  import getAllRoleList from './../../../mixins/getAllRoleList'
 
   export default {
-    mixins: [getPermittedUserList, getPermittedRoleList],
+    mixins: [getPermittedUserList, getAllRoleList, getAllUserList],
 
     data () {
       var validatePass = (rule, value, callback) => {
@@ -224,7 +229,8 @@
             level: '',
             password: '',
             checkPass: '',
-            email: ''
+            email: '',
+            groups: []
           }
         },
         editUserData: {
@@ -265,11 +271,12 @@
 
     created () {
       this.getPermittedUserList()
-      this.getPermittedRoleList()
+      this.getAllRoleList()
+      this.getAllUserList()
     },
 
     watch: {
-      'userList': 'renderList'
+      'permittedUserList': 'renderList'
     },
 
     methods: {
@@ -292,14 +299,14 @@
       handleCurrentChange (val) {
         this.currentPage = val
         const offset = (this.currentPage - 1) * this.currentPageSize
-        const array = this.userList
+        const array = this.permittedUserList
         this.userSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       handleSizeChange (val) {
         console.log(val)
       },
       onSearch () {
-        this.userSearchList = this.userList.filter(user => {
+        this.userSearchList = this.permittedUserList.filter(user => {
           for (const id in user) {
             if (['email', 'nick', 'userId', 'phone'].includes(id)) {
               if (user[id].includes(this.search.key)) {

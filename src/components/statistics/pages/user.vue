@@ -18,7 +18,7 @@
               v-model="selectedUserOrGroup"
               value-key="nick">
               <el-option
-                v-for="user in userList"
+                v-for="user in permittedUserList"
                 :key="user.userId"
                 :label="user.nick"
                 :value="user"></el-option>
@@ -28,7 +28,7 @@
               v-model="selectedUserOrGroup"
               value-key="nick">
               <el-option
-                v-for="role in roleList"
+                v-for="role in permittedRoleList"
                 :key="role.key"
                 :label="role.name"
                 :value="role"></el-option>

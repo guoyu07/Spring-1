@@ -14,7 +14,7 @@
               <el-form-item label="用户" :inline="true">
                 <el-select v-model="newAssignee" filterable clearable placeholder="请选择用户">
                   <el-option
-                    v-for="user in userList"
+                    v-for="user in permittedUserList"
                     :key="user.userId"
                     :label="user.nick"
                     :value="user.userId">
@@ -26,7 +26,7 @@
               <el-form-item label="候选组">
                 <el-select v-model="newcandidateGroup" multiple filterable placeholder="请选择候选组">
                   <el-option
-                    v-for="role in roleList"
+                    v-for="role in permittedRoleList"
                     :key="role.key"
                     :label="role.name"
                     :value="role.key">

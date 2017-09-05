@@ -173,7 +173,7 @@
       <el-select v-model="adminData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
         <template v-if="adminData.type === 'user'">
           <el-option
-            v-for="user in userList"
+            v-for="user in permittedUserList"
             :key="user.userId"
             :label="`${user.nick} - ${user.email}`"
             :value="user.userId"
@@ -181,7 +181,7 @@
         </template>
         <template v-if="adminData.type === 'group'">
           <el-option
-            v-for="role in roleList"
+            v-for="role in permittedRoleList"
             :key="role.key"
             :label="role.name"
             :value="role.key"
@@ -189,8 +189,8 @@
         </template>
       </el-select>
       <!-- <el-checkbox-group v-model="adminData.toAdd">
-        <el-checkbox v-if="adminData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
-        <el-checkbox v-if="adminData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
+        <el-checkbox v-if="adminData.type === 'user'" v-for="user in permittedUserList" :label="user.userId">{{user.code}}</el-checkbox>
+        <el-checkbox v-if="adminData.type === 'group'" v-for="role in permittedRoleList" :label="role.key">{{role.name}}</el-checkbox>
       </el-checkbox-group> -->
       <span class="dialog-footer" slot="footer">
         <el-button @click="onAdd(adminData.pkey, { adminType: adminData.type, operationType: 'admin' })" size="small" icon="check" type="success" :loading="adminData.loading">确认加入</el-button>
@@ -202,7 +202,7 @@
       <el-select v-model="initiatorData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
         <template v-if="initiatorData.type === 'user'">
           <el-option
-            v-for="user in userList"
+            v-for="user in permittedUserList"
             :key="user.userId"
             :label="`${user.nick} - ${user.email}`"
             :value="user.userId"
@@ -210,7 +210,7 @@
         </template>
         <template v-if="initiatorData.type === 'group'">
           <el-option
-            v-for="role in roleList"
+            v-for="role in permittedRoleList"
             :key="role.key"
             :label="role.name"
             :value="role.key"
@@ -218,8 +218,8 @@
         </template>
       </el-select>
       <!-- <el-checkbox-group v-model="initiatorData.toAdd">
-        <el-checkbox v-if="initiatorData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
-        <el-checkbox v-if="initiatorData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
+        <el-checkbox v-if="initiatorData.type === 'user'" v-for="user in permittedUserList" :label="user.userId">{{user.code}}</el-checkbox>
+        <el-checkbox v-if="initiatorData.type === 'group'" v-for="role in permittedRoleList" :label="role.key">{{role.name}}</el-checkbox>
       </el-checkbox-group> -->
       <span class="dialog-footer" slot="footer">
         <el-button @click="onAdd(initiatorData.pkey, { initiatorType: initiatorData.type, operationType: 'initiator' })" size="small" icon="check" type="success" :loading="initiatorData.loading">确认加入</el-button>

@@ -14,7 +14,7 @@
           </el-alert>
           <el-button :disabled="!isQualified" icon="plus" @click="addedRoleData.visible = true" style="margin-bottom: 12px">新建角色</el-button>
           <el-table
-            :data="roleList"
+            :data="permittedRoleList"
             border
             @expand="isCheckable = false">
             <el-table-column
@@ -68,7 +68,7 @@
     <el-dialog title="加入用户" size="tiny" v-model="userViewData.visible">
       <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
       <el-checkbox-group v-model="usersToAdd">
-        <el-checkbox v-for="user in userList" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
+        <el-checkbox v-for="user in permittedUserList" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
       </el-checkbox-group>
       <span class="dialog-footer" slot="footer">
         <el-button :disabled="!isQualified" @click="onAddUser" size="small" icon="check" type="success" :loading="userViewData.loading">确认加入</el-button>
@@ -235,14 +235,14 @@
           this.userViewData.visible = true
           this.userViewData.roleKey = key
           console.log(users)
-          for (let user of this.userList) {
+          for (let user of this.permittedUserList) {
             if (users.includes(user)) {
               user.exsting = true
             } else {
               user.exsting = false
             }
           }
-          console.log(this.userList)
+          console.log(this.permittedUserList)
           return
         }
         let postData = {
