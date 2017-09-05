@@ -79,7 +79,7 @@
           if (res.status === 200) {
             this.messageList = res.data.data.list
             this.pagination.total = res.data.data.total
-            this.$store.dispatch('SOCKET_ONREAD')
+            this.$store.dispatch('socket_onread')
           }
         })
       },
