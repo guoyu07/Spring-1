@@ -31,6 +31,16 @@ const routes = [{
       sidebar: SidebarConf.Homepage
     }
   }, {
+    path: '/messages',
+    component: require('./components/messages/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
+    children: [{
+      path: '',
+      component: resolve => require(['./components/messages/pages/list'], resolve)
+    }]
+  }, {
     path: '/procedure',
     component: require('./components/procedure/index'),
     meta: {
