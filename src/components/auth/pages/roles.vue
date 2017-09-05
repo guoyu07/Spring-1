@@ -3,7 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <div>
-          <h3 class="modul-title"><i class="el-icon-fa-users"></i> 角色管理</h3>
+          <h3 class="module-title"><i class="el-icon-fa-users"></i> 角色管理</h3>
           <el-alert
             v-if="!isQualified"
             title="没有权限 :("

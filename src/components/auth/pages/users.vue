@@ -3,7 +3,7 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <div>
-          <h3 class="modul-title"><i class="el-icon-fa-user"></i> 用户管理</h3>
+          <h3 class="module-title"><i class="el-icon-fa-user"></i> 用户管理</h3>
           <el-alert
             v-if="!isQualified"
             title="没有权限 :("
@@ -44,7 +44,7 @@
             </el-table-column>
             <el-table-column
               prop="userId"
-              label="用户名"
+              label="用户 ID"
               width="100"></el-table-column>
             <el-table-column
               prop="nick"
@@ -84,12 +84,11 @@
             <el-table-column
               label="操作"
               width="80"
-              inline-template
-              :context="_self">
+              inline-template>
               <template>
                 <!-- <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
                 <el-button :disabled="!isQualified" :type="row.status ? 'success' : 'danger'" size="small" @click="onToggleUser(row)">{{ row.status ? '启用' : '禁用' }}</el-button> -->
-                <el-button type="primary" size="small">查看</el-button>
+                <el-button type="primary" size="small" @click="toDetail(row.userId)">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -101,7 +100,7 @@
             :page-sizes="[10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
             layout="sizes, prev, pager, next"
-            :total="userSearchList.length">
+            :total="permittedUserList.length">
           </el-pagination>
         </div>
       </el-col>
@@ -109,7 +108,7 @@
 
     <el-dialog title="添加用户" size="small" v-model="addUserData.visible">
       <el-form :rules="userFormRules" ref="addUserData.user" :model="addUserData.user" label-width="78px">
-        <el-form-item label="用户名" prop="nick">
+        <el-form-item label="昵称" prop="nick">
           <el-input v-model="addUserData.user.nick"></el-input>
         </el-form-item>
         <el-form-item label="用户 ID" prop="userId">
@@ -117,6 +116,9 @@
         </el-form-item>
         <el-form-item label="Email" prop="email">
           <el-input v-model="addUserData.user.email"></el-input>
+        </el-form-item>
+        <el-form-item label="手机" prop="phone">
+          <el-input v-model="addUserData.user.phone"></el-input>
         </el-form-item>
         <el-form-item label="密码" prop="password">
           <el-input type="password" v-model="addUserData.user.password" auto-complete="off"></el-input>
@@ -132,41 +134,40 @@
           </el-select>
         </el-form-item>
         <el-form-item label="所属角色" prop="groups">
-          <el-select v-model="addUserData.user.groups" placeholder="请选择用户所属角色">
-            <el-option label="超级管理员" value="0"></el-option>
+          <el-select v-model="addUserData.user.groups" multiple placeholder="请选择用户所属角色">
+            <el-option
+              v-for="role in permittedRoleList"
+              :key="role.key"
+              :label="role.name"
+              :value="role.key">
+            </el-option>
           </el-select>
         </el-form-item>
       </el-form>
       <span class="dialog-footer" slot="footer">
-        <el-button @click="onAddUser(addUserData.user)" icon="check" type="info">确认新建</el-button>
+        <el-button @click="onAddUser(addUserData.user)" icon="check" type="info">确认添加</el-button>
       </span>
     </el-dialog>
 
-    <el-dialog title="编辑用户" size="tiny" v-model="editUserData.visible">
-      <el-form :rules="userFormRules" ref="addUserData.user" :model="addUserData.user" label-width="72px">
-        <el-form-item label="用户名" prop="nick">
-          <el-input v-model="editUserData.user.nick" placeholder="请填写用户名"></el-input>
-        </el-form-item>
-        <el-form-item label="用户 ID" prop="userId">
-          <el-input v-model="editUserData.user.userId" placeholder="请填写用户 ID"></el-input>
-        </el-form-item>
-        <el-form-item label="Email" prop="email">
-          <el-input v-model="editUserData.user.email"></el-input>
-        </el-form-item>
-        <el-form-item label="密码">
-          <el-input v-model="editUserData.user.pwd"></el-input>
-        </el-form-item>
+    <el-dialog title="批量编辑" size="tiny" v-model="editUserData.visible">
+      <el-form :rules="userFormRules" ref="editUserData.user" :model="editUserData.user" label-width="72px">
         <el-form-item label="用户层级" prop="level">
-          <el-select v-model="editUserData.user.level" :disabled="editUserData.user.userId === $store.state.userinfo.userId" placeholder="请选择用户层级">
+          <el-select v-model="editUserData.user.level" placeholder="请选择用户层级">
             <el-option label="超级管理员" value="0"></el-option>
             <el-option label="管理员" value="1"></el-option>
             <el-option label="普通" value="2"></el-option>
           </el-select>
         </el-form-item>
-        <!-- <el-form-item label="用户层级" prop="level">
-          <el-input-number v-model="editUserData.user.level" :min="0" :max="2"></el-input-number>
+        <el-form-item label="所属角色" prop="groups">
+          <el-select v-model="editUserData.user.group_keys" multiple placeholder="请选择用户所属角色">
+            <el-option
+              v-for="role in permittedRoleList"
+              :key="role.key"
+              :label="role.name"
+              :value="role.key">
+            </el-option>
+          </el-select>
         </el-form-item>
-        <h5 class="sub-title" style="padding-left: 24px; margin-top: 0"><i class="el-icon-information"></i> 用户层级说明：<br>0：超级管理员；1：管理员；2：普通</h5> -->
       </el-form>
       <span class="dialog-footer" slot="footer">
         <el-button @click="onEditUser(editUserData.user)" icon="check" type="info">确认</el-button>
@@ -177,11 +178,12 @@
 
 <script>
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
+  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import getAllUserList from './../../../mixins/getAllUserList'
   import getAllRoleList from './../../../mixins/getAllRoleList'
 
   export default {
-    mixins: [getPermittedUserList, getAllRoleList, getAllUserList],
+    mixins: [getPermittedUserList, getPermittedRoleList, getAllRoleList, getAllUserList],
 
     data () {
       var validatePass = (rule, value, callback) => {
@@ -226,6 +228,7 @@
           visible: false,
           user: {
             nick: '',
+            phone: '',
             level: '',
             password: '',
             checkPass: '',
@@ -236,10 +239,8 @@
         editUserData: {
           visible: false,
           user: {
-            nick: '',
             level: '',
-            password: '',
-            checkPass: ''
+            group_keys: []
           }
         },
         userFormRules: {
@@ -271,6 +272,7 @@
 
     created () {
       this.getPermittedUserList()
+      this.getPermittedRoleList()
       this.getAllRoleList()
       this.getAllUserList()
     },
@@ -281,7 +283,11 @@
 
     methods: {
       renderList (newVal, oldVal) {
-        this.userSearchList = newVal
+        this.handleCurrentChange(1)
+        // this.userSearchList = newVal
+        // const offset = (this.currentPage - 1) * this.currentPageSize
+        // const array = this.permittedUserList
+        // this.userSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       formatLevel (row, col) {
         // console.log(row.level, col)
@@ -303,7 +309,8 @@
         this.userSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       handleSizeChange (val) {
-        console.log(val)
+        this.currentPageSize = val
+        this.handleCurrentChange(1)
       },
       onSearch () {
         this.userSearchList = this.permittedUserList.filter(user => {
@@ -324,7 +331,10 @@
           }
         })
       },
-      onAddUser ({ nick, userId, email, level, password }) {
+      toDetail (userId) {
+        this.$router.push({ path: 'user-detail', query: { userId: userId } })
+      },
+      onAddUser ({ nick, phone, userId, email, level, password, groups }) {
         // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(userId)) {
         //   this.$message.error('用户 ID 只能是字母,数字,下划线,且开头和结尾不能是下划线！')
         //   return
@@ -332,7 +342,7 @@
         let postData = {
           action: 'user',
           method: 'POST',
-          data: { nick, userId, email, level, password }
+          data: { nick, phone, userId, email, level, password, groups }
         }
         this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
@@ -345,24 +355,29 @@
         })
       },
 
-      onEditUser ({ nick, userId, email, pwd, level }) {
+      onEditUser (user) {
         // if ((?!_)(?!.*?_$)!/^[a-zA-Z0-9_]/.test(userId)) {
         //   this.$message.error('用户 ID 用户名只能是字母,数字,下划线,且开头和结尾不能是下划线！')
         //   return
         // }
-        let data = { nick, userId, email, pwd, level }
-        if (this.editUserData.user.userId === this.$store.state.userinfo.userId) {
-          delete data.level
-        }
+        // let data = user
+        // if (this.editUserData.user.userId === this.$store.state.userinfo.userId) {
+        //   delete data.level
+        // }
+        let userIds = []
+        this.userSelection.map(user => {
+          userIds.push(user.userId)
+        })
+        user.level = +user.level
         let postData = {
-          action: 'user',
-          method: 'PUT',
-          data: data
+          action: 'batch/update/user',
+          method: 'post',
+          data: { users: userIds, ...user }
         }
         this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.editUserData.visible = false
-            this.$message.success('修改成功！')
+            this.$message.success('批量修改成功！')
             this.getPermittedUserList()
           }
         })
@@ -406,5 +421,8 @@
   }
   .text-danger {
     color: #FF4949;
+  }
+  .el-select {
+    display: block;
   }
 </style>

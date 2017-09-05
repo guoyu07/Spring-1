@@ -131,6 +131,9 @@ const routes = [{
       path: 'users',
       component: resolve => require(['./components/auth/pages/users'], resolve)
     }, {
+      path: 'user-detail',
+      component: resolve => require(['./components/auth/pages/userDetail'], resolve)
+    }, {
       path: 'roles',
       component: resolve => require(['./components/auth/pages/roles'], resolve)
     }]
