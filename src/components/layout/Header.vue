@@ -195,7 +195,7 @@
           <router-link class="link-block" :to="{ path: '/account' }"><i class="el-icon-fa-user"></i> 我的账户</router-link>
         </el-menu-item>
         <el-menu-item index="5-2">
-          <router-link class="link-block" :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 账户管理</router-link>
+          <router-link class="link-block" :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 用户与权限</router-link>
         </el-menu-item>
         <el-menu-item index="5-3">
           <router-link class="link-block" :to="{ path: '/process-admin/basics' }"><i class="el-icon-fa-key"></i> 权限管理</router-link>

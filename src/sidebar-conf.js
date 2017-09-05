@@ -177,9 +177,9 @@ const SidebarConf = {
     }]
   },
   Accounts: {
-    title: '账户管理',
+    title: '用户与权限',
     routes: [{
-      label: undefined,
+      label: '用户管理',
       list: [{
         name: '用户管理',
         path: '/auth/users',
@@ -188,6 +188,17 @@ const SidebarConf = {
         name: '角色管理',
         path: '/auth/roles',
         icon: 'fa-users'
+      }]
+    }, {
+      label: '流程权限管理理',
+      list: [{
+        name: '流程管理理员设置',
+        path: '/auth/flowSetting',
+        icon: 'fa-chain'
+      }, {
+        name: '环节权限设置',
+        path: '/auth/processSetting',
+        icon: 'fa-chain-broken'
       }]
     }]
   },

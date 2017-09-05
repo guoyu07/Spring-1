@@ -1,9 +1,9 @@
 <template>
   <div class="users wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="20">
-        <el-card class="box-card">
-          <h3><i class="el-icon-setting"></i> 用户管理</h3>
+      <el-col :sm="24" :md="24" :lg="24">
+        <div>
+          <h3 class="modul-title"><i class="el-icon-fa-user"></i> 用户管理</h3>
           <el-alert
             v-if="!isQualified"
             title="没有权限 :("
@@ -12,22 +12,53 @@
             show-icon
             style="margin-bottom: 12px;">
           </el-alert>
-          <el-button :disabled="!isQualified" icon="plus" @click="addUserData.visible = true" style="margin-bottom: 12px">新建用户</el-button>
+          <div class="flex-box">
+            <div class="search-block">
+              <el-input
+                placeholder="根据⽤用户名或基本信息搜索"
+                icon="search"
+                v-model="search.key"
+                @change="onSearch">
+              </el-input>
+              <!-- multiple -->
+              <el-select v-model="search.role" @change="onSearch" clearable placeholder="请选择角色">
+                <el-option
+                  v-for="role in roleList"
+                  :key="role.key"
+                  :label="role.name"
+                  :value="role.key">
+                </el-option>
+              </el-select>
+            </div>
+            <div class="btn-block">
+              <el-button :disabled="!userSelection.length" icon="edit" type="primary" @click="editUserData.visible = true">批量编辑</el-button>
+              <el-button :disabled="!isQualified" icon="plus" type="success" @click="addUserData.visible = true">添加用户</el-button>
+            </div>
+          </div>
           <el-table
-            :data="userList"
-            border>
+            :data="userSearchList"
+            border
+            @selection-change="handleSelectionChange">
             <el-table-column
-              prop="nick"
-              label="用户名"></el-table-column>
+              type="selection"
+              width="50">
+            </el-table-column>
             <el-table-column
               prop="userId"
-              label="ID"
-              width="150"></el-table-column>
+              label="用户名"
+              width="100"></el-table-column>
+            <el-table-column
+              prop="nick"
+              label="昵称"
+              width="100"></el-table-column>
             <el-table-column
               prop="email"
               label="邮箱"></el-table-column>
             <el-table-column
-              label="所属组别"
+              prop="phone"
+              label="手机"></el-table-column>
+            <el-table-column
+              label="所属角色"
               inline-template
               :context="_self">
               <template>
@@ -36,17 +67,44 @@
               </template>
             </el-table-column>
             <el-table-column
+              prop="level"
+              label="用户层级"
+              width="120"
+              :formatter="formatLevel"></el-table-column>
+            <el-table-column
+              inline-template
+              :context="_self"
+              label="用户状态"
+              width="100">
+                <template>
+                  <span :class="row.status ? 'text-danger' : ''">
+                    {{ row.status ? '已禁用' : '使用中' }}
+                  </span>
+                </template>
+            </el-table-column>
+            <el-table-column
               label="操作"
-              width="180"
+              width="80"
               inline-template
               :context="_self">
               <template>
-                <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
-                <el-button :disabled="!isQualified" :type="row.status ? 'success' : 'danger'" size="small" @click="onToggleUser(row)">{{ row.status ? '启用' : '禁用' }}</el-button>
+                <!-- <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
+                <el-button :disabled="!isQualified" :type="row.status ? 'success' : 'danger'" size="small" @click="onToggleUser(row)">{{ row.status ? '启用' : '禁用' }}</el-button> -->
+                <el-button type="primary" size="small">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
-        </el-card>
+          <el-pagination
+            class="fr margin-top"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-size="currentPageSize"
+            layout="sizes, prev, pager, next"
+            :total="userSearchList.length">
+          </el-pagination>
+        </div>
       </el-col>
     </el-row>
 
@@ -115,9 +173,10 @@
 
 <script>
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
+  import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
 
   export default {
-    mixins: [getPermittedUserList],
+    mixins: [getPermittedUserList, getPermittedRoleList],
 
     data () {
       var validatePass = (rule, value, callback) => {
@@ -150,6 +209,14 @@
         }
       }
       return {
+        search: {
+          key: '',
+          role: ''
+        },
+        userSelection: [],
+        userSearchList: [],
+        currentPage: 1,
+        currentPageSize: 20,
         addUserData: {
           visible: false,
           user: {
@@ -198,9 +265,58 @@
 
     created () {
       this.getPermittedUserList()
+      this.getPermittedRoleList()
+    },
+
+    watch: {
+      'userList': 'renderList'
     },
 
     methods: {
+      renderList (newVal, oldVal) {
+        this.userSearchList = newVal
+      },
+      formatLevel (row, col) {
+        // console.log(row.level, col)
+        switch (row.level) {
+          case 0: return '超级管理员'
+          case 1: return '管理员'
+          case 2: return '普通用户'
+          default:
+        }
+      },
+      handleSelectionChange (val) {
+        console.log(val)
+        this.userSelection = val
+      },
+      handleCurrentChange (val) {
+        this.currentPage = val
+        const offset = (this.currentPage - 1) * this.currentPageSize
+        const array = this.userList
+        this.userSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+      },
+      handleSizeChange (val) {
+        console.log(val)
+      },
+      onSearch () {
+        this.userSearchList = this.userList.filter(user => {
+          for (const id in user) {
+            if (['email', 'nick', 'userId', 'phone'].includes(id)) {
+              if (user[id].includes(this.search.key)) {
+                return true
+              }
+            }
+          }
+        }).filter(user => {
+          for (const id in user) {
+            if (id === 'groups') {
+              if (user[id].some(group => { return group.key === this.search.role }) || this.search.role === '') {
+                return true
+              }
+            }
+          }
+        })
+      },
       onAddUser ({ nick, userId, email, level, password }) {
         // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(userId)) {
         //   this.$message.error('用户 ID 只能是字母,数字,下划线,且开头和结尾不能是下划线！')
@@ -267,3 +383,21 @@
     }
   }
 </script>
+<style lang="less" scoped>
+  .el-tag+.el-tag {
+    margin-left: 10px;
+  }
+  .flex-box {
+    margin-bottom: 12px;
+    .search-block {
+      display: flex;
+      .el-input {
+        height: 36px;
+        margin-right: 12px;
+      }
+    }
+  }
+  .text-danger {
+    color: #FF4949;
+  }
+</style>

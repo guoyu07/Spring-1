@@ -2,8 +2,8 @@
   <div class="roles wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
-        <el-card class="box-card">
-          <h3><i class="el-icon-menu"></i> 角色管理</h3>
+        <div>
+          <h3 class="modul-title"><i class="el-icon-fa-users"></i> 角色管理</h3>
           <el-alert
             v-if="!isQualified"
             title="没有权限 :("
@@ -62,7 +62,7 @@
               </template>
             </el-table-column>
           </el-table>
-        </el-card>
+        </div>
       </el-col>
     </el-row>
     <el-dialog title="加入用户" size="tiny" v-model="userViewData.visible">
