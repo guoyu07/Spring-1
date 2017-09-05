@@ -4304,11 +4304,7 @@ sort-keys@^1.0.0:
   dependencies:
     is-plain-obj "^1.0.0"
 
-sortablejs@^1.5.1:
-  version "1.5.1"
-  resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.5.1.tgz#efae13b84c677f3b3d3f4f8e46c7e05fc6acb525"
-
-sortablejs@^1.6.1:
+sortablejs@^1.5.1, sortablejs@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/sortablejs/-/sortablejs-1.6.1.tgz#d120d103fbb9f60c7db27814a1384072e6c6e083"
 
@@ -4731,6 +4727,10 @@ vue-loader@^9.8.0:
     vue-style-loader "^1.0.0"
     vue-template-compiler "^2.0.5"
     vue-template-es2015-compiler "^1.2.2"
+
+vue-native-websocket@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/vue-native-websocket/-/vue-native-websocket-2.0.3.tgz#b54830c6490cc2928729240b0b5bdca4c78c7b46"
 
 vue-quill-editor@^2.2.1:
   version "2.2.1"

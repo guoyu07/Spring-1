@@ -145,6 +145,13 @@
         display: list-item;
       }
     }
+
+    .message-badge {
+      .el-badge__content {
+        right: 6px;
+        top: 16px;
+      }
+    }
   }
   .link-block {
     display: block;
@@ -177,17 +184,28 @@
           <router-link class="link-block" :to="{ path: '/process-admin/basics' }">流程管理</router-link>
         </el-menu-item>
       </el-submenu>
+      <el-menu-item index="3">
+        <router-link class="link-block" :to="{ path: '/statistics' }">统计中心</router-link>
+      </el-menu-item>
     </el-menu>
     <el-menu class="right" mode="horizontal">
-      <el-menu-item index="7" class="screenfull" @click="onScreenFull">
+      <el-menu-item index="8" class="screenfull" @click="onScreenFull">
         <i class="el-icon-fa-arrows-alt"></i>
       </el-menu-item>
-      <el-menu-item index="6">
+      <el-menu-item index="7">
         <el-tooltip placement="bottom" content="返回 EasyOps 自动化运维平台">
           <a class="link-block" :href="$store.state.userinfo._easyops_url">
             <img src="../../assets/logo.png" alt="" class="menu-img">
           </a>
         </el-tooltip>
+      </el-menu-item>
+      <el-menu-item index="6">
+        <router-link class="link-block" :to="{ path: '/messages' }">
+          <el-badge is-dot class="message-badge" v-show="$store.state.socket.unread">
+            <i class="el-icon-fa-bell"></i>
+          </el-badge>
+          <i v-show="!$store.state.socket.unread" class="el-icon-fa-bell"></i>
+        </router-link>
       </el-menu-item>
       <el-submenu class="mine" index="5">
         <template slot="title">{{userName}}</template>

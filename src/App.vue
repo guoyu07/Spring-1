@@ -11,8 +11,20 @@
 </template>
 
 <script>
+import socket from './socket'
 export default {
-  name: 'app'
+  name: 'app',
+
+  mounted () {
+    this.$nextTick(() => {
+      if (socket.socketOpen) {
+        this.$socket.onmessage = (data) => {
+          const message = JSON.parse(data)
+          this.$store.dispatch('socket_onmessage', message)
+        }
+      }
+    })
+  }
 }
 </script>
 

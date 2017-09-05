@@ -9,6 +9,8 @@ import store from './store'
 
 import eventHub from './utils/event-hub'
 import auth from './auth'
+// import './socket'
+
 // import apis from './api.mock'
 import axios from 'axios'
 
@@ -23,7 +25,6 @@ import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css'
 import 'bpmn-js-properties-panel/styles/properties.less'
 
 Vue.use(ElementUI)
-// Vue.use(VueResource)
 
 const http = axios.create({
   baseURL: '/api/', // 使用了代理

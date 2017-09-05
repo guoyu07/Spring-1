@@ -10,7 +10,13 @@ Vue.use(Vuex)
 const state = {
   userinfo: {},
   idcrackData: [],
-  editingProcesses: []
+  editingProcesses: [],
+  messages: [],
+  socket: {
+    connected: false,
+    unread: false,
+    message: null
+  }
 }
 
 export default new Vuex.Store({

@@ -68,10 +68,10 @@
           order: 'pinstance__pnum',
           show: [],
           filters: [{
-            key: 'assign',
-            label: '当前处理人',
-            type: 'user',
-            filter: []
+            key: 'pinstance__pnum',
+            label: '流程单号',
+            type: 'str',
+            filter: ''
           }]
         }
       }

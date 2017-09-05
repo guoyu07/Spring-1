@@ -48,6 +48,34 @@
           </template>
         </template>
 
+        <template v-if="filter.type === 'pname'">
+          <el-select
+            v-model="filter.filter"
+            multiple
+            placeholder="请选择流程"
+            value-key="key">
+            <el-option
+              v-for="process in processDicts"
+              :label="process.label"
+              :key="process.key"
+              :value="process"></el-option>
+          </el-select>
+        </template>
+
+        <template v-if="filter.type === 'tname'">
+          <el-select
+            v-model="filter.filter"
+            multiple
+            placeholder="请选择环节"
+            value-key="key">
+            <el-option
+              v-for="task in taskDicts"
+              :label="task.label"
+              :key="task.key"
+              :value="task"></el-option>
+          </el-select>
+        </template>
+
         <template v-if="filter.type === 'user'">
           <el-select
             v-model="filter.filter"
@@ -120,7 +148,9 @@
         searchLabel: '',
         activeTab: '',
         userDicts: [],
-        groupDicts: []
+        groupDicts: [],
+        processDicts: [],
+        taskDicts: []
       }
     },
 
@@ -143,6 +173,12 @@
           }
           if (val.some(_ => _.type === 'group') && !this.groupDicts.length) {
             this.getGroupDicts()
+          }
+          if (val.some(_ => _.type === 'pname') && !this.processDicts.length) {
+            this.getProcessDicts()
+          }
+          if (val.some(_ => _.type === 'tname') && !this.taskDicts.length) {
+            this.getTaskDicts()
           }
           this.$emit('on-filter-change', { filters: val })
         },
@@ -225,6 +261,26 @@
         this.http.post(url, groupApi.data).then((res) => {
           if (res.status === 200) {
             this.groupDicts = res.data.data.list
+          }
+        })
+      },
+
+      getProcessDicts () {
+        const processApi = this.filterList.find(_ => _.type === 'pname').source
+        const url = (processApi.url).replace('/api', '')
+        this.http.post(url, processApi.data).then((res) => {
+          if (res.status === 200) {
+            this.processDicts = res.data.data.list
+          }
+        })
+      },
+
+      getTaskDicts () {
+        const taskApi = this.filterList.find(_ => _.type === 'tname').source
+        const url = (taskApi.url).replace('/api', '')
+        this.http.post(url, taskApi.data).then((res) => {
+          if (res.status === 200) {
+            this.taskDicts = res.data.data.list
           }
         })
       }

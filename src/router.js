@@ -2,6 +2,7 @@ import Vue from 'vue'
 import VueRouter from 'vue-router'
 
 import auth from './auth'
+import socket from './socket'
 import SidebarConf from './sidebar-conf'
 
 import NProgress from 'nprogress'
@@ -29,6 +30,16 @@ const routes = [{
     meta: {
       sidebar: SidebarConf.Homepage
     }
+  }, {
+    path: '/messages',
+    component: require('./components/messages/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
+    children: [{
+      path: '',
+      component: resolve => require(['./components/messages/pages/list'], resolve)
+    }]
   }, {
     path: '/procedure',
     component: require('./components/procedure/index'),
@@ -234,6 +245,7 @@ router.beforeEach((to, from, next) => {
       console.log(requiresAuth)
     } else {
       next()
+      socket.initSocket()
     }
   } else {
     next()

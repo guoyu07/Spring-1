@@ -22,6 +22,7 @@
     "sortablejs": "^1.6.1",
     "vue": "^2.1.0",
     "vue-codemirror": "^3.0.5",
+    "vue-native-websocket": "^2.0.3",
     "vue-quill-editor": "^2.2.1",
     "vue-resource": "^1.0.3",
     "vue-router": "^2.0.3",

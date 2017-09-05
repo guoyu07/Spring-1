@@ -26,9 +26,10 @@
                     prop="num"></el-table-column>
                   <el-table-column
                     label="平均耗时"
-                    prop="avg_duration"></el-table-column>
-                  <!-- <el-table-column
-                    label="标准工时"></el-table-column> -->
+                    inline-template
+                    :context="_self">
+                    <span>{{ _convertTime(row.avg_duration) }}</span>
+                  </el-table-column>
                 </el-table>
               </template>
             </el-table-column>
@@ -95,6 +96,35 @@
       onTimeQueryChange (args) {
         this.timeQuery = args.val
         this.getProcessStatistics()
+      },
+
+      _convertTime (ms) {
+        if (!ms) return
+        const ONE_DAY = 24 * 60 * 60 * 1000
+        const timeMap = {
+          TWO_DAYS: ONE_DAY * 2,  // 48 hours
+          FORTNIGHT: ONE_DAY * 14, // 2 weeks
+          TWO_MONTHS: ONE_DAY * 60,  // 8 weeks
+          S_TO_D (s) {
+            return s / 60 / 60
+          },
+          S_TO_W (s) {
+            return this.S_TO_D(s) / 7
+          },
+          S_TO_M (s) {
+            return this.S_TO_D(s) / 30
+          }
+        }
+        const seconds = ms / 1000
+        if (seconds < timeMap.TWO_DAYS) {
+          return Math.floor(seconds) + ' 秒'
+        } else if (seconds < timeMap.FORTNIGHT) {
+          return Math.floor(timeMap.S_TO_D(seconds)) + ' 天'
+        } else if (seconds < timeMap.TWO_MONTHS) {
+          return Math.floor(timeMap.S_TO_W(seconds)) + ' 周'
+        } else if (seconds >= timeMap.TWO_MONTHS) {
+          return Math.floor(timeMap.S_TO_M(seconds)) + ' 月'
+        }
       }
     },
 
