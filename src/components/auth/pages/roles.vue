@@ -12,56 +12,56 @@
             show-icon
             style="margin-bottom: 12px;">
           </el-alert>
-          <el-button :disabled="!isQualified" icon="plus" @click="addedRoleData.visible = true" style="margin-bottom: 12px">新建角色</el-button>
+            <div class="flex-box">
+            <div class="search-block">
+              <el-input
+                placeholder="根据⽤用户名或基本信息搜索"
+                icon="search"
+                v-model="search.key"
+                @change="onSearch()"
+                >
+              </el-input>
+            </div>
+            <div class="btn-block">
+              <el-button  icon="edit" type="primary" >批量编辑</el-button>
+              <el-button :disabled="!isQualified" icon="plus" type="success" @click="addRoleData.visible = true">添加角色</el-button>
+            </div>
+          </div>
           <el-table
-            :data="permittedRoleList"
+            :data="roleSearchList"
             border
-            @expand="isCheckable = false">
-            <el-table-column
-              type="expand">
-              <template scope="props">
-                <div class="btn-area clear">
-                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="props.row.users.length"><i class="el-icon-fa-users"></i> 属于{{props.row.role}}角色的用户 ({{props.row.users.length}})：</h5>
-                  <h5 class="sub-title fl" style="margin-top: 0;" v-if="!props.row.users.length"><i class="el-icon-warning"></i> 暂无属于{{props.row.name}}角色的用户！</h5>
-                  <el-button :disabled="!isQualified" v-if="isCheckable" class="fr cancel-btn" type="text" size="small" @click="isCheckable = false">取消</el-button>
-                  <el-tooltip content="移除用户" placement="right" class="fr" v-if="props.row.users.length">
-                    <el-button
-                      :disabled="!isQualified"
-                      icon="minus"
-                      type="danger"
-                      size="small"
-                      :class="{ empty: !isCheckable }"
-                      @click="onDeleteUser(props.row.key)">{{ isCheckable ? '移除所选' : '' }}</el-button>
-                  </el-tooltip>
-                  <el-tooltip content="加入用户" placement="left" class="fr">
-                    <el-button
-                      :disabled="!isQualified"
-                      icon="plus"
-                      type="success"
-                      size="small"
-                      @click="onAddUser(props.row.key, props.row.users)">
-                    </el-button>
-                  </el-tooltip>
-                </div>
-                <el-checkbox-group v-model="usersToDelete" :class="{ uncheckable: !isCheckable }">
-                  <el-checkbox v-for="user in props.row.users" :key="user.userId" :label="user.userId" :disabled="user.existing">{{user.nick}}</el-checkbox>
-                </el-checkbox-group>
-              </template>
+            >
+            <el-table-column type="selection" width="50"></el-table-column>
+            <el-table-column prop="name" label="角色名"width="100"></el-table-column>
+            <el-table-column inline-template label="管理员"width="100">
+            <template>
+              <p v-for="user in row.users" v-if="user.level<=1">{{user.nick}}</p>
+            </template>
+            </el-table-column>
+            <el-table-column  label="所属用户" inline-template>
+                <template>
+                  <p v-for="user in row.users">{{user.nick}}</p>
+                </template>
             </el-table-column>
             <el-table-column
-              prop="name"
-              label="角色名称"></el-table-column>
-            <el-table-column
               label="操作"
-              width="240"
-              inline-template
-              :context="_self">
+              width="80"
+              inline-template>
               <template>
-                <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editRoleData.visible = true; editRoleData.role = row"></el-button>
-                <el-button :disabled="!isQualified" type="danger" size="small" icon="delete" @click="onDeleteRole(row)"></el-button>
+                <el-button type="primary" size="small" @click="">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
+          <el-pagination
+            class="fr margin-top"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-size="currentPageSize"
+            layout="sizes, prev, pager, next"
+            :total="permittedRoleList.length">
+          </el-pagination>
         </div>
       </el-col>
     </el-row>
@@ -109,6 +109,7 @@
         <el-button :disabled="!isQualified" @click="onAddRole(addedRoleData.role)" icon="check" type="info" :loading="addedRoleData.loading">确认新建</el-button>
       </span>
     </el-dialog>
+
   </div>
 </template>
 
@@ -121,6 +122,12 @@
 
     data () {
       return {
+        search: {
+          key: ''
+        },
+        currentPage: 1,
+        currentPageSize: 20,
+        roleSearchList: [],
         usersToAdd: [],
         usersToDelete: [],
         isCheckable: false,
@@ -168,6 +175,28 @@
     },
 
     methods: {
+      handleCurrentChange (val) {
+        this.currentPage = val
+        const offset = (this.currentPage - 1) * this.currentPageSize
+        const array = this.permittedRoleList
+        console.log(offset + this.currentPageSize)
+        this.roleSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+      },
+      handleSizeChange (val) {
+        this.currentPageSize = val
+        this.handleCurrentChange(1)
+      },
+      onSearch () {
+        this.roleSearchList = this.permittedRoleList.filter(role => {
+          for (const id in role) {
+            if (['key', 'name'].includes(id)) {
+              if (role[id].includes(this.search.key)) {
+                return true
+              }
+            }
+          }
+        })
+      },
       onAddRole ({ name, tags }) {
         // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
         //   this.$message.error('角色 Key 只可包含小写英文、数字和下划线，且开头和结尾只可是小写英文！')
@@ -303,6 +332,16 @@
 </script>
 
 <style lang="less">
+.flex-box {
+    margin-bottom: 12px;
+    .search-block {
+      display: flex;
+      .el-input {
+        height: 36px;
+        margin-right: 12px;
+      }
+    }
+  }
   .btn-area {
     margin-top: 12px;
 
