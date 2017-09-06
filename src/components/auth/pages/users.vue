@@ -29,7 +29,8 @@
                 </el-option>
               </el-select>
             </div>
-            <div class="btn-block">
+            <!-- 仅超级管理理员/管理理员可批量编辑 及 添加用户？ -->
+            <div class="btn-block" v-if="$store.state.userinfo.level <= 1">
               <el-button :disabled="!userSelection.length" icon="edit" type="primary" @click="editUserData.visible = true">批量编辑</el-button>
               <el-button :disabled="!isQualified" icon="plus" type="success" @click="addUserData.visible = true">添加用户</el-button>
             </div>
@@ -38,7 +39,9 @@
             :data="userSearchList"
             border
             @selection-change="handleSelectionChange">
+            <!-- 仅超级管理理员/管理理员可选择 -->
             <el-table-column
+              v-if="$store.state.userinfo.level <= 1"
               type="selection"
               width="50">
             </el-table-column>
@@ -81,13 +84,13 @@
                   </span>
                 </template>
             </el-table-column>
+            <!-- 仅超级管理理员/管理理员可进行操作？ -->
             <el-table-column
+              v-if="$store.state.userinfo.level <= 1"
               label="操作"
               width="80"
               inline-template>
               <template>
-                <!-- <el-button :disabled="!isQualified" type="info" :plain="true" size="small" icon="edit" @click="editUserData.visible = true; editUserData.user = row"></el-button>
-                <el-button :disabled="!isQualified" :type="row.status ? 'success' : 'danger'" size="small" @click="onToggleUser(row)">{{ row.status ? '启用' : '禁用' }}</el-button> -->
                 <el-button type="primary" size="small" @click="toDetail(row.userId)">查看</el-button>
               </template>
             </el-table-column>
@@ -286,13 +289,8 @@
     methods: {
       renderList (newVal, oldVal) {
         this.handleCurrentChange(1)
-        // this.userSearchList = newVal
-        // const offset = (this.currentPage - 1) * this.currentPageSize
-        // const array = this.permittedUserList
-        // this.userSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       formatLevel (row, col) {
-        // console.log(row.level, col)
         switch (row.level) {
           case 0: return '超级管理员'
           case 1: return '管理员'
@@ -301,7 +299,6 @@
         }
       },
       handleSelectionChange (val) {
-        console.log(val)
         this.userSelection = val
       },
       handleCurrentChange (val) {
@@ -337,10 +334,6 @@
         this.$router.push({ path: 'user-detail', query: { userId: userId } })
       },
       onAddUser ({ nick, phone, userId, email, level, password, groups }) {
-        // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(userId)) {
-        //   this.$message.error('用户 ID 只能是字母,数字,下划线,且开头和结尾不能是下划线！')
-        //   return
-        // }
         let postData = {
           action: 'user',
           method: 'POST',
@@ -349,23 +342,12 @@
         this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.addUserData.visible = false
-            // this.$alert(`用户 ${nick} 的密码是 ${res.data.data.pwd}。`, '新建成功！', {
-            //   confirmButtonText: '记住了'
-            // })
             this.getPermittedUserList()
           }
         })
       },
 
       onEditUser (user) {
-        // if ((?!_)(?!.*?_$)!/^[a-zA-Z0-9_]/.test(userId)) {
-        //   this.$message.error('用户 ID 用户名只能是字母,数字,下划线,且开头和结尾不能是下划线！')
-        //   return
-        // }
-        // let data = user
-        // if (this.editUserData.user.userId === this.$store.state.userinfo.userId) {
-        //   delete data.level
-        // }
         let userIds = []
         this.userSelection.map(user => {
           userIds.push(user.userId)
@@ -382,26 +364,6 @@
             this.$message.success('批量修改成功！')
             this.getPermittedUserList()
           }
-        })
-      },
-
-      onToggleUser ({ nick, userId, status }) {
-        this.$confirm(`确定${status ? '启用' : '禁用'}用户 ${nick}？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let postData = {
-            action: 'user',
-            method: 'DELETE',
-            data: { userId }
-          }
-          this.http.post('/user/', this.parseData(postData)).then((res) => {
-            if (res.status === 200) {
-              this.$message.success(`已${status ? '启用' : '禁用'}用户「${nick}」！`)
-              this.getPermittedUserList()
-            }
-          })
         })
       }
     }
