@@ -84,5 +84,19 @@ module.exports = {
       commit(types.SOCKET_ONREAD)
       resolve()
     })
+  },
+
+  socket_onnew: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_ONNEW)
+      resolve()
+    })
+  },
+
+  socket_onassigned: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_ONASSIGNED)
+      resolve()
+    })
   }
 }

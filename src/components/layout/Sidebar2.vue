@@ -54,21 +54,21 @@
   }
 
   .sidebar-title {
-      position: fixed;
-      top: 50px;
-      width: 199px;
-      padding: 17px 25px;
-      border-bottom: 1px solid @eoBorderColor;
-      font-size: 18px;
-      line-height: 25px;
-      color: #167be0;
-      background-color: @eoSideBgColor;
-      z-index: @floating;
+    position: fixed;
+    top: 50px;
+    width: 199px;
+    padding: 17px 25px;
+    border-bottom: 1px solid @eoBorderColor;
+    font-size: 18px;
+    line-height: 25px;
+    color: #167be0;
+    background-color: @eoSideBgColor;
+    z-index: @floating;
 
-      @media screen and (max-width: 450px) {
-        display: none;
-      }
+    @media screen and (max-width: 450px) {
+      display: none;
     }
+  }
 </style>
 <template>
   <div>
@@ -84,6 +84,9 @@
             :key="item.name"
             :index="item.path">
             <i :class="`el-icon-${item.icon}`"></i>{{item.name}}
+            <sup v-if="item.name === '工单列表'"
+                 v-show="$store.state.socket.newTask || $store.state.socket.newAssigned"
+                 class="sidebar-badge"></sup>
           </el-menu-item>
         </el-menu-item-group>
       </el-menu>

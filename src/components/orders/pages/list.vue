@@ -1,6 +1,6 @@
 <template>
   <div class="order-list">
-    <el-card class="box-card" v-if="filteredTasks.list.length">
+    <el-card class="box-card" v-if="filteredTasks.list && filteredTasks.list.length">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
       <el-button icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
         <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
@@ -18,10 +18,10 @@
           :context="_self"
           :label="col.label">
           <template>
-            <span v-if="Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
+            <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
               {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
             </span>
-            <span v-else>{{row.columns.find(c => c.key_path === col.key_path).value}}</span>
+            <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
           </template>
         </el-table-column>
         <el-table-column
@@ -88,12 +88,45 @@
     },
 
     methods: {
+      getFilterData (id) {
+        let postData = {
+          action: 'filter',
+          method: 'GET',
+          data: { id }
+        }
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.filterData = res.data.data
+            this.getFilteredTasks()
+            this.$nextTick(() => {
+              this.resetMessageState()
+            })
+          }
+        })
+      },
+
       onViewTask (order) {
         Object.assign(this.taskViewData, { visible: true, order })
       },
 
       onViewProcess (order) {
         Object.assign(this.processViewData, { visible: true, order })
+      },
+
+      resetMessageState () {
+        switch (this.filterData.name) {
+          case '待处理':
+            if (this.$store.state.socket.newTask) {
+              this.$store.dispatch('socket_onnew')
+            }
+            break
+          case '待认领':
+            if (this.$store.state.socket.newAssigned) {
+              this.$store.dispatch('socket_onassigned')
+            }
+            break
+          default: break
+        }
       }
     },
 

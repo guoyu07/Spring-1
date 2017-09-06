@@ -8,6 +8,9 @@
           <span class="filter-name">{{filter.name}}</span>
           <span style="padding-right: 14px;">
             <i class="filter-number">{{filter.count}}</i>
+            <sup v-if="['待处理', '待认领'].includes(filter.name)"
+                 v-show="filter.name === '待处理' && $store.state.socket.newTask || filter.name === '待认领' && $store.state.socket.newAssigned"
+                 class="sidebar-badge"></sup>
           </span>
         </router-link>
       </li>
@@ -122,7 +125,7 @@
   }
 </script>
 
-<style lang="less">
+<style lang="less" scoped>
   @import url("./../../../assets/css/variables.less");
 
   .order-sidebar {
@@ -208,6 +211,12 @@
 
     &__plus {
       margin-left: 12px;
+    }
+
+    .sidebar-badge {
+      position: absolute;
+      top: 12px;
+      right: 14px;
     }
   }
 </style>

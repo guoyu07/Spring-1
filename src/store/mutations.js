@@ -34,19 +34,47 @@ export default {
 
   [types.SOCKET_ONMESSAGE] (state, message) {
     state.socket.message = message
-    if (message.type === 'message' || message.data.type === 'tip') {
-      if (message.type === 'message') {
+    switch (message.type) {
+      case 'message':
         state.socket.unread = true
-      }
-
-      Vue.prototype.$notify.info({
-        title: '新消息',
-        message: message.data.title
-      })
+        Vue.prototype.$notify.info({
+          title: '新消息',
+          message: message.data.title
+        })
+        break
+      case 'new_task':
+        state.socket.newTask = true
+        Vue.prototype.$notify.warning({
+          title: '待处理',
+          // message: Vue.$createElement('div', [
+          //   Vue.$createElement('p', `你被指派了一项新任务：${message.data.task.pinstance.pd.pname} - ${message.data.task.ptask.tname}`),
+          //   Vue.$createElement('el-button', {}, '前往')
+          // ]),
+          message: `你有一项新的待处理任务：${message.data.task.pinstance.pd.pname}—${message.data.task.ptask.tname}`,
+          duration: 8000
+        })
+        break
+      case 'allot_task':
+        state.socket.newAssigned = true
+        Vue.prototype.$notify.warning({
+          title: '待认领',
+          message: `你有一项新的待认领任务：${message.data.task.pinstance.pd.pname}—${message.data.task.ptask.tname}`,
+          duration: 8000
+        })
+        break
+      default: break
     }
   },
 
   [types.SOCKET_ONREAD] (state) {
     state.socket.unread = false
+  },
+
+  [types.SOCKET_ONNEW] (state) {
+    state.socket.newTask = false
+  },
+
+  [types.SOCKET_ONASSIGNED] (state) {
+    state.socket.newAssigned = false
   }
 }

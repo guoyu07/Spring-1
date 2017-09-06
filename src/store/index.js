@@ -15,6 +15,8 @@ const state = {
   socket: {
     connected: false,
     unread: false,
+    newTask: false,
+    newAssigned: false,
     message: null
   }
 }
