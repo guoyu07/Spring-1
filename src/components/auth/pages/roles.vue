@@ -15,7 +15,7 @@
             <div class="flex-box">
             <div class="search-block">
               <el-input
-                placeholder="根据⽤用户名或基本信息搜索"
+                placeholder="根据角色名或其他信息搜索"
                 icon="search"
                 v-model="search.key"
                 @change="onSearch()"
@@ -23,24 +23,25 @@
               </el-input>
             </div>
             <div class="btn-block">
-              <el-button  icon="edit" type="primary" >批量编辑</el-button>
-              <el-button :disabled="!isQualified" icon="plus" type="success" @click="addRoleData.visible = true">添加角色</el-button>
+              <el-button  icon="edit" type="primary" :disabled="!this.roleSelection.length" @click="editRoleData.visible = true">批量编辑</el-button>
+              <el-button :disabled="!isQualified" icon="plus" type="success" @click="addedRoleData.visible = true">添加角色</el-button>
             </div>
           </div>
           <el-table
             :data="roleSearchList"
             border
+            @selection-change="handleSelectionChange"
             >
             <el-table-column type="selection" width="50"></el-table-column>
             <el-table-column prop="name" label="角色名"width="100"></el-table-column>
-            <el-table-column inline-template label="管理员"width="100">
+            <el-table-column inline-template label="管理员">
             <template>
-              <p v-for="user in row.users" v-if="user.level<=1">{{user.nick}}</p>
+              <el-tag v-for="user in row.users" v-if="user.level<=1">{{user.nick}}</el-tag>
             </template>
             </el-table-column>
             <el-table-column  label="所属用户" inline-template>
                 <template>
-                  <p v-for="user in row.users">{{user.nick}}</p>
+                  <el-tag v-for="user in row.users">{{user.nick}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column
@@ -48,7 +49,7 @@
               width="80"
               inline-template>
               <template>
-                <el-button type="primary" size="small" @click="">查看</el-button>
+                <el-button type="primary" size="small" @click="toDetail(row.key)">查看</el-button>
               </template>
             </el-table-column>
           </el-table>
@@ -125,6 +126,7 @@
         search: {
           key: ''
         },
+        roleSelection: [],
         currentPage: 1,
         currentPageSize: 20,
         roleSearchList: [],
@@ -162,7 +164,9 @@
         }
       }
     },
-
+    watch: {
+      'permittedRoleList': 'renderList'
+    },
     computed: {
       isQualified () {
         return (this.$store.state.userinfo.admin === true || this.$store.state.userinfo.superadmin === true)
@@ -175,6 +179,16 @@
     },
 
     methods: {
+      toDetail (key) {
+        this.$router.push({ path: 'role-detail', query: { key: key } })
+      },
+      handleSelectionChange (val) {
+        console.log(val)
+        this.roleSelection = val
+      },
+      renderList () {
+        this.handleCurrentChange(1)
+      },
       handleCurrentChange (val) {
         this.currentPage = val
         const offset = (this.currentPage - 1) * this.currentPageSize
@@ -189,7 +203,9 @@
       onSearch () {
         this.roleSearchList = this.permittedRoleList.filter(role => {
           for (const id in role) {
-            if (['key', 'name'].includes(id)) {
+            if (['name'].includes(id)) {
+              console.log(role[id])
+              console.log(this.search.key)
               if (role[id].includes(this.search.key)) {
                 return true
               }
@@ -332,6 +348,9 @@
 </script>
 
 <style lang="less">
+  .el-tag+.el-tag {
+    margin-left: 10px;
+  }
 .flex-box {
     margin-bottom: 12px;
     .search-block {
@@ -344,10 +363,6 @@
   }
   .btn-area {
     margin-top: 12px;
-
-    .el-tooltip.fr:first-of-type {
-      margin-left: 6px;
-    }
 
     .cancel-btn {
       margin-left: 6px;

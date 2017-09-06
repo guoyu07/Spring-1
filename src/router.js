@@ -136,6 +136,9 @@ const routes = [{
     }, {
       path: 'roles',
       component: resolve => require(['./components/auth/pages/roles'], resolve)
+    }, {
+      path: 'role-detail',
+      component: resolve => require(['./components/auth/pages/roleDetail'], resolve)
     }]
   }, {
     path: '/process-admin',
