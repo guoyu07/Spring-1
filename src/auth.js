@@ -40,6 +40,7 @@ export default {
     // window.localStorage.removeItem('userName')
     store.dispatch('remove_userinfo').then(() => {
       router.replace('/login')
+      store.dispatch('socket_onclose')
     })
     // router.replace('/login')
     this.authenticated = false
