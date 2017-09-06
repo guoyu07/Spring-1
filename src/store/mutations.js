@@ -50,16 +50,16 @@ export default {
           //   Vue.$createElement('p', `你被指派了一项新任务：${message.data.task.pinstance.pd.pname} - ${message.data.task.ptask.tname}`),
           //   Vue.$createElement('el-button', {}, '前往')
           // ]),
-          message: `你有一项新的待处理任务：${message.data.task.pinstance.pd.pname} - ${message.data.task.ptask.tname}`,
-          duration: 5000
+          message: `你有一项新的待处理任务：${message.data.task.pinstance.pd.pname}—${message.data.task.ptask.tname}`,
+          duration: 8000
         })
         break
       case 'allot_task':
         state.socket.newAssigned = true
         Vue.prototype.$notify.warning({
           title: '待认领',
-          message: `你有一项新的待认领任务：${message.data.task.pinstance.pd.pname} - ${message.data.task.ptask.tname}`,
-          duration: 5000
+          message: `你有一项新的待认领任务：${message.data.task.pinstance.pd.pname}—${message.data.task.ptask.tname}`,
+          duration: 8000
         })
         break
       default: break
@@ -70,11 +70,11 @@ export default {
     state.socket.unread = false
   },
 
-  [types.SOCKET_CLEAR_NEW] (state) {
+  [types.SOCKET_ONNEW] (state) {
     state.socket.newTask = false
   },
 
-  [types.SOCKET_CLEAR_ASSIGNED] (state) {
+  [types.SOCKET_ONASSIGNED] (state) {
     state.socket.newAssigned = false
   }
 }

@@ -117,12 +117,12 @@
         switch (this.filterData.name) {
           case '待处理':
             if (this.$store.state.socket.newTask) {
-              this.$store.dispatch('socket_clear_new')
+              this.$store.dispatch('socket_onnew')
             }
             break
           case '待认领':
             if (this.$store.state.socket.newAssigned) {
-              this.$store.dispatch('socket_clear_assigned')
+              this.$store.dispatch('socket_onassigned')
             }
             break
           default: break

@@ -21,3 +21,9 @@ export const SOCKET_ONMESSAGE = 'SOCKET_ONMESSAGE'
 
 // socket 已读消息
 export const SOCKET_ONREAD = 'SOCKET_ONREAD'
+
+// socket 清空待处理任务
+export const SOCKET_ONNEW = 'SOCKET_ONNEW'
+
+// socket 清空待认领任务
+export const SOCKET_ONASSIGNED = 'SOCKET_ONASSIGNED'
