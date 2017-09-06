@@ -137,7 +137,7 @@
       <el-select v-model="candidateData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
         <template v-if="candidateData.type === 'user'">
           <el-option
-            v-for="user in userList"
+            v-for="user in permittedUserList"
             :key="user.userId"
             :label="`${user.nick} - ${user.email}`"
             :value="user.userId"
@@ -145,7 +145,7 @@
         </template>
         <template v-if="candidateData.type === 'group'">
           <el-option
-            v-for="role in roleList"
+            v-for="role in permittedRoleList"
             :key="role.key"
             :label="role.name"
             :value="role.key"
@@ -153,8 +153,8 @@
         </template>
       </el-select>
       <!-- <el-checkbox-group v-model="candidateData.toAdd">
-        <el-checkbox v-if="candidateData.type === 'user'" v-for="user in userList" :label="user.userId">{{user.code}}</el-checkbox>
-        <el-checkbox v-if="candidateData.type === 'group'" v-for="role in roleList" :label="role.key">{{role.name}}</el-checkbox>
+        <el-checkbox v-if="candidateData.type === 'user'" v-for="user in permittedUserList" :label="user.userId">{{user.code}}</el-checkbox>
+        <el-checkbox v-if="candidateData.type === 'group'" v-for="role in permittedRoleList" :label="role.key">{{role.name}}</el-checkbox>
       </el-checkbox-group> -->
       <span class="dialog-footer" slot="footer">
         <el-button @click="onAddCandidate(candidateData)" size="small" icon="check" type="success" :loading="candidateData.loading">确认加入</el-button>
@@ -165,14 +165,14 @@
       <h5 class="sub-title"><i class="el-icon-information"></i> 选中欲指定为受指派人的用户：</h5>
       <el-select v-model="assigneeData.assignee" filterable placeholder="可搜索" :disabled="assigneeData.initiator" style="width: 80%">
         <el-option
-          v-for="user in userList"
+          v-for="user in permittedUserList"
           :key="user.userId"
           :label="`${user.nick} - ${user.email}`"
           :value="user.userId"
           :disabled="currentTask && currentTask.assignee && currentTask.assignee.userId === user.userId"></el-option>
       </el-select>
       <!-- <el-radio-group v-model="assigneeData.assignee">
-        <el-radio v-for="user in userList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
+        <el-radio v-for="user in permittedUserList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
       </el-radio-group> -->
       <b class="sub-title" style="display: block; margin: 12px 0 6px;">或：</b>
       <el-checkbox-group v-model="assigneeData.initiator">

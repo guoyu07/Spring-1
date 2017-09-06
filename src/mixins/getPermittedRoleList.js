@@ -2,7 +2,7 @@
 export default {
   data () {
     return {
-      roleList: []
+      permittedRoleList: []
     }
   },
 
@@ -15,7 +15,7 @@ export default {
       }
       this.http.post('/user/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
-          this.roleList = res.data.data.list
+          this.permittedRoleList = res.data.data.list
           console.log('mixin working')
         }
       })

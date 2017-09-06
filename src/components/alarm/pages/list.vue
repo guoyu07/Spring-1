@@ -89,7 +89,7 @@
 
     <claim :claim-view-data="claimViewData"></claim>
 
-    <assign :assign-view-data="assignViewData" :role-list="roleList" :user-list="userList"></assign>
+    <assign :assign-view-data="assignViewData" :role-list="permittedRoleList" :user-list="permittedUserList"></assign>
 
     <el-dialog
       :title="handleViewData.task.pname"
