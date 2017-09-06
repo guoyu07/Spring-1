@@ -86,16 +86,16 @@ module.exports = {
     })
   },
 
-  socket_clear_new: ({ commit }) => {
+  socket_onnew: ({ commit }) => {
     return new Promise((resolve, reject) => {
-      commit(types.SOCKET_CLEAR_NEW)
+      commit(types.SOCKET_ONNEW)
       resolve()
     })
   },
 
-  socket_clear_assigned: ({ commit }) => {
+  socket_onassigned: ({ commit }) => {
     return new Promise((resolve, reject) => {
-      commit(types.SOCKET_CLEAR_ASSIGNED)
+      commit(types.SOCKET_ONASSIGNED)
       resolve()
     })
   }

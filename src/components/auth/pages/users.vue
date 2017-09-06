@@ -187,9 +187,11 @@
 
     data () {
       var validatePass = (rule, value, callback) => {
-        console.log(value)
+        const reg = /^[a-zA-Z0-9_!@#$%^&*]{6,16}$/
         if (value === '') {
           callback(new Error('请输入密码'))
+        } else if (!reg.test(value)) {
+          callback(new Error('请输入6至16位符合规则的密码'))
         } else {
           if (this.addUserData.user.checkPass !== '') {
             this.$refs['addUserData.user'].validateField('checkPass')
