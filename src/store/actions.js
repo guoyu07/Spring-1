@@ -84,5 +84,19 @@ module.exports = {
       commit(types.SOCKET_ONREAD)
       resolve()
     })
+  },
+
+  socket_clear_new: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_CLEAR_NEW)
+      resolve()
+    })
+  },
+
+  socket_clear_assigned: ({ commit }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.SOCKET_CLEAR_ASSIGNED)
+      resolve()
+    })
   }
 }

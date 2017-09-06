@@ -4,6 +4,13 @@
       <el-col>
         <el-card class="box-card">
           <h3><i class="el-icon-fa-bell icon-lg"></i> 消息管理</h3>
+          <el-button
+            type="success"
+            :plain="true"
+            icon="fa-check-square-o"
+            @click="readMessage"
+            size="small"
+            class="margin-bottom fr">全部标为已读</el-button>
           <el-table :data="messageList" stripe v-loading="loading">
             <el-table-column type="expand">
               <template scope="props">
@@ -27,7 +34,7 @@
               align="center">
               <template>
                 <i v-if="row.read" class="el-icon-fa-envelope-open-o"></i>
-                <el-tooltip v-else content="设为已读" placement="top">
+                <el-tooltip v-else content="标为已读" placement="top">
                   <i class="el-icon-fa-envelope text-warning havent-read" @click="readMessage(row.id)"></i>
                 </el-tooltip>
               </template>
@@ -79,7 +86,7 @@
           if (res.status === 200) {
             this.messageList = res.data.data.list
             this.pagination.total = res.data.data.total
-            this.$store.dispatch('SOCKET_ONREAD')
+            this.$store.dispatch('socket_onread')
           }
         })
       },
@@ -94,7 +101,7 @@
           action: 'message',
           method: 'POST',
           data: {
-            ids: id ? [ id ] : null
+            ids: Number.isInteger(id) ? [ id ] : null // 传 null 即为全部已读
           }
         }
         this.http.post('/base/', this.parseData(postData)).then((res) => {
