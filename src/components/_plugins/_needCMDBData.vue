@@ -125,9 +125,9 @@
           }
         }
       }
-      if (this.strucData.watch) {
+      // console.log(!this.strucData.watch, this.strucData.name, typeof this.strucData.watch)
+      if (this.strucData.watch && typeof this.strucData.watch === 'string') {
         this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          console.log(this.strucData.watch)
           if (!this.isEditing) {
             if (this.strucData.value.type === 'dicts') {
               this.vmodel[this.strucData.id] = []
@@ -135,9 +135,6 @@
               this.vmodel[this.strucData.id] = null
             }
           }
-          //  else {
-          //   this.vmodel[this.strucData.id] = null
-          // }
           this.renderOptions()
         }, { deep: true })
       } else {
@@ -152,8 +149,8 @@
         }
       }
     },
+    // 这个 watch 是为了上传Excel文档时，填入对应的值
     watch: {
-      // 这个 watch 是为了上传Excel文档时，填入对应的值
       'vmodel': {
         handler: 'renderData',
         deep: true
@@ -244,9 +241,9 @@
         }
         let params = {}
         if (this.strucData.value.source.data.params.length !== 0) {
-          console.log(this.strucData.name)
+          // console.log(this.strucData.name)
           for (const para of this.strucData.value.source.data.params) {
-            console.log(para.value.type)
+            // console.log(para.value.type)
             if (para.value.type === 'static') {
               params[para.id] = para.value.value
             } else if (para.value.type === 'form_header') {

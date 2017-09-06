@@ -15,12 +15,12 @@
           <div class="flex-box">
             <div class="search-block">
               <el-input
-                placeholder="根据⽤用户名或基本信息搜索"
+                placeholder="根据用户名/基本信息搜索"
                 icon="search"
                 v-model="search.key"
                 @change="onSearch">
               </el-input>
-              <el-select v-model="search.role" @change="onSearch" clearable placeholder="请选择角色">
+              <el-select v-model="search.role" @change="onSearch" clearable placeholder="角色">
                 <el-option
                   v-for="role in roleList.list"
                   :key="role.key"
@@ -28,15 +28,24 @@
                   :value="role.key">
                 </el-option>
               </el-select>
+              <el-select v-model="search.level" @change="onSearch" clearable placeholder="用户层级">
+                <el-option label="超级管理员" value="0"></el-option>
+                <el-option label="管理员" value="1"></el-option>
+                <el-option label="普通用户" value="2"></el-option>
+              </el-select>
+              <el-select v-model="search.status" @change="onSearch" clearable placeholder="用户状态">
+                <el-option label="使用中" value="0"></el-option>
+                <el-option label="已禁用" value="1"></el-option>
+              </el-select>
             </div>
-            <!-- 仅超级管理理员/管理理员可批量编辑 及 添加用户？ -->
+            <!-- 仅超级管理理员/管理理员可批量编辑 及 添加用户 -->
             <div class="btn-block" v-if="$store.state.userinfo.level <= 1">
               <el-button :disabled="!userSelection.length" icon="edit" type="primary" @click="editUserData.visible = true">批量编辑</el-button>
               <el-button :disabled="!isQualified" icon="plus" type="success" @click="addUserData.visible = true">添加用户</el-button>
             </div>
           </div>
           <el-table
-            :data="userSearchList"
+            :data="currentPageList"
             border
             @selection-change="handleSelectionChange">
             <!-- 仅超级管理理员/管理理员可选择 -->
@@ -103,7 +112,7 @@
             :page-sizes="[10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
             layout="sizes, prev, pager, next"
-            :total="permittedUserList.length">
+            :total="totalPage">
           </el-pagination>
         </div>
       </el-col>
@@ -223,12 +232,16 @@
       return {
         search: {
           key: '',
-          role: ''
+          role: '',
+          level: '',
+          status: ''
         },
         userSelection: [],
         userSearchList: [],
+        currentPageList: [],
         currentPage: 1,
         currentPageSize: 20,
+        totalPage: 0,
         addUserData: {
           visible: false,
           user: {
@@ -288,7 +301,8 @@
 
     methods: {
       renderList (newVal, oldVal) {
-        this.handleCurrentChange(1)
+        this.totalPage = newVal.length
+        this.handleCurrentChange()
       },
       formatLevel (row, col) {
         switch (row.level) {
@@ -301,15 +315,15 @@
       handleSelectionChange (val) {
         this.userSelection = val
       },
-      handleCurrentChange (val) {
+      handleCurrentChange (val = 1) {
         this.currentPage = val
         const offset = (this.currentPage - 1) * this.currentPageSize
-        const array = this.permittedUserList
-        this.userSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+        let array = this.userSearchList.length ? this.userSearchList : this.permittedUserList
+        this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       handleSizeChange (val) {
         this.currentPageSize = val
-        this.handleCurrentChange(1)
+        this.handleCurrentChange()
       },
       onSearch () {
         this.userSearchList = this.permittedUserList.filter(user => {
@@ -328,7 +342,25 @@
               }
             }
           }
+        }).filter(user => {
+          for (const id in user) {
+            if (id === 'level') {
+              if (user[id] === +this.search.level || this.search.level === '') {
+                return true
+              }
+            }
+          }
+        }).filter(user => {
+          for (const id in user) {
+            if (id === 'status') {
+              if (user[id] === +this.search.status || this.search.status === '') {
+                return true
+              }
+            }
+          }
         })
+        this.totalPage = this.userSearchList.length
+        this.handleCurrentChange()
       },
       toDetail (userId) {
         this.$router.push({ path: 'user-detail', query: { userId: userId } })
@@ -378,8 +410,13 @@
     .search-block {
       display: flex;
       .el-input {
+        width: 210px;
         height: 36px;
-        margin-right: 12px;
+        margin-right: 10px;
+      }
+      .el-select {
+        width: 120px;
+        margin-right: 10px;
       }
     }
   }
