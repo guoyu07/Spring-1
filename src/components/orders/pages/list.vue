@@ -122,9 +122,7 @@
             break
           case '待认领':
             if (this.$store.state.socket.newAssigned) {
-              this.$store.dispatch({
-                type: 'socket_clear_assigned'
-              })
+              this.$store.dispatch('socket_clear_assigned')
             }
             break
           default: break
