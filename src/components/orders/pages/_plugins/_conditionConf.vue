@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-tabs type="border-card" closable @tab-remove="onRemoveFilter" :value="activeTab">
+    <el-tabs type="border-card" class="condition-tab" closable @tab-remove="onRemoveFilter" :value="activeTab">
       <el-tab-pane
         v-for="(filter, index) in selectedFilters"
         :label="filter.label"
@@ -130,7 +130,7 @@
           :key="filter.label"></el-checkbox>
       </el-checkbox-group>
     </el-popover>
-    <el-button v-popover:popover size="small" type="text" icon="fa-caret-down">更多</el-button>
+    <el-button v-popover:popover size="small" type="text" icon="fa-caret-down" class="more-conditions">更多</el-button>
   </div>
 </template>
 
@@ -287,3 +287,17 @@
     }
   }
 </script>
+
+<style lang="less">
+  .condition-tab {
+    .el-tabs__header {
+      padding-right: 60px;
+    }
+  }
+
+  .more-conditions {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+  }
+</style>

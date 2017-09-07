@@ -196,6 +196,7 @@
         this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success(`已成功修改用户「${data.userId}」的相关信息！`)
+            this.$route.push('/auth/users')
             this.renderUserDetail()
           }
         })
