@@ -64,7 +64,7 @@
                       <div v-if="task.form.form.body.body_list.length">
                         <div v-for="taskbody in task.form.form.body.body_list">
                           <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
-                            <p class="h5">{{task.tname}}</p>
+                            <p v-if="task.form.form.header.length || taskbody.attr_list.length" class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
                               <div v-for="taskformheader in task.form.form.header">
@@ -92,8 +92,8 @@
                       </div>
                       <div v-else>
                         <!-- header 信息显示 -->
-                        <p class="h5">{{task.tname}}</p>
                         <div v-if="task.form.form.header.length >= 1">
+                          <p class="h5">{{task.tname}}</p>
                           <div v-for="taskformheader in task.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
