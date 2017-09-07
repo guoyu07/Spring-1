@@ -318,7 +318,7 @@
       handleCurrentChange (val = 1) {
         this.currentPage = val
         const offset = (this.currentPage - 1) * this.currentPageSize
-        let array = this.userSearchList.length ? this.userSearchList : this.permittedUserList
+        let array = (this.search.key || this.search.role || this.search.level || this.search.status) ? this.userSearchList : this.permittedUserList
         this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       handleSizeChange (val) {
