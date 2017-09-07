@@ -27,7 +27,7 @@
         placeholder="请选择">
         <el-option
           v-for="item in userList"
-          :key="item.code"
+          :key="item.userId"
           :label="item.userId"
           :value="item">
         </el-option>
@@ -46,24 +46,18 @@
         filterable
         class="member"
         placeholder="请选择">
-        <!-- <el-tooltip
-          effect="dark"
-          :content="item.email"
-          placement="right"> -->
         <el-option
           v-for="item in userList"
-          :key="item.code"
+          :key="item.userId"
           :label="item.userId"
           :value="item">
           <p>{{ item.userId }}</p>
           <p style="color: #8492a6; font-size: 13px">{{ item.email }}</p>
         </el-option>
-        <!-- </el-tooltip> -->
       </el-select>
       <div class="assign-btn">
         <el-button size="small" @click="assignToMe" type="text">分配给我</el-button>
       </div>
-      <!-- <el-button @click="assignToMe" :plain="true" type="info">分配给我</el-button> -->
     </div>
   </div>
 </template>
@@ -126,7 +120,7 @@
       },
       assignToMe () {
         // console.log('分配给我')
-        const user = this.$store.state.userinfo.nick
+        const user = this.$store.state.userinfo.userId
         if (this.strucData.isAlias) {
           this.groupList.map(group => {
             if (group.key === '__None__') { // 我默认分配为 所有 的分组里面
@@ -161,7 +155,7 @@
         this.http.post('/base/', this.parseData(postHeadvData))
         .then((response) => {
           // console.log(response)
-          this.groupList = response.data.data
+          this.groupList = response.data.data.list
           setTimeout(() => {
             // console.log(this.vmodel[this.strucData.id])
             if (this.vmodel[this.strucData.id].group && this.vmodel[this.strucData.id].group.key) {
@@ -223,7 +217,7 @@
         this.http.post('/base/', this.parseData(postHeadvData))
         .then((response) => {
           // console.log(response)
-          this.userList = response.data.data
+          this.userList = response.data.data.list
         })
       }
     }

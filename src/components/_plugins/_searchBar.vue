@@ -178,13 +178,15 @@
     methods: {
       rules (formItem) {
         var validateSearchBar = (rule, value, cb) => {
-          console.log(value.length)
+          // console.log(value.length)
           if (!value.length) {
             return cb(new Error(`${this.mainInfo.name}不能为空`))
           } else if (value.length < this.limit.min) {
             return cb(new Error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
           } else if (this.limit.max && (value.length > this.limit.max)) {
             return cb(new Error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`))
+          } else if (!this.limit.max && (value.length > this.limit.min)) {
+            return cb(new Error(`至多可以增加${this.limit.min}个${this.mainInfo.name},请删除${value.length - this.limit.min}个`))
           } else {
             cb()
           }
@@ -243,19 +245,19 @@
                   return false
                 }
               } else { // 除static外，其他都是一个固定的数值，不准多不准少
-                if (value.length < this.limit.min) {
-                  this.$message.error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`)
+                const Dvalue = this.limit.min - this.hostList.length
+                if (value.length < Dvalue) {
+                  this.$message.error(`需要${Dvalue}个${this.mainInfo.name},还差${Dvalue - value.length}个`)
                   return false
-                } else if (value.length > this.limit.min) {
-                  this.$message.error(`只需要${this.limit.min}个${this.mainInfo.name},请删除${value.length - this.limit.min}个`)
+                } else if (value.length > Dvalue) {
+                  this.$message.error(`只需要${Dvalue}个${this.mainInfo.name},请删除${value.length - Dvalue}个`)
                   return false
                 }
               }
               this.hostList = [...this.hostList, selection]
+            } else {
+              this.$message.info(`列表中已存在该数据`)
             }
-            // else {
-            //   this.$message.info(`列表中已存在${selection.name}`)
-            // }
           }
         } else {
           this.$message.warning('请选择数据')

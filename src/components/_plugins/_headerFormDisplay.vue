@@ -98,8 +98,16 @@
           <el-table-column
             v-for="col in formItem.value.source.data.params.filter(param => {return param.value.type === 'input'})"
             :key="col.id"
-            :prop="col.id"
             :label="col.name">
+            <!-- :prop="col.id" -->
+            <template scope="scope">
+              <span v-if="typeof scope.row[col.id] === 'string'">
+                {{scope.row[col.id]}}
+              </span>
+              <span v-else>
+                {{ Object.assign({}, scope.row[col.id]).name }}
+              </span>
+            </template>
           </el-table-column>
         </el-table>
       </template>

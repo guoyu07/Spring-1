@@ -22,7 +22,7 @@
     },
     created () {
       // this.getFilteredList()
-      console.log(this.progress.taskList)
+      // console.log(this.progress.taskList)
       this.renderPro()
     },
     watch: {
@@ -57,7 +57,8 @@
                 tname: cur.tname
               }]
             })
-            if (cur.action.length > 1) {
+            // cur.action长度大于1 并且 cur.action 里的 expression === 'pass==0' 的数据大于1
+            if (cur.action.length > 1 && cur.action.filter(action => { return action.expression === 'pass==0' }).length > 1) {
               let data = {}
               data.list = []
               const leng = cur.action.length

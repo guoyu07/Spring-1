@@ -56,7 +56,12 @@
   <div class="form-config">
     <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
     <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
-    <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
+    <draggable
+      v-model="configData2"
+      @start="drag=true"
+      class="draggable"
+      v-show="configData2.length"
+      :options="{ handle: '.draggable-item__label' }">
       <div v-for="(itemConf, index) in configData2" class="draggable-item" :key="index" >
         <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`" :ref="itemConf.name+index">
         <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
@@ -114,7 +119,7 @@
                     <el-input size="small" v-model="itemConf.category"></el-input>
                   </el-form-item>
                   <el-form-item label="字段类型">
-                    <el-select size="small" v-model="itemConf.value.type">
+                    <el-select size="small" v-model="itemConf.value.type" :disabled="itemConf.can_change_type === false">
                       <el-option label="字符串" value="str"></el-option>
                       <el-option label="数字" value="int"></el-option>
                       <el-option label="数组" value="arr"></el-option>
@@ -165,6 +170,12 @@
                       <options-conf-cmdb :dialog-props="itemConf"></options-conf-cmdb>
                       <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover> -->
+                  </el-form-item>
+                  <el-form-item label="范围限制" v-if="itemConf.value.type === 'int'">
+                    <el-popover placement="right" trigger="click" @show="showRangeConf(itemConf)">
+                      <range-conf :dialog-props="itemConf"></range-conf>
+                      <el-button size="small" slot="reference">配置范围</el-button>
+                    </el-popover>
                   </el-form-item>
                   <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
                     <el-popover placement="right" trigger="click" @show="showLimitConf(itemConf)">
@@ -315,6 +326,7 @@ import optionsConfCmdb from './_optionsConfCMDB' // 配置下拉选项（动态�
 import tableConf from './_tableConf' // 配置表格
 import defaultConf from './_defaultConf'
 import limitConf from './_limitConf'
+import rangeConf from './_rangeConf'
 import presetConf from './_presetConf'
 import cascadeConf from './_cascadeConf'
 
@@ -548,6 +560,17 @@ export default {
       this.editItem = item
       this.showConditionVisible = true
     },
+    // 范围限制
+    showRangeConf (item) {
+      if (item.range) {
+        //
+      } else {
+        this.$set(item, 'range', {
+          min: 0,
+          max: 0
+        })
+      }
+    },
     // 个数限制
     showLimitConf (item) {
       if (item.limit) {
@@ -599,6 +622,7 @@ export default {
     tableConf,
     defaultConf,
     limitConf,
+    rangeConf,
     presetConf,
     cascadeConf
   }

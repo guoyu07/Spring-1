@@ -432,7 +432,6 @@ Vue.prototype.showBodyList = (taskFormData, postForm, messageData, index, histor
     }
     if (taskFormData.show.op === 'eq') {
       if (Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path.split('.')[0]) && Vue.prototype.getPathResult(compareVariable, taskFormData.show.key_path) === taskFormData.show.value) {
-        // console.log('ok')
         return true
       }
     } else if (taskFormData.show.op === 'neq') {
@@ -462,7 +461,7 @@ Vue.prototype.bodyLabel = (taskForm, postForm, messageData, labelArr) => {
   if (taskForm.body.body_list.length !== 0) {
     if (taskForm.body.body_list.length === 1) {
       messageData && messageData.body.map((body, index) => {
-        if (taskForm.body.body_list[0].name) {
+        if (taskForm.body.body_list[0].name && Vue.prototype.showBodyList(taskForm.body.body_list[0], postForm, messageData, index)) {
           labelArr[index] = taskForm.body.body_list[0].name + (index + 1)
         } else {
           labelArr[index] = 'body' + (index + 1)

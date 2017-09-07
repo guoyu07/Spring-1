@@ -88,7 +88,7 @@
                       <div v-if="task.form.form.body.body_list.length">
                         <div v-for="taskbody in task.form.form.body.body_list">
                           <div v-if="showBodyList(taskbody, assignForm, applyData, index, task.tkey, taskData.pinstance.pkey)">
-                            <p class="h5">{{task.tname}}</p>
+                            <p v-if="task.form.form.header.length || taskbody.attr_list.length" class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
                               <div v-for="taskformheader in task.form.form.header">
@@ -116,8 +116,8 @@
                       </div>
                       <div v-else>
                         <!-- header 信息显示 -->
-                        <p class="h5">{{task.tname}}</p>
                         <div v-if="task.form.form.header.length >= 1">
+                          <p class="h5">{{task.tname}}</p>
                           <div v-for="taskformheader in task.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
@@ -382,7 +382,7 @@
       }
     },
     methods: {
-      onHostsChange (val) {
+      onHostsChange (val, index) {
         // console.log(val)
         // this.hostList = []
         // this.hostList = val
@@ -405,6 +405,20 @@
               }
             }
           })
+        })
+        this.taskForm.body.body_list.map(body => {
+          if (this.showBodyList(body, this.assignForm, this.applyData, index)) {
+            body.attr_list.map(list => {
+              list.value.map(item => {
+                if (this.showFormItem(item, this.assignForm, this.applyData, true, false, index)) {
+                  if (item.value.type === 'search_bar') {
+                    this.assignForm.body[index][item.id] = []
+                    this.assignForm.body[index][item.id] = val
+                  }
+                }
+              })
+            })
+          }
         })
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
         this.$refs['assignForm'].validate((valid) => {}) // 调用验证
@@ -470,8 +484,9 @@
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
             let newData = {}
+            // console.log(this.taskForm.body.body_list)
             this.taskForm.body.body_list.forEach((body, bodyIndex) => {
-              if (this.showBodyList(body, this.assignForm, this.applyData, bodyIndex)) {
+              if (this.showBodyList(body, this.assignForm, this.applyData, k, true, false)) {
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
@@ -500,6 +515,7 @@
                 })
               }
             })
+            // console.log(newData)
             this.assignForm.body.push(newData)
             for (const id in item) {
               // console.log(item[id], this.assignForm.body[k][id])
@@ -572,18 +588,22 @@
           }
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.taskData = res.data.data
           const message = res.data.data.message
-          res.data.data.paths.map(list => {
-            list.map(path => {
-              if (!this.path_list.includes(path.tkey)) {
-                this.path_list.push(path.tkey)
-              }
-            })
+          res.data.data.message.map(list => {
+            if (!this.path_list.includes(list.task_key)) {
+              this.path_list.push(list.task_key)
+            }
+            // list.map(path => {
+            // })
           })
           const taskKeyArr = this.path_list.filter(item => item !== 'start')
-          // console.log(taskKeyArr)
+          if (this.path_list.includes(this.taskData.ptask.tkey)) {
+           // 如果是驳回信息，最后一步没有历史信息,最后一步为驳回信息
+            taskKeyArr.splice(taskKeyArr.length - 1, 1)
+          }
+          console.log(taskKeyArr)
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
