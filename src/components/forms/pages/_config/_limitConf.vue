@@ -17,10 +17,10 @@
       </el-form-item>
       <template v-if="dialogProps.limit.type === 'static'">
         <el-form-item label="最大值">
-          <el-input-number v-model="dialogProps.limit.max" :min="1"></el-input-number>
+          <el-input-number size="small" v-model="dialogProps.limit.max" :min="1"></el-input-number>
         </el-form-item>
         <el-form-item label="最小值">
-          <el-input-number v-model="dialogProps.limit.min" :min="1"></el-input-number>
+          <el-input-number size="small" v-model="dialogProps.limit.min" :min="0"></el-input-number>
         </el-form-item>
       </template>
       <template v-if="dialogProps.limit.type !== 'static'">
