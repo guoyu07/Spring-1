@@ -56,7 +56,12 @@
   <div class="form-config">
     <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
     <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
-    <draggable v-model="configData2" @start="drag=true" @end="drag=false" class="draggable" v-show="configData2.length">
+    <draggable
+      v-model="configData2"
+      @start="drag=true"
+      class="draggable"
+      v-show="configData2.length"
+      :options="{ handle: '.draggable-item__label' }">
       <div v-for="(itemConf, index) in configData2" class="draggable-item" :key="index" >
         <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`" :ref="itemConf.name+index">
         <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
