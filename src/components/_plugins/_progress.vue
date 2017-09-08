@@ -57,48 +57,50 @@
                 tname: cur.tname
               }]
             })
-            // cur.action长度大于1 并且 cur.action 里的 expression === 'pass==0' 的数据大于1
-            if (cur.action.length > 1 && cur.action.filter(action => { return action.expression === 'pass==0' }).length > 1) {
-              let data = {}
-              data.list = []
-              const leng = cur.action.length
-              for (var i = 0; i < leng; i++) {
-                if (cur.action[i].expression === 'pass==0') {
-                  // alltasksIndex.push(index + 1)
-                  // data.value = index + 1
-                  data.value = valueIndex++
-                  alltasks.push(cur.action[i].target)
-                  arr.map(task => {
-                    if (task.tkey === cur.action[i].target) {
-                      data.list.push({
-                        tkey: task.tkey,
-                        tname: task.tname
-                      })
-                    }
-                  })
+            // cur.action长度大于1 并且 cur.action 里的 expression 有重复数据的都是并发任务
+            if (cur.action.length > 1) {
+              // 找出所有的 expression
+              const expres = cur.action.reduce((p, c) => {
+                p.push(c.expression)
+                return p
+              }, [])
+              // 找出有重复的 expression
+              let repeatExpre = []
+              for (let i = 0; i < expres.length; i++) {
+                if (expres.indexOf(expres[i]) !== expres.lastIndexOf(expres[i]) && !repeatExpre.includes(expres[i])) {
+                  repeatExpre.push(expres[i])
                 }
               }
-              pre.push(data)
+              if (repeatExpre.length) {
+                // 每一个重复的 expresssion 都是并发任务
+                repeatExpre.map(expression => {
+                  let data = {}
+                  data.list = []
+                  const leng = cur.action.length
+                  for (var i = 0; i < leng; i++) {
+                    if (cur.action[i].expression === expression) {
+                      // alltasksIndex.push(index + 1)
+                      // data.value = index + 1
+                      data.value = valueIndex++
+                      alltasks.push(cur.action[i].target)
+                      arr.map(task => {
+                        if (task.tkey === cur.action[i].target) {
+                          data.list.push({
+                            tkey: task.tkey,
+                            tname: task.tname
+                          })
+                        }
+                      })
+                    }
+                  }
+                  pre.push(data)
+                })
+              }
             }
           }
           return pre
         }, [])
       }
-      // getFilteredList () {
-      //   // console.log(this.progress.taskList)
-      //   let postData = {
-      //     action: 'process/form',
-      //     method: 'GET',
-      //     data: {
-      //       pkey: this.progress.pkey,
-      //       tkey: this.progress.tkey,
-      //       form: {}
-      //     }
-      //   }
-      //   this.http.post('/form/', this.parseData(postData)).then((res) => {
-      //     console.log(res)
-      //   })
-      // }
     },
 
     computed: {
