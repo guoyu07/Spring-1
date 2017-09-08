@@ -1,54 +1,69 @@
 <template>
-	<div>
-		<h3>{{usersName}}</h3>
-		<h5>成员列表</h5><el-button type="danger" @click="deleteRole">删除角色</el-button>
-		<el-input 
-		placeholder="根据⽤用户名或基本信息搜索"
-                icon="search"
-                v-model="search.key"
-                @change="onSearch"></el-input>
-		<el-select placeholder='所有用户层级' v-model='search.role1' clearable @change='onSearch'>
-			<el-option v-for='user in usersLevel' :key='user.key' :label='user.label' :value='user.key' ></el-option>
-		</el-select>
-		<el-select placeholder='所有用户状态' v-model='search.role2' clearable @change='onSearch'>
-			<el-option v-for='user in usersStatus' :key='user.key' :label='user.label' :value='user.key' ></el-option>
-		</el-select>
-		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量操作</el-button>
-		<el-button type='success' @click='joinUserGroup = true'>关联用户</el-button>
-		<el-table :data="renderUsersList" border @selection-change="handleSelectionChange">
-		    <el-table-column type='selection' :selectable='forbiddenChoice'></el-table-column>
-			<el-table-column prop='userId' label="用户名">
-			</el-table-column>
-			<el-table-column label='昵称' prop='nick'></el-table-column>
-			<el-table-column label='邮箱' prop='email'></el-table-column>
-			<el-table-column label='手机' prop='phone'></el-table-column>
-			<el-table-column label='用户层级' prop='level' :formatter='formatLevel' ></el-table-column>
-			<el-table-column label='用户状态'  inline-template>
-				<template>
-				  <span :class="row.status ? 'text-danger' : ''">
-                    {{ row.status ? '已禁用' : '使用中' }}
-                  </span>
-				</template>
-			</el-table-column>
-			<el-table-column label='操作' inline-template>
-				<template>
-					<el-button type='danger' :disabled="row.level === 0" size="small" @click="deleteRow(row.userId)">删除</el-button>
-          <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高层级</el-button>
-				</template>
-			</el-table-column>
-	    </el-table>
-    <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
-      <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
-      <el-select v-model="usersToAdd">
-        <el-option v-for="user in userListToAdd" :key="user.userId" :label="user.userId" :value='user.userId'>
-          <p>{{user.userId}}</p>
-          <p>{{user.email}}</p>
-        </el-option>
-      </el-select>
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="confirmAddUser">确认加入</el-button>
-      </span>
-    </el-dialog>
+	<div class="users wrapper">
+   <el-row>
+     <el-col :sm="24" :md="24" :lg="24">
+      <div class="flex-box1">
+    		<h3 class="module-title">{{usersName}}</h3>
+        <div class="btn-block">
+    	   <el-button type="danger" @click="deleteRole" size="small">删除角色</el-button>
+        </div>
+      </div>
+        <h5 class='second-title'>成员列表</h5>
+        <div class="flex-box2">
+          <div class="search-box">
+        		<el-input 
+        		placeholder="根据⽤用户名或基本信息搜索"
+                        icon="search"
+                        v-model="search.key"
+                        @change="onSearch"></el-input>
+        		<el-select placeholder='所有用户层级' v-model='search.role1' clearable @change='onSearch'>
+        			<el-option v-for='user in usersLevel' :key='user.key' :label='user.label' :value='user.key' ></el-option>
+        		</el-select>
+        		<el-select placeholder='所有用户状态' v-model='search.role2' clearable @change='onSearch'>
+        			<el-option v-for='user in usersStatus' :key='user.key' :label='user.label' :value='user.key' ></el-option>
+        		</el-select>
+         </div>
+         <div class="btn-box">
+      		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量操作</el-button>
+      		<el-button type='success' @click='joinUserGroup = true'>关联用户</el-button>
+         </div>
+      </div>
+    		<el-table :data="renderUsersList" border @selection-change="handleSelectionChange">
+    		    <el-table-column type='selection' :selectable='forbiddenChoice'></el-table-column>
+    			<el-table-column prop='userId' label="用户名">
+    			</el-table-column>
+    			<el-table-column label='昵称' prop='nick'></el-table-column>
+    			<el-table-column label='邮箱' prop='email'></el-table-column>
+    			<el-table-column label='手机' prop='phone'></el-table-column>
+    			<el-table-column label='用户层级' prop='level' :formatter='formatLevel' ></el-table-column>
+    			<el-table-column label='用户状态'  inline-template>
+    				<template>
+    				  <span :class="row.status ? 'text-danger' : ''">
+                        {{ row.status ? '已禁用' : '使用中' }}
+                      </span>
+    				</template>
+    			</el-table-column>
+    			<el-table-column label='操作' inline-template>
+    				<template>
+    					<el-button type='danger' :disabled="row.level === 0" size="small" @click="deleteRow(row.userId)">删除</el-button>
+              <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高等级</el-button>
+    				</template>
+    			</el-table-column>
+    	    </el-table>
+        <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
+          <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
+          <el-select v-model="usersToAdd" multiple >
+            <el-option v-for="user in userListToAdd" :key="user.userId" :label="user.userId" :value='user.userId'>
+              <div class="fl " style="width:100%">{{user.userId}}</div>
+              <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+            </el-option>
+          </el-select>
+          <span class="dialog-footer" slot="footer">
+            <el-button @click="confirmAddUser">确认加入</el-button>
+          </span>
+        </el-dialog>
+      </el-col>
+    </el-row>
 	</div>
 
 </template>
@@ -80,26 +95,37 @@ export default {
     this.getAllUserList()
   },
   watch: {
-    'usersList': 'getArr'
+    'renderUsersList': 'getArr'
   },
   methods: {
     upgrade (val) {
-      let postData = {
-        action: 'group/user/admin',
-        method: 'post',
-        data: {
-          key: this.$route.query.key,
-          userId: val
+      this.$confirm('确认提高等级？', '提示', {
+        confirmButtonText: '确定',
+        cancelButonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let postData = {
+          action: 'group/user/admin',
+          method: 'post',
+          data: {
+            key: this.$route.query.key,
+            userId: val
+          }
         }
-      }
-      this.http.post('/user/', this.parseData(postData)).then((res) => {
-        if (res.status === 200) {
-          this.$message({
-            type: 'success',
-            message: '修改成功'
-          })
-          this.getUsersList()
-        }
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '提高成功'
+            })
+            this.getUsersList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消提高'
+        })
       })
     },
     getArr () {
@@ -113,16 +139,18 @@ export default {
       })
     },
     confirmAddUser () {
+      console.log(this.usersToAdd)
       let postData = {
         action: 'group/user',
         method: 'post',
         data: {
           key: this.$route.query.key,
-          userId_list: [this.usersToAdd]
+          userId_list: this.usersToAdd
         }
       }
       this.http.post('/user/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
+          this.usersToAdd = []
           this.$message({
             type: 'success',
             message: '添加成功'
@@ -290,4 +318,36 @@ export default {
   }
 }
 </script>
-<style></style>
+<style lang="less" scoped>
+  .flex-box1 {
+     display: flex;
+  justify-content: space-between;
+    padding-bottom: 8px;
+    .module-title {
+      margin-bottom: 0;
+    }
+    align-items: center;
+    border-bottom: 2px solid #ccc;
+  }
+  .second-title {
+    margin-top:10px;
+  }
+  .flex-box2 {
+     display: flex;
+  justify-content: space-between;
+       .search-box {
+      display: flex;
+      .el-input {
+        width: 210px;
+        height: 36px;
+        margin-right: 10px;
+      }
+      .el-select {
+        width: 140px;
+        margin-right: 10px;
+      }
+    }
+    margin-bottom:10px;
+  }
+
+</style>

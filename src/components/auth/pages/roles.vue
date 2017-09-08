@@ -28,7 +28,7 @@
             </div>
           </div>
           <el-table
-            :data="roleSearchList"
+            :data="currentPageList"
             border
             @selection-change="handleSelectionChange"
             >
@@ -61,7 +61,7 @@
             :page-sizes="[3,10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
             layout="sizes, prev, pager, next"
-            :total="permittedRoleList.length">
+            :total="totalPage">
           </el-pagination>
         </div>
       </el-col>
@@ -126,6 +126,8 @@
         search: {
           key: ''
         },
+        totalPage: '',
+        currentPageList: [],
         roleSelection: [],
         currentPage: 1,
         currentPageSize: 3,
@@ -186,15 +188,17 @@
         console.log(val)
         this.roleSelection = val
       },
-      renderList () {
+      renderList (newVal, oldVal) {
+        this.totalPage = newVal.length
         this.handleCurrentChange(1)
       },
       handleCurrentChange (val) {
         this.currentPage = val
         const offset = (this.currentPage - 1) * this.currentPageSize
-        const array = this.permittedRoleList
+        let array = (this.search.key) ? this.roleSearchList : this.permittedRoleList
         console.log(offset + this.currentPageSize)
-        this.roleSearchList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+        console.log(array)
+        this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       handleSizeChange (val) {
         this.currentPageSize = val
@@ -212,6 +216,8 @@
             }
           }
         })
+        this.totalPage = this.roleSearchList.length
+        this.handleCurrentChange(1)
       },
       onAddRole ({ name, tags }) {
         // if (!/^[a-z][a-z0-9_]+[a-z]$/.test(key)) {
