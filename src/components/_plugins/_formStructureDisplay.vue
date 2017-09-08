@@ -56,7 +56,7 @@
 
           <span v-else-if="formItem.value.type === 'users'">
             <template v-if="!isEditing || !editing[formItem.id]">
-              <span v-if="item[formItem.id] && item[formItem.id].user && item[formItem.id].user.code" class="tooltip-link">{{item[formItem.id].user.userId}} <i class="el-icon-fa-user-circle"></i></span>
+              <span v-if="item[formItem.id] && item[formItem.id].user && item[formItem.id].user.userId" class="tooltip-link">{{item[formItem.id].user.userId}} <i class="el-icon-fa-user-circle"></i></span>
               <span v-else-if="item[formItem.id] && item[formItem.id].group && item[formItem.id].group.name" class="tooltip-link">{{ item[formItem.id].group.name}} <i class="el-icon-fa-users"></i></span>
               <span v-else>未指定</span>
               <!-- <i v-if="isEditing" @click="toggleEditable(formItem.id)" class="editable-field__indicator el-icon-edit text-info"></i> -->
@@ -78,6 +78,7 @@
           </span>
 
           <el-table
+            class="margin-bottom"
             v-else-if="formItem.value.type === 'table'"
             :data="item[formItem.id]">
             <el-table-column
