@@ -58,7 +58,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-sizes="[3,10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
             layout="sizes, prev, pager, next"
             :total="permittedRoleList.length">
@@ -128,7 +128,7 @@
         },
         roleSelection: [],
         currentPage: 1,
-        currentPageSize: 20,
+        currentPageSize: 3,
         roleSearchList: [],
         usersToAdd: [],
         usersToDelete: [],

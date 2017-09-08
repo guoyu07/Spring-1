@@ -1,7 +1,7 @@
 <template>
 	<div>
 		<h3>{{usersName}}</h3>
-		<h5>成员列表</h5><el-button type="danger">删除用户</el-button>
+		<h5>成员列表</h5><el-button type="danger" @click="deleteRole">删除角色</el-button>
 		<el-input 
 		placeholder="根据⽤用户名或基本信息搜索"
                 icon="search"
@@ -13,16 +13,16 @@
 		<el-select placeholder='所有用户状态' v-model='search.role2' clearable @change='onSearch'>
 			<el-option v-for='user in usersStatus' :key='user.key' :label='user.label' :value='user.key' ></el-option>
 		</el-select>
-		<el-button type='primary' @click='onSearch' :disabled='!countSelection.length'>批量操作</el-button>
-		<el-button type='success' @click='onSearch'>关联用户</el-button>
+		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量操作</el-button>
+		<el-button type='success' @click='joinUserGroup = true'>关联用户</el-button>
 		<el-table :data="renderUsersList" border @selection-change="handleSelectionChange">
-		    <el-table-column type='selection'></el-table-column>
+		    <el-table-column type='selection' :selectable='forbiddenChoice'></el-table-column>
 			<el-table-column prop='userId' label="用户名">
 			</el-table-column>
 			<el-table-column label='昵称' prop='nick'></el-table-column>
 			<el-table-column label='邮箱' prop='email'></el-table-column>
 			<el-table-column label='手机' prop='phone'></el-table-column>
-			<el-table-column label='用户层级' prop='level' :formatter='formatLevel'></el-table-column>
+			<el-table-column label='用户层级' prop='level' :formatter='formatLevel' ></el-table-column>
 			<el-table-column label='用户状态'  inline-template>
 				<template>
 				  <span :class="row.status ? 'text-danger' : ''">
@@ -32,37 +32,208 @@
 			</el-table-column>
 			<el-table-column label='操作' inline-template>
 				<template>
-					<el-button type='danger'>删除</el-button>
+					<el-button type='danger' :disabled="row.level === 0" size="small" @click="deleteRow(row.userId)">删除</el-button>
+          <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高层级</el-button>
 				</template>
 			</el-table-column>
 	    </el-table>
+    <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
+      <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
+      <el-select v-model="usersToAdd">
+        <el-option v-for="user in userListToAdd" :key="user.userId" :label="user.userId" :value='user.userId'>
+          <p>{{user.userId}}</p>
+          <p>{{user.email}}</p>
+        </el-option>
+      </el-select>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="confirmAddUser">确认加入</el-button>
+      </span>
+    </el-dialog>
 	</div>
+
 </template>
 <script>
-	export default {
-	  data () {
-	    return {
-	      search: {
-	        key: '',
-	        role1: '',
-	        role2: ''
-	      },
-	      usersName: '',
-	      countSelection: [],
-	      usersList: [],
-	      renderUsersList: [],
-	      usersLevel: [ {key: 0, label: '超级管理员'}, {key: 1, label: '管理员'}, {key: 2, label: '普通用户'} ],
-	      usersStatus: [ {key: 0, label: '使用中'}, {key: 1, label: '已禁用'} ]
-	    }
-	  },
-	  created () {
-	    this.getUsersList()
-	  },
-	  watch: {},
-	  methods: {
-	    handleSelectionChange (val) {
+import getAllUserList from './../../../mixins/getAllUserList'
+export default {
+  mixins: [getAllUserList],
+  data () {
+    return {
+      usersToAdd: [],
+      userListToAdd: [],
+      joinUserGroup: false,
+      selectedUserList: [],
+      search: {
+        key: '',
+        role1: '',
+        role2: ''
+      },
+      usersName: '',
+      countSelection: [],
+      usersList: [],
+      renderUsersList: [],
+      usersLevel: [ {key: 0, label: '超级管理员'}, {key: 1, label: '管理员'}, {key: 2, label: '普通用户'} ],
+      usersStatus: [ {key: 0, label: '使用中'}, {key: 1, label: '已禁用'} ]
+    }
+  },
+  created () {
+    this.getUsersList()
+    this.getAllUserList()
+  },
+  watch: {
+    'usersList': 'getArr'
+  },
+  methods: {
+    upgrade (val) {
+      let postData = {
+        action: 'group/user/admin',
+        method: 'post',
+        data: {
+          key: this.$route.query.key,
+          userId: val
+        }
+      }
+      this.http.post('/user/', this.parseData(postData)).then((res) => {
+        if (res.status === 200) {
+          this.$message({
+            type: 'success',
+            message: '修改成功'
+          })
+          this.getUsersList()
+        }
+      })
+    },
+    getArr () {
+      let arr1 = this.usersList.map((val) => {
+        return val.userId
+      })
+      this.userListToAdd = this.userList.list.filter((val) => {
+        if (!arr1.includes(val.userId)) {
+          return true
+        }
+      })
+    },
+    confirmAddUser () {
+      let postData = {
+        action: 'group/user',
+        method: 'post',
+        data: {
+          key: this.$route.query.key,
+          userId_list: [this.usersToAdd]
+        }
+      }
+      this.http.post('/user/', this.parseData(postData)).then((res) => {
+        if (res.status === 200) {
+          this.$message({
+            type: 'success',
+            message: '添加成功'
+          })
+          this.joinUserGroup = false
+          this.getUsersList()
+        }
+      })
+    },
+    forbiddenChoice (row, index) {
+      if (row.level !== 0 && row.userId !== this.$store.state.userinfo.userId) {
+        return true
+      }
+    },
+    deleteRow (val) {
+      this.$confirm('确认删除选定用户？', '提示', {
+        confirmButtonText: '确定',
+        cancelButonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let postData = {
+          action: 'group/user',
+          method: 'delete',
+          data: {
+            key: this.$route.query.key,
+            userId_list: [val]
+          }
+        }
+        console.log(postData)
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+            this.getUsersList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    deleteSelectedGroup () {
+      this.$confirm('确认删除选定用户？', '提示', {
+        confirmButtonText: '确定',
+        cancelButonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.selectedUserList = this.countSelection.map((val) => {
+          return val.userId
+        })
+        let postData = {
+          action: 'group/user',
+          method: 'delete',
+          data: {
+            key: this.$route.query.key,
+            userId_list: this.selectedUserList
+          }
+        }
+        console.log(postData)
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+            this.getUsersList()
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    deleteRole () {
+      this.$confirm('确认删除角色？', '提示', {
+        confirmButtonText: '确定',
+        cancelButonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        let postData = {
+          action: 'group',
+          method: 'delete',
+          data: {
+            key: this.$route.query.key
+          }
+        }
+        this.http.post('/user/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message({
+              type: 'success',
+              message: '删除成功'
+            })
+            this.$router.go(-1)
+          }
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handleSelectionChange (val) {
       this.countSelection = val
-	    },
+    },
     formatLevel (row, col) {
       switch (row.level) {
         case 0: return '超级管理员'
@@ -82,7 +253,6 @@
           this.usersName = res.data.data.name
           this.usersList = res.data.data.users
           this.renderUsersList = this.usersList
-          console.log(res.data)
         }
       })
     },
