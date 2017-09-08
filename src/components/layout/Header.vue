@@ -117,6 +117,22 @@
 
       i {
         margin-right: 4px;
+
+        &.badged {
+          position: relative;
+
+          &::after {
+            content: '';
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            border: 1px solid #fff;
+            background-color: @danger;
+            position: absolute;
+            right: -8px;
+            top: 0;
+          }
+        }
       }
 
       a {
@@ -145,16 +161,54 @@
         display: list-item;
       }
     }
-
-    .message-badge {
-      .el-badge__content {
-        right: 6px;
-        top: 16px;
-      }
-    }
   }
   .link-block {
     display: block;
+  }
+
+  .message {
+
+    &__list {
+      padding: 0;
+      margin: 0;
+    }
+
+    &__item {
+      padding: 10px 18px;
+
+      &:not(:last-of-type) {
+        border-bottom: 1px @borderColor solid;
+      }
+
+      &:hover {
+        background-color: @bgLighter;
+        cursor: pointer;
+      }
+
+      &__title {
+        font-size: 14px;
+        color: @textColor;
+        margin-bottom: 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      &__time {
+        color: lighten(@textColor, 20%);
+      }
+
+      &__link {
+        &:hover {
+          text-decoration: none;
+        }
+      }
+
+      &__more {
+        color: @info;
+        font-size: 13px;
+      }
+    }
   }
 </style>
 
@@ -200,12 +254,26 @@
         </el-tooltip>
       </el-menu-item>
       <el-menu-item index="6">
-        <router-link class="link-block" :to="{ path: '/messages' }">
-          <el-badge is-dot class="message-badge" v-show="$store.state.socket.unread">
-            <i class="el-icon-fa-bell"></i>
-          </el-badge>
-          <i v-show="!$store.state.socket.unread" class="el-icon-fa-bell"></i>
-        </router-link>
+        <el-popover
+          ref="message"
+          placement="bottom"
+          width="250"
+          trigger="click"
+          @show="getUnreadMessages">
+          <ul class="message__list">
+            <li class="message__item" v-for="message in messageList">
+              <router-link class="message__item__link" :to="{ path: message.url }">
+                <div class="message__item__title">{{message.title}}</div>
+                <div class="message__item__time">{{message.ctime}}</div>
+              </router-link>
+            </li>
+            <li class="message__item" v-show="!messageList.length">没有新未读消息</li>
+            <li class="message__item">
+              <router-link :to="{ path: '/messages' }" class="message__item__more">查看更多</router-link>
+            </li>
+          </ul>
+        </el-popover>
+        <i v-popover:message :class="{ 'el-icon-fa-bell': true, badged: $store.state.socket.unread }"></i>
       </el-menu-item>
       <el-submenu class="mine" index="5">
         <template slot="title">{{userName}}</template>
@@ -233,7 +301,8 @@
   export default {
     data () {
       return {
-        userName: ''
+        userName: '',
+        messageList: []
       }
     },
 
@@ -245,6 +314,24 @@
       logout () {
         Auth.logout()
         // this.$router.go(0)
+      },
+
+      getUnreadMessages () {
+        let postData = {
+          action: 'message',
+          method: 'GET',
+          data: {
+            read: false,
+            page: 1,
+            page_size: 5  // 获取头五条未读消息
+          }
+        }
+        this.http.post('/base/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.messageList = res.data.data.list
+            // this.$store.dispatch('socket_onread')
+          }
+        })
       },
 
       onScreenFull () {
