@@ -624,7 +624,7 @@
                     }
                   }
                 }
-                // console.log(untakedData)
+                console.log(untakedData)
                 // 整理出被当前其他表单占用的 U位
                 let formTakedData = []
                 this.assignForm.body.map((body, bodyk) => {
@@ -643,7 +643,7 @@
                     }
                   }
                 })
-                // console.log(formTakedData)
+                console.log(formTakedData)
                 if (formTakedData.length !== 0) {
                   const untakedDataLenght = untakedData.length
                   for (let i = 0; i <= untakedDataLenght; i++) {
@@ -655,13 +655,13 @@
                     }
                     if (!formTakedData.includes(untakedData[i]) && !formTakedData.includes(Uend)) {
                       this.assignForm.body[k].idcracku = untakedData[i]
-                      console.log(k, untakedData[0])
+                      console.log(k, untakedData[i])
                       return false
                     }
                   }
                 } else {
                   this.assignForm.body[k].idcracku = untakedData[0]
-                  // console.log(k, untakedData[0])
+                  console.log(k, untakedData[0])
                 }
               })
             }

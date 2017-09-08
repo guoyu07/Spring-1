@@ -304,8 +304,61 @@
           if (this.taskFormData.body.body_list.length) {
             this.$set(this.postForm, 'body', [{}])
           }
-          this.taskFormData.body.body_list.forEach((body, bodyIndex) => {
-            if (this.showBodyList(body, this.postForm, this.applyData, bodyIndex)) {
+          // this.taskFormData.body.body_list.forEach((body, bodyIndex) => {
+          //   if (this.showBodyList(body, this.postForm, this.applyData, 0)) {
+          //     console.log(body)
+          //     body.attr_list.map(group => {
+          //       group.value.map(value => {
+          //         if (value.need_submit) {
+          //           this.setDataType(value, this.postForm.body[0], this)
+          //           // 有默认值时 只有 form_body 和 form_header 2种
+          //           if (value.default && value.default.type) {
+          //             if (value.default.type === 'form_body') {
+          //               this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+          //                 this.postForm.body[0][value.id] = newVal
+          //               })
+          //             } else if (value.default.type === 'form_header') {
+          //               this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+          //                 this.postForm.body[0][value.id] = newVal
+          //               })
+          //             }
+          //           }
+          //         }
+          //       })
+          //     })
+          //   }
+          // })
+          this.taskFormData.body.body_list.forEach(body => {
+            if (body.show.type) {
+              // const keyPath = body.show.key_path.split('.')
+              if (body.show.type === 'form_header') {
+                this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
+                  this.$set(this.postForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
+                  this.taskFormData.body.body_list.map(bodyList => {
+                    if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+                      bodyList.attr_list.map(group => {
+                        group.value.map(value => {
+                          this.setDataType(value, this.postForm.body[0], this)
+                          // 有默认值时 只有 form_body 和 form_header 2种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'form_body') {
+                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.postForm.body[0][value.id] = newVal
+                              })
+                            } else if (value.default.type === 'form_header') {
+                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.postForm.body[0][value.id] = newVal
+                              })
+                            }
+                          }
+                        })
+                      })
+                    }
+                  })
+                })
+              }
+            } else {
+              this.$set(this.postForm, 'body', [{}])
               body.attr_list.map(group => {
                 group.value.map(value => {
                   if (value.need_submit) {
