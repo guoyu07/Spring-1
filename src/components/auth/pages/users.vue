@@ -223,8 +223,8 @@
       var validateUserId = (rule, value, callback) => {
         if (value === '') {
           callback(new Error('请输入用户 ID'))
-        } else if (!/^(?!_)(?!.*?_$)[a-zA-Z0-9_]{6,16}$/.test(value)) {
-          callback(new Error('请输入6-16位的字母或数字或下划线，且开头和结尾不能是下划线'))
+        } else if (!/^(?!_)(?!.*?_$)[a-zA-Z0-9_]{4,16}$/.test(value)) {
+          callback(new Error('请输入4-16位的字母或数字或下划线，且开头和结尾不能是下划线'))
         } else {
           callback()
         }

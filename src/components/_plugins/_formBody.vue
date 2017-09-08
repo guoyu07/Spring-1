@@ -264,33 +264,45 @@
       }
     },
     mounted () {
-      // if (this.formItem && this.formItem.default && this.formItem.default.type) {
-      //   if (this.formItem.default.type === 'message_header') {
-      //     this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
-      //   } else if (this.formItem.default.type === 'static') {
-      //     this.whole.header[this.formItem.id] = this.formItem.default.this.formItem
-      //   } else if (this.formItem.default.type === 'form_header') {
-      //     this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-      //       this.whole.header[this.formItem.id] = newVal
-      //     })
-      //   } else if (this.formItem.default.type === 'form_body') {
-      //     if (this.headerTable || this.bodyTable) {
-      //       this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
-      //         this.whole[this.formItem.id] = newVal
-      //       })
-      //     } else {
-      //       if (this.header) {
-      //         this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-      //           this.whole.header[this.formItem.id] = newVal
-      //         })
-      //       } else {
-      //         this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
-      //           this.whole.body[this.index][this.valueId] = newVal
-      //         })
-      //       }
-      //     }
-      //   }
-      // }
+      if (this.formItem && this.formItem.default && this.formItem.default.type) {
+        if (this.formItem.default.type === 'message_header') {
+          if (this.header) {
+            this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
+          } else {
+            this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
+          }
+        } else if (this.formItem.default.type === 'static') {
+          if (this.header) {
+            this.whole.header[this.formItem.id] = this.formItem.default.value
+          } else {
+            this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
+          }
+        } else if (this.formItem.default.type === 'form_header') {
+          this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+            if (this.header) {
+              this.whole.header[this.formItem.id] = newVal
+            } else {
+              this.whole.body[this.index][this.formItem.id] = newVal
+            }
+          })
+        } else if (this.formItem.default.type === 'form_body') {
+          if (this.headerTable || this.bodyTable) {
+            this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
+              this.whole[this.formItem.id] = newVal
+            })
+          } else {
+            if (this.header) {
+              this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole.header[this.formItem.id] = newVal
+              })
+            } else {
+              this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole.body[this.index][this.valueId] = newVal
+              })
+            }
+          }
+        }
+      }
     },
     methods: {
       prop (formItem) {
