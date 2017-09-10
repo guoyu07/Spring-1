@@ -17,6 +17,7 @@ export default {
         if (res.status === 200) {
           this.permittedRoleList = res.data.data.list
           console.log('mixin working')
+          console.log(this.permittedRoleList)
         }
       })
     }

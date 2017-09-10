@@ -1,5 +1,6 @@
 import * as types from './mutation-types'
 import Vue from 'vue'
+import EventHub from './../utils/event-hub'
 import { Notification } from 'element-ui'
 
 Vue.prototype.$notify = Notification
@@ -38,6 +39,7 @@ export default {
     switch (message.type) {
       case 'message':
         state.socket.unread = true
+        EventHub.$emit('on-receive-message')
         Vue.prototype.$notify.info({
           title: '新消息',
           message: message.data.title

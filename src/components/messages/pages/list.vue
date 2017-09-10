@@ -54,6 +54,7 @@
 </template>
 
 <script>
+  import EventHub from './../../../utils/event-hub'
   export default {
     data () {
       return {
@@ -70,6 +71,7 @@
 
     mounted () {
       this.getMessageList()
+      EventHub.$on('on-receive-message', this.onReceiveMessage)
     },
 
     methods: {
@@ -109,6 +111,10 @@
             this.getMessageList()
           }
         })
+      },
+
+      onReceiveMessage () {
+        this.getMessageList()
       }
     }
   }

@@ -5,7 +5,7 @@
       <div class="flex-box1">
     		<h3 class="module-title">{{usersName}}</h3>
         <div class="btn-block">
-    	   <el-button type="danger" @click="deleteRole" size="small">删除角色</el-button>
+    	   <el-button type="danger" @click="deleteRole" size="small" v-show="isQualified">删除角色</el-button>
         </div>
       </div>
         <h5 class='second-title'>成员列表</h5>
@@ -23,8 +23,8 @@
         			<el-option v-for='user in usersStatus' :key='user.key' :label='user.label' :value='user.key' ></el-option>
         		</el-select>
          </div>
-         <div class="btn-box">
-      		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量操作</el-button>
+         <div class="btn-box" v-show="isQualified">
+      		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量删除</el-button>
       		<el-button type='success' @click='joinUserGroup = true'>关联用户</el-button>
          </div>
       </div>
@@ -43,7 +43,7 @@
                       </span>
     				</template>
     			</el-table-column>
-    			<el-table-column label='操作' inline-template>
+    			<el-table-column label='操作' inline-template v-if="isQualified">
     				<template>
     					<el-button type='danger' :disabled="row.level === 0" size="small" @click="deleteRow(row.userId)">删除</el-button>
               <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高等级</el-button>
@@ -93,11 +93,34 @@ export default {
   created () {
     this.getUsersList()
     this.getAllUserList()
+    // this.insideGroup()
   },
   watch: {
     'renderUsersList': 'getArr'
   },
+  computed: {
+    isQualified () {
+      let arr = this.$store.state.userinfo.groups.map((val) => {
+        return val.key
+      })
+      let key = +this.$route.query.key
+      if (arr.includes(key)) {
+        return true
+      }
+    }
+  },
   methods: {
+    // insideGroup () {
+    //   console.log(this.$store.state.userinfo.groups)
+    //   let arr = this.$store.state.userinfo.groups.map((val) => {
+    //     return val.key
+    //   })
+    //   let key = this.$route.query.key
+    //   if (arr.includes(key)) {
+    //     this.isQualified = true
+    //   }
+    //   console.log(this.isQualified)
+    // },
     upgrade (val) {
       this.$confirm('确认提高等级？', '提示', {
         confirmButtonText: '确定',
