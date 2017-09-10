@@ -58,7 +58,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[3,10, 20, 30, 50, 100]"
+            :page-sizes="[10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
             layout="sizes, prev, pager, next"
             :total="totalPage">
@@ -87,11 +87,11 @@
           key: ''
         },
         roleList: [],
-        totalPage: '',
+        totalPage: 0,
         currentPageList: [],
         roleSelection: [],
         currentPage: 1,
-        currentPageSize: 3,
+        currentPageSize: 20,
         roleSearchList: [],
         usersToAdd: [],
         usersToDelete: [],
