@@ -74,10 +74,6 @@
           </el-dropdown-menu>
         </el-dropdown>
       </el-form-item>
-      <el-form-item label="允许新增选项" v-if="!isSearchBar">
-        <el-radio v-model="itemConf.value.allow_create" :label="true">是</el-radio>
-        <el-radio v-model="itemConf.value.allow_create" :label="false">否</el-radio>
-      </el-form-item>
     </el-form>
 
     <h5 v-if="itemConf.value.source.data.params.length">接口请求参数：</h5>
@@ -205,7 +201,7 @@
     methods: {
       handleCMDBShown () {
         Object.assign(this.itemConf.value.source.data, { action: this.selectedPreset.action, method: this.selectedPreset.method })
-        Object.assign(this.itemConf.value.source.res, { data_path: this.selectedPreset.data_path, show_key: [this.itemConf.value.external[0].name] })
+        Object.assign(this.itemConf.value.source.res, { data_path: this.selectedPreset.data_path, show_key: ['name'] })
         this.itemConf.value.source.url = this.selectedPreset.url
         // this.onSelectPreset(this.selectedPreset)
         // this.itemConf.value.source.res.show_key.push(this.itemConf.value.external[0].name)
@@ -338,9 +334,6 @@
       },
 
       onClose () {
-        if (!this.isSearchBar) {
-          this.itemConf.value.allow_create = this.allowCreate
-        }
         this.itemConf.value.confVisible = false
         console.log(this.itemConf.value.confVisible)
       }
