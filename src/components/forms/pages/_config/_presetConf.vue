@@ -36,7 +36,7 @@
     </el-form>
     <h4>请在预设集中选择欲导入的属性</h4>
     <!-- <small>（鼠标悬浮于属性名，可察看属性详情）</small> -->
-    <!-- <el-checkbox-group
+    <el-checkbox-group
       v-model="checkedAttributes">
       <el-popover
         placement="top"
@@ -50,10 +50,10 @@
           <el-form-item label="唯一"><code>{{attr.unique}}</code></el-form-item>
           <el-form-item label="类型"><span>{{attr.value.type}}</span></el-form-item>
         </el-form>
-        <el-checkbox slot="reference" :label="attr" :key="attr" :disabled="['FK', 'FKs'].includes(attr.value.type)">{{attr.name}}</el-checkbox>
+        <el-checkbox slot="reference" :label="attr" :key="attr.id" :value="attr">{{`${attr.name}（${attr.value.type}）`}}</el-checkbox>
       </el-popover>
-    </el-checkbox-group> -->
-    <el-table
+    </el-checkbox-group>
+    <!-- <el-table
       ref="multipleTable"
       :data="currentList"
       border
@@ -89,7 +89,7 @@
       layout="prev, pager, next"
       @current-change="handleCurrentChange"
       :total="selectedPreset.attrList.length">
-    </el-pagination>
+    </el-pagination> -->
     <div class="dialog-footer" slot="footer">
       <el-button @click="onSubmit" type="primary" icon="check">OK</el-button>
     </div>
@@ -106,10 +106,9 @@
         type: String
       }
     },
-
-    created () {
-      this.handleCurrentChange(1)
-    },
+    // created () {
+    //   this.handleCurrentChange(1)
+    // },
 
     data () {
       return {
@@ -143,6 +142,7 @@
         if (this.category) {
           this.checkedAttributes.forEach((_) => { _.category = this.category })
         }
+        console.log(this.checkedAttributes)
         this.$parent.$options.methods.importPreset(this.checkedAttributes, this.currentFields)
         this.selectedPreset.confVisible = false
       }

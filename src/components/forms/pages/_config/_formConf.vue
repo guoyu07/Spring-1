@@ -252,7 +252,7 @@
             <el-form-item label="唯一"><code>{{attr.unique}}</code></el-form-item>
             <el-form-item label="类型"><span>{{attr.value.type}}</span></el-form-item>
           </el-form>
-          <el-checkbox slot="reference" :label="attr" :key="attr">{{attr.name}}</el-checkbox>
+          <el-checkbox slot="reference" :label="attr" :key="attr.id" :value="attr">{{attr.name}}</el-checkbox>
         </el-popover>
       </el-checkbox-group>
       <div class="dialog-footer" slot="footer">
@@ -433,7 +433,7 @@ export default {
     importPreset (preset, currentFields) {
       for (let attr of preset) {
         if (currentFields.every(i => i.id !== attr.id)) {
-          Object.assign(attr, { need_submit: false, isAlias: false, default: { type: '' } })
+          Object.assign(attr, { need_submit: true, isAlias: false, default: { type: '' } })
           if (attr.value.type === 'FK') {
             attr.value.type = 'dict'
           }
