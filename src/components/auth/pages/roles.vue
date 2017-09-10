@@ -12,7 +12,7 @@
             show-icon
             style="margin-bottom: 12px;">
           </el-alert>
-            <div class="flex-box">
+          <div class="flex-box">
             <div class="search-block">
               <el-input
                 placeholder="根据角色名或其他信息搜索"

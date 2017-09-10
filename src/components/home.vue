@@ -24,7 +24,7 @@
     <header-warp></header-warp>
     <side-warp></side-warp>
     <div id="content">
-      <router-view></router-view>
+      <router-view transition="outLeftInRight"></router-view>
     </div>
     <footer-warp></footer-warp>
   </div>

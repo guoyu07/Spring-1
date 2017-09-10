@@ -486,7 +486,32 @@
             let newData = {}
             // console.log(this.taskForm.body.body_list)
             this.taskForm.body.body_list.forEach((body, bodyIndex) => {
-              if (this.showBodyList(body, this.assignForm, this.applyData, k, true, false)) {
+              if (body.show.type === 'form_header') {
+                this.$watch('assignForm.header.' + body.show.key_path, (newVal, oldVal) => {
+                  this.$set(this.assignForm, 'body', [{}]) // 初始化表单数据
+                  this.taskFormData.body.body_list.map(bodyList => {
+                    if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
+                      bodyList.attr_list.map(group => {
+                        group.value.map(value => {
+                          this.setDataType(value, this.assignForm.body[0], this)
+                          // 有默认值时 只有 form_body 和 form_header 2种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'form_body') {
+                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.assignForm.body[0][value.id] = newVal
+                              })
+                            } else if (value.default.type === 'form_header') {
+                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.assignForm.body[0][value.id] = newVal
+                              })
+                            }
+                          }
+                        })
+                      })
+                    }
+                  })
+                })
+              } else if (this.showBodyList(body, this.assignForm, this.applyData, k, true, false)) {
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
@@ -687,7 +712,7 @@
             if (data.header[headerid].length !== 0) {
               postFormData.header[headerid] = data.header[headerid]
             }
-          } else if (data.header[headerid]) {
+          } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
             postFormData.header[headerid] = data.header[headerid]
           }
         }
@@ -698,7 +723,7 @@
               if (body[bodyid].length !== 0) {
                 postFormData.body[bodyIndex][bodyid] = body[bodyid]
               }
-            } else if (body[bodyid]) {
+            } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
               postFormData.body[bodyIndex][bodyid] = body[bodyid]
             }
           }

@@ -191,11 +191,11 @@
 <script>
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
-  import getAllUserList from './../../../mixins/getAllUserList'
+  // import getAllUserList from './../../../mixins/getAllUserList'
   import getAllRoleList from './../../../mixins/getAllRoleList'
 
   export default {
-    mixins: [getPermittedUserList, getPermittedRoleList, getAllRoleList, getAllUserList],
+    mixins: [getPermittedUserList, getPermittedRoleList, getAllRoleList],
 
     data () {
       var validatePass = (rule, value, callback) => {
@@ -236,6 +236,7 @@
           level: '',
           status: ''
         },
+        userList: [],
         userSelection: [],
         userSearchList: [],
         currentPageList: [],
@@ -296,10 +297,22 @@
     },
 
     watch: {
-      'permittedUserList': 'renderList'
+      'userList': 'renderList'
     },
 
     methods: {
+      getAllUserList () {
+        let postData = {
+          action: 'users/all',
+          method: 'GET',
+          data: { include_group: true }
+        }
+        this.http.post('/base/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.userList = res.data.data.list
+          }
+        })
+      },
       renderList (newVal, oldVal) {
         this.totalPage = newVal.length
         this.handleCurrentChange()
@@ -318,7 +331,7 @@
       handleCurrentChange (val = 1) {
         this.currentPage = val
         const offset = (this.currentPage - 1) * this.currentPageSize
-        let array = (this.search.key || this.search.role || this.search.level || this.search.status) ? this.userSearchList : this.permittedUserList
+        let array = (this.search.key || this.search.role || this.search.level || this.search.status) ? this.userSearchList : this.userList
         this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
       },
       handleSizeChange (val) {
@@ -326,7 +339,7 @@
         this.handleCurrentChange()
       },
       onSearch () {
-        this.userSearchList = this.permittedUserList.filter(user => {
+        this.userSearchList = this.userList.filter(user => {
           for (const id in user) {
             if (['email', 'nick', 'userId', 'phone'].includes(id)) {
               if (user[id].includes(this.search.key)) {
@@ -374,7 +387,7 @@
         this.http.post('/user/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.addUserData.visible = false
-            this.getPermittedUserList()
+            this.getAllUserList()
           }
         })
       },
@@ -394,7 +407,7 @@
           if (res.status === 200) {
             this.editUserData.visible = false
             this.$message.success('批量修改成功！')
-            this.getPermittedUserList()
+            this.getAllUserList()
           }
         })
       }

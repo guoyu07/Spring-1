@@ -379,7 +379,7 @@
             // })
             if (this.strucData.default && this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = this.$store.state.userinfo.nick
+                const user = this.$store.state.userinfo.userId
                 this.optionList.map(option => {
                   if (option.userId === user) {
                     if (Array.isArray(this.vmodel[this.strucData.id])) {

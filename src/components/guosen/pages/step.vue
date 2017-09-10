@@ -572,7 +572,32 @@
           this.applyData.body.forEach((item, k) => {
             let newData = {}
             this.taskForm.body.body_list.forEach((body, bodyIndex) => {
-              if (this.showBodyList(body, this.postForm, this.applyData, k)) {
+              if (body.show.type === 'form_header') {
+                this.$watch('assignForm.header.' + body.show.key_path, (newVal, oldVal) => {
+                  this.$set(this.assignForm, 'body', [{}]) // 初始化表单数据
+                  this.taskFormData.body.body_list.map(bodyList => {
+                    if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
+                      bodyList.attr_list.map(group => {
+                        group.value.map(value => {
+                          this.setDataType(value, this.assignForm.body[0], this)
+                          // 有默认值时 只有 form_body 和 form_header 2种
+                          if (value.default && value.default.type) {
+                            if (value.default.type === 'form_body') {
+                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.assignForm.body[0][value.id] = newVal
+                              })
+                            } else if (value.default.type === 'form_header') {
+                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                                this.assignForm.body[0][value.id] = newVal
+                              })
+                            }
+                          }
+                        })
+                      })
+                    }
+                  })
+                })
+              } else if (this.showBodyList(body, this.assignForm, this.applyData, k)) {
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
@@ -624,7 +649,7 @@
                     }
                   }
                 }
-                console.log(untakedData)
+                // console.log(untakedData)
                 // 整理出被当前其他表单占用的 U位
                 let formTakedData = []
                 this.assignForm.body.map((body, bodyk) => {
@@ -632,10 +657,11 @@
                     let eU
                     if (this.taskData.pinstance.pkey === 'host') {
                       eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                      // console.log(eU, body.idcracku, this.applyData.header.host_list[bodyk].u_num)
                     } else if (this.taskData.pinstance.pkey === 'host_my') {
                       eU = body.idcracku + +this.applyData.body[bodyk].host.u_num - 1
                     }
-                    // console.log(bodyk, body.idcracku, eU)
+                    // console.log(eU)
                     for (let tU = body.idcracku; tU <= eU; tU++) {
                       if (!formTakedData.includes(tU)) {
                         formTakedData.push(tU)
@@ -643,7 +669,7 @@
                     }
                   }
                 })
-                console.log(formTakedData)
+                // console.log(formTakedData)
                 if (formTakedData.length !== 0) {
                   const untakedDataLenght = untakedData.length
                   for (let i = 0; i <= untakedDataLenght; i++) {
@@ -661,7 +687,7 @@
                   }
                 } else {
                   this.assignForm.body[k].idcracku = untakedData[0]
-                  console.log(k, untakedData[0])
+                  // console.log(k, untakedData[0])
                 }
               })
             }
@@ -871,7 +897,7 @@
             if (data.header[headerid].length !== 0) {
               postFormData.header[headerid] = data.header[headerid]
             }
-          } else if (data.header[headerid]) {
+          } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
             postFormData.header[headerid] = data.header[headerid]
           }
         }
@@ -882,7 +908,7 @@
               if (body[bodyid].length !== 0) {
                 postFormData.body[bodyIndex][bodyid] = body[bodyid]
               }
-            } else if (body[bodyid]) {
+            } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
               postFormData.body[bodyIndex][bodyid] = body[bodyid]
             }
           }

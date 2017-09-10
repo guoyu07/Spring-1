@@ -15,7 +15,7 @@ export default {
       }
       this.http.post('/base/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
-          this.userList = res.data.data
+          this.userList = res.data.data.list
           console.log('mixin working')
         }
       })

@@ -333,7 +333,7 @@
               // const keyPath = body.show.key_path.split('.')
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
-                  this.$set(this.postForm, 'body', [{}]) // 切换设备类型时，初始化表单数据
+                  this.$set(this.postForm, 'body', [{}]) // 初始化表单数据
                   this.taskFormData.body.body_list.map(bodyList => {
                     if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
@@ -527,7 +527,8 @@
             if (data.header[headerid].length !== 0) {
               postFormData.header[headerid] = data.header[headerid]
             }
-          } else if (data.header[headerid]) {
+          } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
+            // 整型为 0 时可以提交
             postFormData.header[headerid] = data.header[headerid]
           }
         }
@@ -538,11 +539,13 @@
               if (body[bodyid].length !== 0) {
                 postFormData.body[bodyIndex][bodyid] = body[bodyid]
               }
-            } else if (body[bodyid]) {
+            } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
+              // 整型为 0 时可以提交
               postFormData.body[bodyIndex][bodyid] = body[bodyid]
             }
           }
         })
+        console.log(postFormData)
         let postData
         let { pid, pkey, tkey, tid } = this.$route.params
         if (this.isEditing && this.$route.params.pkey !== 'Storage') {
