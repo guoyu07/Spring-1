@@ -322,11 +322,12 @@ export default {
       this.checkedActions = this.formConfig.action.map(item => item.type)
     },
     initiateFieldsets () {
+      this.fieldsets = []
       for (let body of this.formConfig.form.body.body_list) {
-        console.log(body)
+        // console.log(body)
         this.fieldsets.push(body.attr_list)
       }
-      console.log(this.fieldsets)
+      // console.log(this.fieldsets)
     },
     // 选择功能按钮 action
     actionChange (arr) {
