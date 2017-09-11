@@ -23,6 +23,7 @@
               </el-input>
             </div>
             <div class="btn-block" v-show="isQualified">
+              <!-- <el-button v-if="$store.state.userinfo.level === 0" :disabled="!roleSelection.length" icon="edit" type="primary" @click="editRoleData.visible = true">批量编辑</el-button> -->
               <el-button :disabled="!isQualified" icon="plus" type="success" @click="addedRoleData.visible = true">添加角色</el-button>
             </div>
           </div>
@@ -58,7 +59,7 @@
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
-            :page-sizes="[3,10, 20, 30, 50, 100]"
+            :page-sizes="[10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
             layout="sizes, prev, pager, next"
             :total="totalPage">
@@ -67,7 +68,7 @@
       </el-col>
     </el-row>
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
-      <el-form :rules="roleFormRules" label-width="100px">
+      <el-form rules="roleFormRules" label-width="100px">
         <el-form-item label="角色名称" prop="roleName">
           <el-input v-model="addedRoleData.role.name" placeholder="请填写角色名称"></el-input>
         </el-form-item>
@@ -76,22 +77,48 @@
         <el-button :disabled="!isQualified" @click="onAddRole(addedRoleData.role)" icon="check" type="info" :loading="addedRoleData.loading">确认新建</el-button>
       </span>
     </el-dialog>
+    <!-- <el-dialog title="批量编辑" size="tiny" v-model="editRoleData.visible">
+      <el-form label-width="100px">
+        <el-form-item label="管理员" prop="managers">
+          <el-select v-model="editRoleData.role.managers" multiple>
+            <el-option v-for="user in managerList" :key="user.userId" :label="user.userId" :value='user.userId'>
+              <div class="fl " style="width:100%">{{user.userId}}</div>
+              <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="所属用户" prop="users">
+          <el-select v-model="editRoleData.role.users" multiple>
+            <el-option v-for="user in userList" :key="user.userId" :label="user.userId" :value='user.userId'>
+              <div class="fl " style="width:100%">{{user.userId}}</div>
+              <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="onEditRole(editRoleData.role)" icon="check" type="info" :loading="editRoleData.loading">确认</el-button>
+      </span>
+    </el-dialog> -->
   </div>
 </template>
 
 <script>
+  // import getAllUserList from './../../../mixins/getAllUserList'
   export default {
+    // mixins: [getAllUserList],
     data () {
       return {
         search: {
           key: ''
         },
         roleList: [],
-        totalPage: '',
+        managerList: [],
+        totalPage: 0,
         currentPageList: [],
         roleSelection: [],
         currentPage: 1,
-        currentPageSize: 3,
+        currentPageSize: 20,
         roleSearchList: [],
         usersToAdd: [],
         usersToDelete: [],
@@ -104,6 +131,14 @@
             tags: []
           }
         },
+        // editRoleData: {
+        //   visible: false,
+        //   loading: false,
+        //   role: {
+        //     managers: [],
+        //     users: []
+        //   }
+        // },
         roleFormRules: {
           roleName: [
             { required: true, message: '角色名称必填', trigger: 'blur' }
@@ -113,6 +148,7 @@
     },
     watch: {
       'roleList': 'renderList'
+      // 'userList': 'renderManagerList'
     },
     computed: {
       isQualified () {
@@ -122,9 +158,13 @@
 
     created () {
       this.getAllRoleList()
+      // this.getAllUserList()
     },
 
     methods: {
+      // renderManagerList (newVal, oldVal) {
+      //   this.managerList = newVal.filter(user => { return user.level > 1 })
+      // },
       getAllRoleList () {
         let postData = {
           action: 'groups/all',
@@ -218,7 +258,7 @@
       //       this.getPermittedRoleList()
       //     }
       //   })
-      // },
+      // }
 
       // onDeleteRole ({ name, key }) {
       //   this.$confirm(`此操作将移除角色「${name}」，是否继续？`, '警告', {

@@ -11,7 +11,7 @@
         <h5 class='second-title'>成员列表</h5>
         <div class="flex-box2">
           <div class="search-box">
-        		<el-input 
+        		<el-input
         		placeholder="根据⽤用户名或基本信息搜索"
                         icon="search"
                         v-model="search.key"
@@ -104,9 +104,7 @@ export default {
         return val.key
       })
       let key = +this.$route.query.key
-      if (arr.includes(key)) {
-        return true
-      }
+      return arr.includes(key) || this.$store.state.userinfo.level === 0
     }
   },
   methods: {
@@ -155,10 +153,8 @@ export default {
       let arr1 = this.usersList.map((val) => {
         return val.userId
       })
-      this.userListToAdd = this.userList.list.filter((val) => {
-        if (!arr1.includes(val.userId)) {
-          return true
-        }
+      this.userListToAdd = this.userList && this.userList.filter(val => {
+        return !arr1.includes(val.userId)
       })
     },
     confirmAddUser () {
