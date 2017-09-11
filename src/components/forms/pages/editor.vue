@@ -136,7 +136,7 @@
             </el-row>
             <el-row>
               <h5>Body 个数配置</h5>
-              <el-select v-model="formConfig.form.body.count.type" @change="countConfig">
+              <el-select v-model="formConfig.form.body.count.type">
                 <el-option label="静态" value="static"></el-option>
                 <el-option label="来自当前节点 header" value="form_header"></el-option>
                 <el-option label="来自以往节点 header" value="message_header"></el-option>
@@ -167,7 +167,9 @@
             <el-row v-for="(body, index) in formConfig.form.body.body_list" :key="index">
               <h5>Body #{{index + 1}} {{body.name}}</h5>
               <el-card>
-                <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
+                <lazy-render>
+                  <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
+                </lazy-render>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -235,7 +237,6 @@ export default {
 
   data () {
     return {
-      mounting: false,
       fieldsets: [],
       id: '',
       // 操作按钮
@@ -263,9 +264,6 @@ export default {
       return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
     }
   },
-  beforeMount () {
-    this.mounting = true
-  },
   activated () {
     this.getPresetList()
     this.getOptionPresets()
@@ -281,17 +279,13 @@ export default {
       data: { pkey: this.$route.query.pkey, tkey: this.$route.query.tkey }
     }
     this.http.post('/form/', this.parseData(postData)).then((res) => {
-      console.log(res)
+      // console.log(res)
       this.formConfig = res.data.data
-      if (this.formConfig && this.formConfig.form) {
-        // body 类型：从 obj 修改为 arr
-        const bodyIsArr = Array.isArray(this.formConfig.form.body.body_list)
-        if (!bodyIsArr) {
-          this.$set(this.formConfig.form.body.count, 'type', 'static')
-          this.formConfig.form.body.body_list = [this.formConfig.form.body.body_list]
-        }
-      } else {
-        this.$router.go(-1)
+      // body 类型：从 obj 修改为 arr
+      const bodyIsArr = Array.isArray(this.formConfig.form.body.body_list)
+      if (!bodyIsArr) {
+        this.$set(this.formConfig.form.body.count, 'type', 'static')
+        this.formConfig.form.body.body_list = [this.formConfig.form.body.body_list]
       }
       if (this.$route.query.tkey !== 'start') this.getActionDef()
       this.initActions()
@@ -332,7 +326,7 @@ export default {
     // 选择功能按钮 action
     actionChange (arr) {
       this.formConfig.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
-      console.log(this.formConfig.action)
+      // console.log(this.formConfig.action)
     },
     onChangeAuto (val) {
       if (val === 'CMDB更新实例') {
@@ -350,11 +344,6 @@ export default {
       }
       this.initActions()
     },
-    // 选择配置 body 个数
-    countConfig (count) {
-      // 类型切换时 之前加的属性没去除，解析时先判断 type 再取属性
-      console.log(count)
-    },
     // 确认完成
     onSubmit () {
       const postData = {
@@ -371,7 +360,7 @@ export default {
         Object.assign(this.formConfig.action.find(_ => _.type === 'target'), this.selectedTarget)
       }
 
-      console.log(this.formConfig)
+      // console.log(this.formConfig)
       this.submitting = true
       this.http.post('/form/', this.parseData(postData)).then(res => {
         if (res.data.statusCode === 200) {
@@ -435,7 +424,7 @@ export default {
     },
     // 监听子组件 props 副本改变事件
     onHeaderConfigChange (args) {
-      console.log('received!!!')
+      // console.log('received!!!')
       this.formConfig.form.header = args.val
     },
     onBodyConfigChange (args) {

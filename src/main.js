@@ -13,6 +13,7 @@ import auth from './auth'
 
 // import apis from './api.mock'
 import axios from 'axios'
+import LazyRender from 'vue-lazy-render'
 
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
@@ -25,6 +26,7 @@ import 'bpmn-js/assets/bpmn-font/css/bpmn-embedded.css'
 import 'bpmn-js-properties-panel/styles/properties.less'
 
 Vue.use(ElementUI)
+Vue.use(LazyRender)
 
 const http = axios.create({
   baseURL: '/api/', // 使用了代理
