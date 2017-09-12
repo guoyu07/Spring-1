@@ -7,8 +7,10 @@
         :clearable="!strucData.required"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
-        filterable>
-          <el-option  v-for="(option, optionIndex) in optionList"
+        filterable
+        remote
+        :remote-method="filterList">
+          <el-option  v-for="(option, optionIndex) in showOptionList"
                       :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
@@ -66,13 +68,14 @@
         optionList: [],
         limitNum: 0,
         limitMaxNum: 0,
-        showToolTip: false
+        showToolTip: false,
+        showOptionList: []
       }
     },
     created () {
-      if (this.strucData.value.source.res.show_key.length <= 1) {
-        this.showToolTip = true
-      }
+      // if (this.strucData.value.source.res.show_key.length <= 1) {
+      //   this.showToolTip = true
+      // }
       for (const para of this.strucData.value.source.data.params) {
         // let keyPath
         if (para.value.key_path) {
@@ -149,6 +152,11 @@
         }
       }
     },
+    // computed: {
+    //   showOptionList () {
+    //     return this.optionList.slice(0, 50)
+    //   }
+    // },
     // 这个 watch 是为了上传Excel文档时，填入对应的值
     watch: {
       'vmodel': {
@@ -157,10 +165,24 @@
       }
     },
     methods: {
+      filterList (query) {
+        console.log(query)
+        if (query !== '') {
+          let arr = this.optionList.filter((val) => {
+            return this.showLabel(val).indexOf(query) > -1
+          })
+          this.showOptionList = arr.slice(0, 50)
+          console.log(this.showOptionList)
+        } else {
+          this.showOptionList = this.optionList.slice(0, 50)
+          console.log(this.showOptionList)
+        }
+      },
       renderData () {
         setTimeout(() => {
           // 将默认值(对象类型)放回值里面
-          if (this.vmodel[this.strucData.id]) {
+          if (
+            this.vmodel[this.strucData.id]) {
             if (Array.isArray(this.vmodel[this.strucData.id])) {
               this.vmodel[this.strucData.id].map((item, itemindex) => {
                 if (item[this.strucData.value.source.res.show_key[0]]) {
@@ -310,6 +332,7 @@
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+          this.filterList('')
           if (this.optionList.length === 0 && !this.isAlias) {
             this.vmodel[this.strucData.id] = null
           }
@@ -394,9 +417,9 @@
           } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
             if (this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = this.$store.state.userinfo.nick
+                const user = this.$store.state.userinfo.userId
                 this.optionList.map(option => {
-                  if (option.name === user) {
+                  if (option.userId === user) {
                     if (Array.isArray(this.vmodel[this.strucData.id])) {
                       this.vmodel[this.strucData.id].push(option)
                     } else {
