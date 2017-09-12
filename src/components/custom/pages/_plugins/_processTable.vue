@@ -1,7 +1,8 @@
 <template>
   <el-table
     :data="processes"
-    border>
+    border
+    :ref="item.id">
     <el-table-column
       prop="pname"
       label="流程名称"></el-table-column>
@@ -29,11 +30,13 @@
       inline-template
       :context="_self">
       <template>
-        <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
-        <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
+        <div class="draggable__token draggable__token--right">
+          <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
+          <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
+        </div>
       </template>
     </el-table-column>
-    <el-table-column
+    <!-- <el-table-column
       label=""
       align="center"
       width="60px"
@@ -42,7 +45,7 @@
       <template>
         <i class="el-icon-fa-arrows text-info"></i>
       </template>
-    </el-table-column>
+    </el-table-column> -->
   </el-table>
 </template>
 
@@ -84,7 +87,7 @@
 
     methods: {
       setSort () {
-        const el = document.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
+        const el = this.$refs[this.item.id].$el.querySelectorAll('tbody')[0]
         this.sortable = Sortable.create(el, {
           onEnd: evt => {
             const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]

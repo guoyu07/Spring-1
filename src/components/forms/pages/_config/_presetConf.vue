@@ -143,7 +143,7 @@
           this.checkedAttributes.forEach((_) => { _.category = this.category })
         }
         console.log(this.checkedAttributes)
-        this.$parent.$options.methods.importPreset(this.checkedAttributes, this.currentFields)
+        this.$parent.$parent.$options.methods.importPreset(this.checkedAttributes, this.currentFields)
         this.selectedPreset.confVisible = false
       }
     }

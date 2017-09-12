@@ -6,6 +6,13 @@
   .mgb12 {
     margin-bottom: 12px;
   }
+
+  .delete-btn {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    transform: translateY(-50%);
+  }
 </style>
 
 <template>
@@ -27,11 +34,18 @@
           <draggable v-model="orderedProcesses" @end="onDragEnd" class="draggable">
             <div v-for="(item, index) in orderedProcesses" class="draggable-item">
               <input type="checkbox" :id="index" :disabled="!item.list.length" :checked="item.list.length">
-              <label :for="index" class="draggable-item__label">
+              <label :for="index" class="draggable-item__label draggable__token draggable__token--right">
                 <span>
                   <b>{{item.name}}</b> - ({{item.list.length}})
                 </span>
                 <span class="el-icon-edit text-info" @click="onEditCategoryName(item.id)"></span>
+                <el-button
+                  v-show="!item.list.length"
+                  @click="onDeleteCategory(item.name)"
+                  type="text"
+                  size="small"
+                  class="delete-btn text-error"
+                  icon="minus">删除分类</el-button>
               </label>
               <section>
                 <div class="draggable-item__inner">
@@ -177,6 +191,20 @@
         })
       },
 
+      onDeleteCategory (name) {
+        let postData = {
+          action: 'process/category',
+          method: 'DELETE',
+          data: { name }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.$message.success('已删除分类')
+            this.getOrderedProcesses()
+          }
+        })
+      },
+
       onCancelEdit (editing) {
         this.orderedProcesses = JSON.parse(this.orderedProcessesBuffer)
         editing = false
@@ -184,15 +212,21 @@
       },
 
       onEditScript (args) {
-        let postData = {
-          action: 'process/script',
-          method: 'GET',
-          data: { pkey: args.pkey }
-        }
-        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.editorProps = { visible: true, pkey: args.pkey, data: res.data.data }
+        this.$confirm('此操作将永久删除该流程分类，是否继续？', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          let postData = {
+            action: 'process/script',
+            method: 'GET',
+            data: { pkey: args.pkey }
           }
+          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.editorProps = { visible: true, pkey: args.pkey, data: res.data.data }
+            }
+          })
         })
       },
 
