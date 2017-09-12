@@ -19,7 +19,7 @@
     <h4 class="order-sidebar__title">用户自定义</h4>
     <template v-if="filterList[1]">
       <draggable v-model="filterList[1].list" @start="drag=true" @end="drag=false" class="order-sidebar__list draggable">
-        <div class="order-sidebar__item" v-for="filter in filterList[1].list" :class="{ active: parseInt($route.params.id) === filter.id }">
+        <div class="order-sidebar__item draggable-token draggable__token draggable__token--left" v-for="filter in filterList[1].list" :class="{ active: parseInt($route.params.id) === filter.id }">
           <router-link :to="{ path: `/orders/queues/${filter.id}` }">
             <span class="filter-name">{{filter.name}}</span>
             <span>
@@ -150,14 +150,6 @@
 
       &.draggable {
         border: none;
-
-        .order-sidebar__item {
-          &::before {
-            content: url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAALCAYAAAC3ZUeVAAAAJUlEQVQI12OYOXPmfyhmgLEZcAliYAbitf//D8EgQRibgV62AwAP/odG9/7LRgAAAABJRU5ErkJggg==);
-            position: absolute;
-            left: 4px;
-          }
-        }
       }
     }
 

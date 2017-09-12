@@ -54,7 +54,7 @@
 
 <template>
   <div class="form-config">
-    <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5>
+    <!-- <h5 class="sub-title" v-show="configData2.length"><i class="el-icon-fa-arrows"></i> 可拖拽排序</h5> -->
     <h5 class="sub-title" v-show="!configData2.length"><i class="el-icon-warning"></i> 暂无字段</h5>
     <draggable
       v-model="configData2"
@@ -70,7 +70,7 @@
           :value="`${bodyIndex}-${itemConf.id}`"
           :id="`${category}-${bodyIndex}-${index}`"
           :ref="itemConf.name+index">
-        <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
+        <label class="draggable-item__label draggable__token draggable__token--right" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section v-if="expandedForm === `${bodyIndex}-${itemConf.id}`">
           <div class="draggable-item__inner">
             <el-row>
@@ -94,6 +94,8 @@
                   <el-form-item label="默认值">
                     <el-popover placement="right" trigger="click">
                       <lazy-render>
+                        <!-- 要删掉 lazy-render 记得更改
+                        presetConf 的 $parent -->
                         <default-conf :dialog-props="itemConf" :is-body="isBody"></default-conf>
                       </lazy-render>
                       <el-button size="small" slot="reference">配置默认值</el-button>

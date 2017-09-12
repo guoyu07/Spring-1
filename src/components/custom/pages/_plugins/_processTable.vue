@@ -30,11 +30,13 @@
       inline-template
       :context="_self">
       <template>
-        <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
-        <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
+        <div class="draggable__token draggable__token--right">
+          <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
+          <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
+        </div>
       </template>
     </el-table-column>
-    <el-table-column
+    <!-- <el-table-column
       label=""
       align="center"
       width="60px"
@@ -43,7 +45,7 @@
       <template>
         <i class="el-icon-fa-arrows text-info"></i>
       </template>
-    </el-table-column>
+    </el-table-column> -->
   </el-table>
 </template>
 

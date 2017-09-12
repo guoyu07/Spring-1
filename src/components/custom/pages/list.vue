@@ -34,7 +34,7 @@
           <draggable v-model="orderedProcesses" @end="onDragEnd" class="draggable">
             <div v-for="(item, index) in orderedProcesses" class="draggable-item">
               <input type="checkbox" :id="index" :disabled="!item.list.length" :checked="item.list.length">
-              <label :for="index" class="draggable-item__label">
+              <label :for="index" class="draggable-item__label draggable__token draggable__token--right">
                 <span>
                   <b>{{item.name}}</b> - ({{item.list.length}})
                 </span>
