@@ -69,7 +69,8 @@
           :name="`form-${bodyIndex}`"
           :value="`${bodyIndex}-${itemConf.id}`"
           :id="`${category}-${bodyIndex}-${index}`"
-          :ref="itemConf.name+index">
+          :ref="`${bodyIndex}-${itemConf.id}`"
+          @click="close">
         <label class="draggable-item__label draggable__token draggable__token--right" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section v-if="expandedForm === `${bodyIndex}-${itemConf.id}`">
           <div class="draggable-item__inner">
@@ -429,6 +430,14 @@ export default {
   },
 
   methods: {
+    close () {
+      console.log(this.$refs[this.expandedForm][0])
+      console.log(this.$refs[this.expandedForm][0].checked)
+      if (this.$refs[this.expandedForm][0].checked) {
+        this.$refs[this.expandedForm][0].checked = false
+        this.$refs[this.expandedForm][0].removeAttribute('checked')
+      }
+    },
     // 默认展开一个
     collapsed () {
       // console.log(this.configData2)
