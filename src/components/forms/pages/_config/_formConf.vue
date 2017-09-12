@@ -67,11 +67,11 @@
           type="radio"
           v-model="expandedForm"
           :name="`form-${bodyIndex}`"
-          :value="`${bodyIndex}-${itemConf.id}`"
+          :value="`${bodyIndex}-${itemConf._timeStamp}`"
           :id="`${category}-${bodyIndex}-${index}`"
           :ref="itemConf.name+index">
         <label class="draggable-item__label draggable__token draggable__token--right" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
-        <section v-if="expandedForm === `${bodyIndex}-${itemConf.id}`">
+        <section v-if="expandedForm === `${bodyIndex}-${itemConf._timeStamp}`">
           <div class="draggable-item__inner">
             <el-row>
               <el-col :span="22" :offset="1">
@@ -460,16 +460,16 @@ export default {
     // },
     // 导入预设集
     importPreset (preset, currentFields) {
-      for (let attr of preset) {
-        if (currentFields.every(i => i.id !== attr.id)) {
-          Object.assign(attr, { need_submit: true, isAlias: false, default: { type: '' } })
-          if (attr.value.type === 'FK') {
-            attr.value.type = 'dict'
+      for (let i = 0; i < preset.length; i++) {
+        if (currentFields.every(j => j.id !== preset[i].id)) {
+          Object.assign(preset[i], { _timeStamp: `${new Date().getTime()}-${i}`, need_submit: true, isAlias: false, default: { type: '' } })
+          if (preset[i].value.type === 'FK') {
+            preset[i].value.type = 'dict'
           }
-          if (attr.value.type === 'FKs') {
-            attr.value.type = 'dicts'
+          if (preset[i].value.type === 'FKs') {
+            preset[i].value.type = 'dicts'
           }
-          currentFields.push(attr)
+          currentFields.push(preset[i])
         }
       }
     },
@@ -544,6 +544,7 @@ export default {
     onAddField () {
       // console.log(this)
       this.configData2.push({
+        _timeStamp: new Date().getTime(),
         id: '',
         name: '新字段',
         category: this.category, // 分组
@@ -621,7 +622,11 @@ export default {
       this.showConditionVisible = false
     },
     onConfirmClonedFields () {
-      this.configData2 = this.configData2.concat(this.selectedFields)
+      this.selectedFields.map((_, i) => {
+        return { ..._, ...{ _timeStamp: `${new Date().getTime()}-${i}` } }
+      })
+      var cloned = JSON.parse(JSON.stringify(this.selectedFields))
+      this.configData2 = this.configData2.concat(cloned) // 纯拷贝
       this.showCloneBodyFieldVisible = false
       this.showCloneHeaderFieldVisible = false
     },
