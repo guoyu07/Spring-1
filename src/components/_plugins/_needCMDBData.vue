@@ -392,6 +392,17 @@
                   this.$message.warning(`${this.strucData.name}无数据`)
                 }
               }
+            } else if (this.strucData.default.type === 'static') {
+              for (const option of this.optionList) {
+                if (option[this.strucData.value.source.res.show_key[0]] === this.strucData.default.value) {
+                  if (this.strucData.value.type === 'dicts') {
+                    this.vmodel[this.strucData.id].push(option)
+                  } else {
+                    this.vmodel[this.strucData.id] = option
+                  }
+                  return
+                }
+              }
             }
           }
           if (this.strucData.value.source.data.action === 'users/all' && !this.isEditing) {

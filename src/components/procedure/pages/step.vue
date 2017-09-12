@@ -559,9 +559,7 @@
                     }
                   }
                   newDataBody.push(data)
-                  // return Object.assign({}, this.assignForm.body[bodyindex], body)
                 })
-                console.log(newDataBody)
                 this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
                   return Object.assign({}, body, newDataBody[bodyindex])
                 })
