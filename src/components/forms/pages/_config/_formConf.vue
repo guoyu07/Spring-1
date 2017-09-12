@@ -62,10 +62,16 @@
       class="draggable"
       v-show="configData2.length"
       :options="{ handle: '.draggable-item__label' }">
-      <div v-for="(itemConf, index) in configData2" class="draggable-item" :key="index" >
-        <input type="checkbox" :id="`${category}-${bodyIndex}-${index}`" :ref="itemConf.name+index">
+      <div v-for="(itemConf, index) in configData2" class="draggable-item">
+        <input
+          type="radio"
+          v-model="expandedForm"
+          :name="`form-${bodyIndex}`"
+          :value="`${bodyIndex}-${itemConf.id}`"
+          :id="`${category}-${bodyIndex}-${index}`"
+          :ref="itemConf.name+index">
         <label class="draggable-item__label" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
-        <section>
+        <section v-if="expandedForm === `${bodyIndex}-${itemConf.id}`">
           <div class="draggable-item__inner">
             <el-row>
               <el-col :span="22" :offset="1">
@@ -363,6 +369,7 @@ export default {
     return {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
       selectedPreset: null,
+      expandedForm: '',
       selectedFields: [],
       needDefault: false,
       countConfig: [ 'form_header', 'form_body', 'message_header', 'message_body' ],
@@ -408,7 +415,7 @@ export default {
 
     configData2: {
       handler (val) {
-        // console.log('emitted!')
+        console.log('emitted!')
         this.$emit('on-config-change', { val, index: this.bodyIndex, category: this.category }) // 组件内对副本的变更向外部发送事件
       },
       deep: true

@@ -167,7 +167,7 @@
             <el-row v-for="(body, index) in formConfig.form.body.body_list" :key="index">
               <h5>Body #{{index + 1}} {{body.name}}</h5>
               <el-card>
-                <lazy-render>
+                <lazy-render @loaded="onLoadedForms">
                   <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 </lazy-render>
                 <div class="options-btn">
@@ -237,6 +237,7 @@ export default {
 
   data () {
     return {
+      loading: true,
       fieldsets: [],
       id: '',
       // 操作按钮
@@ -293,6 +294,10 @@ export default {
     })
   },
   methods: {
+    onLoadedForms () {
+      console.log('loaded')
+      this.loading = false
+    },
     getActionDef () {
       let postData = {
         action: 'action/define/list',
