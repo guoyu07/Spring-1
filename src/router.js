@@ -139,14 +139,7 @@ const routes = [{
     }, {
       path: 'role-detail',
       component: resolve => require(['./components/auth/pages/roleDetail'], resolve)
-    }]
-  }, {
-    path: '/process-admin',
-    component: require('./components/process/index'),
-    meta: {
-      sidebar: SidebarConf.Auth
-    },
-    children: [{
+    }, {
       path: 'basics',
       component: resolve => require(['./components/process/pages/basics'], resolve)
     }, {

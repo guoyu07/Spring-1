@@ -39,8 +39,8 @@
     			<el-table-column label='用户状态'  inline-template>
     				<template>
     				  <span :class="row.status ? 'text-danger' : ''">
-                        {{ row.status ? '已禁用' : '使用中' }}
-                      </span>
+                {{ row.status ? '已禁用' : '使用中' }}
+              </span>
     				</template>
     			</el-table-column>
     			<el-table-column label='操作' inline-template v-if="isQualified">

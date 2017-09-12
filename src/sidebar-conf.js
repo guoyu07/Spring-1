@@ -36,14 +36,16 @@ const SidebarConf = {
         icon: 'fa-dashboard'
       }, {
         name: '工单列表',
-        path: '/orders',
-        // path: '/orders/queues/filter_type_handle',
+        // path: '/orders',
+        path: '/orders/queues/filter_type_handle',
         icon: 'fa-list-ul'
-      }, {
-        name: '统计中心',
-        path: '/statistics',
-        icon: 'fa-pie-chart'
-      }]
+      }
+      // , {
+      //   name: '统计中心',
+      //   path: '/statistics',
+      //   icon: 'fa-pie-chart'
+      // }
+      ]
     }, {
       label: '流程设置',
       list: [{
@@ -190,39 +192,41 @@ const SidebarConf = {
         icon: 'fa-users'
       }]
     }, {
-      label: '流程权限管理理',
+      label: '流程权限管理',
       list: [{
         name: '流程管理理员设置',
-        path: '/auth/flowSetting',
+        path: '/auth/basics',
         icon: 'fa-chain'
       }, {
         name: '环节权限设置',
-        path: '/auth/processSetting',
+        path: '/auth/steps',
         icon: 'fa-chain-broken'
       }]
     }]
   },
   Auth: {
-    title: '权限管理',
-    routes: [{
-      label: '流程相关',
-      list: [{
-        name: '流程管理员',
-        path: '/process-admin/basics',
-        icon: 'fa-circle-o-notch'
-      }, {
-        name: '环节权限设置',
-        path: '/process-admin/steps',
-        icon: 'fa-circle-o'
-      }]
-    }, {
-      label: '事件相关',
-      list: [{
-        name: '事件权限管理',
-        path: '',
-        icon: 'fa-circle'
-      }]
-    }]
+    // title: '权限管理',
+    // routes: [{
+    //   label: '流程相关',
+    //   list: [{
+    //     name: '流程管理员',
+    //     path: '/process-admin/basics',
+    //     icon: 'fa-circle-o-notch'
+    //   }, {
+    //     name: '环节权限设置',
+    //     path: '/process-admin/steps',
+    //     icon: 'fa-circle-o'
+    //   }]
+    // }
+    // , {
+    //   label: '事件相关',
+    //   list: [{
+    //     name: '事件权限管理',
+    //     path: '',
+    //     icon: 'fa-circle'
+    //   }]
+    // }
+    // ]
   },
   System: [{
     label: '流程设置',

@@ -32,7 +32,7 @@
             border
             @selection-change="handleSelectionChange"
             >
-            <el-table-column type="selection" width="50"></el-table-column>
+            <!-- <el-table-column type="selection" width="50"></el-table-column> -->
             <el-table-column prop="name" label="角色名"width="100"></el-table-column>
             <el-table-column inline-template label="管理员">
             <template>

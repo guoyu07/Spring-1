@@ -226,9 +226,9 @@
       <el-menu-item index="2">
         <router-link class="link-block" :to="{ path: '/menu' }">运维服务目录</router-link>
       </el-menu-item>
-      <el-menu-item v-if="$store.state.userinfo.org !== 'guoxin'" index="3">
+      <!-- <el-menu-item v-if="$store.state.userinfo.org !== 'guoxin'" index="3">
         <router-link class="link-block" :to="{ path: '/event-hub' }">事件管理</router-link>
-      </el-menu-item>
+      </el-menu-item> -->
       <el-submenu index="4">
         <template slot="title">流程中心</template>
         <el-menu-item index="4-1">
@@ -238,9 +238,9 @@
           <router-link class="link-block" :to="{ path: '/process-admin/basics' }">流程管理</router-link>
         </el-menu-item>
       </el-submenu>
-      <el-menu-item index="3">
+      <!-- <el-menu-item index="3">
         <router-link class="link-block" :to="{ path: '/statistics' }">统计中心</router-link>
-      </el-menu-item>
+      </el-menu-item> -->
     </el-menu>
     <el-menu class="right" mode="horizontal">
       <el-menu-item index="8" class="screenfull" @click="onScreenFull">
@@ -282,9 +282,6 @@
         </el-menu-item>
         <el-menu-item index="5-2">
           <router-link class="link-block" :to="{ path: '/auth/users' }"><i class="el-icon-fa-users"></i> 用户与权限</router-link>
-        </el-menu-item>
-        <el-menu-item index="5-3">
-          <router-link class="link-block" :to="{ path: '/process-admin/basics' }"><i class="el-icon-fa-key"></i> 权限管理</router-link>
         </el-menu-item>
         <el-menu-item index="5-3">
           <a class="link-block" @click="logout"><i class="el-icon-fa-sign-out"></i> 退出</a>

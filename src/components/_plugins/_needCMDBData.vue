@@ -313,8 +313,8 @@
           if (this.optionList.length === 0 && !this.isAlias) {
             this.vmodel[this.strucData.id] = null
           }
-          // 配置默认值
-          if (this.strucData.default && this.strucData.default.type) {
+          // this.isEditing 编辑状态下不配置默认值
+          if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
             if (this.strucData.default.type === 'api') {
               if (Array.isArray(this.vmodel[this.strucData.id])) {
                 let keyData
@@ -355,15 +355,21 @@
                 let optionIndex = 0
                 if (this.strucData.unique) { // 如果是唯一值，跟着当前 index 来走
                   let tableIndex = 0
-                  if (this.tableIndex) tableIndex = this.tableIndex
-                  optionIndex = this.index + tableIndex
+                  if (this.tableIndex) tableIndex = +this.tableIndex
+                  if (this.index) {
+                    optionIndex = this.index + tableIndex
+                  } else {
+                    optionIndex = tableIndex
+                  }
                 }
                 const selectedIndex = optionIndex + +this.strucData.default.value
                 if (selectedIndex < this.optionList.length) {
                   this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
+                  return false
                 } else if (this.optionList[0]) {
                   this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
                   this.vmodel[this.strucData.id] = this.optionList[0]
+                  return false
                 } else {
                   this.$message.warning(`${this.strucData.name}无数据`)
                 }
@@ -394,9 +400,9 @@
           } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
             if (this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = this.$store.state.userinfo.nick
+                const user = this.$store.state.userinfo.userId
                 this.optionList.map(option => {
-                  if (option.name === user) {
+                  if (option.userId === user) {
                     if (Array.isArray(this.vmodel[this.strucData.id])) {
                       this.vmodel[this.strucData.id].push(option)
                     } else {

@@ -42,7 +42,7 @@
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
-                    v-if="showFormItem(taskform, assignForm, applyData)"
+                    v-if="showFormItem(taskform, assignForm, applyData) && !isEmptyObj(assignForm.header)"
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
@@ -141,14 +141,13 @@
                             <span v-for="formItem in formBlock.value">
                               <!-- {{isEdting}} -->
                               <form-body
-                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && !isEmptyObj(assignForm.body[index])"
                                 :item="assignForm.body[index]"
                                 :form-item="formItem"
                                 :whole="assignForm"
                                 :index="index"
                                 :isEditing="isEditing"
-                                :message="applyData"
-                                keep-alive>
+                                :message="applyData">
                               </form-body>
                               <search-bar
                                 v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
@@ -241,7 +240,7 @@
                               <span v-for="formItem in formBlock.value">
                                 <!-- {{isEdting}} -->
                                 <form-body
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && !isEmptyObj(assignForm.body[index])"
                                   :item="assignForm.body[index]"
                                   :form-item="formItem"
                                   :whole="assignForm"
@@ -463,19 +462,19 @@
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  this.setDataType(value, this.assignForm.header, this)
+                  this.setDataType(value, this.assignForm.header)
                   // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
-                  if (value.default && value.default.type) {
-                    if (value.default.type === 'message_header') {
-                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                    } else if (value.default.type === 'static') {
-                      this.assignForm.header[value.id] = value.default.value
-                    } else if (value.default.type === 'form_header') {
-                      this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                        this.assignForm.header[value.id] = newVal
-                      })
-                    }
-                  }
+                  // if (value.default && value.default.type) {
+                  //   if (value.default.type === 'message_header') {
+                  //     this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                  //   } else if (value.default.type === 'static') {
+                  //     this.assignForm.header[value.id] = value.default.value
+                  //   } else if (value.default.type === 'form_header') {
+                  //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                  //       this.assignForm.header[value.id] = newVal
+                  //     })
+                  //   }
+                  // }
                 }
               })
             }
@@ -483,95 +482,90 @@
           // console.log(this.assignForm.header.host_type)
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
-            let newData = {}
             // console.log(this.taskForm.body.body_list)
+            if (this.taskForm.body.body_list.length === 0) {
+              // body的数量不正确,应继承上一环节body的数量
+              this.assignForm.body.push({})
+            }
             this.taskForm.body.body_list.forEach((body, bodyIndex) => {
+              // console.log(body)
               if (body.show.type === 'form_header') {
                 this.$watch('assignForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.$set(this.assignForm, 'body', [{}]) // 初始化表单数据
-                  this.taskFormData.body.body_list.map(bodyList => {
+                  this.taskForm.body.body_list.map(bodyList => {
                     if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setDataType(value, this.assignForm.body[0], this)
-                          // 有默认值时 只有 form_body 和 form_header 2种
-                          if (value.default && value.default.type) {
-                            if (value.default.type === 'form_body') {
-                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.assignForm.body[0][value.id] = newVal
-                              })
-                            } else if (value.default.type === 'form_header') {
-                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.assignForm.body[0][value.id] = newVal
-                              })
-                            }
-                          }
+                          this.setDataType(value, this.assignForm.body[0])
                         })
                       })
                     }
                   })
                 })
               } else if (this.showBodyList(body, this.assignForm, this.applyData, k, true, false)) {
+                let newData = {}
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // 有默认值时
-                      if (value.default && value.default.type) {
-                        if (value.default.type === 'message_header') {
-                          newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                        } else if (value.default.type === 'form_body') {
-                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                            console.log(newVal, k, value.id)
-                            this.assignForm.body[k][value.id] = newVal
-                          })
-                        } else if (value.default.type === 'message_body') {
-                          newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
-                        } else if (value.default.type === 'form_header') {
-                          this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                            this.assignForm.body[k][value.id] = newVal
-                          })
-                        } else if (value.default.type === 'static') {
-                          this.assignForm.body[k][value.id] = value.default.value
-                        }
-                      }
+                      // this.setDataType(value, this.assignForm.body[0])
+                      // // 有默认值时
+                      // if (value.default && value.default.type) {
+                      //   if (value.default.type === 'message_header') {
+                      //     this.assignForm.body[k][value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                      //   } else if (value.default.type === 'form_body') {
+                      //     this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                      //       // console.log(newVal, k, value.id)
+                      //       this.assignForm.body[k][value.id] = newVal
+                      //     })
+                      //   } else if (value.default.type === 'message_body') {
+                      //     this.assignForm.body[k][value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
+                      //   } else if (value.default.type === 'form_header') {
+                      //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                      //       this.assignForm.body[k][value.id] = newVal
+                      //     })
+                      //   } else if (value.default.type === 'static') {
+                      //     this.assignForm.body[k][value.id] = value.default.value
+                      //   }
+                      // }
                     }
                   })
                 })
+                this.assignForm.body.push(newData)
               }
             })
-            // console.log(newData)
-            this.assignForm.body.push(newData)
-            for (const id in item) {
-              // console.log(item[id], this.assignForm.body[k][id])
-              if (this.assignForm.body[k][id] !== undefined) {
-                this.assignForm.body[k][id] = item[id]
-              }
-            }
+            // for (const id in item) {
+            //   if (this.assignForm.body[k][id] !== undefined) {
+            //     this.assignForm.body[k][id] = item[id]
+            //   }
+            // }
           })
           // 判断是否为驳回信息
-          let newDataBody
+          let newDataBody = []
           for (var message of this.taskData.message) {
             if (message.task_key === this.taskData.ptask.tkey) {
               this.isEditing = true
               this.edtingInfo = this.taskData.message[this.taskData.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-              newDataBody = message.form.body.map((body, bodyindex) => {
-                let data = {}
-                for (const key in this.assignForm.body[bodyindex]) {
-                  // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
-                  if (body[key]) {
-                    data[key] = body[key]
-                  } else {
-                    data[key] = this.assignForm.body[bodyindex][key]
+              setTimeout(() => {
+                message.form.body.map((body, bodyindex) => {
+                  let data = {}
+                  for (const key in this.assignForm.body[bodyindex]) {
+                    // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
+                    if (body[key]) {
+                      data[key] = body[key]
+                    } else {
+                      data[key] = this.assignForm.body[bodyindex][key]
+                    }
                   }
-                }
-                return data
-                // return Object.assign({}, this.assignForm.body[bodyindex], body)
-              })
-              this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
-                return Object.assign({}, body, newDataBody[bodyindex])
-              })
+                  newDataBody.push(data)
+                  // return Object.assign({}, this.assignForm.body[bodyindex], body)
+                })
+                console.log(newDataBody)
+                this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+                  return Object.assign({}, body, newDataBody[bodyindex])
+                })
+              }, 100)
               return false
             }
           }
@@ -628,7 +622,7 @@
            // 如果是驳回信息，最后一步没有历史信息,最后一步为驳回信息
             taskKeyArr.splice(taskKeyArr.length - 1, 1)
           }
-          console.log(taskKeyArr)
+          // console.log(taskKeyArr)
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
           this.applyData.action = res.data.data.action
@@ -646,7 +640,7 @@
         }
         // this.loading = true
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
-          console.log(res)
+          // console.log(res)
           this.form = res.data.data.list
         })
       },

@@ -575,11 +575,11 @@
               if (body.show.type === 'form_header') {
                 this.$watch('assignForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.$set(this.assignForm, 'body', [{}]) // 初始化表单数据
-                  this.taskFormData.body.body_list.map(bodyList => {
+                  this.taskForm.body.body_list.map(bodyList => {
                     if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setDataType(value, this.assignForm.body[0], this)
+                          this.setNewDataType(value, newData)
                           // 有默认值时 只有 form_body 和 form_header 2种
                           if (value.default && value.default.type) {
                             if (value.default.type === 'form_body') {

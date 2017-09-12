@@ -279,11 +279,11 @@
                 if (item.show.type === 'form_header') {
                   this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
                     if (item.show.op === 'eq' && newVal === item.show.value) {
-                      this.setDataType(item, this.postForm.header, this)
+                      this.setDataType(item, this.postForm.header)
                     } else if (item.show.op === 'neq' && newVal !== item.show.value) {
-                      this.setDataType(item, this.postForm.header, this)
+                      this.setDataType(item, this.postForm.header)
                     } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
-                      this.setDataType(item, this.postForm.header, this)
+                      this.setDataType(item, this.postForm.header)
                     } else {
                       // delete this.postForm.header[item.id]
                     }
@@ -340,17 +340,17 @@
                         group.value.map(value => {
                           this.setDataType(value, this.postForm.body[0], this)
                           // 有默认值时 只有 form_body 和 form_header 2种
-                          if (value.default && value.default.type) {
-                            if (value.default.type === 'form_body') {
-                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.postForm.body[0][value.id] = newVal
-                              })
-                            } else if (value.default.type === 'form_header') {
-                              this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.postForm.body[0][value.id] = newVal
-                              })
-                            }
-                          }
+                          // if (value.default && value.default.type) {
+                          //   if (value.default.type === 'form_body') {
+                          //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                          //       this.postForm.body[0][value.id] = newVal
+                          //     })
+                          //   } else if (value.default.type === 'form_header') {
+                          //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                          //       this.postForm.body[0][value.id] = newVal
+                          //     })
+                          //   }
+                          // }
                         })
                       })
                     }
@@ -364,17 +364,17 @@
                   if (value.need_submit) {
                     this.setDataType(value, this.postForm.body[0], this)
                     // 有默认值时 只有 form_body 和 form_header 2种
-                    if (value.default && value.default.type) {
-                      if (value.default.type === 'form_body') {
-                        this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                          this.postForm.body[0][value.id] = newVal
-                        })
-                      } else if (value.default.type === 'form_header') {
-                        this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                          this.postForm.body[0][value.id] = newVal
-                        })
-                      }
-                    }
+                    // if (value.default && value.default.type) {
+                    //   if (value.default.type === 'form_body') {
+                    //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                    //       this.postForm.body[0][value.id] = newVal
+                    //     })
+                    //   } else if (value.default.type === 'form_header') {
+                    //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                    //       this.postForm.body[0][value.id] = newVal
+                    //     })
+                    //   }
+                    // }
                   }
                 })
               })

@@ -12,7 +12,7 @@
       <el-input
         v-if="!formItem.readonly"
         :type="formItem.isAlias ? 'textarea' : 'text'"
-        :autosize="{ minRows: 5}"
+        :autosize="{ minRows: 5 }"
         v-model="item[formItem.id]">
       </el-input>
       <!-- 读取默认值并提交 -->
@@ -264,41 +264,57 @@
       }
     },
     mounted () {
-      if (this.formItem && this.formItem.default && this.formItem.default.type) {
-        if (this.formItem.default.type === 'message_header') {
-          if (this.header) {
-            this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
-          } else {
-            this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
-          }
-        } else if (this.formItem.default.type === 'static') {
-          if (this.header) {
-            this.whole.header[this.formItem.id] = this.formItem.default.value
-          } else {
-            this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
-          }
-        } else if (this.formItem.default.type === 'form_header') {
-          this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-            if (this.header) {
-              this.whole.header[this.formItem.id] = newVal
+      // this.isEditing 编辑状态下不配置默认值
+      if (!this.isEditing) {
+        // 默认值
+        if (this.formItem && this.formItem.default && this.formItem.default.type) {
+          if (this.formItem.default.type === 'message_header') {
+            if (this.headerTable || this.bodyTable) {
+              this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, 0)
             } else {
-              this.whole.body[this.index][this.formItem.id] = newVal
+              if (this.header) {
+                this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
+              } else {
+                this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
+              }
             }
-          })
-        } else if (this.formItem.default.type === 'form_body') {
-          if (this.headerTable || this.bodyTable) {
-            this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
-              this.whole[this.formItem.id] = newVal
+          } else if (this.formItem.default.type === 'static') {
+            if (this.headerTable || this.bodyTable) {
+              this.whole[this.formItem.id] = this.formItem.default.value
+            } else {
+              if (this.header) {
+                this.whole.header[this.formItem.id] = this.formItem.default.value
+              } else {
+                this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
+              }
+            }
+          } else if (this.formItem.default.type === 'form_header') {
+            this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+              if (this.headerTable || this.bodyTable) {
+                this.whole[this.formItem.id] = newVal
+              } else {
+                if (this.header) {
+                  this.whole.header[this.formItem.id] = newVal
+                } else {
+                  this.whole.body[this.index][this.formItem.id] = newVal
+                }
+              }
             })
-          } else {
-            if (this.header) {
-              this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                this.whole.header[this.formItem.id] = newVal
+          } else if (this.formItem.default.type === 'form_body') {
+            if (this.headerTable || this.bodyTable) {
+              this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole[this.formItem.id] = newVal
               })
             } else {
-              this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                this.whole.body[this.index][this.valueId] = newVal
-              })
+              if (this.header) {
+                this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                  this.whole.header[this.formItem.id] = newVal
+                })
+              } else {
+                this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                  this.whole.body[this.index][this.valueId] = newVal
+                })
+              }
             }
           }
         }
