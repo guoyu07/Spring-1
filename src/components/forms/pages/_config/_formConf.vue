@@ -87,7 +87,9 @@
                   </el-form-item>
                   <el-form-item label="默认值">
                     <el-popover placement="right" trigger="click">
-                      <default-conf :dialog-props="itemConf" :is-body="isBody"></default-conf>
+                      <lazy-render>
+                        <default-conf :dialog-props="itemConf" :is-body="isBody"></default-conf>
+                      </lazy-render>
                       <el-button size="small" slot="reference">配置默认值</el-button>
                     </el-popover>
                     <el-tooltip placement="top" v-if="itemConf.default">
@@ -141,7 +143,9 @@
                     <!--静态选项-->
                     <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
                       placement="left" trigger="click" @show="showMultiConf(itemConf)">
-                      <options-conf :conf-arr="itemConf.value.regex"></options-conf>
+                      <lazy-render>
+                        <options-conf :conf-arr="itemConf.value.regex"></options-conf>
+                      </lazy-render>
                       <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover>
                     <!--动态选项（cmdb）-->
@@ -153,12 +157,16 @@
                     <!-- </template> -->
                     <!-- 级联菜单 -->
                     <el-popover v-if="itemConf.value.type === 'cascade'" placement="left" trigger="click" @show="showCascadeConf(itemConf)">
-                      <cascade-conf :conf-arr="itemConf.value.regex"></cascade-conf>
+                      <lazy-render>
+                        <cascade-conf :conf-arr="itemConf.value.regex"></cascade-conf>
+                      </lazy-render>
                       <el-button size="small" slot="reference">配置数据</el-button>
                     </el-popover>
                     <!--表格-->
                     <el-popover v-if="itemConf.value.type === 'table'" placement="top" trigger="click" @show="showTableConf(itemConf)">
-                      <table-conf :dialog-props="itemConf"></table-conf>
+                      <lazy-render>
+                        <table-conf :dialog-props="itemConf"></table-conf>
+                      </lazy-render>
                       <el-button size="small" slot="reference">配置表格</el-button>
                     </el-popover>
                     <!-- <template v-if="itemConf.value.type === 'table'">
@@ -173,13 +181,17 @@
                   </el-form-item>
                   <el-form-item label="范围限制" v-if="itemConf.value.type === 'int'">
                     <el-popover placement="right" trigger="click" @show="showRangeConf(itemConf)">
-                      <range-conf :dialog-props="itemConf"></range-conf>
+                      <lazy-render>
+                        <range-conf :dialog-props="itemConf"></range-conf>
+                      </lazy-render>
                       <el-button size="small" slot="reference">配置范围</el-button>
                     </el-popover>
                   </el-form-item>
                   <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
                     <el-popover placement="right" trigger="click" @show="showLimitConf(itemConf)">
-                      <limit-conf :dialog-props="itemConf"></limit-conf>
+                      <lazy-render>
+                        <limit-conf :dialog-props="itemConf"></limit-conf>
+                      </lazy-render>
                       <el-button size="small" slot="reference">配置个数</el-button>
                     </el-popover>
                     <el-tooltip placement="top" v-if="itemConf.limit">
@@ -233,7 +245,9 @@
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
-    <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
+    <lazy-render>
+      <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
+    </lazy-render>
 
     <!-- 避免修改 props，不写成组件 -->
     <el-dialog title="克隆 header 已有字段" v-model="showCloneHeaderFieldVisible" v-if="!isBody">
@@ -277,7 +291,7 @@
                 <el-form-item label="唯一"><code>{{attr.unique}}</code></el-form-item>
                 <el-form-item label="类型"><span>{{attr.value.type}}</span></el-form-item>
               </el-form>
-              <el-checkbox slot="reference" :label="attr" :key="attr">{{attr.name}}</el-checkbox>
+              <el-checkbox slot="reference" :label="attr" :key="attr.id" :value="attr">{{attr.name}}</el-checkbox>
             </el-popover>
           </el-checkbox-group>
         </el-form-item>
@@ -321,14 +335,14 @@
 <script>
 import draggable from 'vuedraggable'
 // import Sortable from 'sortablejs'
-import optionsConf from './_optionsConf' // 配置下拉选项（静态）的表单
-import optionsConfCmdb from './_optionsConfCMDB' // 配置下拉选项（动态）的表单
-import tableConf from './_tableConf' // 配置表格
-import defaultConf from './_defaultConf'
-import limitConf from './_limitConf'
-import rangeConf from './_rangeConf'
-import presetConf from './_presetConf'
-import cascadeConf from './_cascadeConf'
+const optionsConf = () => import('./_optionsConf.vue') // 配置下拉选项（静态）的表单
+const optionsConfCmdb = () => import('./_optionsConfCMDB.vue') // 配置下拉选项（动态）的表单
+const tableConf = () => import('./_tableConf.vue') // 配置表格
+const defaultConf = () => import('./_defaultConf.vue')
+const limitConf = () => import('./_limitConf.vue')
+const rangeConf = () => import('./_rangeConf.vue')
+const presetConf = () => import('./_presetConf.vue')
+const cascadeConf = () => import('./_cascadeConf.vue')
 
 import eventHub from './../../../../utils/event-hub'
 
@@ -385,13 +399,19 @@ export default {
   },
 
   watch: {
-    configData (val) {
-      this.configData2 = val  // 父组件修改组件 props 不会同步到 data 副本上
+    configData: {
+      handler (val) {
+        this.configData2 = val  // 父组件修改组件 props 不会同步到 data 副本上
+      },
+      deep: true
     },
 
-    configData2 (val) {
-      console.log('emitted!')
-      this.$emit('on-config-change', { val, index: this.bodyIndex, category: this.category }) // 组件内对副本的变更向外部发送事件
+    configData2: {
+      handler (val) {
+        // console.log('emitted!')
+        this.$emit('on-config-change', { val, index: this.bodyIndex, category: this.category }) // 组件内对副本的变更向外部发送事件
+      },
+      deep: true
     }
   },
 
@@ -402,11 +422,11 @@ export default {
   methods: {
     // 默认展开一个
     collapsed () {
-      console.log(this.configData2)
+      // console.log(this.configData2)
       let len = this.configData2.length - 1
       let param = this.configData2[len].name + len
-      console.log(param)
-      console.log(this.$refs[param][0])
+      // console.log(param)
+      // console.log(this.$refs[param][0])
       if (!this.configData2[len].id) {
         this.$refs[param][0].setAttribute('checked', 'true')
       }
@@ -513,7 +533,7 @@ export default {
     // },
     // 添加一个字段
     onAddField () {
-      console.log(this)
+      // console.log(this)
       this.configData2.push({
         id: '',
         name: '新字段',

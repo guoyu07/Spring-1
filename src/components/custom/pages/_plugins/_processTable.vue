@@ -1,7 +1,8 @@
 <template>
   <el-table
     :data="processes"
-    border>
+    border
+    :ref="item.id">
     <el-table-column
       prop="pname"
       label="流程名称"></el-table-column>
@@ -84,7 +85,7 @@
 
     methods: {
       setSort () {
-        const el = document.querySelectorAll('.el-table__body-wrapper > table > tbody')[0]
+        const el = this.$refs[this.item.id].$el.querySelectorAll('tbody')[0]
         this.sortable = Sortable.create(el, {
           onEnd: evt => {
             const tempIndex = this.newList.splice(evt.oldIndex, 1)[0]
