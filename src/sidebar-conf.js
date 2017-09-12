@@ -50,11 +50,11 @@ const SidebarConf = {
       label: '流程设置',
       list: [{
         name: '流程管理员设置',
-        path: '/process-admin/basics',
+        path: '/auth/basics',
         icon: 'fa-circle-o-notch'
       }, {
         name: '环节权限设置',
-        path: '/process-admin/steps',
+        path: '/auth/steps',
         icon: 'fa-circle-o'
       }, {
         name: '流程自定义',

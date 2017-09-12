@@ -128,8 +128,14 @@
       },
 
       isAssignee () {
-        if (this.taskViewData.order.assign || this.taskViewData.order.assign_group) {
-          return this.taskViewData.order.assign.userId === this.$store.state.userinfo.userId || this.$store.state.userinfo.groups.some(_ => this.taskViewData.order.assign_group.includes(_))
+        if (this.taskViewData.order.assign && this.taskViewData.order.assign.userId) {
+          return this.taskViewData.order.assign.userId === this.$store.state.userinfo.userId
+        } else if (this.taskViewData.order.assign_group) {
+          const keyList = this.$store.state.userinfo.groups.reduce((pre, cur) => {
+            pre.push(cur.key)
+            return pre
+          }, [])
+          return keyList.includes(this.taskViewData.order.assign_group.key)
         } else {
           return false
         }

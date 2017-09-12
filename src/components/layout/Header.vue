@@ -235,7 +235,7 @@
           <router-link class="link-block" :to="{ path: '/orders/queues/filter_type_handle' }">流程中心</router-link>
         </el-menu-item>
         <el-menu-item index="4-2">
-          <router-link class="link-block" :to="{ path: '/process-admin/basics' }">流程管理</router-link>
+          <router-link class="link-block" :to="{ path: '/auth/basics' }">流程管理</router-link>
         </el-menu-item>
       </el-submenu>
       <!-- <el-menu-item index="3">
