@@ -96,7 +96,7 @@ export default {
     // this.insideGroup()
   },
   watch: {
-    'renderUsersList': 'getArr'
+    'userList': 'getArr'
   },
   computed: {
     isQualified () {
@@ -150,10 +150,12 @@ export default {
       })
     },
     getArr () {
+      console.log(this.usersList)
       let arr1 = this.usersList.map((val) => {
         return val.userId
       })
-      this.userListToAdd = this.userList && this.userList.filter(val => {
+      console.log(this.userList)
+      this.userListToAdd = this.userList.filter(val => {
         return !arr1.includes(val.userId)
       })
     },
