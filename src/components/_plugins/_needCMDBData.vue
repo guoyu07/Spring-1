@@ -152,11 +152,6 @@
         }
       }
     },
-    // computed: {
-    //   showOptionList () {
-    //     return this.optionList.slice(0, 50)
-    //   }
-    // },
     // 这个 watch 是为了上传Excel文档时，填入对应的值
     watch: {
       'vmodel': {
