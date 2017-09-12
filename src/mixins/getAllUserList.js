@@ -17,7 +17,6 @@ export default {
         if (res.status === 200) {
           this.userList = res.data.data.list
           console.log('mixin working')
-          console.log(this.userList)
         }
       })
     }
