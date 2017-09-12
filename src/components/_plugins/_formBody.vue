@@ -278,7 +278,8 @@
                 this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
               }
             }
-          } else if (this.formItem.default.type === 'static') {
+          } else if (this.formItem.default.type === 'static' && !['dict', 'dicts'].includes(this.formItem.value.type)) {
+            // dict', 'dicts'的static类型默认值在 _needCMDBData.vue
             if (this.headerTable || this.bodyTable) {
               this.whole[this.formItem.id] = this.formItem.default.value
             } else {
@@ -375,7 +376,6 @@
           if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch) && formItem.value.type === 'arr') {
             return cb(new Error(`请输入正确的${formItem.name}`))
           }
-          console.log('yanyanyanyanyan')
           if (this.limitMaxNum) { // static时，有一个范围值
             if (value.length < this.limitNum) {
               return cb(new Error(`至少需要输入${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
