@@ -61,16 +61,19 @@
       @start="drag=true"
       class="draggable"
       v-show="configData2.length"
-      :options="{ handle: '.draggable-item__label' }">
+      :options="{ handle: '.draggable-item__label' }"
+      ref="group">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
         <input
           type="radio"
           v-model="expandedForm"
+          data-tag='0'
           :name="`form-${bodyIndex}`"
           :value="`${bodyIndex}-${itemConf._timeStamp}`"
           :id="`${category}-${bodyIndex}-${index}`"
-          :ref="`${bodyIndex}-${itemConf.id}`"
-          @click="close">
+          :ref="`${bodyIndex}-${itemConf._timeStamp}`"
+          @click="close"
+        >
         <label class="draggable-item__label draggable__token draggable__token--right" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section v-if="expandedForm === `${bodyIndex}-${itemConf._timeStamp}`">
           <div class="draggable-item__inner">
@@ -367,7 +370,6 @@ export default {
       type: String
     }
   },
-
   data () {
     return {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
@@ -431,11 +433,15 @@ export default {
 
   methods: {
     close () {
-      console.log(this.$refs[this.expandedForm][0])
-      console.log(this.$refs[this.expandedForm][0].checked)
-      if (this.$refs[this.expandedForm][0].checked) {
+      console.log(this.$refs.group)
+      if (+this.$refs[this.expandedForm][0].dataset.tag < 1) {
+        this.$refs[this.expandedForm][0].dataset.tag = 1
+        console.log('open')
+        this.$refs[this.expandedForm][0].checked = true
+      } else {
         this.$refs[this.expandedForm][0].checked = false
-        this.$refs[this.expandedForm][0].removeAttribute('checked')
+        this.$refs[this.expandedForm][0].dataset.tag = 0
+        console.log('close')
       }
     },
     // 默认展开一个

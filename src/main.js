@@ -122,9 +122,13 @@ const getPathResult = (result, path, k) => {
   const _path = path.split('.')
   // console.log(_path, Array.isArray(_result[_path[0]]))
   if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
-    _path.reduce((prev, cur, index) => {
-      _result = index ? _result[cur] : _result[cur][k]
-    }, null)
+    if (_result[_path[0]].length) {
+      _path.reduce((prev, cur, index) => {
+        _result = index ? _result[cur] : _result[cur][k]
+      }, null)
+    } else {
+      return false
+    }
   } else {
     for (const i in _path) {
       if (!_result) {

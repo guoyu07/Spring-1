@@ -65,7 +65,7 @@
                   <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
                 </div>
                 <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                  <el-tab-pane v-for="(data, index) in postForm.body" :key="index" :label="bodyLableName[index]" :name="index + ''" :closable="postForm.body.length !== 1">
+                  <el-tab-pane v-for="(data, index) in postForm.body" :key="index" :label="bodyLableName[index]" :name="index + ''" :closable="isClosable">
                     <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                       <div v-for="bodyList in taskFormData.body.body_list" :key="bodyList.name">
                           <div v-if="showBodyList(bodyList, postForm, applyData, index)">
@@ -110,7 +110,7 @@
               <template v-if="taskFormData.body && taskFormData.body.style === 2">
                 <div class="tab-wrap" v-for="(data, index) in postForm.body" :key="index" :id="'anchor-'+index">
                   <el-button size="small" @click="addTab(tabsValue, index)" icon="plus" class="add-tab">复制当前表单</el-button>
-                  <el-tabs type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="postForm.body.length !== 1">
+                  <el-tabs type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="isClosable">
                     <el-tab-pane :label="bodyLableName[index]">
                       <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                         <div v-for="bodyList in taskFormData.body.body_list" :key="bodyList.name">
@@ -199,6 +199,7 @@
         taskFormData: {},
         tabsValue: '0',
         tabsIndex: 0,
+        isClosable: true,
         bodyLableName: [],
         Editdata: {},
         submitLoading: false
@@ -216,6 +217,13 @@
       'postForm': {
         handler: 'renderBodyLabel',
         deep: true
+      },
+      'postForm.body' (newVal, oldVal) {
+        if (this.taskFormData.body.count.type === 'form_header') {
+          this.isClosable = false
+        } else {
+          this.isClosable = newVal.length !== 1
+        }
       }
     },
     methods: {
@@ -338,19 +346,34 @@
                     if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setDataType(value, this.postForm.body[0], this)
-                          // 有默认值时 只有 form_body 和 form_header 2种
-                          // if (value.default && value.default.type) {
-                          //   if (value.default.type === 'form_body') {
-                          //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                          //       this.postForm.body[0][value.id] = newVal
-                          //     })
-                          //   } else if (value.default.type === 'form_header') {
-                          //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                          //       this.postForm.body[0][value.id] = newVal
-                          //     })
-                          //   }
-                          // }
+                          this.setDataType(value, this.postForm.body[0])
+                          // 渲染 body 个数
+                          if (this.taskFormData.body.count.type === 'form_header') {
+                            this.$watch('postForm.header.' + this.taskFormData.body.count.key_path, (newVal, oldVal) => {
+                              if (Array.isArray(newVal) && newVal.length) {
+                                // i = 1 开始而不是从0开始，因为初始化默认会有一个body
+                                for (let i = 1; i < newVal.length; i++) {
+                                  if (this.postForm.body.length <= newVal.length) {
+                                    this.$set(this.postForm.body, i, {})
+                                    bodyList.attr_list.map(groupv => {
+                                      groupv.value.map(valuev => {
+                                        this.setDataType(valuev, this.postForm.body[i])
+                                      })
+                                    })
+                                  } else {
+                                    this.postForm.body.splice(i, 1)
+                                  }
+                                }
+                                // 当 postForm body 长度为 2，newVal 长度为 1 时，规避以上for循环 i 和 newVal.length 同时为1时不执行
+                                if (newVal.length === 1 && this.postForm.body.length > newVal.length) {
+                                  this.postForm.body.splice(1, 1)
+                                }
+                              } else {
+                                // 恢复初始化默认的body
+                                this.setDataType(value, this.postForm.body[0])
+                              }
+                            }, { deep: true })
+                          }
                         })
                       })
                     }

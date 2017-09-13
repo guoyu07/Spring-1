@@ -123,6 +123,11 @@
       if (this.hosts[this.attrList.id].length) {
         this.hostList = this.hosts[this.attrList.id]
       }
+      if (this.attrList.show && this.attrList.show.type) {
+        if (this.attrList.show.type === 'form_header') {
+          this.hostList = []
+        }
+      }
       // for (const block of this.attrList) {
       //   for (const item of block.value) {
       this.mainInfo = this.attrList
@@ -166,10 +171,7 @@
     },
 
     watch: {
-      'hosts' (newVal, oldVal) {
-        console.log(newVal)
-        this.hostList = [] // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中  val
-      },
+      'hosts': 'renderHostList', // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中  val
       'hostList' (val) {
         this.$emit('on-hosts-change', val, this.index) // ③组件内对 hostList 变更后向外部发送事件通知
       }
@@ -196,6 +198,10 @@
           required: formItem.required,
           trigger: 'change'
         }
+      },
+      renderHostList (newVal, oldVal) {
+        console.log(newVal)
+        // this.hostList = []
       },
       onSearchDevices () {
         let searchData = {}

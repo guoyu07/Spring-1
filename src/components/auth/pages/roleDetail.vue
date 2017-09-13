@@ -52,7 +52,7 @@
     	    </el-table>
         <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
           <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
-          <el-select v-model="usersToAdd" multiple >
+          <el-select v-model="usersToAdd" multiple filterable>
             <el-option v-for="user in userListToAdd" :key="user.userId" :label="user.userId" :value='user.userId'>
               <div class="fl " style="width:100%">{{user.userId}}</div>
               <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
