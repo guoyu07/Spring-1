@@ -102,7 +102,6 @@
     },
     computed: {
       IndexPath () {
-        console.log('run')
         var iroutes = this.$route.meta.sidebar.routes
         var routesArr = []
         for (let i in iroutes) {
@@ -114,7 +113,6 @@
         }
         console.log(routesArr.indexOf(this.$route.path) > -1)
         if (routesArr.indexOf(this.$route.path) > -1) {
-          console.log(this.$route.path)
           return this.$route.path
         } else {
           var reg = /^\/\w*/
