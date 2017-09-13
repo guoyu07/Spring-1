@@ -11,8 +11,8 @@
             </el-radio-group> -->
             <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
-              <el-form-item label="用户" :inline="true">
-                <el-select v-model="newAssignee" filterable clearable placeholder="请选择用户">
+              <el-form-item label="处理人" :inline="true">
+                <el-select v-model="newAssignee" filterable clearable placeholder="请选择处理人">
                   <el-option
                     v-for="user in permittedUserList"
                     :key="user.userId"
@@ -22,6 +22,9 @@
                     <p style="color: #8492a6; font-size: 13px">{{ user.email }}</p>
                  </el-option>
                 </el-select>
+                <div class="assign-btn">
+                  <el-button size="small" @click="assignToMe" type="text">分配给我</el-button>
+                </div>
               </el-form-item>
               <el-form-item label="候选组">
                 <el-select v-model="newcandidateGroup" multiple filterable placeholder="请选择候选组">
@@ -440,6 +443,14 @@
             type: 'info',
             message: '取消认领'
           })
+        })
+      },
+      assignToMe () {
+        const user = this.$store.state.userinfo.userId
+        this.permittedUserList.map(option => {
+          if (option.userId === user) {
+            this.newAssignee = user
+          }
         })
       }
     },
