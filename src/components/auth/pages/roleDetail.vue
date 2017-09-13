@@ -104,6 +104,10 @@ export default {
         return val.key
       })
       let key = +this.$route.query.key
+      let level = this.$store.state.userinfo.level
+      if (level > 1) {
+        return false
+      }
       return arr.includes(key) || this.$store.state.userinfo.level === 0
     }
   },
@@ -150,11 +154,9 @@ export default {
       })
     },
     getArr () {
-      console.log(this.usersList)
       let arr1 = this.usersList.map((val) => {
         return val.userId
       })
-      console.log(this.userList)
       this.userListToAdd = this.userList.filter(val => {
         return !arr1.includes(val.userId)
       })

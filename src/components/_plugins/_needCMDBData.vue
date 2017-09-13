@@ -32,8 +32,10 @@
         v-model="vmodel[strucData.id]"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
-        multiple>
-          <el-option  v-for="(option, optionIndex) in optionList"
+        multiple
+        remote
+        :remote-method="filterList">
+          <el-option  v-for="(option, optionIndex) in showOptionList"
                       :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
@@ -112,7 +114,7 @@
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
-                  console.log('chongzhi?', this.vmodel[this.strucData.id], this.strucData.name, this.index)
+                  // console.log('chongzhi?', this.vmodel[this.strucData.id], this.strucData.name, this.index)
                   if (this.strucData.value.type === 'dicts') {
                     this.vmodel[this.strucData.id] = []
                   } else {
@@ -143,14 +145,14 @@
       } else {
         this.renderOptions()
       }
-      // 配置默认值
-      if (this.strucData.default && this.strucData.default.type) {
-        if (this.strucData.default.type === 'form_body') {
-          this.$watch('whole.body.' + this.index + '.' + this.strucData.default.key_path, (newVal, oldVal) => {
-            this.whole.body[this.index][this.strucData.id] = newVal
-          }, { deep: true })
-        }
-      }
+      // // 配置默认值
+      // if (this.strucData.default && this.strucData.default.type) {
+      //   if (this.strucData.default.type === 'form_body') {
+      //     this.$watch('whole.body.' + this.index + '.' + this.strucData.default.key_path, (newVal, oldVal) => {
+      //       this.whole.body[this.index][this.strucData.id] = newVal
+      //     }, { deep: true })
+      //   }
+      // }
     },
     // 这个 watch 是为了上传Excel文档时，填入对应的值
     watch: {
@@ -167,10 +169,10 @@
             return this.showLabel(val).indexOf(query) > -1
           })
           this.showOptionList = arr.slice(0, 50)
-          console.log(this.showOptionList)
+          // console.log(this.showOptionList)
         } else {
           this.showOptionList = this.optionList.slice(0, 50)
-          console.log(this.showOptionList)
+          // console.log(this.showOptionList)
         }
       },
       renderData () {
@@ -404,6 +406,16 @@
                 }
               }
             }
+          }
+          // 若有其他默认值的情况下，把值返回来
+          if (this.strucData.value.type === 'dicts' && this.vmodel[this.strucData.id].length) {
+            this.vmodel[this.strucData.id].map((item, itemindex) => {
+              this.optionList.map(option => {
+                if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
+                  this.vmodel[this.strucData.id].splice(itemindex, 1, option)
+                }
+              })
+            })
           }
           if (this.strucData.value.source.data.action === 'users/all' && !this.isEditing) {
             // let userlist = []
