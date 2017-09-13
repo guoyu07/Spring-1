@@ -431,10 +431,9 @@
           }
           this.http.post('/flow/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              this.deviceViewData.visible = false
               this.$message.success('已认领！')
+              this.$router.replace(`/procedure/${this.allData.pid}/${this.query.tid}/${this.params.name}`)
             }
-            this.$router.replace(`/procedure/${this.allData.pid}/${this.query.tid}/${this.query.tname}`)
           })
         }).catch(() => {
           this.$message({
