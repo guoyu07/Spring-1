@@ -18,7 +18,7 @@
                     :key="user.userId"
                     :label="user.nick"
                     :value="user.userId">
-                    <p>{{ user.userId }}</p>
+                    <p>{{ user.nick }}</p>
                     <p style="color: #8492a6; font-size: 13px">{{ user.email }}</p>
                  </el-option>
                 </el-select>

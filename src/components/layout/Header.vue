@@ -253,7 +253,7 @@
           </a>
         </el-tooltip>
       </el-menu-item>
-      <el-menu-item index="6">
+      <el-menu-item index="6" v-popover:message>
         <el-popover
           ref="message"
           placement="bottom"
@@ -273,7 +273,7 @@
             </li>
           </ul>
         </el-popover>
-        <i v-popover:message :class="{ 'el-icon-fa-bell': true, badged: $store.state.socket.unread }"></i>
+        <i  :class="{ 'el-icon-fa-bell': true, badged: $store.state.socket.unread }"></i>
       </el-menu-item>
       <el-submenu class="mine" index="5">
         <template slot="title">{{userName}}</template>

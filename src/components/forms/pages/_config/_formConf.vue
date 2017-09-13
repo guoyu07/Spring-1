@@ -61,16 +61,19 @@
       @start="drag=true"
       class="draggable"
       v-show="configData2.length"
-      :options="{ handle: '.draggable-item__label' }">
+      :options="{ handle: '.draggable-item__label' }"
+      ref="group">
       <div v-for="(itemConf, index) in configData2" class="draggable-item">
         <input
           type="radio"
           v-model="expandedForm"
+          data-tag='0'
           :name="`form-${bodyIndex}`"
           :value="`${bodyIndex}-${itemConf._timeStamp}`"
           :id="`${category}-${bodyIndex}-${index}`"
-          :ref="`${bodyIndex}-${itemConf.id}`"
-          @click="close">
+          :ref="`${bodyIndex}-${itemConf._timeStamp}`"
+          @click="close"
+        >
         <label class="draggable-item__label draggable__token draggable__token--right" :for="`${category}-${bodyIndex}-${index}`"><b>{{itemConf.name}}</b><span v-if="itemConf.category">{{` - ${itemConf.category}`}}</span> - {{fieldTypeMap[itemConf.value.type]}}</label>
         <section v-if="expandedForm === `${bodyIndex}-${itemConf._timeStamp}`">
           <div class="draggable-item__inner">
@@ -94,11 +97,11 @@
                   </el-form-item>
                   <el-form-item label="默认值">
                     <el-popover placement="right" trigger="click">
-                      <lazy-render>
+                      <!-- <lazy-render> -->
                         <!-- 要删掉 lazy-render 记得更改
                         presetConf 的 $parent -->
                         <default-conf :dialog-props="itemConf" :is-body="isBody"></default-conf>
-                      </lazy-render>
+                      <!-- </lazy-render> -->
                       <el-button size="small" slot="reference">配置默认值</el-button>
                     </el-popover>
                     <el-tooltip placement="top" v-if="itemConf.default">
@@ -152,9 +155,9 @@
                     <!--静态选项-->
                     <el-popover v-if="['enum', 'enums'].includes(itemConf.value.type)"
                       placement="left" trigger="click" @show="showMultiConf(itemConf)">
-                      <lazy-render>
+                      <!-- <lazy-render> -->
                         <options-conf :conf-arr="itemConf.value.regex"></options-conf>
-                      </lazy-render>
+                      <!-- </lazy-render> -->
                       <el-button size="small" slot="reference" icon="fa-cogs"></el-button>
                     </el-popover>
                     <!--动态选项（cmdb）-->
@@ -166,16 +169,16 @@
                     <!-- </template> -->
                     <!-- 级联菜单 -->
                     <el-popover v-if="itemConf.value.type === 'cascade'" placement="left" trigger="click" @show="showCascadeConf(itemConf)">
-                      <lazy-render>
+                      <!-- <lazy-render> -->
                         <cascade-conf :conf-arr="itemConf.value.regex"></cascade-conf>
-                      </lazy-render>
+                      <!-- </lazy-render> -->
                       <el-button size="small" slot="reference">配置数据</el-button>
                     </el-popover>
                     <!--表格-->
                     <el-popover v-if="itemConf.value.type === 'table'" placement="top" trigger="click" @show="showTableConf(itemConf)">
-                      <lazy-render>
+                      <!-- <lazy-render> -->
                         <table-conf :dialog-props="itemConf"></table-conf>
-                      </lazy-render>
+                      <!-- </lazy-render> -->
                       <el-button size="small" slot="reference">配置表格</el-button>
                     </el-popover>
                     <!-- <template v-if="itemConf.value.type === 'table'">
@@ -190,17 +193,17 @@
                   </el-form-item>
                   <el-form-item label="范围限制" v-if="itemConf.value.type === 'int'">
                     <el-popover placement="right" trigger="click" @show="showRangeConf(itemConf)">
-                      <lazy-render>
+                      <!-- <lazy-render> -->
                         <range-conf :dialog-props="itemConf"></range-conf>
-                      </lazy-render>
+                      <!-- </lazy-render> -->
                       <el-button size="small" slot="reference">配置范围</el-button>
                     </el-popover>
                   </el-form-item>
                   <el-form-item label="个数限制" v-if="['enums', 'dicts', 'search_bar', 'table', 'arr'].includes(itemConf.value.type)">
                     <el-popover placement="right" trigger="click" @show="showLimitConf(itemConf)">
-                      <lazy-render>
+                      <!-- <lazy-render> -->
                         <limit-conf :dialog-props="itemConf"></limit-conf>
-                      </lazy-render>
+                      <!-- </lazy-render> -->
                       <el-button size="small" slot="reference">配置个数</el-button>
                     </el-popover>
                     <el-tooltip placement="top" v-if="itemConf.limit">
@@ -254,9 +257,9 @@
       </el-select>
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
-    <lazy-render>
+    <!-- <lazy-render> -->
       <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
-    </lazy-render>
+    <!-- </lazy-render> -->
 
     <!-- 避免修改 props，不写成组件 -->
     <el-dialog title="克隆 header 已有字段" v-model="showCloneHeaderFieldVisible" v-if="!isBody">
@@ -367,7 +370,6 @@ export default {
       type: String
     }
   },
-
   data () {
     return {
       configData2: this.configData, // 为免直接修改 props，创建 configData 副本，结合 watch 实现 props 双向数据流
@@ -431,11 +433,15 @@ export default {
 
   methods: {
     close () {
-      console.log(this.$refs[this.expandedForm][0])
-      console.log(this.$refs[this.expandedForm][0].checked)
-      if (this.$refs[this.expandedForm][0].checked) {
+      console.log(this.$refs.group)
+      if (+this.$refs[this.expandedForm][0].dataset.tag < 1) {
+        this.$refs[this.expandedForm][0].dataset.tag = 1
+        console.log('open')
+        this.$refs[this.expandedForm][0].checked = true
+      } else {
         this.$refs[this.expandedForm][0].checked = false
-        this.$refs[this.expandedForm][0].removeAttribute('checked')
+        this.$refs[this.expandedForm][0].dataset.tag = 0
+        console.log('close')
       }
     },
     // 默认展开一个
