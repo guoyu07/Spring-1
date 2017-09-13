@@ -172,14 +172,6 @@
       optionPresets: Array,
       isBody: Boolean
     },
-    mounted () {
-      if (this.itemConf.value.external) {
-        // 若是外键，默认选中 API 预设集第一个
-        this.selectedPreset = this.optionPresets[0]
-        eventHub.$on('cmdb-got-shown', this.handleCMDBShown)
-        // eventHub.$on('cmdb-got-shown', this.handleCMDBShown)
-      }
-    },
     data () {
       return {
         // optionType: 'dynamic',
@@ -196,11 +188,34 @@
 
       defaultOptions () {
         return this.isBody ? [ 'static', 'form_header', 'form_body', 'message_header', 'message_body', 'get' ] : [ 'static', 'form_header', 'message_header', 'get' ]
+      },
+
+      isExternal () {
+        return this.itemConf.value.external
+      }
+    },
+    mounted () {
+      if (this.isExternal) {
+        // 若是外键，默认选中 API 预设集第一个
+        this.selectedPreset = this.optionPresets[0].list[0]
+        eventHub.$on('cmdb-got-shown', this.modifyExternalKey)
+        // eventHub.$on('cmdb-got-shown', this.modifyExternalKey)
       }
     },
     methods: {
-      handleCMDBShown () {
-        Object.assign(this.itemConf.value.source.data, { action: this.selectedPreset.action, method: this.selectedPreset.method })
+      modifyExternalKey () {
+        console.log('external')
+        Object.assign(this.itemConf.value.source.data, {
+          action: this.selectedPreset.action,
+          method: this.selectedPreset.method,
+          params: [{
+            id: 'object_id',
+            value: {
+              type: 'static',
+              value: this.itemConf.value.rule.obj
+            }
+          }]
+        })
         Object.assign(this.itemConf.value.source.res, { data_path: this.selectedPreset.data_path, show_key: ['name'] })
         this.itemConf.value.source.url = this.selectedPreset.url
         // this.onSelectPreset(this.selectedPreset)
