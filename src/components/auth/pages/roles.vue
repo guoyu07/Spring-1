@@ -68,8 +68,8 @@
       </el-col>
     </el-row>
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
-      <el-form rules="roleFormRules" label-width="100px" v-model="addedRoleData.role">
-        <el-form-item label="角色名称" prop="roleName">
+      <el-form :rules="roleFormRules" label-width="100px" v-model="addedRoleData.role">
+        <el-form-item label="角色名称" prop="name">
           <el-input v-model="addedRoleData.role.name" placeholder="请填写角色名称"></el-input>
         </el-form-item>
       </el-form>
@@ -139,7 +139,7 @@
         //   }
         // },
         roleFormRules: {
-          roleName: [
+          name: [
             { required: true, message: '角色名称必填', trigger: 'blur' }
           ]
         }
