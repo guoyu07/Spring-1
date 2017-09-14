@@ -178,8 +178,8 @@
       renderData () {
         setTimeout(() => {
           // 将默认值(对象类型)放回值里面
-          if (
-            this.vmodel[this.strucData.id]) {
+          if (this.vmodel[this.strucData.id]) {
+            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (Array.isArray(this.vmodel[this.strucData.id])) {
               this.vmodel[this.strucData.id].map((item, itemindex) => {
                 if (item[this.strucData.value.source.res.show_key[0]]) {

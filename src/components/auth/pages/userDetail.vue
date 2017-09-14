@@ -55,7 +55,7 @@
                   <el-form-item label="用户层级" prop="level">
                     <!-- 仅超级管理理员可配置⽤用户层级 -->
                     <el-select v-model="userDetail.level" placeholder="请选择用户层级" :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level !== 0">
-                      <el-option label="超级管理员" value="0"></el-option>
+                      <el-option label="超级管理员" value="0" style="display:none"></el-option>
                       <el-option label="管理员" value="1"></el-option>
                       <el-option label="普通" value="2"></el-option>
                     </el-select>
@@ -64,6 +64,8 @@
                     <!-- 仅管理理员/超级管理理员可配置 -->
                     <el-checkbox-group v-model="userDetail.groups_key">
                       <el-checkbox
+                        :ref="role.key"
+                        @change="setGroup"
                         v-for="role in permittedRoleList"
                         :label="role.key"
                         :key="role.key"
@@ -146,6 +148,15 @@
     },
 
     methods: {
+      deleteGroup () {
+        let arr = this.permittedRoleList.map((val) => {
+          return val.key
+        })
+        console.log(arr)
+      },
+      setGroup () {
+        console.log(this.$refs[role.key])
+      },
       renderUserDetail () {
         let postData = {
           action: 'user/info',
