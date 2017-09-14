@@ -54,7 +54,7 @@
                 <el-form label-width="78px">
                   <el-form-item label="用户层级" prop="level">
                     <!-- 仅超级管理理员可配置⽤用户层级 -->
-                    <el-select v-model="userDetail.level" placeholder="请选择用户层级" :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level !== 0">
+                    <el-select v-model="userDetail.level" placeholder="请选择用户层级" :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level !== 0" >
                       <el-option label="超级管理员" value="0" style="display:none"></el-option>
                       <el-option label="管理员" value="1"></el-option>
                       <el-option label="普通" value="2"></el-option>
@@ -65,7 +65,6 @@
                     <el-checkbox-group v-model="userDetail.groups_key">
                       <el-checkbox
                         :ref="role.key"
-                        @change="setGroup"
                         v-for="role in permittedRoleList"
                         :label="role.key"
                         :key="role.key"
@@ -75,8 +74,8 @@
                     </el-checkbox-group>
                   </el-form-item>
                 </el-form>
-                <el-button :disabled="userDetail.userId === $store.state.userinfo.userId" @click="updateUserInfo({ userId: userDetail.userId, level: userDetail.level, groups: userDetail.groups_key })" type="info">保存</el-button>
-                <el-button @click="cancel">取消</el-button>
+<!--                 <el-button :disabled="userDetail.userId === $store.state.userinfo.userId" @click="updateUserInfo({ userId: userDetail.userId, level: userDetail.level, groups: userDetail.groups_key })" type="info">保存</el-button>
+                <el-button @click="cancel">取消</el-button> -->
               </el-tab-pane>
             </el-tabs>
           </el-col>
@@ -146,17 +145,72 @@
       this.getPermittedRoleList()
       this.renderUserDetail()
     },
+    watch: {
+      'userDetail.level' (newVal, oldVal) {
+        if (oldVal !== undefined) {
+          let postData = {
+            action: 'user',
+            method: 'put',
+            data: {
+              userId: this.$route.query.userId,
+              level: this.userDetail.level
+            }
+          }
+          this.http.post('/user/', this.parseData(postData)).then((res) => {
+            if (res.status === 200) {
+              this.$message('用户层级已改变')
+            }
+          })
+        }
+      },
+      'userDetail.groups_key' (newVal, oldVal) {
+        // 新增操作
+        if (newVal.length > oldVal.length) {
+          for (let i = 0; i < newVal.length; i++) {
+            if (oldVal.indexOf(newVal[i]) < 0) {
+              let temp = newVal[i]
+              console.log(temp)
+              let postData = {
+                action: 'group/user',
+                method: 'post',
+                data: {
+                  key: temp,
+                  userId_list: [this.$route.query.userId]
+                }
+              }
+              this.http.post('/user/', this.parseData(postData)).then((res) => {
+                if (res.status === 200) {
+                  this.$message('已新增')
+                }
+              })
+            }
+          }
+        } else {
+          // 删除操作
+          for (let i = 0; i < oldVal.length; i++) {
+            if (newVal.indexOf(oldVal[i]) < 0) {
+              let temp = oldVal[i]
+              console.log(temp)
+              let postData = {
+                action: 'group/user',
+                method: 'delete',
+                data: {
+                  key: temp,
+                  userId_list: [this.$route.query.userId]
+                }
+              }
+              this.http.post('/user/', this.parseData(postData)).then((res) => {
+                if (res.status === 200) {
+                  this.$message('已删除')
+                }
+              })
+            }
+          }
+        }
+      }
+    },
 
     methods: {
-      deleteGroup () {
-        let arr = this.permittedRoleList.map((val) => {
-          return val.key
-        })
-        console.log(arr)
-      },
-      setGroup () {
-        console.log(this.$refs[role.key])
-      },
       renderUserDetail () {
         let postData = {
           action: 'user/info',
@@ -195,23 +249,23 @@
           })
         })
       },
-      updateUserInfo (data) {
-        if (data.email !== undefined && data.email === '') {
-          this.$message.error('邮箱不能为空')
-        }
-        let postData = {
-          action: 'user',
-          method: 'put',
-          data: data
-        }
-        this.http.post('/user/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            this.$message.success(`已成功修改用户「${data.userId}」的相关信息！`)
-            this.$route.push('/auth/users')
-            this.renderUserDetail()
-          }
-        })
-      },
+      // updateUserInfo (data) {
+      //   if (data.email !== undefined && data.email === '') {
+      //     this.$message.error('邮箱不能为空')
+      //   }
+      //   let postData = {
+      //     action: 'user',
+      //     method: 'put',
+      //     data: data
+      //   }
+      //   this.http.post('/user/', this.parseData(postData)).then((res) => {
+      //     if (res.status === 200) {
+      //       this.$message.success(`已成功修改用户「${data.userId}」的相关信息！`)
+      //       this.$route.push('/auth/users')
+      //       this.renderUserDetail()
+      //     }
+      //   })
+      // },
       cancel () {
         this.$router.go(-1)
       }
