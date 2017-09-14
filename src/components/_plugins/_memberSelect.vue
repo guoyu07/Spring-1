@@ -223,8 +223,3 @@
     }
   }
 </script>
-<style scoped>
-  .assign-btn {
-    line-height: 1;
-  }
-</style>

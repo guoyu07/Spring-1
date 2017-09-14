@@ -9,30 +9,34 @@ export default {
 
   methods: {
     onAssign (tid, assignee, candidateGroup) {
-      let postData = {
-        action: 'task_assign', // runtime/task/assignee
-        method: 'put',
-        data: { tid, userId: assignee }
-      }
-      this.assignViewLoading = true
-      this.http.post('/flow/', this.parseData(postData)).then((res) => {
-        if (res.status === 200) {
-          if (candidateGroup.length) {
-            let postData = {
-              action: 'task/candidate',
-              method: 'post',
-              data: { tid, group_keys: candidateGroup }
-            }
-            this.http.post('/flow/', this.parseData(postData)).then((res) => {
-              if (res.status === 200) {
-                _finish()
-              }
-            })
-          } else {
+      console.log(assignee, candidateGroup)
+      if (assignee && candidateGroup.length) {
+        this.$message.info('处理人和候选组只能选其一')
+        return false
+      } else if (assignee) {
+        let postData = {
+          action: 'task_assign', // runtime/task/assignee
+          method: 'put',
+          data: { tid, userId: assignee }
+        }
+        this.assignViewLoading = true
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
             _finish()
           }
+        })
+      } else if (candidateGroup.length) {
+        let postData = {
+          action: 'task/candidate',
+          method: 'post',
+          data: { tid, group_keys: candidateGroup }
         }
-      })
+        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            _finish()
+          }
+        })
+      }
 
       const _finish = () => {
         this.assignViewLoading = false

@@ -278,7 +278,7 @@
                 this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
               }
             }
-          } else if (this.formItem.default.type === 'static' && !['dict', 'dicts'].includes(this.formItem.value.type)) {
+          } else if (this.formItem.default.type === 'static' && !['dict', 'dicts'].includes(this.formItem.value.type) && this.formItem.default.value !== '$author') {
             // dict', 'dicts'的static类型默认值在 _needCMDBData.vue
             if (this.headerTable || this.bodyTable) {
               this.whole[this.formItem.id] = this.formItem.default.value
@@ -290,17 +290,22 @@
               }
             }
           } else if (this.formItem.default.type === 'form_header') {
-            this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+            this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+              const val = this.getPathResult(this.whole.header, this.formItem.default.key_path, this.index)
+              if (!val) return false
               if (this.headerTable || this.bodyTable) {
-                this.whole[this.formItem.id] = newVal
+                this.whole[this.formItem.id] = val
               } else {
                 if (this.header) {
-                  this.whole.header[this.formItem.id] = newVal
+                  this.whole.header[this.formItem.id] = val
                 } else {
-                  this.whole.body[this.index][this.formItem.id] = newVal
+                  this.whole.body.map((body, bodyindex) => {
+                    const bodyVal = this.getPathResult(this.whole.header, this.formItem.default.key_path, bodyindex)
+                    this.whole.body[bodyindex][this.formItem.id] = bodyVal
+                  })
                 }
               }
-            })
+            }, {deep: true})
           } else if (this.formItem.default.type === 'form_body') {
             if (this.headerTable || this.bodyTable) {
               this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
