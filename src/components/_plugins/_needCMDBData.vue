@@ -168,7 +168,8 @@
     },
     methods: {
       filterList (query) {
-        if (query !== '') {
+        if (query || query === 0) {
+          // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
             return this.showLabel(val).indexOf(query) > -1
           })
@@ -422,12 +423,6 @@
             })
           }
           if (this.strucData.value.source.data.action === 'users/all' && !this.isEditing) {
-            // let userlist = []
-            // this.optionList.map(list => {
-            //   if (userlist.some(item => { return item.label === list.groups[0].key })) {
-
-            //   }
-            // })
             if (this.strucData.default && this.strucData.default.type) {
               if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                 const user = this.$store.state.userinfo.userId

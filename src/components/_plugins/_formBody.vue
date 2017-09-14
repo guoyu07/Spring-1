@@ -140,6 +140,9 @@
       @change="datetimeFormat"
       :placeholder="formItem.placeholder">
     </el-date-picker>
+    <!-- <el-input
+      v-else-if="formItem.value.type === 'datetime'"
+      v-model="item[formItem.id]"></el-input> -->
     <el-date-picker
       v-else-if="formItem.value.type === 'date'"
       v-model="item[formItem.id]"
@@ -513,8 +516,6 @@
       },
       datetimeFormat (val) {
         // console.log(val)
-        // const value = new Date(val)
-        // console.log(value)
         this.item[this.formItem.id] = val
       },
       dateFormat (val) {

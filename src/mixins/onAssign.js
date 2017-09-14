@@ -13,7 +13,7 @@ export default {
       if (assignee && candidateGroup.length) {
         this.$message.info('处理人和候选组只能选其一')
         return false
-      } else if (assignee) {
+      } else {
         let postData = {
           action: 'task_assign', // runtime/task/assignee
           method: 'put',
@@ -25,13 +25,12 @@ export default {
             _finish()
           }
         })
-      } else if (candidateGroup.length) {
-        let postData = {
+        let candidateData = {
           action: 'task/candidate',
           method: 'post',
           data: { tid, group_keys: candidateGroup }
         }
-        this.http.post('/flow/', this.parseData(postData)).then((res) => {
+        this.http.post('/flow/', this.parseData(candidateData)).then((res) => {
           if (res.status === 200) {
             _finish()
           }
