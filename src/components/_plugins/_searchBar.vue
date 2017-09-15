@@ -236,30 +236,30 @@
         this.onSearchDevices()
       },
       onAddtoOff () {
-        const value = this.selectedDevices
+        // const value = this.selectedDevices
         if (this.selectedDevices.length) {
           for (const selection of this.selectedDevices) {
             // if (!this.hostList.includes(selection)) {
             const inclu = this.hostList.find(list => { return list.instanceId === selection.instanceId })
             if (!inclu) {
-              if (this.limit.max) { // static时，有一个范围值
-                if (value.length < this.limit.min) {
-                  this.$message.error(`至少需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`)
-                  return false
-                } else if (value.length > this.limit.max) {
-                  this.$message.error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`)
-                  return false
-                }
-              } else { // 除static外，其他都是一个固定的数值，不准多不准少
-                const Dvalue = this.limit.min - this.hostList.length
-                if (value.length < Dvalue) {
-                  this.$message.error(`需要${Dvalue}个${this.mainInfo.name},还差${Dvalue - value.length}个`)
-                  return false
-                } else if (value.length > Dvalue) {
-                  this.$message.error(`只需要${Dvalue}个${this.mainInfo.name},请删除${value.length - Dvalue}个`)
-                  return false
-                }
-              }
+              // if (this.limit.max) { // static时，有一个范围值
+              //   if (value.length < this.limit.min) {
+              //     this.$message.error(`至少需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`)
+              //     return false
+              //   } else if (value.length > this.limit.max) {
+              //     this.$message.error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`)
+              //     return false
+              //   }
+              // } else { // 除static外，其他都是一个固定的数值，不准多不准少
+              //   const Dvalue = this.limit.min - this.hostList.length
+              //   if (value.length < Dvalue) {
+              //     this.$message.error(`需要${Dvalue}个${this.mainInfo.name},还差${Dvalue - value.length}个`)
+              //     return false
+              //   } else if (value.length > Dvalue) {
+              //     this.$message.error(`只需要${Dvalue}个${this.mainInfo.name},请删除${value.length - Dvalue}个`)
+              //     return false
+              //   }
+              // }
               this.hostList = [...this.hostList, selection]
             } else {
               this.$message.info(`列表中已存在该数据`)

@@ -550,19 +550,19 @@
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  this.setDataType(value, this.assignForm.header, this)
+                  this.setDataType(value, this.assignForm.header)
                   // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
-                  if (value.default && value.default.type) {
-                    if (value.default.type === 'message_header') {
-                      this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                    } else if (value.default.type === 'static') {
-                      this.assignForm.header[value.id] = value.default.value
-                    } else if (value.default.type === 'form_header') {
-                      this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                        this.assignForm.header[value.id] = newVal
-                      })
-                    }
-                  }
+                  // if (value.default && value.default.type) {
+                  //   if (value.default.type === 'message_header') {
+                  //     this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
+                  //   } else if (value.default.type === 'static') {
+                  //     this.assignForm.header[value.id] = value.default.value
+                  //   } else if (value.default.type === 'form_header') {
+                  //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                  //       this.assignForm.header[value.id] = newVal
+                  //     })
+                  //   }
+                  // }
                 }
               })
             }
@@ -602,25 +602,25 @@
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // 有默认值时
-                      if (value.default && value.default.type) {
-                        if (value.default.type === 'message_header') {
-                          newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                        } else if (value.default.type === 'form_body') {
-                          this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                            console.log(newVal, k, value.id)
-                            this.assignForm.body[k][value.id] = newVal
-                          })
-                        } else if (value.default.type === 'message_body') {
-                          newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
-                        } else if (value.default.type === 'form_header') {
-                          this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                            this.assignForm.body[k][value.id] = newVal
-                          })
-                        } else if (value.default.type === 'static') {
-                          this.assignForm.body[k][value.id] = value.default.value
-                        }
-                      }
+                      // // 有默认值时
+                      // if (value.default && value.default.type) {
+                      //   if (value.default.type === 'message_header') {
+                      //     newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
+                      //   } else if (value.default.type === 'form_body') {
+                      //     this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
+                      //       console.log(newVal, k, value.id)
+                      //       this.assignForm.body[k][value.id] = newVal
+                      //     })
+                      //   } else if (value.default.type === 'message_body') {
+                      //     newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
+                      //   } else if (value.default.type === 'form_header') {
+                      //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
+                      //       this.assignForm.body[k][value.id] = newVal
+                      //     })
+                      //   } else if (value.default.type === 'static') {
+                      //     this.assignForm.body[k][value.id] = value.default.value
+                      //   }
+                      // }
                     }
                   })
                 })
