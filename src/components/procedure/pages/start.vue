@@ -276,36 +276,27 @@
           this.taskFormData = res.data.data.form
           this.taskFormData.header.map(group => {
             group.value.map(item => {
-              this.setDataType(item, this.postForm.header, this)
-              // if (item.value.type === 'table') {
-              //   // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
-              //   item.value.attr_list.map(list => {
-              //     this.setDataType(list, this.postForm.header[item.id][0], this)
-              //   })
-              // }
               if (item.show.type) {
                 if (item.show.type === 'form_header') {
                   this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                    if (item.show.op === 'eq' && newVal === item.show.value) {
-                      this.setDataType(item, this.postForm.header)
-                    } else if (item.show.op === 'neq' && newVal !== item.show.value) {
-                      this.setDataType(item, this.postForm.header)
-                    } else if (item.show.op === 'reg' && newVal.includes(item.show.value)) {
+                    if (this.showFormItem(item, this.postForm)) {
                       this.setDataType(item, this.postForm.header)
                     } else {
-                      // delete this.postForm.header[item.id]
+                      delete this.postForm.header[item.id]
                     }
                   })
                 }
+              } else {
+                this.setDataType(item, this.postForm.header)
               }
-              // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
-              if (item.default && item.default.type) {
-                if (item.default.type === 'form_header') {
-                  this.$watch('postForm.header.' + item.default.key_path, (newVal, oldVal) => {
-                    this.postForm.header[item.id] = newVal
-                  })
-                }
-              }
+              // // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
+              // if (item.default && item.default.type) {
+              //   if (item.default.type === 'form_header') {
+              //     this.$watch('postForm.header.' + item.default.key_path, (newVal, oldVal) => {
+              //       this.postForm.header[item.id] = newVal
+              //     })
+              //   }
+              // }
             })
           })
           // let newData = {}
@@ -346,7 +337,22 @@
                     if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setDataType(value, this.postForm.body[0])
+                          // if (this.showFormItem(value, this.postForm)) {
+                          //   this.setDataType(value, this.postForm.body[0])
+                          // }
+                          if (value.show.type) {
+                            if (value.show.type === 'form_header') {
+                              this.$watch('postForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                                if (this.showFormItem(value, this.postForm)) {
+                                  this.setDataType(value, this.postForm.body[0])
+                                } else {
+                                  delete this.postForm.body[0][value.id]
+                                }
+                              })
+                            }
+                          } else {
+                            this.setDataType(value, this.postForm.body[0])
+                          }
                           // 渲染 body 个数
                           if (this.taskFormData.body.count.type === 'form_header') {
                             this.$watch('postForm.header.' + this.taskFormData.body.count.key_path, (newVal, oldVal) => {
@@ -459,12 +465,12 @@
                 group.value.map(item => {
                   this.setNewDataType(item, newData)
                   if (!item.unique) {
-                    // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
-                    if (index !== undefined) {
-                      newData[item.id] = this.postForm.body[index][item.id]
-                    } else {
-                      newData[item.id] = this.postForm.body[this.tabsValue][item.id]
+                    let bodyIndex = index !== undefined ? index : this.tabsValue
+                    console.log(this.postForm.body[bodyIndex][item.id])
+                    if (item.value.type === 'table') {
+                      // this.postForm.body[bodyIndex][item.id].map()
                     }
+                    newData[item.id] = this.postForm.body[bodyIndex][item.id]
                   }
                 })
               })

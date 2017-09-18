@@ -462,7 +462,19 @@
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  this.setDataType(value, this.assignForm.header)
+                  if (value.show.type) {
+                    if (value.show.type === 'form_header') {
+                      this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                        if (this.showFormItem(value, this.assignForm)) {
+                          this.setDataType(value, this.assignForm.header)
+                        } else {
+                          delete this.assignForm.header[value.id]
+                        }
+                      })
+                    }
+                  } else {
+                    this.setDataType(value, this.assignForm.header)
+                  }
                   // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
                   // if (value.default && value.default.type) {
                   //   if (value.default.type === 'message_header') {
@@ -507,7 +519,17 @@
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
-                      this.setNewDataType(value, newData)
+                      if (value.show.type === 'form_header') {
+                        this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                          if (this.showFormItem(value, this.assignForm)) {
+                            this.setDataType(value, this.assignForm.header)
+                          } else {
+                            delete this.assignForm.header[value.id]
+                          }
+                        })
+                      } else if (this.showFormItem(value, this.assignForm, this.applyData)) {
+                        this.setNewDataType(value, newData)
+                      }
                       // this.setDataType(value, this.assignForm.body[0])
                       // // 有默认值时
                       // if (value.default && value.default.type) {
