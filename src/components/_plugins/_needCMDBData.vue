@@ -81,27 +81,25 @@
       // }
       this.keyPaths = []
       for (const para of this.strucData.value.source.data.params) {
-        let keyPath
+        // let keyPath
         if (para.value.key_path) {
-          keyPath = para.value.key_path.split('.')
+          // keyPath = para.value.key_path.split('.')
           this.keyPaths.push(para.value.key_path.split('.')[0])
           if (para.value.type === 'form_header') {
-            this.$watch('whole.header.' + keyPath[0], (newVal, oldVal) => {
+            this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
               if (!this.isEditing) {
                 if (this.strucData.value.type === 'dicts') {
                   this.vmodel[this.strucData.id] = []
                 } else {
+                  console.log(this.strucData.name)
                   this.vmodel[this.strucData.id] = null
                 }
               }
-              //  else {
-              //   this.vmodel[this.strucData.id] = null
-              // }
               this.renderOptions()
-            }, { deep: true })
+            })
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
-              this.$watch('whole.' + keyPath[0], (newVal, oldVal) => {
+              this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
                   if (this.strucData.value.type === 'dicts') {
                     this.vmodel[this.strucData.id] = []
@@ -110,20 +108,16 @@
                   }
                 }
                 this.renderOptions()
-              }, { deep: true })
+              })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
-                  // console.log('chongzhi?', this.vmodel[this.strucData.id], this.strucData.name, this.index)
                   if (this.strucData.value.type === 'dicts') {
                     this.vmodel[this.strucData.id] = []
                   } else {
                     this.vmodel[this.strucData.id] = null
                   }
                 }
-                //  else {
-                //   this.vmodel[this.strucData.id] = null
-                // }
                 this.renderOptions()
               })
             }
@@ -132,29 +126,29 @@
       }
       // console.log(keyPaths)
       if (this.strucData.watch && typeof this.strucData.watch === 'string') {
-        this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-          if (!this.isEditing) {
-            if (this.strucData.value.type === 'dicts') {
-              this.vmodel[this.strucData.id] = []
-            } else {
-              this.vmodel[this.strucData.id] = null
+        if (!this.keyPaths.includes(this.strucData.watch)) {
+          this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
+            if (!this.isEditing) {
+              if (this.strucData.value.type === 'dicts') {
+                this.vmodel[this.strucData.id] = []
+              } else {
+                this.vmodel[this.strucData.id] = null
+              }
             }
-          }
-          if (!this.keyPaths.includes(this.strucData.watch)) {
             this.renderOptions()
-          }
-        }, { deep: true })
+          })
+        }
       } else {
         this.renderOptions()
       }
-      // 配置默认值
-      if (this.strucData.default && this.strucData.default.type) {
-        if (this.strucData.default.type === 'form_body') {
-          this.$watch('whole.body.' + this.index + '.' + this.strucData.default.key_path, (newVal, oldVal) => {
-            this.whole.body[this.index][this.strucData.id] = newVal
-          }, { deep: true })
-        }
-      }
+      // // 配置默认值
+      // if (this.strucData.default && this.strucData.default.type) {
+      //   if (this.strucData.default.type === 'form_body') {
+      //     this.$watch('whole.body.' + this.index + '.' + this.strucData.default.key_path, (newVal, oldVal) => {
+      //       this.whole.body[this.index][this.strucData.id] = newVal
+      //     }, { deep: true })
+      //   }
+      // }
     },
     // 这个 watch 是为了上传Excel文档时，填入对应的值
     watch: {
@@ -171,10 +165,8 @@
             return this.showLabel(val).indexOf(query) > -1
           })
           this.showOptionList = arr.slice(0, 50)
-          // console.log(this.showOptionList)
         } else {
           this.showOptionList = this.optionList.slice(0, 50)
-          // console.log(this.showOptionList)
         }
       },
       renderData () {
@@ -325,6 +317,7 @@
           this.optionList = []
           if (this.vmodel[this.strucData.id]) {
             this.optionList.push(this.vmodel[this.strucData.id])
+            this.showOptionList = this.optionList
           }
           return false
         }

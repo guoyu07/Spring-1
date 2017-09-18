@@ -279,6 +279,7 @@
               if (item.show.type) {
                 if (item.show.type === 'form_header') {
                   this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                    // console.log(item.name)
                     if (this.showFormItem(item, this.postForm)) {
                       this.setDataType(item, this.postForm.header)
                     } else {
@@ -287,6 +288,7 @@
                   })
                 }
               } else {
+                // console.log(item.name)
                 this.setDataType(item, this.postForm.header)
               }
               // // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body

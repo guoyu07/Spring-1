@@ -731,6 +731,7 @@
               this.isEditing = true
               this.edtingInfo = this.taskData.message[this.taskData.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
+              if (!message.form.body) return false
               newDataBody = message.form.body.map((body, bodyindex) => {
                 let data = {}
                 for (const key in this.assignForm.body[bodyindex]) {
