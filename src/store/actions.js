@@ -67,6 +67,7 @@ module.exports = {
 
   socket_onclose: ({ commit }) => {
     return new Promise((resolve, reject) => {
+      console.log('socket close')
       commit(types.SOCKET_ONCLOSE)
       resolve()
     })

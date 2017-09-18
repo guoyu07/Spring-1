@@ -1,6 +1,7 @@
 import router from './router'
 import store from './store'
 import eventHub from './utils/event-hub'
+import socket from './socket'
 // URL 及端点常量
 // const API_URL = 'http://localhost:3001/'
 // const LOGIN_URL = API_URL + 'sessions/create/'
@@ -30,17 +31,20 @@ export default {
       }
       // 发射 login 事件
       eventHub.$emit('login')
-      this.socket()
+      socket.initSocket()
     }, response => {
       return false
     })
   },
 
-  logout () {
+  logout (context, data) {
     // window.localStorage.removeItem('userName')
     store.dispatch('remove_userinfo').then(() => {
       router.replace('/login')
       store.dispatch('socket_onclose')
+    })
+    context.http.post('/base/', data).then(res => {
+      console.log('ture logout')
     })
     // router.replace('/login')
     this.authenticated = false

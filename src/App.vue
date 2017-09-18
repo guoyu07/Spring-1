@@ -16,6 +16,13 @@ export default {
   name: 'app',
 
   mounted () {
+    window.onfocus = () => {
+      let tag = this.$store.state.socket.connected
+      console.log(tag)
+      if (!tag) {
+        this.$store.dispatch('socket_open')
+      }
+    }
     this.$nextTick(() => {
       if (socket.socketOpen) {
         this.$socket.onmessage = (data) => {
