@@ -149,6 +149,7 @@
           this.limitNum = 1
         }
         var validateLimit = (rule, value, cb) => {
+          if (!Array.isArray(value)) return // value 必须是一个数组
           function isMatch (ele, i, arr) {
             const reg = new RegExp(ele)
             return value.some(val => { return !val.match(reg) }) // 要value数组里每一个值都通过正则，否则报错

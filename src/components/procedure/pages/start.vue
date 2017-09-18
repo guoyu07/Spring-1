@@ -276,7 +276,7 @@
           this.taskFormData = res.data.data.form
           this.taskFormData.header.map(group => {
             group.value.map(item => {
-              this.setDataType(item, this.postForm.header, this)
+              this.setDataType(item, this.postForm.header)
               // if (item.value.type === 'table') {
               //   // TODO 这里就要判断 table 的个数，然后生成对应的 table 的 key 空值 等待填入
               //   item.value.attr_list.map(list => {
@@ -346,7 +346,9 @@
                     if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setDataType(value, this.postForm.body[0])
+                          if (this.showFormItem(value)) {
+                            this.setDataType(value, this.postForm.body[0])
+                          }
                           // 渲染 body 个数
                           if (this.taskFormData.body.count.type === 'form_header') {
                             this.$watch('postForm.header.' + this.taskFormData.body.count.key_path, (newVal, oldVal) => {
@@ -459,12 +461,12 @@
                 group.value.map(item => {
                   this.setNewDataType(item, newData)
                   if (!item.unique) {
-                    // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
-                    if (index !== undefined) {
-                      newData[item.id] = this.postForm.body[index][item.id]
-                    } else {
-                      newData[item.id] = this.postForm.body[this.tabsValue][item.id]
+                    let bodyIndex = index !== undefined ? index : this.tabsValue
+                    console.log(this.postForm.body[bodyIndex][item.id])
+                    if (item.value.type === 'table') {
+                      // this.postForm.body[bodyIndex][item.id].map()
                     }
+                    newData[item.id] = this.postForm.body[bodyIndex][item.id]
                   }
                 })
               })

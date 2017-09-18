@@ -59,7 +59,10 @@
       cursor: pointer;
 
       .entry__icon span {
-        background-color: @primary;
+        // background-color: @primary;
+        // opacity: .8;
+        // filter: saturate(180%);
+        filter: brightness(150%);
       }
 
       .entry__title {
@@ -89,7 +92,7 @@
             <ul class="grid">
               <li v-for="child in top.children" class="entry" @click="onEntryClick(child.path)">
                 <div class="entry__icon">
-                  <span :class="'el-icon-' + child.icon"></span>
+                  <span :class="'el-icon-' + child.icon" :style="{ backgroundColor: child.color }"></span>
                 </div>
                 <div class="entry__title">{{child.title}}</div>
               </li>
@@ -97,13 +100,12 @@
           </el-col>
         </template>
         <template v-for="entry in searchResult">
-          <!-- 屏蔽 应用发布更新 -->
           <el-col :sm="24">
             <h4 class="category">{{entry.category}}</h4>
             <ul class="grid">
               <li v-for="child in entry.children" class="entry" @click="onEntryClick(child.path)">
                 <div class="entry__icon">
-                  <span :class="'el-icon-' + child.icon"></span>
+                  <span :class="'el-icon-' + child.icon" :style="{ backgroundColor: child.color }"></span>
                 </div>
                 <div class="entry__title">{{child.title}}</div>
               </li>
@@ -148,13 +150,15 @@
               categ.list.map(list => {
                 if (list.pkey === 'host_apply') {
                   entry.children.push({
-                    icon: 'fa-star',
+                    icon: list.icon ? list.icon : 'fa-star',
+                    color: list.color.hex,
                     title: list.pname,
                     path: `/system/apply`
                   })
                 } else if (['appAddCluster', 'systemOnline'].includes(list.pkey)) {
                   entry.children.push({
-                    icon: 'fa-star',
+                    icon: list.icon ? list.icon : 'fa-star',
+                    color: list.color.hex,
                     title: list.pname,
                     path: {
                       path: '/system/onlinelist',
@@ -165,7 +169,8 @@
                   })
                 } else {
                   entry.children.push({
-                    icon: 'fa-star',
+                    icon: list.icon ? list.icon : 'fa-star',
+                    color: list.color.hex,
                     title: list.pname,
                     path: `/procedure/start/${list.pkey}/${list.pname}`
                   })
@@ -194,13 +199,15 @@
         res.map(list => {
           if (list.pkey === 'host_apply') {
             this.topList[0].children.push({
-              icon: 'fa-star',
+              icon: list.icon ? list.icon : 'fa-star',
+              color: list.color.hex,
               title: list.pname,
               path: `/system/apply`
             })
           } else if (['appAddCluster', 'systemOnline'].includes(list.pkey)) {
             this.topList[0].children.push({
-              icon: 'fa-star',
+              icon: list.icon ? list.icon : 'fa-star',
+              color: list.color.hex,
               title: list.pname,
               path: {
                 path: '/system/onlinelist',
@@ -211,7 +218,8 @@
             })
           } else {
             this.topList[0].children.push({
-              icon: 'fa-star',
+              icon: list.icon ? list.icon : 'fa-star',
+              color: list.color.hex,
               title: list.pname,
               path: `/procedure/start/${list.pkey}/${list.pname}`
             })
