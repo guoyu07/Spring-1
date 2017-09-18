@@ -18,7 +18,7 @@
             size="small"
             filterable
             allow-create>
-            <el-option v-for="cat in categories" :key="cat" :label="cat" :value="cat"></el-option>
+            <el-option v-for="cat in categories" :key="cat.id" :label="cat.name" :value="cat.name"></el-option>
           </el-select>
           <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
           <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row)"></i>

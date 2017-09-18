@@ -309,7 +309,14 @@
 
     methods: {
       logout () {
-        Auth.logout()
+        let postData = {
+          action: 'logout',
+          method: 'post'
+        }
+        // this.http.post('/base/', postData).then(res => {
+        //   console.log('ture logout' + res)
+        // })
+        Auth.logout(this, postData)
         // this.$router.go(0)
       },
 
