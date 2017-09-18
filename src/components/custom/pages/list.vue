@@ -55,6 +55,7 @@
                     @should-update-categories="getCategoryList"
                     @should-update-processes="getOrderedProcesses"
                     @on-edit-script="onEditScript"
+                    @on-edit-style="onEditStyle"
                     @on-cancel-edit="onCancelEdit"></process-table>
                 </div>
               </section>
@@ -64,12 +65,14 @@
       </el-col>
     </el-row>
     <script-editor :editor-props="editorProps"></script-editor>
+    <style-conf v-if="styleProps.visible" :style-props="styleProps"></style-conf>
   </div>
 </template>
 
 <script>
   import draggable from 'vuedraggable'
-  import scriptEditor from './../../_plugins/_scriptEditor'
+  import scriptEditor from './_plugins/_scriptEditor'
+  import styleConf from './_plugins/_styleConf'
   import processTable from './_plugins/_processTable'
 
   export default {
@@ -81,6 +84,9 @@
           visible: false,
           pkey: '',
           data: ''
+        },
+        styleProps: {
+          visible: false
         },
         categoryList: [],
         orderConfVisible: false
@@ -212,22 +218,20 @@
       },
 
       onEditScript (args) {
-        this.$confirm('此操作将永久删除该流程分类，是否继续？', '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let postData = {
-            action: 'process/script',
-            method: 'GET',
-            data: { pkey: args.pkey }
+        let postData = {
+          action: 'process/script',
+          method: 'GET',
+          data: { pkey: args.pkey }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            this.editorProps = { visible: true, pkey: args.pkey, data: res.data.data }
           }
-          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-            if (res.status === 200) {
-              this.editorProps = { visible: true, pkey: args.pkey, data: res.data.data }
-            }
-          })
         })
+      },
+
+      onEditStyle (args) {
+        this.styleProps = { ...{ visible: true }, ...args }
       },
 
       _onRestoreEditing () {
@@ -248,6 +252,7 @@
     components: {
       draggable,
       scriptEditor,
+      styleConf,
       processTable
     }
   }

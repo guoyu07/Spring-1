@@ -1,52 +1,55 @@
 <template>
-  <el-table
-    :data="processes"
-    border
-    :ref="item.id">
-    <el-table-column
-      prop="pname"
-      label="流程名称"></el-table-column>
-    <el-table-column
-      label="类别"
-      inline-template
-      :context="_self">
-      <template>
-        <el-select
-          v-show="row.editing"
-          v-model="row.category"
-          size="small"
-          filterable
-          allow-create>
-          <el-option v-for="cat in categories" :key="cat" :label="cat" :value="cat"></el-option>
-        </el-select>
-        <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
-        <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row)"></i>
-        <span v-show="!row.editing">{{row.category}}</span>
-        <i class="el-icon-edit text-info" v-show="!row.editing" @click="onAttemptToEdit(row)"></i>
-      </template>
-    </el-table-column>
-    <el-table-column
-      label="操作"
-      inline-template
-      :context="_self">
-      <template>
-        <div class="draggable__token draggable__token--right">
-          <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> 自定义</router-link>
-          <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
-        </div>
-      </template>
-    </el-table-column>
-    <!-- <el-table-column
-      label=""
-      align="center"
-      width="60px"
-      inline-template
-      :context="_self">
-      <template>
-        <i class="el-icon-fa-arrows text-info"></i>
-      </template>
-    </el-table-column> -->
-  </el-table>
+  <div>
+    <el-table
+      :data="processes"
+      border
+      :ref="item.id">
+      <el-table-column
+        prop="pname"
+        label="流程名称"></el-table-column>
+      <el-table-column
+        label="类别"
+        inline-template
+        :context="_self">
+        <template>
+          <el-select
+            v-show="row.editing"
+            v-model="row.category"
+            size="small"
+            filterable
+            allow-create>
+            <el-option v-for="cat in categories" :key="cat" :label="cat" :value="cat"></el-option>
+          </el-select>
+          <i v-show="row.editing" class="el-icon-check text-success" @click="onEditCategory(row)"></i>
+          <i v-show="row.editing" class="el-icon-close text-error" @click="onCancelEdit(row)"></i>
+          <span v-show="!row.editing">{{row.category}}</span>
+          <i class="el-icon-edit text-info" v-show="!row.editing" @click="onAttemptToEdit(row)"></i>
+        </template>
+      </el-table-column>
+      <el-table-column
+        label="操作"
+        inline-template
+        :context="_self">
+        <template>
+          <div class="draggable__token draggable__token--right">
+            <router-link :to="{ path: `/custom/bpmn/${row.pkey}` }" class="el-button el-button--small el-button--plain"><i class="el-icon-fa-cogs"></i> BPMN</router-link>
+            <el-button type="info" size="small" :plain="true" @click="onEditScript(row.pkey)" icon="fa-code">后置脚本</el-button>
+            <el-button type="info" size="small" :plain="true" @click="onEditStyle(row)" icon="fa-paint-brush">样式</el-button>
+          </div>
+        </template>
+      </el-table-column>
+      <!-- <el-table-column
+        label=""
+        align="center"
+        width="60px"
+        inline-template
+        :context="_self">
+        <template>
+          <i class="el-icon-fa-arrows text-info"></i>
+        </template>
+      </el-table-column> -->
+    </el-table>
+  </div>
 </template>
 
 <script>
@@ -109,6 +112,10 @@
 
       onEditScript (pkey) {
         this.$emit('on-edit-script', { pkey })
+      },
+
+      onEditStyle ({ pkey, icon, color }) {
+        this.$emit('on-edit-style', { pkey, icon, color })
       },
 
       onAttemptToEdit (process) {
