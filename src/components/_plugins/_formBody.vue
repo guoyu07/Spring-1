@@ -43,6 +43,8 @@
     <el-input-number
       v-else-if="formItem.value.type === 'int'"
       v-model="item[formItem.id]"
+      :min="formItem.range.min ? formItem.range.min : -99999999999"
+      :max="formItem.range.max ? formItem.range.max : 99999999999"
       :disabled="formItem.readonly">
     </el-input-number>
     <!-- <el-input
@@ -267,8 +269,8 @@
       }
     },
     mounted () {
-      // this.isEditing 编辑状态下不配置默认值
-      if (!this.isEditing) {
+      // this.isEditing 编辑状态下且有原值时不配置默认值
+      if (!this.isEditing && !this.item[this.formItem.id]) {
         // 默认值
         if (this.formItem && this.formItem.default && this.formItem.default.type) {
           if (this.formItem.default.type === 'message_header') {
@@ -276,6 +278,7 @@
               this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, 0)
             } else {
               if (this.header) {
+                console.log(this.whole.header[this.formItem.id])
                 this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
               } else {
                 this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
