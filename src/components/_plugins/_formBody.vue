@@ -316,12 +316,12 @@
               })
             } else {
               if (this.header) {
-                this.$watch(this.wholeName + '.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
                   this.whole.header[this.formItem.id] = newVal
                 })
               } else {
-                this.$watch(this.wholeName + '.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                  this.whole.body[this.index][this.valueId] = newVal
+                this.$watch('whole.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                  this.whole.body[this.index][this.formItem.id] = newVal
                 })
               }
             }

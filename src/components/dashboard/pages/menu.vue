@@ -60,9 +60,9 @@
 
       .entry__icon span {
         // background-color: @primary;
-        // opacity: .8;
+        opacity: .9;
         // filter: saturate(180%);
-        filter: brightness(150%);
+        filter: brightness(110%);
       }
 
       .entry__title {
