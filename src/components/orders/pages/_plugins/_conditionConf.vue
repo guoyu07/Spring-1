@@ -68,11 +68,16 @@
             multiple
             placeholder="请选择环节"
             value-key="key">
-            <el-option
-              v-for="task in taskDicts"
-              :label="task.label"
-              :key="task.key"
-              :value="task"></el-option>
+            <el-option-group
+              v-for="process in taskDicts"
+              :key="process.key"
+              :label="process.label">
+              <el-option
+                v-for="task in process.list"
+                :label="task.label"
+                :key="task.key"
+                :value="task"></el-option>
+            </el-option-group>
           </el-select>
         </template>
 
