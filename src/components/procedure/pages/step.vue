@@ -283,11 +283,14 @@
             <!-- 按钮区域 -->
             <div class="btn-area">
               <span v-for="action in applyData.action">
-                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')" :loading="submitLoading">{{action.name}}</el-button>
+                <el-button v-if="action.type==='submit'" type="success" @click="onSubmit('assignForm')" :disabled="submitLoading">{{action.name}}</el-button>
                 <el-tooltip v-else-if="action.type==='manual'" :content="action.desc" placement="bottom">
-                  <el-button type="primary" @click="onManual(action)" :loading="submitLoading">{{action.name}}</el-button>
+                  <el-button type="primary" @click="onManual(action)" :disabled="submitLoading">{{action.name}}</el-button>
                 </el-tooltip>
-                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)" :loading="submitLoading">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)" :disabled="submitLoading">{{action.name}}</el-button>
+                <el-button v-else-if="action.type==='target'" type="info" :disabled="submitLoading">
+                  <a class="link-block" :href="action.url" target="_blank">{{action.name ? action.name : '跳转'}}</a>
+                </el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
             </div>
@@ -793,7 +796,7 @@
       manualMethod (action) {
         this.submitLoading = true
         const postData = {
-          action: 'do/activiti/form/action',
+          action: 'do/form/action',
           method: 'POST',
           data: {
             form: this.assignForm,
@@ -801,7 +804,7 @@
             action_id: action.id
           }
         }
-        this.http.post('', this.parseData(postData))
+        this.http.post('/flow/', this.parseData(postData))
         .then((res) => {
           this.submitLoading = false
           if (res && res.status === 200) {
@@ -809,7 +812,7 @@
               type: 'success',
               message: '提交成功!'
             })
-            this.$router.replace('/orders') // 分配成功跳转工单管理
+            this.$router.replace('/menu') // 分配成功跳转工单管理
           }
         })
       },
@@ -1030,5 +1033,11 @@
 .total-page {
   font-size: 12px;
   color: #616161;
+}
+.link-block {
+  color: #fff;
+  &:hover {
+    text-decoration: none;
+  }
 }
 </style>
