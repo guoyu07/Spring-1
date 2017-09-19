@@ -142,7 +142,7 @@
       },
 
       isGuosen () {
-        return ['host', 'host_my'].includes(this.taskViewData.order.pinstance.pkey)
+        return ['host', 'host_my', 'host_machine'].includes(this.taskViewData.order.pinstance.pkey)
       }
     },
 

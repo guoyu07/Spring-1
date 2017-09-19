@@ -10,13 +10,24 @@
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
           <h3><i class="el-icon-fa-wpforms icon-lg color-primary"></i> 表单配置</h3>
-          <el-select v-model="selectedProcess" placeholder="请先选择流程…" class="process-select" value-key="pname">
-            <el-option
+          <el-select v-model="selectedProcess" filterable placeholder="请先选择流程…" class="process-select" value-key="pname">
+            <!-- <el-option
               v-for="process in processList"
               :key="process.name"
               :label="process.pname"
               :value="process">
-            </el-option>
+            </el-option> -->
+            <el-option-group
+              v-for="group in processGroupList"
+              :key="group.label"
+              :label="group.label">
+              <el-option
+                v-for="item in group.list"
+                :key="item.name"
+                :label="item.pname"
+                :value="item">
+              </el-option>
+            </el-option-group>
           </el-select>
           <small class="process-desc"><i class="el-icon-information"></i> 此处仅为你可管理的流程</small>
           <el-table

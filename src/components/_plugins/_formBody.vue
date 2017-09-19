@@ -269,8 +269,8 @@
       }
     },
     mounted () {
-      // this.isEditing 编辑状态下且有原值时不配置默认值
-      if (!this.isEditing && !this.item[this.formItem.id]) {
+      // this.isEditing 编辑状态下或者无原值时配置默认值
+      if (!this.isEditing || !this.item[this.formItem.id]) {
         // 默认值
         if (this.formItem && this.formItem.default && this.formItem.default.type) {
           if (this.formItem.default.type === 'message_header') {
@@ -282,6 +282,16 @@
                 this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
               } else {
                 this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
+              }
+            }
+          } else if (this.formItem.default.type === 'message_body') {
+            if (this.headerTable || this.bodyTable) {
+              this.whole[this.formItem.id] = this.getPathResult(this.message.body[this.index], this.formItem.default.key_path, this.tableIndex)
+            } else {
+              if (this.header) {
+                this.whole.header[this.formItem.id] = this.getPathResult(this.message.body[this.index], this.formItem.default.key_path)
+              } else {
+                this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.body[this.index], this.formItem.default.key_path, this.tableIndex)
               }
             }
           } else if (this.formItem.default.type === 'static' && !['dict', 'dicts'].includes(this.formItem.value.type) && this.formItem.default.value !== '$author') {
