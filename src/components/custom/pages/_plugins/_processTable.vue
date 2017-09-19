@@ -114,8 +114,8 @@
         this.$emit('on-edit-script', { pkey })
       },
 
-      onEditStyle ({ pkey, icon, color }) {
-        this.$emit('on-edit-style', { pkey, icon, color })
+      onEditStyle ({ pkey, icon, bg_color }) {
+        this.$emit('on-edit-style', { pkey, icon, bg_color })
       },
 
       onAttemptToEdit (process) {

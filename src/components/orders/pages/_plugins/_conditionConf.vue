@@ -185,6 +185,9 @@
           if (val.some(_ => _.type === 'tname') && !this.taskDicts.length) {
             this.getTaskDicts()
           }
+          if (val.some(_ => _.type === 'time' && !_.filter.s_date && !_.filter.e_date && !_.filter.time)) {
+            return
+          }
           this.$emit('on-filter-change', { filters: val })
         },
         deep: true
