@@ -331,6 +331,9 @@
           if (this.optionList.length === 0) {
             this.$message.info(`${this.strucData.name}无数据`)
           }
+          // this.$store.dispatch('idcrack_data', {
+          //   idcrackData: this.optionList
+          // })
           this.filterList('')
           if (this.optionList.length === 0 && !this.isAlias) {
             this.vmodel[this.strucData.id] = null
