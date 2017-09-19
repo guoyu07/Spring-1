@@ -151,14 +151,14 @@
                 if (list.pkey === 'host_apply') {
                   entry.children.push({
                     icon: list.icon ? list.icon : 'fa-star',
-                    color: list.color.hex,
+                    color: list.bg_color,
                     title: list.pname,
                     path: `/system/apply`
                   })
                 } else if (['appAddCluster', 'systemOnline'].includes(list.pkey)) {
                   entry.children.push({
                     icon: list.icon ? list.icon : 'fa-star',
-                    color: list.color.hex,
+                    color: list.bg_color,
                     title: list.pname,
                     path: {
                       path: '/system/onlinelist',
@@ -170,7 +170,7 @@
                 } else {
                   entry.children.push({
                     icon: list.icon ? list.icon : 'fa-star',
-                    color: list.color.hex,
+                    color: list.bg_color,
                     title: list.pname,
                     path: `/procedure/start/${list.pkey}/${list.pname}`
                   })
@@ -200,14 +200,14 @@
           if (list.pkey === 'host_apply') {
             this.topList[0].children.push({
               icon: list.icon ? list.icon : 'fa-star',
-              color: list.color.hex,
+              color: list.bg_color,
               title: list.pname,
               path: `/system/apply`
             })
           } else if (['appAddCluster', 'systemOnline'].includes(list.pkey)) {
             this.topList[0].children.push({
               icon: list.icon ? list.icon : 'fa-star',
-              color: list.color.hex,
+              color: list.bg_color,
               title: list.pname,
               path: {
                 path: '/system/onlinelist',
@@ -219,7 +219,7 @@
           } else {
             this.topList[0].children.push({
               icon: list.icon ? list.icon : 'fa-star',
-              color: list.color.hex,
+              color: list.bg_color,
               title: list.pname,
               path: `/procedure/start/${list.pkey}/${list.pname}`
             })
