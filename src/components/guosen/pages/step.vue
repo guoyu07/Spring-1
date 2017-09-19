@@ -694,7 +694,7 @@
             // 主机名
             if (this.taskData.ptask.tkey === 'confirm1') {
               let prefix
-              if (this.taskData.pinstance.pkey === 'host') {
+              if (this.taskData.pinstance.pkey === 'host' || this.taskData.pinstance.pkey === 'host_machine') {
                 prefix = [
                   this.applyData.header.idc.abbreviation,
                   this.applyData.header.host_type.abbreviation,

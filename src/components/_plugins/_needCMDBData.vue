@@ -138,9 +138,8 @@
             this.renderOptions()
           })
         }
-      } else {
-        this.renderOptions()
       }
+      this.renderOptions()
       // // 配置默认值
       // if (this.strucData.default && this.strucData.default.type) {
       //   if (this.strucData.default.type === 'form_body') {
@@ -173,6 +172,7 @@
         setTimeout(() => {
           // 将默认值(对象类型)放回值里面
           if (this.vmodel[this.strucData.id]) {
+            // console.log(this.strucData.id, this.strucData.name)
             this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (Array.isArray(this.vmodel[this.strucData.id])) {
               this.vmodel[this.strucData.id].map((item, itemindex) => {
@@ -184,6 +184,7 @@
                     } else {
                       if (!this.optionList.includes(item)) {
                         this.optionList.push(item)
+                        this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
                       }
                     }
                   })
@@ -203,6 +204,7 @@
                   if (!isIncludes) {
                     if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
                       this.optionList.push(this.vmodel[this.strucData.id])
+                      this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
                     }
                   }
                 }, 100)
@@ -267,7 +269,9 @@
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'form_body') {
+              // console.log(this.bodyTable, this.headerTable, this.strucData.name)
               if (this.bodyTable || this.headerTable) {
+                console.log('hello laiyit')
                 if (isRender(this.getPathResult(this.whole, para.value.key_path))) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole, para.value.key_path)
@@ -279,7 +283,7 @@
                 if (keyPath.length && !this.getPathResult(this.whole.body[this.index], keyPath[0])) {
                   return false
                 }
-                console.log(this.whole, this.index, para.value.key_path)
+                // console.log(this.whole, this.index, para.value.key_path)
                 if (this.whole && isRender(this.getPathResult(this.whole.body[this.index], para.value.key_path))) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole.body[this.index], para.value.key_path)
@@ -324,6 +328,9 @@
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+          if (this.optionList.length === 0) {
+            this.$message.info(`${this.strucData.name}无数据`)
+          }
           this.filterList('')
           if (this.optionList.length === 0 && !this.isAlias) {
             this.vmodel[this.strucData.id] = null
@@ -443,6 +450,7 @@
               }
             }
           }
+          // console.log(this.vmodel[this.strucData.id], this.strucData.id, this.strucData.name)
           this.renderData()
         })
       }
