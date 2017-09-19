@@ -22,7 +22,7 @@
         <el-input v-model="icon" style="width: 320px"></el-input>
       </el-form-item>
       <el-form-item label="预览">
-        <div class="entry__icon">
+        <div class="m-entry__icon">
           <span :class="`el-icon-${icon}`" :style="{ backgroundColor: bgColor }"></span>
         </div>
       </el-form-item>
@@ -87,7 +87,7 @@
 </script>
 
 <style scoped lang="less">
-  .entry__icon {
+  .m-entry__icon {
     justify-content: flex-start;
 
     span {

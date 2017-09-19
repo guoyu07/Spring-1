@@ -90,11 +90,11 @@
           <el-col :sm="24">
             <h4 class="category hot-category">{{top.category}}</h4>
             <ul class="grid">
-              <li v-for="child in top.children" class="entry" @click="onEntryClick(child.path)">
-                <div class="entry__icon">
+              <li v-for="child in top.children" class="m-entry" @click="onEntryClick(child.path)">
+                <div class="m-entry__icon">
                   <span :class="'el-icon-' + child.icon" :style="{ backgroundColor: child.color }"></span>
                 </div>
-                <div class="entry__title">{{child.title}}</div>
+                <div class="m-entry__title">{{child.title}}</div>
               </li>
             </ul>
           </el-col>
@@ -103,11 +103,11 @@
           <el-col :sm="24">
             <h4 class="category">{{entry.category}}</h4>
             <ul class="grid">
-              <li v-for="child in entry.children" class="entry" @click="onEntryClick(child.path)">
-                <div class="entry__icon">
+              <li v-for="child in entry.children" class="m-entry" @click="onEntryClick(child.path)">
+                <div class="m-entry__icon">
                   <span :class="'el-icon-' + child.icon" :style="{ backgroundColor: child.color }"></span>
                 </div>
-                <div class="entry__title">{{child.title}}</div>
+                <div class="m-entry__title">{{child.title}}</div>
               </li>
             </ul>
           </el-col>
