@@ -29,6 +29,7 @@
       <el-table-column
         label="操作"
         inline-template
+        width="320px"
         :context="_self">
         <template>
           <div class="draggable__token draggable__token--right">
