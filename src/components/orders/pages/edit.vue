@@ -65,11 +65,11 @@
       } else {
         this.filterData = {
           name: '新过滤器',
-          order: 'pinstance__pnum',
+          order: 'pinstance__pd__pname',
           show: [],
           filters: [{
-            key: 'pinstance__pnum',
-            label: '流程单号',
+            key: 'pinstance__pd__pname',
+            label: '流程名称',
             type: 'str',
             filter: ''
           }]
