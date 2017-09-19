@@ -269,8 +269,8 @@
       }
     },
     mounted () {
-      // this.isEditing 编辑状态下且有原值时不配置默认值
-      if (!this.isEditing && !this.item[this.formItem.id]) {
+      // this.isEditing 编辑状态下或者无原值时配置默认值
+      if (!this.isEditing || !this.item[this.formItem.id]) {
         // 默认值
         if (this.formItem && this.formItem.default && this.formItem.default.type) {
           if (this.formItem.default.type === 'message_header') {
