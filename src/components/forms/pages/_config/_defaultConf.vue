@@ -15,12 +15,12 @@
           <el-option v-for="item in countConfig" :value="item" :key="item"></el-option>
         </el-select>
       </el-form-item>
-      <template v-if="['static', 'api'].includes(dialogProps.default.type)">
+      <template v-if="dialogProps.default.type === 'static'">
         <el-form-item label="静态值／索引">
           <el-input size="small" v-model="dialogProps.default.value"></el-input>
         </el-form-item>
       </template>
-      <template v-if="!['static', 'api'].includes(dialogProps.default.type)">
+      <template v-if="dialogProps.default.type.includes('_')">
         <el-form-item label="属性路径">
           <el-input size="small" class="code-input" v-model="dialogProps.default.key_path"></el-input>
         </el-form-item>
@@ -30,7 +30,17 @@
           <el-input size="small" class="code-input" v-model="dialogProps.default.id"></el-input>
         </el-form-item>
       </template>
-      <template v-if="dialogProps.default.type">
+      <template v-if="dialogProps.default.type === 'api'">
+        <el-form-item label="默认选中">
+          <el-input size="small" :placeholder="`请填写${defaultOptionType === 'index' ? '序列' : '名称'}`" v-model="dialogProps.default.value">
+            <el-select size="small" v-model="defaultOptionType" slot="prepend" placeholder="请选择" style="width: 72px;">
+              <el-option label="序列" value="index"></el-option>
+              <el-option label="名称" value="name"></el-option>
+            </el-select>
+          </el-input>
+        </el-form-item>
+      </template>
+      <template v-show="dialogProps.default.type">
         <el-form-item>
           <el-button size="small" @click="onReset"><i class="el-icon-fa-refresh"></i> 重置</el-button>
         </el-form-item>
@@ -44,6 +54,12 @@
     props: {
       dialogProps: Object,
       isBody: Boolean
+    },
+
+    data () {
+      return {
+        defaultOptionType: 'index'
+      }
     },
 
     computed: {
