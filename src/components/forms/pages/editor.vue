@@ -90,7 +90,7 @@
                 <!-- <br> -->
                 <el-form-item label="自动触发">
                   <el-select
-                    v-model="selectedAuto"
+                    v-model="selectedAuto.name"
                     value-key="name">
                     <el-option
                       v-for="(ac, index) of actionDefList"
@@ -104,7 +104,7 @@
                 <!-- <br> -->
                 <el-form-item label="手动触发">
                   <el-select
-                    v-model="selectedManual"
+                    v-model="selectedManual.name"
                     value-key="name">
                     <el-option
                       v-for="(ac, index) of actionDefList"
@@ -284,6 +284,7 @@ export default {
         Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
       },
       get () {
+        console.log('2')
         return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
       }
     }
