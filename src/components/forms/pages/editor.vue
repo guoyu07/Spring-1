@@ -82,20 +82,35 @@
                     <el-input slot="reference" size="small" v-model="selectedTarget.url"></el-input>
                   </el-popover>
                 </el-form-item>
+                <el-form-item label="按钮名称">
+                  <el-input size="small" v-model="selectedTarget.name"></el-input>
+                </el-form-item>
               </template>
               <template v-if="formConfig.action.find(_ => _.type === 'auto') || checkedActions.includes('auto')">
                 <!-- <br> -->
                 <el-form-item label="自动触发">
-                  <el-select v-model="selectedAuto.name" @change="onChangeAuto">
-                    <el-option v-for="(ac, index) of actionDefList" :key="index" :label="ac.name" :value="ac.name"></el-option>
+                  <el-select
+                    v-model="selectedAuto"
+                    value-key="name">
+                    <el-option
+                      v-for="(ac, index) of actionDefList"
+                      :key="index"
+                      :label="ac.name"
+                      :value="ac"></el-option>
                   </el-select>
                 </el-form-item>
               </template>
               <template v-if="formConfig.action.find(_ => _.type === 'manual') || checkedActions.includes('manual')">
                 <!-- <br> -->
                 <el-form-item label="手动触发">
-                  <el-select v-model="selectedManual.name" @change="onChangeManual">
-                    <el-option v-for="(ac, index) of actionDefList" :key="index" :label="ac.name" :value="ac.name"></el-option>
+                  <el-select
+                    v-model="selectedManual"
+                    value-key="name">
+                    <el-option
+                      v-for="(ac, index) of actionDefList"
+                      :key="index"
+                      :label="ac.name"
+                      :value="ac"></el-option>
                   </el-select>
                 </el-form-item>
                 <br>
@@ -167,9 +182,7 @@
             <el-row v-for="(body, index) in formConfig.form.body.body_list" :key="index">
               <h5>Body #{{index + 1}} {{body.name}}</h5>
               <el-card>
-                <lazy-render @loaded="onLoadedForms">
-                  <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
-                </lazy-render>
+                <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -256,13 +269,23 @@ export default {
   },
   computed: {
     selectedTarget () {
-      return this.formConfig.action.find(_ => _.type === 'target') ? this.formConfig.action.find(_ => _.type === 'target') : {}
+      return this.formConfig.action.find(_ => _.type === 'target') || {}
     },
-    selectedAuto () {
-      return this.formConfig.action.find(_ => _.type === 'auto') ? this.formConfig.action.find(_ => _.type === 'auto') : {}
+    selectedAuto: {
+      set (val) {
+        Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } })
+      },
+      get () {
+        return this.formConfig.action.find(_ => _.type === 'auto') ? this.formConfig.action.find(_ => _.type === 'auto') : {}
+      }
     },
-    selectedManual () {
-      return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
+    selectedManual: {
+      set (val) {
+        Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
+      },
+      get () {
+        return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
+      }
     }
   },
   activated () {
@@ -332,22 +355,6 @@ export default {
     actionChange (arr) {
       this.formConfig.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
       // console.log(this.formConfig.action)
-    },
-    onChangeAuto (val) {
-      if (val === 'CMDB更新实例') {
-        Object.assign(this.selectedAuto, { id: 'cmdb_update_instance', desc: '表单header里须包含object_id,body里为实例数据' })
-      } else {
-        Object.assign(this.selectedAuto, { id: 'cmdb_create_instance', desc: '表单header里须包含object_id,body里为实例数据' })
-      }
-      this.initActions()
-    },
-    onChangeManual (val) {
-      if (val === 'CMDB更新实例') {
-        Object.assign(this.selectedManual, { id: 'cmdb_update_instance', desc: '表单header里须包含object_id,body里为实例数据' })
-      } else {
-        Object.assign(this.selectedManual, { id: 'cmdb_create_instance', desc: '表单header里须包含object_id,body里为实例数据' })
-      }
-      this.initActions()
     },
     // 确认完成
     onSubmit () {
