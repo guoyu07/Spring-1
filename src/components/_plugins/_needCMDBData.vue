@@ -151,7 +151,11 @@
     },
     // 这个 watch 是为了上传Excel文档时或者有默认值时，填入对应的值
     watch: {
-      'vmodel': {
+      'vmodel': { // 监控默认值
+        handler: 'renderData',
+        deep: true
+      },
+      'optionList': { // 监控数据加载
         handler: 'renderData',
         deep: true
       }
@@ -169,9 +173,9 @@
         }
       },
       renderData (newVal, oldVal) {
-        // console.log(newVal, this.strucData.name, this.strucData.id)
+        // setTimeout(() => {
         if (this.vmodel[this.strucData.id]) {
-          // console.log(this.strucData.id, this.strucData.name)
+          console.log(this.strucData.id, this.strucData.name)
           this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
           if (Array.isArray(this.vmodel[this.strucData.id])) {
             this.vmodel[this.strucData.id].map((item, itemindex) => {
@@ -210,6 +214,7 @@
             }
           }
         }
+        // }, 100)
       },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
@@ -328,14 +333,14 @@
           this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
           if (this.optionList.length === 0) {
             this.$message.info(`${this.strucData.name}无数据`)
+            if (!this.isAlias) {
+              this.vmodel[this.strucData.id] = null
+            }
           }
           // this.$store.dispatch('idcrack_data', {
           //   idcrackData: this.optionList
           // })
           this.filterList('')
-          if (this.optionList.length === 0 && !this.isAlias) {
-            this.vmodel[this.strucData.id] = null
-          }
           // this.isEditing 编辑状态下不配置默认值
           if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
             if (this.strucData.default.type === 'api') {
@@ -452,7 +457,7 @@
             }
           }
           // console.log(this.vmodel[this.strucData.id], this.strucData.id, this.strucData.name)
-          this.renderData()
+          // this.renderData()
         })
       }
     }

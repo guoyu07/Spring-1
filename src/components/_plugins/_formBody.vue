@@ -307,12 +307,14 @@
             }
           } else if (this.formItem.default.type === 'form_header') {
             this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+              // console.log(this.formItem.default.key_path)
               const val = this.getPathResult(this.whole.header, this.formItem.default.key_path, this.index)
-              if (!val) return false
+              if (!val || newVal === oldVal) return false
               if (this.headerTable || this.bodyTable) {
                 this.whole[this.formItem.id] = val
               } else {
                 if (this.header) {
+                  // console.log(val, newVal, oldVal)
                   this.whole.header[this.formItem.id] = val
                 } else {
                   this.whole.body.map((body, bodyindex) => {

@@ -276,7 +276,8 @@
           this.taskFormData = res.data.data.form
           this.taskFormData.header.map(group => {
             group.value.map(item => {
-              if (item.show.type) {
+              if (this.showFormItem(item, this.postForm)) {
+                this.setDataType(item, this.postForm.header)
                 if (item.show.type === 'form_header') {
                   this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
                     // console.log(item.name)
