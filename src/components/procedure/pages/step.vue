@@ -465,11 +465,13 @@
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  if (value.show.type) {
+                  if (this.showFormItem(value, this.assignForm)) {
+                    this.setDataType(value, this.assignForm.header)
                     if (value.show.type === 'form_header') {
                       this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
                         if (this.showFormItem(value, this.assignForm)) {
                           this.setDataType(value, this.assignForm.header)
+                          // console.log(this.assignForm.header)
                         } else {
                           delete this.assignForm.header[value.id]
                         }
@@ -477,6 +479,7 @@
                     }
                   } else {
                     this.setDataType(value, this.assignForm.header)
+                    // console.log(this.assignForm.header)
                   }
                   // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
                   // if (value.default && value.default.type) {

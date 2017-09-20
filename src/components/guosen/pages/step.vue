@@ -553,19 +553,20 @@
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  this.setDataType(value, this.assignForm.header)
-                  // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
-                  // if (value.default && value.default.type) {
-                  //   if (value.default.type === 'message_header') {
-                  //     this.assignForm.header[value.id] = this.getPathResult(this.applyData.header, value.default.key_path)
-                  //   } else if (value.default.type === 'static') {
-                  //     this.assignForm.header[value.id] = value.default.value
-                  //   } else if (value.default.type === 'form_header') {
-                  //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                  //       this.assignForm.header[value.id] = newVal
-                  //     })
-                  //   }
-                  // }
+                  if (this.showFormItem(value, this.assignForm)) {
+                    this.setDataType(value, this.assignForm.header)
+                    if (value.show.type === 'form_header') {
+                      this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                        if (this.showFormItem(value, this.assignForm)) {
+                          this.setDataType(value, this.assignForm.header)
+                        } else {
+                          delete this.assignForm.header[value.id]
+                        }
+                      })
+                    }
+                  } else {
+                    this.setDataType(value, this.assignForm.header)
+                  }
                 }
               })
             }
