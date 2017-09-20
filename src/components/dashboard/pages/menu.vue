@@ -20,7 +20,7 @@
     color: #888;
   }
 
-  .entry {
+  .m-entry {
     flex: none;
     padding: 1.5em 0 0 1.5em;
     margin-right: 1.5em;
@@ -58,7 +58,7 @@
     &:hover {
       cursor: pointer;
 
-      .entry__icon span {
+      .m-entry__icon span {
         // background-color: @primary;
         opacity: .9;
         // filter: saturate(180%);

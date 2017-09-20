@@ -441,20 +441,14 @@
       removeTab (targetName) {
         let tabs = this.postForm.body
         let activeName = this.tabsValue
-        // if (activeName === targetName) {
         tabs.forEach((tab, index) => {
-          // if (index === +targetName) {
           let nextTab = tabs[index + 1] || tabs[index - 1]
           if (nextTab) {
             activeName = tabs.indexOf(nextTab)
           }
-          // }
         })
-        // }
         this.tabsValue = activeName + ''
-        // console.log(targetName)
         this.postForm.body.splice(targetName, 1)
-        console.log(this.postForm.body.splice(targetName, 1))
       },
       addTab (targetName, index) {
         var that = this
