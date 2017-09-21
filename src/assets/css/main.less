@@ -46,6 +46,7 @@ img {
 
 table {
   border-collapse: collapse;
+  // font-size: 13px;
 }
 
 li {
@@ -114,6 +115,10 @@ h1, h2, h3, h4, h5, h6, p {
     display: block;
     clear: both;
   }
+}
+
+.el-form-item__label {
+  // font-size: 12px;
 }
 
 .wrapper {
@@ -210,7 +215,7 @@ h1, h2, h3, h4, h5, h6, p {
 .form-unit {
   display: inline-flex;
   align-items: center;
-  min-width: 380px;
+  width: 380px;
   &__label {
     width: 100px;
     text-align: right;
@@ -911,4 +916,13 @@ h1, h2, h3, h4, h5, h6, p {
 
 .assign-btn {
   line-height: 1;
+}
+
+.searchBar {
+  word-break: break-all;
+  width: 100%;
+  display: flex !important;
+  .el-form-item__content {
+    width: 100%;
+  }
 }

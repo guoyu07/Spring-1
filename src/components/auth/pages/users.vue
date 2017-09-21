@@ -164,7 +164,7 @@
     <el-dialog title="批量编辑" size="tiny" v-model="editUserData.visible">
       <el-form :rules="userFormRules" ref="editUserData.user" :model="editUserData.user" label-width="72px">
         <el-form-item label="用户层级" prop="level">
-          <el-select v-model="editUserData.user.level" placeholder="请选择用户层级">
+          <el-select v-model="editUserData.user.level" @change="userlevel" placeholder="请选择用户层级">
             <el-option label="超级管理员" value="0"></el-option>
             <el-option label="管理员" value="1"></el-option>
             <el-option label="普通" value="2"></el-option>
@@ -301,6 +301,10 @@
     },
 
     methods: {
+      userlevel (val) {
+        console.log(val)
+        // this.editUserData.user.level = val ? (val + '') : ''
+      },
       getAllUserList () {
         let postData = {
           action: 'users/all',
@@ -397,7 +401,11 @@
         this.userSelection.map(user => {
           userIds.push(user.userId)
         })
-        user.level = +user.level
+        if (user.level) {
+          user.level = +user.level
+        } else {
+          delete user.level
+        }
         let postData = {
           action: 'batch/update/user',
           method: 'post',

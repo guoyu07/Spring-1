@@ -25,7 +25,7 @@
          </div>
          <div class="btn-box" v-show="isQualified">
       		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量删除</el-button>
-      		<el-button type='success' @click='joinUserGroup = true'>关联用户</el-button>
+      		<el-button type='success' @click="correlateUsers()">关联用户</el-button>
          </div>
       </div>
     		<el-table :data="renderUsersList" border @selection-change="handleSelectionChange">
@@ -52,9 +52,9 @@
     	    </el-table>
         <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
           <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
-          <el-select v-model="usersToAdd" multiple filterable>
-            <el-option v-for="user in userListToAdd" :key="user.userId" :label="user.userId" :value='user.userId'>
-              <div class="fl " style="width:100%">{{user.userId}}</div>
+          <el-select v-model="usersToAdd" multiple filterable remote :remote-method="usersFilter">
+            <el-option v-for="user in usersFilterList" :key="user.userId" :label="user.userId" :value='user.userId'>
+              <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
               <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
             </el-option>
           </el-select>
@@ -75,6 +75,7 @@ export default {
     return {
       usersToAdd: [],
       userListToAdd: [],
+      usersFilterList: [],
       joinUserGroup: false,
       selectedUserList: [],
       search: {
@@ -123,6 +124,19 @@ export default {
     //   }
     //   console.log(this.isQualified)
     // },
+    correlateUsers () {
+      this.joinUserGroup = true
+      this.usersFilter('')
+    },
+    usersFilter (query) {
+      if (query !== '') {
+        this.usersFilterList = this.userListToAdd.filter(item => {
+          return item.userId.includes(query) || item.nick.includes(query)
+        })
+      } else {
+        this.usersFilterList = this.userListToAdd
+      }
+    },
     upgrade (val) {
       this.$confirm('确认提高等级？', '提示', {
         confirmButtonText: '确定',
