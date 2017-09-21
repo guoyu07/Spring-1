@@ -91,7 +91,7 @@
                 <el-form-item label="自动触发">
                   <el-select
                     v-model="selectedAuto"
-                    value-key="name">
+                    :value-key="name">
                     <el-option
                       v-for="(ac, index) of actionDefList"
                       :key="index"
@@ -250,6 +250,8 @@ export default {
 
   data () {
     return {
+      selectedAuto: {},
+      selectedManual: {},
       loading: true,
       fieldsets: [],
       id: '',
@@ -267,26 +269,33 @@ export default {
       submitting: false
     }
   },
+  watch: {
+    'selectedManual': 'assignForm',
+    'selectedAuto': 'assignForm'
+  },
   computed: {
     selectedTarget () {
       return this.formConfig.action.find(_ => _.type === 'target') || {}
-    },
-    selectedAuto: {
-      set (val) {
-        Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } })
-      },
-      get () {
-        return this.formConfig.action.find(_ => _.type === 'auto') ? this.formConfig.action.find(_ => _.type === 'auto') : {}
-      }
-    },
-    selectedManual: {
-      set (val) {
-        Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
-      },
-      get () {
-        return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
-      }
     }
+    // selectedAuto: {
+    //   set (val) {
+    //     Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } })
+    //   },
+    //   get () {
+    //     return this.formConfig.action.find(_ => _.type === 'auto') ? this.formConfig.action.find(_ => _.type === 'auto') : {}
+    //   }
+    // }
+    // selectedManual: {
+    //   set (val) {
+    //     console.log(val)
+    //     Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
+    //     console.log(Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } }))
+
+    //   },
+    //   get () {
+    //     return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
+    //   }
+    // }
   },
   activated () {
     this.getPresetList()
@@ -317,6 +326,18 @@ export default {
     })
   },
   methods: {
+    assignForm () {
+      if (this.selectedManual) {
+        let val = this.selectedManual
+        Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
+        console.log(Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } }))
+      }
+      if (this.selectedAuto) {
+        console.log(Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } }))
+        let val = this.selectedAuto
+        Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } })
+      }
+    },
     onLoadedForms () {
       console.log('loaded')
       this.loading = false
@@ -329,6 +350,7 @@ export default {
       }
       this.http.post('/form/', this.parseData(postData)).then(res => {
         this.actionDefList = res.data.data.list
+        console.log(this.actionDefList)
       })
     },
 
