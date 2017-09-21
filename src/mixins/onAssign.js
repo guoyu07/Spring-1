@@ -2,35 +2,25 @@ export default {
   data () {
     return {
       newAssignee: '',
-      newcandidateGroup: [],
+      newassignGroup: '',
       isAssignable: false
     }
   },
 
   methods: {
-    onAssign (tid, assignee, candidateGroup) {
-      console.log(assignee, candidateGroup)
-      if (assignee && candidateGroup.length) {
-        this.$message.info('处理人和候选组只能选其一')
+    onAssign (tid, assignee, assignGroup) {
+      console.log(assignee, assignGroup)
+      if (assignee && assignGroup) {
+        this.$message.info('处理人和处理组只能选其一')
         return false
       } else {
         let postData = {
           action: 'task_assign', // runtime/task/assignee
           method: 'put',
-          data: { tid, userId: assignee }
+          data: { tid, userId: assignee, group_key: assignGroup }
         }
         this.assignViewLoading = true
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            _finish()
-          }
-        })
-        let candidateData = {
-          action: 'task/candidate',
-          method: 'post',
-          data: { tid, group_keys: candidateGroup }
-        }
-        this.http.post('/flow/', this.parseData(candidateData)).then((res) => {
           if (res.status === 200) {
             _finish()
           }

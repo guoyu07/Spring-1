@@ -599,9 +599,9 @@
     width: 100%;
     display: flex !important;
     .el-form-item__content {
-      width: 50%;
-      width:-moz-calc(100% - 100px);
-      width:-webkit-calc(100% - 100px);
+      width: 80%;
+      // width:-moz-calc(100% - 100px);
+      // width:-webkit-calc(100% - 100px);
       width: calc(100% - 100px);
     }
   }

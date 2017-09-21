@@ -23,13 +23,16 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
+        remote
+        :remote-method="usersFilter"
         @change="userChange"
         placeholder="请选择">
         <el-option
-          v-for="item in userList"
+          v-for="item in usersFilterList"
           :key="item.userId"
           :label="item.userId"
           :value="item">
+          <p>{{ item.nick }} - {{ item.userId }}</p>
         </el-option>
       </el-select>
       <div class="assign-btn">
@@ -44,14 +47,16 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
+        remote
+        :remote-method="usersFilter"
         class="member"
         placeholder="请选择">
         <el-option
-          v-for="item in userList"
+          v-for="item in usersFilterList"
           :key="item.userId"
           :label="item.userId"
           :value="item">
-          <p>{{ item.userId }}</p>
+          <p>{{ item.nick }} - {{ item.userId }}</p>
           <p style="color: #8492a6; font-size: 13px">{{ item.email }}</p>
         </el-option>
       </el-select>
@@ -82,6 +87,7 @@
         memberBuffer: '',
         userId: '',
         userList: [],
+        usersFilterList: [],
         groupList: []
       }
     },
@@ -97,6 +103,15 @@
       'member.group': 'groupChange'
     },
     methods: {
+      usersFilter (query) {
+        if (query !== '') {
+          this.usersFilterList = this.userList.filter(item => {
+            return item.userId.includes(query) || item.nick.includes(query)
+          })
+        } else {
+          this.usersFilterList = this.userList
+        }
+      },
       groupChange (val) {
         if (val.key) {
           this.vmodel[this.strucData.id].group = {}
@@ -218,6 +233,7 @@
         .then((response) => {
           // console.log(response)
           this.userList = response.data.data.list
+          this.usersFilter('')
         })
       }
     }

@@ -3,7 +3,7 @@
     :prop="header ? 'header.' + attrList.id : 'body.' + index + '.' + attrList.id"
     :rules="rules(attrList)"
     label=""
-    class="blockElement">
+    class="searchBar">
     <div v-if="mainInfo.value.type === 'search_bar'" class="form-block">
       <h5>{{mainInfo.name}}</h5>
       <!-- <el-form ref="searchKeys" class="advance-search-form" :model="searchKeys" label-width="100px" :inline="true"> -->

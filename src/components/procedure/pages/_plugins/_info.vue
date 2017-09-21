@@ -26,8 +26,8 @@
                   <el-button size="small" @click="assignToMe" type="text">分配给我</el-button>
                 </div>
               </el-form-item>
-              <el-form-item label="候选组">
-                <el-select v-model="newcandidateGroup" multiple filterable placeholder="请选择候选组">
+              <el-form-item label="处理组">
+                <el-select v-model="newassignGroup" filterable placeholder="请选择候选组">
                   <el-option
                     v-for="role in permittedRoleList"
                     :key="role.key"
@@ -36,7 +36,7 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-button :loading="assignViewLoading" type="info" @click="onAssign($route.query.tid, newAssignee, newcandidateGroup)">指派</el-button>
+              <el-button :loading="assignViewLoading" type="info" @click="onAssign($route.query.tid, newAssignee, newassignGroup)">指派</el-button>
             </el-form>
           </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
@@ -300,7 +300,7 @@
         allData: {},
         taskData: {},
         newAssignee: '',
-        newcandidateGroup: [],
+        newassignGroup: '',
         assignViewLoading: false
       }
     },
@@ -316,14 +316,15 @@
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.taskData = res.data.data
-            this.newcandidateGroup = []
-            this.taskData.candidate_groups.map(group => {
-              this.newcandidateGroup.push(group.key)
-            })
+            this.newassignGroup = ''
+            // this.taskData.candidate_groups.map(group => {
+            //   this.newassignGroup.push(group.key)
+            // })
             if (this.taskData.can_manage) {
               this.getPermittedUserList()
               this.getPermittedRoleList()
-              this.newAssignee = this.taskData.assign.userId
+              this.newAssignee = this.taskData.assign && this.taskData.assign.userId || ''
+              this.newassignGroup = this.taskData.assign_group && this.taskData.assign_group.key || ''
             }
           }
         })
