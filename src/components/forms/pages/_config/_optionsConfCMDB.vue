@@ -150,7 +150,7 @@
     <h5>选择 API 预设集：</h5>
     <template v-if="optionPresets && optionPresets.length">
       <el-card>
-        <el-select placeholder="API 预设集" v-model="selectedPreset" value-key="name" @change="onSelectPreset">
+        <el-select size="small" placeholder="API 预设集" v-model="selectedPreset" value-key="name" @change="onSelectPreset">
           <el-option-group
             v-for="group in optionPresets"
             :key="group.name"
