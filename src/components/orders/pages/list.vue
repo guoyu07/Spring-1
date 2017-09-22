@@ -76,13 +76,6 @@
       }
     },
 
-    watch: {
-      '$route.params.id' (id) {
-        this.getFilterData(id)
-        this.currentPage = 1
-      }
-    },
-
     mounted () {
       this.getFilterData(this.orderId)
     },

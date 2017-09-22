@@ -8,7 +8,16 @@ export default {
       filteredTasks: {},
       filteredColumnList: [],
       currentPage: 1,
-      currentSize: 10
+      currentSize: 10,
+      pagesCache: {}
+    }
+  },
+
+  watch: {
+    '$route.params.id' (id) {
+      this.getFilterData(id)
+      this.currentPage = 1
+      this.pagesCache = {}
     }
   },
 
@@ -45,6 +54,10 @@ export default {
           page_size: this.currentSize
         }
       }
+      if (this.pagesCache[this.currentPage]) {
+        this.filteredTasks = this.pagesCache[this.currentPage]
+        return
+      }
       this.loading = true
       this.http.post('/flow/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
@@ -63,6 +76,7 @@ export default {
               task.columns.push(Object.assign({}, col, { value }))// 将 columns 赋值为带值的 col 对象
             })
           })
+          this.pagesCache[this.currentPage] = this.filteredTasks
         }
       })
     },
