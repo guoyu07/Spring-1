@@ -52,7 +52,7 @@
                               size="small"
                               style="margin-left: 6px;"
                               :class="{ empty: !adminData.isCheckable }"
-                              @click="onRemove(scope.row.pkey, { adminType: 'user', operationType: 'admin' })">{{adminData.isCheckable ? '移除所选' : ''}}</el-button>
+                              @click="onRemove(scope.row.pkey, { adminType: 'user', operationType: 'admin' }); currentProcess = scope.row">{{adminData.isCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
                           <el-tooltip content="加入管理员用户" placement="top" class="fr">
                             <el-button
@@ -81,7 +81,7 @@
                               size="small"
                               style="margin-left: 6px;"
                               :class="{ empty: !initiatorData.isCheckable }"
-                              @click="onRemove(scope.row.pkey, { initiatorType: 'user', operationType: 'initiator' })">{{initiatorData.isCheckable ? '移除所选' : ''}}</el-button>
+                              @click="onRemove(scope.row.pkey, { initiatorType: 'user', operationType: 'initiator' }); currentProcess = scope.row">{{initiatorData.isCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
                           <el-tooltip content="加入启动候选人用户" placement="top" class="fr">
                             <el-button
@@ -302,7 +302,22 @@
             // Object.assign(_operationRelations[operationType], { visible: false, loading: false })
             _operationRelations[operationType].loading = false
             _operationRelations[operationType].visible = false
-            this.getPermittedProcessList()
+            if (adminType === 'user' || initiatorType === 'user') {
+              toAdd.map(userid => {
+                const toAddUser = this.permittedUserList.find(user => {
+                  return user.userId === userid
+                })
+                operationType === 'admin' ? this.currentProcess.users.push(toAddUser) : this.currentProcess.start_users.push(toAddUser)
+              })
+            } else {
+              toAdd.map(key => {
+                const toAddRole = this.permittedRoleList.find(role => {
+                  return role.key === key
+                })
+                operationType === 'admin' ? this.currentProcess.groups.push(toAddRole) : this.currentProcess.start_groups.push(toAddRole)
+              })
+            }
+            // this.getPermittedProcessList()
           }
         })
       },
@@ -345,7 +360,26 @@
             if (res.status === 200) {
               this.$message.success('移除成功！')
               Object.assign(_operationRelations[operationType], { visible: false, isCheckable: false })
-              this.getPermittedProcessList()
+              if (adminType === 'user' || initiatorType === 'user') {
+                const arr = operationType === 'admin' ? this.currentProcess.users : this.currentProcess.start_users
+                toRemove.map(userid => {
+                  arr.map((user, index) => {
+                    if (user.userId === userid) {
+                      arr.splice(index, 1)
+                    }
+                  })
+                })
+              } else {
+                const arr = operationType === 'admin' ? this.currentProcess.groups : this.currentProcess.start_groups
+                toRemove.map(key => {
+                  arr.map((user, index) => {
+                    if (user.key === key) {
+                      arr.splice(index, 1)
+                    }
+                  })
+                })
+              }
+              // this.getPermittedProcessList()
             }
           })
         })
