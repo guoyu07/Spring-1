@@ -288,7 +288,7 @@
                     }
                   })
                 }
-              } else {
+              } else if (!item.show.type) {
                 // console.log(item.name)
                 this.setDataType(item, this.postForm.header)
               }

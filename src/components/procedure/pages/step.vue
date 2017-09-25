@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" ref="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
@@ -7,6 +7,7 @@
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">工作流</el-button>
+            <!-- <el-button class="not-print" type="text" @click="createPdf">打印</el-button> -->
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -384,6 +385,14 @@
       }
     },
     methods: {
+      createPdf () {
+        let newWindow = window.open('_blank')  // 打开新窗口
+        newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
+        newWindow.document.head.innerHTML = window.document.head.innerHTML // 向文档写入头部信息
+        newWindow.document.close() // 关闭document的输出流, 显示选定的数据
+        newWindow.print()  // 打印当前窗口
+        return true
+      },
       onHostsChange (val, index) {
         // console.log(val)
         // this.hostList = []
@@ -477,7 +486,7 @@
                         }
                       })
                     }
-                  } else {
+                  } else if (!value.show.type) {
                     this.setDataType(value, this.assignForm.header)
                     // console.log(this.assignForm.header)
                   }

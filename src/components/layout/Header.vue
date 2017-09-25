@@ -213,7 +213,7 @@
 </style>
 
 <template>
-  <header class="header fw flex-box">
+  <header class="header fw flex-box not-print">
     <el-menu default-active="1" mode="horizontal">
       <el-menu-item index="1" class="logo">
         <router-link to="/menu">

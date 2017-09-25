@@ -72,7 +72,7 @@
 </style>
 <template>
   <div>
-    <aside class="sibebar">
+    <aside class="sibebar not-print">
       <div class="sidebar-title">{{sidebarConf.title}}</div>
       <el-menu mode="vertical" router="router" :default-active="IndexPath">
         <el-menu-item-group

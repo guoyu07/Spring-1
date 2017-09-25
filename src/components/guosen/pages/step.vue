@@ -564,7 +564,8 @@
                         }
                       })
                     }
-                  } else {
+                  } else if (!value.show.type) {
+                    // console.log(value.name)
                     this.setDataType(value, this.assignForm.header)
                   }
                 }
@@ -638,7 +639,7 @@
               }
             }
             // U 位默认值
-            if (this.taskData.ptask.tkey === 'cabinet') {
+            if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host') {
               // console.log(this.assignForm.body[k])
               this.$watch('assignForm.body.' + k + '.idcrack', (newVal, oldVal) => {
                 // console.log(newVal)

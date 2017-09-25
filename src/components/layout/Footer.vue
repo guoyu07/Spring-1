@@ -24,7 +24,7 @@
 </style>
 
 <template>
-  <footer class="footer">
+  <footer class="footer not-print">
     <el-row>
       <el-col :span="24">
         <section class="copy">
