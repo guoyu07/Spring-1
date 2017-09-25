@@ -27,7 +27,7 @@
                 </div>
               </el-form-item>
               <el-form-item label="处理组">
-                <el-select v-model="newassignGroup" filterable placeholder="请选择候选组">
+                <el-select v-model="newassignGroup" filterable clearable placeholder="请选择处理组">
                   <el-option
                     v-for="role in permittedRoleList"
                     :key="role.key"

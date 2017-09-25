@@ -101,11 +101,12 @@
             :label="col.name">
             <!-- :prop="col.id" -->
             <template scope="scope">
-              <span v-if="typeof scope.row[col.id] === 'string'">
+              <span v-if="typeof scope.row[col.id] === 'string' || typeof scope.row[col.id] === 'number'">
                 {{scope.row[col.id]}}
               </span>
               <span v-else>
-                {{ Object.assign({}, scope.row[col.id]).name }}
+                {{getPathResult(scope.row, col.id)}}
+                <!-- {{ Object.assign({}, scope.row[col.id]).name }} -->
               </span>
             </template>
           </el-table-column>

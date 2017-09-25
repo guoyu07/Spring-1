@@ -138,12 +138,13 @@
     display: flex;
     flex-wrap: nowrap;
     justify-content: space-around;
-    height: 3px;
+    // height: 3px;
     width: 100%;
     margin-top: 80px;
     padding: 0;
     padding-right: 3%;
-    background-color: @activeColor;
+    // background-color: @activeColor;
+    border-bottom: 3px solid @activeColor;
     position: absolute;
 
     &::before,
@@ -157,10 +158,11 @@
       left: -18px;
       display: block;
       margin-top: -9px;
-      width: 18px;
-      height: 18px;
+      // width: 18px;
+      // height: 18px;
       border-radius: 50%;
-      background-color: @activeColor;
+      // background-color: @activeColor;
+      border: 10px solid @activeColor;
     }
 
     &::after {
@@ -210,8 +212,10 @@
 
         &::before {
           background-color: lighten(@activeColor, 20%);
+          -webkit-print-color-adjust: exact;
           border: none;
           content: "\f00c";
+          // content: "\f058";
           font: normal normal normal 14px/1 FontAwesome;
           color: #fff;
           font-size: 10px;
@@ -225,9 +229,9 @@
         }
 
         &::before {
-          background-color: @activeColor;
+          // background-color: @activeColor;
           animation: ing .8s infinite;
-          border: none;
+          border: 7px solid @activeColor;
         }
       }
 

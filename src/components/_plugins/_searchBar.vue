@@ -183,11 +183,11 @@
           // console.log(value.length)
           if (!value.length) {
             return cb(new Error(`${this.mainInfo.name}不能为空`))
-          } else if (value.length < this.limit.min) {
+          } else if (this.limit && this.limit.min && (value.length < this.limit.min)) {
             return cb(new Error(`需要${this.limit.min}个${this.mainInfo.name},还差${this.limit.min - value.length}个`))
-          } else if (this.limit.max && (value.length > this.limit.max)) {
+          } else if (this.limit && this.limit.max && (value.length > this.limit.max)) {
             return cb(new Error(`至多可以增加${this.limit.max}个${this.mainInfo.name},请删除${value.length - this.limit.max}个`))
-          } else if (!this.limit.max && (value.length > this.limit.min)) {
+          } else if (this.limit && !this.limit.max && (value.length > this.limit.min)) {
             return cb(new Error(`至多可以增加${this.limit.min}个${this.mainInfo.name},请删除${value.length - this.limit.min}个`))
           } else {
             cb()

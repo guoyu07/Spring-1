@@ -74,7 +74,7 @@
 
 <template>
   <div class="wrapper">
-    <el-row>
+    <el-row ref="pdfWrap">
       <el-col :sm="24" :md="24" :lg="20">
         <el-col :sm="24" style="margin-bottom: 20px;">
           <el-col :md="8" :lg="4">
