@@ -243,9 +243,10 @@
             if (item.show.type) {
               // show.type 有四种类型
               if (item.show.type === 'form_header') {
-                if (this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) {
-                  if (item.value.type === 'search_bar') {
-                    // this.postForm.header[item.id] = []
+                if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
+                    (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
+                    (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+                  if (item.value.type === 'search_bar') { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                     this.postForm.header[item.id] = val
                   }
                 }
@@ -278,16 +279,16 @@
             group.value.map(item => {
               if (this.showFormItem(item, this.postForm)) {
                 this.setDataType(item, this.postForm.header)
-                if (item.show.type === 'form_header') {
-                  this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                    console.log(item.name)
-                    if (this.showFormItem(item, this.postForm)) {
-                      this.setDataType(item, this.postForm.header)
-                    } else {
-                      delete this.postForm.header[item.id]
-                    }
-                  })
-                }
+              }
+              if (item.show.type === 'form_header') {
+                this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                  console.log(item.name)
+                  if (this.showFormItem(item, this.postForm)) {
+                    this.setDataType(item, this.postForm.header)
+                  } else {
+                    delete this.postForm.header[item.id]
+                  }
+                })
               }
               // else if (!item.show.type) {
               //   // console.log(item.name)
