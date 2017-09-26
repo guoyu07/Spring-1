@@ -11,7 +11,7 @@
 </template>
 
 <script>
-import socket from './socket'
+// import socket from './socket'
 export default {
   name: 'app',
 
@@ -20,17 +20,17 @@ export default {
       let tag = this.$store.state.socket.connected
       console.log(tag)
       if (!tag) {
-        this.$message.error('链接异常请重新刷新')
+        // this.$message.error('链接异常请重新刷新')
       }
     }
-    this.$nextTick(() => {
-      if (socket.socketOpen) {
-        this.$socket.onmessage = (data) => {
-          const message = JSON.parse(data)
-          this.$store.dispatch('socket_onmessage', message)
-        }
-      }
-    })
+    // this.$nextTick(() => {
+    //   if (socket.socketOpen) {
+    //     this.$socket.onmessage = (data) => {
+    //       const message = JSON.parse(data)
+    //       this.$store.dispatch('socket_onmessage', message)
+    //     }
+    //   }
+    // })
   }
 }
 </script>
