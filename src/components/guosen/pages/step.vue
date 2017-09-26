@@ -297,7 +297,8 @@
                 </el-tooltip>
                 <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)" :disabled="submitLoading">{{action.name}}</el-button>
                 <el-button v-else-if="action.type==='target'" type="info" :disabled="submitLoading">
-                  <a class="link-block" :href="action.url" target="_blank">{{action.name ? action.name : '跳转'}}</a>
+                  <!-- target="_blank" -->
+                  <a class="link-block" :href="action.url">{{action.name ? action.name : '跳转'}}</a>
                 </el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
@@ -564,7 +565,7 @@
                         }
                       })
                     }
-                  } else if (!value.show.type) {
+                  } else {
                     // console.log(value.name)
                     this.setDataType(value, this.assignForm.header)
                   }

@@ -278,7 +278,7 @@
               this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, 0)
             } else {
               if (this.header) {
-                console.log(this.whole.header[this.formItem.id])
+                // console.log(this.whole.header[this.formItem.id])
                 this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
               } else {
                 this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)

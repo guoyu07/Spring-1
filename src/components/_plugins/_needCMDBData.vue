@@ -157,7 +157,11 @@
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
-            return this.showLabel(val).indexOf(query) > -1
+            if (typeof this.showLabel(val) === 'number') {
+              return this.showLabel(val) === query
+            } else {
+              return this.showLabel(val).indexOf(query) > -1
+            }
           })
           this.showOptionList = arr.slice(0, 50)
         } else {
@@ -167,7 +171,7 @@
       renderData (newVal, oldVal) {
         // setTimeout(() => {
         if (this.vmodel[this.strucData.id]) {
-          console.log(this.strucData.id, this.strucData.name)
+          // console.log(this.strucData.id, this.strucData.name)
           this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
           if (Array.isArray(this.vmodel[this.strucData.id])) {
             this.vmodel[this.strucData.id].map((item, itemindex) => {
@@ -322,134 +326,136 @@
         }
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
-          this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
-          if (this.optionList.length === 0) {
-            this.$message.info(`${this.strucData.name}无数据`)
-            if (!this.isAlias) {
-              this.vmodel[this.strucData.id] = null
-            }
-          }
-          // this.$store.dispatch('idcrack_data', {
-          //   idcrackData: this.optionList
-          // })
-          this.filterList('')
-          // this.isEditing 编辑状态下不配置默认值
-          if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
-            if (this.strucData.default.type === 'api') {
-              if (Array.isArray(this.vmodel[this.strucData.id])) {
-                let keyData
-                if (this.strucData.limit.type === 'message_body') {
-                  keyData = this.getPathResult(this.message.body[this.index], this.strucData.limit.key_path)
-                } else if (this.strucData.limit.type === 'message_header') {
-                  // console.log(this.message)
-                  keyData = this.getPathResult(this.message.header, this.strucData.limit.key_path)
-                } else if (this.strucData.limit.type === 'static') {
-                  keyData = this.strucData.limit.min
-                  this.limitMaxNum = this.strucData.limit.max
-                } else if (this.strucData.limit.type === 'form_body') {
-                  keyData = this.getPathResult(this.whole.body[this.index], this.strucData.limit.key_path) // this.whole.body[this.index] 就是 this.item
-                } else if (this.strucData.limit.type === 'form_header') {
-                  keyData = this.getPathResult(this.whole.header, this.strucData.limit.key_path)
-                }
-                if (Array.isArray(keyData)) {
-                  this.limitNum = keyData.length
-                } else if (typeof keyData === 'number') {
-                  this.limitNum = keyData
-                } else if (typeof keyData === 'string') {
-                  if (typeof +keyData === 'number') {
-                    this.limitNum = +keyData
-                  } else {
-                    this.$message('limit数据配置有误')
-                  }
-                }
-                if ((this.limitNum + +this.strucData.default.value) <= this.optionList.length) {
-                  this.vmodel[this.strucData.id] = this.optionList.slice(this.strucData.default.value, this.limitNum)
-                } else if (this.limitNum <= this.optionList.length) {
-                  this.$message.warning(`${this.strucData.name}的选项不够${+this.limitNum + +this.strucData.default.value}项`)
-                  this.vmodel[this.strucData.id] = this.optionList.slice(0, this.limitNum)
-                } else {
-                  this.vmodel[this.strucData.id] = this.optionList
-                  this.$message.warning(`${this.strucData.name}数据项不足`)
-                }
-              } else {
-                let optionIndex = 0
-                if (this.strucData.unique) { // 如果是唯一值，跟着当前 index 来走
-                  let tableIndex = 0
-                  if (this.tableIndex) tableIndex = +this.tableIndex
-                  if (this.index) {
-                    optionIndex = this.index + tableIndex
-                  } else {
-                    optionIndex = tableIndex
-                  }
-                }
-                const selectedIndex = optionIndex + +this.strucData.default.value
-                if (selectedIndex < this.optionList.length) {
-                  this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
-                  return false
-                } else if (this.optionList[0]) {
-                  this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
-                  this.vmodel[this.strucData.id] = this.optionList[0]
-                  return false
-                } else {
-                  this.$message.warning(`${this.strucData.name}无数据`)
-                }
-              }
-            } else if (this.strucData.default.type === 'static') {
-              for (const option of this.optionList) {
-                if (option[this.strucData.value.source.res.show_key[0]] === this.strucData.default.value) {
-                  if (this.strucData.value.type === 'dicts') {
-                    this.vmodel[this.strucData.id].push(option)
-                  } else {
-                    this.vmodel[this.strucData.id] = option
-                  }
-                  return
-                }
+          if (response) {
+            this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+            if (this.optionList.length === 0) {
+              this.$message.info(`${this.strucData.name}无数据`)
+              if (!this.isAlias) {
+                this.vmodel[this.strucData.id] = null
               }
             }
-          }
-          // 若有其他默认值的情况下，把值返回来
-          if (this.strucData.value.type === 'dicts' && this.vmodel[this.strucData.id].length) {
-            this.vmodel[this.strucData.id].map((item, itemindex) => {
-              this.optionList.map(option => {
-                if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
-                  this.vmodel[this.strucData.id].splice(itemindex, 1, option)
+            // this.$store.dispatch('idcrack_data', {
+            //   idcrackData: this.optionList
+            // })
+            this.filterList('')
+            // this.isEditing 编辑状态下不配置默认值
+            if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
+              if (this.strucData.default.type === 'api') {
+                if (Array.isArray(this.vmodel[this.strucData.id])) {
+                  let keyData
+                  if (this.strucData.limit.type === 'message_body') {
+                    keyData = this.getPathResult(this.message.body[this.index], this.strucData.limit.key_path)
+                  } else if (this.strucData.limit.type === 'message_header') {
+                    // console.log(this.message)
+                    keyData = this.getPathResult(this.message.header, this.strucData.limit.key_path)
+                  } else if (this.strucData.limit.type === 'static') {
+                    keyData = this.strucData.limit.min
+                    this.limitMaxNum = this.strucData.limit.max
+                  } else if (this.strucData.limit.type === 'form_body') {
+                    keyData = this.getPathResult(this.whole.body[this.index], this.strucData.limit.key_path) // this.whole.body[this.index] 就是 this.item
+                  } else if (this.strucData.limit.type === 'form_header') {
+                    keyData = this.getPathResult(this.whole.header, this.strucData.limit.key_path)
+                  }
+                  if (Array.isArray(keyData)) {
+                    this.limitNum = keyData.length
+                  } else if (typeof keyData === 'number') {
+                    this.limitNum = keyData
+                  } else if (typeof keyData === 'string') {
+                    if (typeof +keyData === 'number') {
+                      this.limitNum = +keyData
+                    } else {
+                      this.$message('limit数据配置有误')
+                    }
+                  }
+                  if ((this.limitNum + +this.strucData.default.value) <= this.optionList.length) {
+                    this.vmodel[this.strucData.id] = this.optionList.slice(this.strucData.default.value, this.limitNum)
+                  } else if (this.limitNum <= this.optionList.length) {
+                    this.$message.warning(`${this.strucData.name}的选项不够${+this.limitNum + +this.strucData.default.value}项`)
+                    this.vmodel[this.strucData.id] = this.optionList.slice(0, this.limitNum)
+                  } else {
+                    this.vmodel[this.strucData.id] = this.optionList
+                    this.$message.warning(`${this.strucData.name}数据项不足`)
+                  }
+                } else {
+                  let optionIndex = 0
+                  if (this.strucData.unique) { // 如果是唯一值，跟着当前 index 来走
+                    let tableIndex = 0
+                    if (this.tableIndex) tableIndex = +this.tableIndex
+                    if (this.index) {
+                      optionIndex = this.index + tableIndex
+                    } else {
+                      optionIndex = tableIndex
+                    }
+                  }
+                  const selectedIndex = optionIndex + +this.strucData.default.value
+                  if (selectedIndex < this.optionList.length) {
+                    this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
+                    return false
+                  } else if (this.optionList[0]) {
+                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
+                    this.vmodel[this.strucData.id] = this.optionList[0]
+                    return false
+                  } else {
+                    this.$message.warning(`${this.strucData.name}无数据`)
+                  }
                 }
+              } else if (this.strucData.default.type === 'static') {
+                for (const option of this.optionList) {
+                  if (option[this.strucData.value.source.res.show_key[0]] === this.strucData.default.value) {
+                    if (this.strucData.value.type === 'dicts') {
+                      this.vmodel[this.strucData.id].push(option)
+                    } else {
+                      this.vmodel[this.strucData.id] = option
+                    }
+                    return
+                  }
+                }
+              }
+            }
+            // 若有其他默认值的情况下，把值返回来
+            if (this.strucData.value.type === 'dicts' && this.vmodel[this.strucData.id] && this.vmodel[this.strucData.id].length) {
+              this.vmodel[this.strucData.id].map((item, itemindex) => {
+                this.optionList.map(option => {
+                  if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
+                    this.vmodel[this.strucData.id].splice(itemindex, 1, option)
+                  }
+                })
               })
-            })
-          }
-          if (this.strucData.value.source.data.action === 'users/all' && !this.isEditing) {
-            if (this.strucData.default && this.strucData.default.type) {
-              if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = this.$store.state.userinfo.userId
-                this.optionList.map(option => {
-                  if (option.userId === user) {
-                    if (Array.isArray(this.vmodel[this.strucData.id])) {
-                      this.vmodel[this.strucData.id].push(option)
-                    } else {
-                      this.vmodel[this.strucData.id] = option
+            }
+            if (this.strucData.value.source.data.action === 'users/all' && !this.isEditing) {
+              if (this.strucData.default && this.strucData.default.type) {
+                if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
+                  const user = this.$store.state.userinfo.userId
+                  this.optionList.map(option => {
+                    if (option.userId === user) {
+                      if (Array.isArray(this.vmodel[this.strucData.id])) {
+                        this.vmodel[this.strucData.id].push(option)
+                      } else {
+                        this.vmodel[this.strucData.id] = option
+                      }
                     }
-                  }
-                })
+                  })
+                }
+              }
+            } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
+              if (this.strucData.default.type) {
+                if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
+                  const user = this.$store.state.userinfo.userId
+                  this.optionList.map(option => {
+                    if (option.userId === user) {
+                      if (Array.isArray(this.vmodel[this.strucData.id])) {
+                        this.vmodel[this.strucData.id].push(option)
+                      } else {
+                        this.vmodel[this.strucData.id] = option
+                      }
+                    }
+                  })
+                }
               }
             }
-          } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
-            if (this.strucData.default.type) {
-              if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
-                const user = this.$store.state.userinfo.userId
-                this.optionList.map(option => {
-                  if (option.userId === user) {
-                    if (Array.isArray(this.vmodel[this.strucData.id])) {
-                      this.vmodel[this.strucData.id].push(option)
-                    } else {
-                      this.vmodel[this.strucData.id] = option
-                    }
-                  }
-                })
-              }
-            }
+            // console.log(this.vmodel[this.strucData.id], this.strucData.id, this.strucData.name)
+            // this.renderData()
           }
-          // console.log(this.vmodel[this.strucData.id], this.strucData.id, this.strucData.name)
-          // this.renderData()
         })
       }
     }
