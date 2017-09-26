@@ -31,7 +31,6 @@ export default {
 
   [types.SOCKET_ONCLOSE] (state) {
     state.socket.connected = false
-    Vue.prototype.$socket = null
   },
 
   [types.SOCKET_ONMESSAGE] (state, message) {

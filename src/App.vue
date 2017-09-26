@@ -20,7 +20,7 @@ export default {
       let tag = this.$store.state.socket.connected
       console.log(tag)
       if (!tag) {
-        this.$store.dispatch('socket_open')
+        this.$message.error('链接异常请重新刷新')
       }
     }
     this.$nextTick(() => {

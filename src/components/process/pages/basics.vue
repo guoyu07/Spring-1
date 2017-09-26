@@ -290,6 +290,7 @@
         _operationRelations[operationType].loading = true
         let data
         let { toAdd } = _operationRelations[operationType]
+        console.log(toAdd)
         adminType === 'user' || initiatorType === 'user' ? data = { pkey, users: toAdd } : data = { pkey, groups: toAdd }
         let postData = {
           action: _operationRelations[operationType].action,
@@ -299,6 +300,7 @@
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.$message.success('加入成功！')
+            console.log(res)
             // Object.assign(_operationRelations[operationType], { visible: false, loading: false })
             _operationRelations[operationType].loading = false
             _operationRelations[operationType].visible = false
