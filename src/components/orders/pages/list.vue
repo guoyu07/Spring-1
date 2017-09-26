@@ -1,5 +1,5 @@
 <template>
-  <div class="order-list">
+  <div :class="{ 'order-list': true, collapsed: !isExpanded }">
     <el-card class="box-card" v-if="filteredTasks.list && filteredTasks.list.length">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
       <el-button icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
@@ -62,6 +62,10 @@
 
   export default {
     mixins: [ getFilteredTasks ],
+
+    props: {
+      isExpanded: Boolean
+    },
 
     data () {
       return {
@@ -136,6 +140,14 @@
 
     &:hover {
       text-decoration: none;
+    }
+  }
+
+  .order-list {
+    transition: padding-left .3s ease;
+
+    &.collapsed {
+      padding-left: 20px;
     }
   }
 </style>
