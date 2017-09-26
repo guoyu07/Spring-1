@@ -1,6 +1,5 @@
 <template>
-      <!-- 新建应用时，是一个字符串，非选取的对象 -->
-  <!-- <div class="history-block"> -->
+    <!-- 新建应用时，是一个字符串，非选取的对象 -->
     <el-form-item
       :label="hideName ? '' : formItem.name"
       :class="['search_bar','table', 'richtext'].includes(formItem.value.type) ? 'blockElement' : ''">
@@ -113,7 +112,6 @@
         </el-table>
       </template>
     </el-form-item>
-  <!-- </div> -->
 </template>
 
 <script>

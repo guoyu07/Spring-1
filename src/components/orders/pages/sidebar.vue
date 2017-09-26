@@ -1,5 +1,5 @@
 <template>
-  <div class="order-sidebar">
+  <div :class="{ 'order-sidebar': true, collapsed: !isExpanded }">
     <spinner v-show="filterLoading"></spinner>
     <h4 class="order-sidebar__title">系统内置</h4>
     <ul class="order-sidebar__list">
@@ -42,6 +42,10 @@
   import EventHub from './../../../utils/event-hub'
 
   export default {
+    props: {
+      isExpanded: Boolean
+    },
+
     data () {
       return {
         filterList: [],
@@ -137,6 +141,7 @@
     padding: 14px;
     border-right: 1px solid @borderColor;
     overflow-y: scroll;
+    transition: all .3s ease;
 
     &__title {
       margin: 12px;
@@ -209,6 +214,11 @@
       position: absolute;
       top: 12px;
       right: 14px;
+    }
+
+    &.collapsed {
+      transform: translateX(-200px);
+      opacity: 0;
     }
   }
 </style>

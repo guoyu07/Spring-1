@@ -119,34 +119,34 @@
         }
       },
       rules (formItem) {
-        console.log(formItem)
-        let keyData
+        // console.log(formItem)
+        let keyData, limitNum, limitTableMax
         if (formItem.limit.type === 'message_body') {
           keyData = this.getPathResult(this.messageData.body[this.index], formItem.limit.key_path)
         } else if (formItem.limit.type === 'message_header') {
           keyData = this.getPathResult(this.messageData.header, formItem.limit.key_path)
         } else if (formItem.limit.type === 'static') {
           keyData = formItem.limit.min
-          this.limitTableMax = formItem.limit.max
+          limitTableMax = formItem.limit.max
         } else if (formItem.limit.type === 'form_body') {
           keyData = this.getPathResult(this.whole.body[this.index], formItem.limit.key_path) // this.whole.body[this.index] 就是 this.item
         } else if (formItem.limit.type === 'form_header') {
           keyData = this.getPathResult(this.whole.header, formItem.limit.key_path)
         }
         if (Array.isArray(keyData)) {
-          this.limitNum = keyData.length
+          limitNum = keyData.length
         } else if (typeof keyData === 'number') {
-          this.limitNum = keyData
+          limitNum = keyData
         } else if (typeof keyData === 'string') {
           if (typeof +keyData === 'number') {
-            this.limitNum = +keyData
+            limitNum = +keyData
           } else {
             this.$message('limit数据配置有误')
           }
         }
         // 以下是 formItem.limit.type 未配置时，或者 keyData 本身取到的值为 0 或者 取不到 对应的值，都默认为至少有一个 table 并且可增加无限个 table
-        if (!this.limitNum) {
-          this.limitNum = 1
+        if (!limitNum) {
+          limitNum = 1
         }
         var validateLimit = (rule, value, cb) => {
           if (!Array.isArray(value)) return // value 必须是一个数组
@@ -157,24 +157,26 @@
           if (value && formItem.value.regex.length && formItem.value.regex.some(isMatch)) {
             return cb(new Error(`请输入正确的${formItem.name}`))
           }
-          if (this.limitTableMax) { // static时，有一个范围值
-            if (value.length < this.limitNum) {
-              return cb(new Error(`至少需要${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
-            } else if (value.length > this.limitTableMax) {
-              return cb(new Error(`至多可以增加${this.limitTableMax}个${formItem.name},请删除${value.length - this.limitTableMax}个`))
+          if (limitTableMax) { // static时，有一个范围值
+            if (value.length < limitNum) {
+              return cb(new Error(`至少需要${limitNum}个${formItem.name},还差${limitNum - value.length}个`))
+            } else if (value.length > limitTableMax) {
+              return cb(new Error(`至多可以增加${limitTableMax}个${formItem.name},请删除${value.length - limitTableMax}个`))
             } else {
               cb()
             }
           } else { // 除static外，其他都是一个固定的数值，不准多不准少
-            if (value.length < this.limitNum) {
-              return cb(new Error(`需要${this.limitNum}个${formItem.name},还差${this.limitNum - value.length}个`))
-            } else if (value.length > this.limitNum) {
-              return cb(new Error(`只需要${this.limitNum}个${formItem.name},请删除${value.length - this.limitNum}个`))
+            if (value.length < limitNum) {
+              return cb(new Error(`需要${limitNum}个${formItem.name},还差${limitNum - value.length}个`))
+            } else if (value.length > limitNum) {
+              return cb(new Error(`只需要${limitNum}个${formItem.name},请删除${value.length - limitNum}个`))
             } else {
               cb()
             }
           }
         }
+        this.limitNum = limitNum
+        this.limitTableMax = limitTableMax
         return {
           validator: validateLimit,
           required: formItem.required,

@@ -176,7 +176,7 @@
                     </div>
                   </div>
                   <div class="clear">
-                    <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
+                    <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data)" class="margin-bottom">机柜预览图</el-button>
                   </div>
                 </el-tab-pane>
               </el-tabs>
@@ -279,7 +279,7 @@
                       </div>
                     </div>
                     <div class="clear">
-                      <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data.sc_ip_info[0].ipscope.instanceId)" class="margin-bottom">机柜预览图</el-button>
+                      <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data)" class="margin-bottom">机柜预览图</el-button>
                     </div>
                   </el-tab-pane>
                 </el-tabs>
@@ -396,7 +396,8 @@
         previewPage: 1,
         pageNum: 1,
         idcrackList: [],
-        idcrackTaked: []
+        idcrackTaked: [],
+        hostMachineIdcrackList: []
       }
     },
     created () {
@@ -433,13 +434,18 @@
           }
         }
       },
-      getPreview (ipscope) {
+      getPreview (data) {
+        let idcrackData = {}
+        if (this.taskData.pinstance.pkey === 'host_machine') {
+          idcrackData.ipscopeId = this.applyData.body[0].esxi_ipscope.instanceId
+          idcrackData.type = 'esxi'
+        } else {
+          idcrackData.ipscopeId = data.sc_ip_info[0].ipscope.instanceId
+        }
         const postHeadvData = {
           action: 'idcrack/list',
           method: 'GET',
-          data: {
-            ipscopeId: ipscope
-          }
+          data: idcrackData
         }
         this.http.post('/data/', this.parseData(postHeadvData))
         .then((response) => {
@@ -586,18 +592,18 @@
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
                           this.setNewDataType(value, newData)
-                          // 有默认值时 只有 form_body 和 form_header 2种
-                          if (value.default && value.default.type) {
-                            if (value.default.type === 'form_body') {
-                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.assignForm.body[0][value.id] = newVal
-                              })
-                            } else if (value.default.type === 'form_header') {
-                              this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                                this.assignForm.body[0][value.id] = newVal
-                              })
-                            }
-                          }
+                          // // 有默认值时 只有 form_body 和 form_header 2种
+                          // if (value.default && value.default.type) {
+                          //   if (value.default.type === 'form_body') {
+                          //     this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                          //       this.assignForm.body[0][value.id] = newVal
+                          //     })
+                          //   } else if (value.default.type === 'form_header') {
+                          //     this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
+                          //       this.assignForm.body[0][value.id] = newVal
+                          //     })
+                          //   }
+                          // }
                         })
                       })
                     }
@@ -608,25 +614,6 @@
                   group.value.map(value => {
                     if (value.need_submit) {
                       this.setNewDataType(value, newData)
-                      // // 有默认值时
-                      // if (value.default && value.default.type) {
-                      //   if (value.default.type === 'message_header') {
-                      //     newData[value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                      //   } else if (value.default.type === 'form_body') {
-                      //     this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                      //       console.log(newVal, k, value.id)
-                      //       this.assignForm.body[k][value.id] = newVal
-                      //     })
-                      //   } else if (value.default.type === 'message_body') {
-                      //     newData[value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
-                      //   } else if (value.default.type === 'form_header') {
-                      //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                      //       this.assignForm.body[k][value.id] = newVal
-                      //     })
-                      //   } else if (value.default.type === 'static') {
-                      //     this.assignForm.body[k][value.id] = value.default.value
-                      //   }
-                      // }
                     }
                   })
                 })
@@ -730,6 +717,30 @@
               })
             }
           })
+          // 宿主机 U 位默认值
+          if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
+            const UData = {
+              action: 'get/racku',
+              method: 'GET',
+              data: {
+                ipscopeId: this.applyData.body[0].esxi_ipscope.instanceId,
+                host_u: this.applyData.header.host_list[0].u_num,
+                host_num: this.applyData.header.host_list.length
+              }
+            }
+            this.http.post('/data/', this.parseData(UData)).then((res) => {
+              const resData = res.data.data.list
+              resData.map(list => {
+                if (!this.isEmptyObj(list._default)) {
+                  for (const i in list._default) {
+                    const index = i - 1
+                    this.assignForm.body[index].idcracku = list._default[i]
+                    this.assignForm.body[index].idcrack = list
+                  }
+                }
+              })
+            })
+          }
           // 判断是否为驳回信息
           let newDataBody
           for (var message of this.taskData.message) {
