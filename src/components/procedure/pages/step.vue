@@ -377,7 +377,7 @@
       'applyData.body' (oldVal, newVal) {
         this.applyData.body.map((body, index) => {
           // this.infoShow[index] = true
-          this.$set(this.infoShow, index, true)
+          this.$set(this.infoShow, index, false)
         })
       },
       'infoShow': {

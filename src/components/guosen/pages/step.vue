@@ -389,7 +389,7 @@
         path_list: [],
         submitLoading: false,
         infoShow: {},
-        infoHideAll: false,
+        infoHideAll: true,
         hostList: [],
         previewShown: false,
         idcrackData: [],
@@ -412,7 +412,7 @@
       'applyData.body' (oldVal, newVal) {
         this.applyData.body.map((body, index) => {
           // this.infoShow[index] = true
-          this.$set(this.infoShow, index, true)
+          this.$set(this.infoShow, index, false)
         })
       },
       'infoShow': {
