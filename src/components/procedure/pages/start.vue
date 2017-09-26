@@ -243,9 +243,10 @@
             if (item.show.type) {
               // show.type 有四种类型
               if (item.show.type === 'form_header') {
-                if (this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) {
-                  if (item.value.type === 'search_bar') {
-                    // this.postForm.header[item.id] = []
+                if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
+                    (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
+                    (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+                  if (item.value.type === 'search_bar') { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                     this.postForm.header[item.id] = val
                   }
                 }
@@ -278,58 +279,26 @@
             group.value.map(item => {
               if (this.showFormItem(item, this.postForm)) {
                 this.setDataType(item, this.postForm.header)
-                if (item.show.type === 'form_header') {
-                  this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                    // console.log(item.name)
-                    if (this.showFormItem(item, this.postForm)) {
-                      this.setDataType(item, this.postForm.header)
-                    } else {
-                      delete this.postForm.header[item.id]
-                    }
-                  })
-                }
-              } else if (!item.show.type) {
-                // console.log(item.name)
-                this.setDataType(item, this.postForm.header)
               }
-              // // 有默认值时 应该只有 form_header 1种，这个是发起流程没有历史信息，header的默认值不应该来自body
-              // if (item.default && item.default.type) {
-              //   if (item.default.type === 'form_header') {
-              //     this.$watch('postForm.header.' + item.default.key_path, (newVal, oldVal) => {
-              //       this.postForm.header[item.id] = newVal
-              //     })
-              //   }
+              if (item.show.type === 'form_header') {
+                this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
+                  console.log(item.name)
+                  if (this.showFormItem(item, this.postForm)) {
+                    this.setDataType(item, this.postForm.header)
+                  } else {
+                    delete this.postForm.header[item.id]
+                  }
+                })
+              }
+              // else if (!item.show.type) {
+              //   // console.log(item.name)
+              //   this.setDataType(item, this.postForm.header)
               // }
             })
           })
-          // let newData = {}
-          if (this.taskFormData.body.body_list.length) {
-            this.$set(this.postForm, 'body', [{}])
-          }
-          // this.taskFormData.body.body_list.forEach((body, bodyIndex) => {
-          //   if (this.showBodyList(body, this.postForm, this.applyData, 0)) {
-          //     console.log(body)
-          //     body.attr_list.map(group => {
-          //       group.value.map(value => {
-          //         if (value.need_submit) {
-          //           this.setDataType(value, this.postForm.body[0], this)
-          //           // 有默认值时 只有 form_body 和 form_header 2种
-          //           if (value.default && value.default.type) {
-          //             if (value.default.type === 'form_body') {
-          //               this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-          //                 this.postForm.body[0][value.id] = newVal
-          //               })
-          //             } else if (value.default.type === 'form_header') {
-          //               this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-          //                 this.postForm.body[0][value.id] = newVal
-          //               })
-          //             }
-          //           }
-          //         }
-          //       })
-          //     })
-          //   }
-          // })
+          // if (this.taskFormData.body.body_list.length) {
+          //   this.$set(this.postForm, 'body', [{}])
+          // }
           this.taskFormData.body.body_list.forEach(body => {
             if (body.show.type) {
               // const keyPath = body.show.key_path.split('.')

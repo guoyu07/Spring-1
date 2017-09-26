@@ -7,7 +7,7 @@
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">工作流</el-button>
-            <!-- <el-button class="not-print" type="text" @click="createPdf">打印</el-button> -->
+            <el-button class="not-print" type="text" @click="createPdf">打印</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -290,7 +290,8 @@
                 </el-tooltip>
                 <el-button v-else-if="action.type==='back'" type="danger" @click="onReject(applyData, action)" :disabled="submitLoading">{{action.name}}</el-button>
                 <el-button v-else-if="action.type==='target'" type="info" :disabled="submitLoading">
-                  <a class="link-block" :href="action.url" target="_blank">{{action.name ? action.name : '跳转'}}</a>
+                  <!-- target="_blank" -->
+                  <a class="link-block" :href="action.url">{{action.name ? action.name : '跳转'}}</a>
                 </el-button>
               </span>
               <el-button :plain="true" type="primary" @click="cancel">取消</el-button>
@@ -474,21 +475,19 @@
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  if (this.showFormItem(value, this.assignForm)) {
+                  if (this.showFormItem(value, this.assignForm, this.applyData)) {
                     this.setDataType(value, this.assignForm.header)
                     if (value.show.type === 'form_header') {
                       this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
                         if (this.showFormItem(value, this.assignForm)) {
                           this.setDataType(value, this.assignForm.header)
-                          // console.log(this.assignForm.header)
                         } else {
                           delete this.assignForm.header[value.id]
                         }
                       })
                     }
-                  } else if (!value.show.type) {
+                  } else {
                     this.setDataType(value, this.assignForm.header)
-                    // console.log(this.assignForm.header)
                   }
                   // 有默认值时 header 默认值有4种 ps: api 类型写在 needCMDBData 里了
                   // if (value.default && value.default.type) {

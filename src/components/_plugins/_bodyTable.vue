@@ -2,7 +2,7 @@
   <div>
     <el-form-item
       v-if="formData.value.type === 'table'"
-      :prop="prop(formData)"
+      :prop="formData.required ? 'body.' + index + '.' + formData.id : ''"
       :rules="rules(formData)"
       class="block">
       <!-- formData.limit.type === 'static' 这种情况是允许增加 table 的 -->
@@ -118,8 +118,8 @@
           })
         }
       },
-      tableValid (formItem) {
-        // console.log(formItem)
+      rules (formItem) {
+        console.log(formItem)
         let keyData
         if (formItem.limit.type === 'message_body') {
           keyData = this.getPathResult(this.messageData.body[this.index], formItem.limit.key_path)
@@ -180,19 +180,6 @@
           required: formItem.required,
           trigger: 'blur, change'
         }
-      },
-      rules (formItem) {
-        return this.tableValid(formItem)
-        // if (formItem.value.type === 'dicts') {
-        //   return this.tableValid(formItem)
-        // } else if (formItem.value.type === 'dict') {
-        //   return {
-        //     type: 'object',
-        //     required: formItem.required,
-        //     message: formItem.name + '不能为空',
-        //     trigger: 'blur, change'
-        //   }
-        // }
       },
       closableIndex (index, value) {
         if (value.limit.type === 'static') {

@@ -120,7 +120,7 @@
       }
     },
     created () {
-      if (this.hosts[this.attrList.id].length) {
+      if (this.hosts[this.attrList.id] && this.hosts[this.attrList.id].length) {
         this.hostList = this.hosts[this.attrList.id]
       }
       if (this.attrList.show && this.attrList.show.type) {
