@@ -91,6 +91,22 @@
                               :history-task="task.tkey">
                             </form-structure-display>
                           </div>
+                          <div v-else>
+                            <!-- header 信息显示 -->
+                            <div v-if="task.form.form.header.length >= 1">
+                              <p class="h5">{{task.tname}}</p>
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
+                                    <header-form-display
+                                      :item="applyData.header"
+                                      :form-item="valueheader">
+                                    </header-form-display>
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
+                          </div>
                         </div>
                       </div>
                       <div v-else>

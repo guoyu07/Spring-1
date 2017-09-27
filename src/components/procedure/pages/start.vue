@@ -304,9 +304,9 @@
               // const keyPath = body.show.key_path.split('.')
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
-                  this.$set(this.postForm, 'body', [{}]) // 初始化表单数据
                   this.taskFormData.body.body_list.map(bodyList => {
                     if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+                      this.$set(this.postForm, 'body', [{}]) // 初始化表单数据
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
                           // if (this.showFormItem(value, this.postForm)) {
@@ -318,7 +318,9 @@
                                 if (this.showFormItem(value, this.postForm)) {
                                   this.setDataType(value, this.postForm.body[0])
                                 } else {
-                                  delete this.postForm.body[0][value.id]
+                                  if (this.postForm.body[0]) {
+                                    delete this.postForm.body[0][value.id]
+                                  }
                                 }
                               })
                             }
@@ -354,6 +356,10 @@
                           }
                         })
                       })
+                    } else {
+                      console.log('delete body[0]')
+                      // 若没有body 表单，删除整个body
+                      this.postForm.body = []
                     }
                   })
                 })
@@ -363,19 +369,7 @@
               body.attr_list.map(group => {
                 group.value.map(value => {
                   if (value.need_submit) {
-                    this.setDataType(value, this.postForm.body[0], this)
-                    // 有默认值时 只有 form_body 和 form_header 2种
-                    // if (value.default && value.default.type) {
-                    //   if (value.default.type === 'form_body') {
-                    //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                    //       this.postForm.body[0][value.id] = newVal
-                    //     })
-                    //   } else if (value.default.type === 'form_header') {
-                    //     this.$watch('postForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                    //       this.postForm.body[0][value.id] = newVal
-                    //     })
-                    //   }
-                    // }
+                    this.setDataType(value, this.postForm.body[0])
                   }
                 })
               })
