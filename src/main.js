@@ -74,6 +74,7 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
+  console.log(rs)
   if (rs.status === 401) {
     auth.logout()
   }
@@ -141,12 +142,7 @@ const getPathResult = (result, path, k) => {
           // console.log(_result[_path[i]])
           _result = _result[_path[i]]
         } else {
-          Vue.prototype.$message({
-            showClose: true,
-            message: `读不到${_path[i]}的值，请检查配置`,
-            type: 'error',
-            duration: 0
-          })
+          console.log(`读不到${_path[i]}的值，请检查配置`)
           return undefined
         }
       } else {

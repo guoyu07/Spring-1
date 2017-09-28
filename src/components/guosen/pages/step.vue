@@ -18,10 +18,7 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
-            <div v-if="applyData.body && applyData.body.length" class="flex-box">
-              <div></div>
-              <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
-            </div>
+
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
@@ -77,6 +74,10 @@
                   </header-table>
                 </span>
               </div>
+            </div>
+            <div v-if="applyData.body && applyData.body.length" class="flex-box">
+              <div></div>
+              <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">

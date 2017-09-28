@@ -275,7 +275,8 @@
         if (this.formItem && this.formItem.default && this.formItem.default.type) {
           if (this.formItem.default.type === 'message_header') {
             if (this.headerTable || this.bodyTable) {
-              this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, 0)
+              console.log('formbody default')
+              this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
             } else {
               if (this.header) {
                 // console.log(this.whole.header[this.formItem.id])

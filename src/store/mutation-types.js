@@ -4,7 +4,7 @@ export const UPDATE_USERINFO = 'UPDATE_USERINFO'
 // 清空用户信息
 export const REMOVE_USERINFO = 'REMOVE_USERINFO'
 
-// 清空用户信息
+// 机柜数据
 export const IDCRACK_DATA = 'IDCRACK_DATA'
 
 // 行内编辑字段
@@ -27,3 +27,9 @@ export const SOCKET_ONNEW = 'SOCKET_ONNEW'
 
 // socket 清空待认领任务
 export const SOCKET_ONASSIGNED = 'SOCKET_ONASSIGNED'
+
+// 更新API数据缓存
+export const UPDATE_APICACHE = 'UPDATE_APICACHE'
+
+// 清空API数据缓存
+export const REMOVE_APICACHE = 'REMOVE_APICACHE'

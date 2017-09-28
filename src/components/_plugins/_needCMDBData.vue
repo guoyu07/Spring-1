@@ -72,7 +72,8 @@
         limitMaxNum: 0,
         showToolTip: false,
         showOptionList: [],
-        keyPaths: []
+        keyPaths: [],
+        params: {}
       }
     },
     created () {
@@ -154,6 +155,7 @@
     },
     methods: {
       filterList (query) {
+        console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
@@ -170,10 +172,17 @@
       },
       renderData (newVal, oldVal) {
         // setTimeout(() => {
+        this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
         if (this.vmodel[this.strucData.id]) {
           // console.log(this.strucData.id, this.strucData.name)
-          this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
           if (Array.isArray(this.vmodel[this.strucData.id])) {
+            // const key = []
+            // if (this.vmodel[this.strucData.id].length) {
+            //   this.vmodel[this.strucData.id].map(model => {
+            //     key.push(this.showLabel(model))
+            //   })
+            // }
+            // this.filterList(key)
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
@@ -190,6 +199,7 @@
               }
             })
           } else {
+            // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes
               for (var option of this.optionList) {
@@ -309,6 +319,7 @@
             }
           }
         }
+        this.params = params
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
@@ -323,24 +334,28 @@
           }
           return false
         }
+        // let p = ''
+        // let key
+        // for (const i in params) {
+        //   p = `${p}${i}=${params[i]}&`
+        // }
+        // key = `${this.strucData.value.source.data.action}?${p}`
+        // if (this.$store.state.apiCache[key]) {
+        //   this.optionList = this.$store.state.apiCache[key]
+        //   return false
+        // }
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           if (response) {
-            // let p = ''
-            // for (const i in params) {
-            //   p = `${p}${i}=${params[i]}&`
-            // }
-            // this.$store.cacheDispatch(`${this.strucData.value.source.data.action}?${p}`)
             this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+            // const apicache = { key: key, value: this.optionList }
+            // this.$store.dispatch('update_apicache', apicache)
             if (this.optionList.length === 0) {
               this.$message.info(`${this.strucData.name}无数据`)
               if (!this.isAlias) {
                 this.vmodel[this.strucData.id] = null
               }
             }
-            // this.$store.dispatch('idcrack_data', {
-            //   idcrackData: this.optionList
-            // })
             this.filterList('')
             // this.isEditing 编辑状态下不配置默认值
             if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
@@ -441,7 +456,7 @@
                   })
                 }
               }
-            } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
+            } else if (this.strucData.value.source.data.action === 'object/instance/list' && this.params.object_id === 'USER' && !this.isEditing) {
               if (this.strucData.default.type) {
                 if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                   const user = this.$store.state.userinfo.userId
@@ -457,8 +472,6 @@
                 }
               }
             }
-            // console.log(this.vmodel[this.strucData.id], this.strucData.id, this.strucData.name)
-            // this.renderData()
           }
         })
       }

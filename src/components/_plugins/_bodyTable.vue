@@ -107,11 +107,14 @@
           this.formData.value.attr_list.map(list => {
             if (list.default.type) {
               if (list.default.type === 'message_header') {
+                console.log('bodytable default')
                 // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
-                if (!Array.isArray(this.postForm.body[this.index][this.formData.id][i][list.id]) && Array.isArray(this.getPathResult(this.messageData.header, list.default.key_path))) {
+                if (!Array.isArray(this.postForm.body[this.index][this.formData.id][i][list.id]) && Array.isArray(this.getPathResult(this.messageData.header, list.default.key_path, this.index))) {
                   this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path)[i]
                 } else {
-                  this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path)
+                  console.log(this.index)
+                  this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path, this.index)
+                  console.log(this.postForm.body[this.index][this.formData.id][i][list.id])
                 }
               }
             }
@@ -124,7 +127,7 @@
         if (formItem.limit.type === 'message_body') {
           keyData = this.getPathResult(this.messageData.body[this.index], formItem.limit.key_path)
         } else if (formItem.limit.type === 'message_header') {
-          keyData = this.getPathResult(this.messageData.header, formItem.limit.key_path)
+          keyData = this.getPathResult(this.messageData.header, formItem.limit.key_path, this.index)
         } else if (formItem.limit.type === 'static') {
           keyData = formItem.limit.min
           limitTableMax = formItem.limit.max

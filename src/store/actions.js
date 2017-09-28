@@ -99,5 +99,21 @@ module.exports = {
       commit(types.SOCKET_ONASSIGNED)
       resolve()
     })
+  },
+
+  update_apicache: ({ commit }, apicache) => {
+    return new Promise((resolve, reject) => {
+      commit(types.UPDATE_APICACHE, apicache)
+      resolve()
+    })
+  },
+
+  remove_apicache: ({
+    commit
+  }) => {
+    return new Promise((resolve, reject) => {
+      commit(types.REMOVE_APICACHE)
+      resolve()
+    })
   }
 }

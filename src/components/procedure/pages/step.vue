@@ -75,15 +75,15 @@
               </div>
             </div>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
-              <div></div>
+              <!-- <div></div> -->
+              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
+                <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
+                <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
+              </el-button-group>
               <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
-              <el-button-group style="margin-bottom:8px;width:90px">
-                <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
-                <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
-              </el-button-group>
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length" >
                 <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
@@ -461,7 +461,9 @@
         newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
         newWindow.document.head.innerHTML = window.document.head.innerHTML // 向文档写入头部信息
         newWindow.document.close() // 关闭document的输出流, 显示选定的数据
-        newWindow.print()  // 打印当前窗口
+        setTimeout(() => {
+          newWindow.print()  // 打印当前窗口
+        }, 100)
         return true
       },
       onHostsChange (val, index) {
