@@ -120,7 +120,7 @@ const getPathResult = (result, path, k) => {
   }
   let _result = result
   const _path = path.split('.')
-  // console.log(_path, Array.isArray(_result[_path[0]]))
+  // console.log(_path, Array.isArray(_result[_path[0]]), k)
   if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
     if (_result[_path[0]].length) {
       _path.reduce((prev, cur, index) => {
@@ -131,6 +131,7 @@ const getPathResult = (result, path, k) => {
     }
   } else {
     for (const i in _path) {
+      // console.log(_result[_path[i]])
       if (!_result) {
         // console.log('找不到_result')
         return false
@@ -140,6 +141,12 @@ const getPathResult = (result, path, k) => {
           // console.log(_result[_path[i]])
           _result = _result[_path[i]]
         } else {
+          Vue.prototype.$message({
+            showClose: true,
+            message: `读不到${_path[i]}的值，请检查配置`,
+            type: 'error',
+            duration: 0
+          })
           return undefined
         }
       } else {

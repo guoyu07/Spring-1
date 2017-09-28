@@ -92,6 +92,7 @@
                             <p v-if="task.form.form.header.length || taskbody.attr_list.length" class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
+                              <p class="h5">{{task.tname}}</p>
                               <div v-for="taskformheader in task.form.form.header">
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
@@ -623,7 +624,9 @@
       },
       renderBodyLength (data) {
         this.applyData.body = []
+        console.log(data, this.taskForm.body.count.key_path)
         const keyData = this.getPathResult(data, this.taskForm.body.count.key_path)
+        console.log(keyData)
         if (Array.isArray(keyData)) {
           // this.applyData.body.length = keyData.length
           const num = keyData.length

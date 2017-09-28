@@ -270,7 +270,6 @@
             } else if (para.value.type === 'form_body') {
               // console.log(this.bodyTable, this.headerTable, this.strucData.name)
               if (this.bodyTable || this.headerTable) {
-                console.log('hello laiyit')
                 if (isRender(this.getPathResult(this.whole, para.value.key_path))) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole, para.value.key_path)
@@ -292,9 +291,9 @@
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path))) {
+              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path, this.index))) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
+                params[para.id] = this.getPathResult(this.message.header, para.value.key_path, this.index)
               } else {
                 return false // 如果没取到值就不发请求
               }
@@ -327,6 +326,11 @@
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           if (response) {
+            // let p = ''
+            // for (const i in params) {
+            //   p = `${p}${i}=${params[i]}&`
+            // }
+            // this.$store.cacheDispatch(`${this.strucData.value.source.data.action}?${p}`)
             this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
             if (this.optionList.length === 0) {
               this.$message.info(`${this.strucData.name}无数据`)
