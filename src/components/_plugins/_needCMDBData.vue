@@ -155,7 +155,7 @@
     },
     methods: {
       filterList (query) {
-        console.log(query)
+        // console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
