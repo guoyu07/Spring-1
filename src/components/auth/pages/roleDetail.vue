@@ -28,7 +28,7 @@
       		<el-button type='success' @click="correlateUsers()">关联用户</el-button>
          </div>
       </div>
-    		<el-table :data="renderUsersList" border @selection-change="handleSelectionChange">
+    		<el-table :data="currentPageList" border @selection-change="handleSelectionChange">
     		    <el-table-column type='selection' :selectable='forbiddenChoice'></el-table-column>
     			<el-table-column prop='userId' label="用户名">
     			</el-table-column>
@@ -50,6 +50,16 @@
     				</template>
     			</el-table-column>
     	    </el-table>
+          <el-pagination
+            class="fr margin-top"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-size="currentPageSize"
+            layout="sizes, prev, pager, next"
+            :total="totalPage">
+          </el-pagination>
         <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
           <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
           <el-select v-model="usersToAdd" multiple filterable remote :remote-method="usersFilter">
@@ -88,7 +98,11 @@ export default {
       usersList: [],
       renderUsersList: [],
       usersLevel: [ {key: 0, label: '超级管理员'}, {key: 1, label: '管理员'}, {key: 2, label: '普通用户'} ],
-      usersStatus: [ {key: 0, label: '使用中'}, {key: 1, label: '已禁用'} ]
+      usersStatus: [ {key: 0, label: '使用中'}, {key: 1, label: '已禁用'} ],
+      currentPage: 1,
+      currentPageSize: 10,
+      currentPageList: [],
+      totalPage: 0
     }
   },
   created () {
@@ -97,7 +111,8 @@ export default {
     // this.insideGroup()
   },
   watch: {
-    'userList': 'getArr'
+    'userList': 'getArr',
+    'renderUsersList': 'renderList'
   },
   computed: {
     isQualified () {
@@ -113,6 +128,20 @@ export default {
     }
   },
   methods: {
+    handleCurrentChange (val) {
+      this.currentPage = val
+      const offset = (this.currentPage - 1) * this.currentPageSize
+      let array = (this.search.key) ? this.renderUsersList : this.renderUsersList
+      this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+    },
+    handleSizeChange (val) {
+      this.currentPageSize = val
+      this.handleCurrentChange(1)
+    },
+    renderList (newVal, oldVal) {
+      this.totalPage = newVal.length
+      this.handleCurrentChange(1)
+    },
     // insideGroup () {
     //   console.log(this.$store.state.userinfo.groups)
     //   let arr = this.$store.state.userinfo.groups.map((val) => {

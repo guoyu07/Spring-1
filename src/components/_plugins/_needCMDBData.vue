@@ -155,12 +155,10 @@
     },
     methods: {
       filterList (query) {
-        // console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
             if (Array.isArray(query)) {
-              console.log(query.indexOf(this.showLabel(val)))
               return query.indexOf(this.showLabel(val)) > -1
             } else if (typeof this.showLabel(val) === 'number') {
               return this.showLabel(val) === query
