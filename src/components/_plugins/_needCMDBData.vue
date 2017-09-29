@@ -158,7 +158,7 @@
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
-            if (Array.isArray(query)) {
+            if (Array.isArray(query) && query.length) {
               return query.indexOf(this.showLabel(val)) > -1
             } else if (typeof this.showLabel(val) === 'number') {
               return this.showLabel(val) === query
