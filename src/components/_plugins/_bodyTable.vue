@@ -103,22 +103,22 @@
           if (this.postForm.body[this.index][this.formData.id].length < this.limitNum) {
             this.postForm.body[this.index][this.formData.id].push(JSON.parse(stringData))
           }
-          // 配置默认值
-          this.formData.value.attr_list.map(list => {
-            if (list.default.type) {
-              if (list.default.type === 'message_header') {
-                console.log('bodytable default')
-                // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
-                if (!Array.isArray(this.postForm.body[this.index][this.formData.id][i][list.id]) && Array.isArray(this.getPathResult(this.messageData.header, list.default.key_path, this.index))) {
-                  this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path)[i]
-                } else {
-                  console.log(this.index)
-                  this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path, this.index)
-                  console.log(this.postForm.body[this.index][this.formData.id][i][list.id])
-                }
-              }
-            }
-          })
+          // // 配置默认值
+          // this.formData.value.attr_list.map(list => {
+          //   if (list.default.type) {
+          //     if (list.default.type === 'message_header') {
+          //       console.log('bodytable default')
+          //       // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
+          //       if (!Array.isArray(this.postForm.body[this.index][this.formData.id][i][list.id]) && Array.isArray(this.getPathResult(this.messageData.header, list.default.key_path, this.index))) {
+          //         this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path)[i]
+          //       } else {
+          //         console.log(this.index)
+          //         this.postForm.body[this.index][this.formData.id][i][list.id] = this.getPathResult(this.messageData.header, list.default.key_path, this.index)
+          //         console.log(this.postForm.body[this.index][this.formData.id][i][list.id])
+          //       }
+          //     }
+          //   }
+          // })
         }
       },
       rules (formItem) {
