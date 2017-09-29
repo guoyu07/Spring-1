@@ -9,7 +9,6 @@ export default {
   initSocket () {
     if (store.state.connected) return false
     Vue.use(VueSocket, WS_API, { store, format: 'json' })
-    console.log(Vue.use(VueSocket, WS_API, { store, format: 'json' }))
     store.dispatch('socket_onopen')
   }
 }

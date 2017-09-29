@@ -159,7 +159,10 @@
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
-            if (typeof this.showLabel(val) === 'number') {
+            if (Array.isArray(query)) {
+              console.log(query.indexOf(this.showLabel(val)))
+              return query.indexOf(this.showLabel(val)) > -1
+            } else if (typeof this.showLabel(val) === 'number') {
               return this.showLabel(val) === query
             } else {
               return this.showLabel(val).indexOf(query) > -1
@@ -224,6 +227,14 @@
       },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
+          // console.log(option[this.strucData.value.source.res.show_key[0]])
+          // let key = this.strucData.value.source.res.show_key[0]
+          if (Array.isArray(option)) {
+            let arr = option.map((val) => {
+              return val[this.strucData.value.source.res.show_key[0]]
+            })
+            return arr
+          }
           return option[this.strucData.value.source.res.show_key[0]]
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
           //   return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
