@@ -275,7 +275,16 @@
         if (this.formItem && this.formItem.default && this.formItem.default.type) {
           if (this.formItem.default.type === 'message_header') {
             if (this.headerTable || this.bodyTable) {
-              this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, 0)
+              console.log('formbody default')
+              this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
+              // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
+              if (!Array.isArray(this.whole[this.formItem.id]) && Array.isArray(this.getPathResult(this.message.header, this.formItem.default.key_path, this.tableIndex))) {
+                this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)[this.tableIndex]
+              } else {
+                this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex)
+                // console.log(this.getPathResult(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex))
+                // console.log(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex)
+              }
             } else {
               if (this.header) {
                 // console.log(this.whole.header[this.formItem.id])

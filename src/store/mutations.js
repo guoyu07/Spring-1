@@ -78,5 +78,13 @@ export default {
 
   [types.SOCKET_ONASSIGNED] (state) {
     state.socket.newAssigned = false
+  },
+
+  [types.UPDATE_APICACHE] (state, data) {
+    state.apiCache[data.key] = data.value
+  },
+
+  [types.REMOVE_APICACHE] (state) {
+    state.apiCache = {}
   }
 }

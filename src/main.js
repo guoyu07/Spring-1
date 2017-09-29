@@ -74,6 +74,7 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
+  console.log(rs)
   if (rs.status === 401) {
     auth.logout()
   }
@@ -113,24 +114,31 @@ Vue.prototype.parseData = parseData
  * @param {number} k 若取到的值为数组，k则为数组的索引，若不为数组，k无效
  * @return {arr, object, string, number, null, ''} 直接返回path对应的值
 */
-const getPathResult = (result, path, k) => {
+const getPathResult = (result, path, k, kindex) => {
   if (!result) {
     // console.log('找不到result')
     return false
   }
   let _result = result
   const _path = path.split('.')
-  // console.log(_path, Array.isArray(_result[_path[0]]))
+  // console.log(_path, Array.isArray(_result[_path[0]]), k)
   if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
     if (_result[_path[0]].length) {
       _path.reduce((prev, cur, index) => {
-        _result = index ? _result[cur] : _result[cur][k]
+        if (Array.isArray(_result[cur]) && kindex !== undefined) {
+          // _result = getPathResult(_result[_path[0]][k], _path.slice(index).join('.'), index)
+          // return _result
+          _result = _result[cur][kindex]
+        } else {
+          _result = index ? _result[cur] : _result[cur][k]
+        }
       }, null)
     } else {
       return false
     }
   } else {
     for (const i in _path) {
+      // console.log(_result[_path[i]])
       if (!_result) {
         // console.log('找不到_result')
         return false
@@ -140,6 +148,8 @@ const getPathResult = (result, path, k) => {
           // console.log(_result[_path[i]])
           _result = _result[_path[i]]
         } else {
+          console.log(_result[_path[i]])
+          console.log(`读不到${_path[i]}的值，请检查配置`)
           return undefined
         }
       } else {

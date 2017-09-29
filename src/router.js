@@ -5,6 +5,8 @@ import auth from './auth'
 import socket from './socket'
 import SidebarConf from './sidebar-conf'
 
+import store from './store'
+
 import NProgress from 'nprogress'
 
 Vue.use(VueRouter)
@@ -233,6 +235,7 @@ const router = new VueRouter({
 })
 
 router.beforeEach((to, from, next) => {
+  store.state.apiCache = {} // 每次跳转路由，清空原页面的 api 数据
   const requiresAuth = to.matched.some(m => m.meta.requiresAuth)
   auth.checkAuth() // 取 this.$store.state.userinfo
   if (requiresAuth) {  // 如果目的路由需要验证、而用户尚未验证时

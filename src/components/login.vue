@@ -120,7 +120,11 @@
         auth.login(this, credentials, '/menu')
       }
     },
-
+    created () {
+      console.log(this)
+      delete this.$options.sockets
+      console.log(this.$socket)
+    },
     mounted () {
       this.$nextTick(() => {
         const canvas = document.getElementById('canvas')

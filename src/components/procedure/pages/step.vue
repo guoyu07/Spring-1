@@ -75,12 +75,16 @@
               </div>
             </div>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
-              <div></div>
+              <!-- <div></div> -->
+              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
+                <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
+                <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
+              </el-button-group>
               <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
-              <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
+              <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length" >
                 <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
@@ -92,6 +96,7 @@
                             <p v-if="task.form.form.header.length || taskbody.attr_list.length" class="h5">{{task.tname}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
+                              <p class="h5">{{task.tname}}</p>
                               <div v-for="taskformheader in task.form.form.header">
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
@@ -112,6 +117,22 @@
                               :current-task="taskData.ptask.tkey"
                               :history-task="task.tkey">
                             </form-structure-display>
+                          </div>
+                          <div v-else>
+                            <!-- header 信息显示 -->
+                            <div v-if="task.form.form.header.length >= 1">
+                              <p class="h5">{{task.tname}}</p>
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
+                                    <header-form-display
+                                      :item="applyData.header"
+                                      :form-item="valueheader">
+                                    </header-form-display>
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -179,7 +200,12 @@
             </template>
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
-                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body" :key="index">
+                <div v-for="(data, index) in applyData.body" style="position:relative">
+                <el-button-group style="position:absolute;right:10px;top:8px;z-index:1;width:90px">
+                  <el-button size="small" @click="copyValue(index)">复制</el-button>
+                  <el-button size="small" @click="stickValue(index)">黏贴</el-button>
+                </el-button-group>
+                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick"  :key="index">
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
@@ -276,6 +302,7 @@
                     </div>
                   </el-tab-pane>
                 </el-tabs>
+                </div>
               </div>
               <div class="anchorNav">
                 <a href="javascript:void(0)" v-for="(data, index) in applyData.body" :key="index" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
@@ -355,7 +382,8 @@
         submitLoading: false,
         infoShow: {},
         infoHideAll: false,
-        hostList: []
+        hostList: [],
+        copyObj: {}
       }
     },
     created () {
@@ -377,7 +405,7 @@
       'applyData.body' (oldVal, newVal) {
         this.applyData.body.map((body, index) => {
           // this.infoShow[index] = true
-          this.$set(this.infoShow, index, true)
+          this.$set(this.infoShow, index, false)
         })
       },
       'infoShow': {
@@ -386,12 +414,56 @@
       }
     },
     methods: {
+      copyValue (index) {
+        console.log(index)
+        let bodyList = this.taskForm.body.body_list
+        let selection = []
+        for (let taskFormData in bodyList) {
+          for (let i in bodyList[taskFormData].attr_list) {
+            bodyList[taskFormData].attr_list[i].value.map((val) => {
+              return selection.push(val)
+            })
+          }
+        }
+        var copyValues = selection.filter((val) => {
+          if (val.default.type === '' && !val.readOnly && !val.unique) {
+            return val
+          }
+        })
+        // 获取可以复制的选项id
+        copyValues = copyValues.map((val) => {
+          return val.id
+        })
+        console.log(copyValues)
+        console.log(this.assignForm.body[index])
+        // 把复制内容整合成一个对象
+        let list = {}
+        Object.assign(list, this.assignForm.body[index])
+        for (let i in list) {
+          if (!copyValues.some((val) => { return i === val })) {
+            delete list[i]
+          }
+        }
+        this.copyObj = list
+        this.$message({
+          message: '已复制',
+          type: 'success',
+          duration: '1000'
+        })
+      },
+      stickValue (index) {
+        console.log(index)
+        console.log(this.copyObj)
+        Object.assign(this.assignForm.body[index], this.copyObj)
+      },
       createPdf () {
         let newWindow = window.open('_blank')  // 打开新窗口
         newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
         newWindow.document.head.innerHTML = window.document.head.innerHTML // 向文档写入头部信息
         newWindow.document.close() // 关闭document的输出流, 显示选定的数据
-        newWindow.print()  // 打印当前窗口
+        setTimeout(() => {
+          newWindow.print()  // 打印当前窗口
+        }, 100)
         return true
       },
       onHostsChange (val, index) {
@@ -607,7 +679,9 @@
       },
       renderBodyLength (data) {
         this.applyData.body = []
+        console.log(data, this.taskForm.body.count.key_path)
         const keyData = this.getPathResult(data, this.taskForm.body.count.key_path)
+        console.log(keyData)
         if (Array.isArray(keyData)) {
           // this.applyData.body.length = keyData.length
           const num = keyData.length

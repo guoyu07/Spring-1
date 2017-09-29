@@ -18,7 +18,8 @@ const state = {
     newTask: false,
     newAssigned: false,
     message: null
-  }
+  },
+  apiCache: {}
 }
 
 export default new Vuex.Store({

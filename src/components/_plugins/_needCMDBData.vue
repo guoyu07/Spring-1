@@ -72,7 +72,8 @@
         limitMaxNum: 0,
         showToolTip: false,
         showOptionList: [],
-        keyPaths: []
+        keyPaths: [],
+        params: {}
       }
     },
     created () {
@@ -157,7 +158,9 @@
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
-            if (typeof this.showLabel(val) === 'number') {
+            if (Array.isArray(query) && query.length) {
+              return query.indexOf(this.showLabel(val)) > -1
+            } else if (typeof this.showLabel(val) === 'number') {
               return this.showLabel(val) === query
             } else {
               return this.showLabel(val).indexOf(query) > -1
@@ -170,10 +173,17 @@
       },
       renderData (newVal, oldVal) {
         // setTimeout(() => {
+        this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
         if (this.vmodel[this.strucData.id]) {
           // console.log(this.strucData.id, this.strucData.name)
-          this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
           if (Array.isArray(this.vmodel[this.strucData.id])) {
+            // const key = []
+            // if (this.vmodel[this.strucData.id].length) {
+            //   this.vmodel[this.strucData.id].map(model => {
+            //     key.push(this.showLabel(model))
+            //   })
+            // }
+            // this.filterList(key)
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
@@ -190,6 +200,7 @@
               }
             })
           } else {
+            // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes
               for (var option of this.optionList) {
@@ -214,6 +225,14 @@
       },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
+          // console.log(option[this.strucData.value.source.res.show_key[0]])
+          // let key = this.strucData.value.source.res.show_key[0]
+          if (Array.isArray(option)) {
+            let arr = option.map((val) => {
+              return val[this.strucData.value.source.res.show_key[0]]
+            })
+            return arr
+          }
           return option[this.strucData.value.source.res.show_key[0]]
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
           //   return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
@@ -270,7 +289,6 @@
             } else if (para.value.type === 'form_body') {
               // console.log(this.bodyTable, this.headerTable, this.strucData.name)
               if (this.bodyTable || this.headerTable) {
-                console.log('hello laiyit')
                 if (isRender(this.getPathResult(this.whole, para.value.key_path))) {
                   // 这里要区分一下 this.whole.body[this.index] 的 id 的值是对象还是数组
                   params[para.id] = this.getPathResult(this.whole, para.value.key_path)
@@ -292,9 +310,9 @@
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path))) {
+              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path, this.index))) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.header, para.value.key_path)
+                params[para.id] = this.getPathResult(this.message.header, para.value.key_path, this.index)
               } else {
                 return false // 如果没取到值就不发请求
               }
@@ -310,6 +328,7 @@
             }
           }
         }
+        this.params = params
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
@@ -324,19 +343,28 @@
           }
           return false
         }
+        // let p = ''
+        // let key
+        // for (const i in params) {
+        //   p = `${p}${i}=${params[i]}&`
+        // }
+        // key = `${this.strucData.value.source.data.action}?${p}`
+        // if (this.$store.state.apiCache[key]) {
+        //   this.optionList = this.$store.state.apiCache[key]
+        //   return false
+        // }
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           if (response) {
             this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
+            // const apicache = { key: key, value: this.optionList }
+            // this.$store.dispatch('update_apicache', apicache)
             if (this.optionList.length === 0) {
               this.$message.info(`${this.strucData.name}无数据`)
               if (!this.isAlias) {
                 this.vmodel[this.strucData.id] = null
               }
             }
-            // this.$store.dispatch('idcrack_data', {
-            //   idcrackData: this.optionList
-            // })
             this.filterList('')
             // this.isEditing 编辑状态下不配置默认值
             if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
@@ -437,7 +465,7 @@
                   })
                 }
               }
-            } else if (this.strucData.value.source.data.action === 'object/instance/list' && params.object_id === 'USER' && !this.isEditing) {
+            } else if (this.strucData.value.source.data.action === 'object/instance/list' && this.params.object_id === 'USER' && !this.isEditing) {
               if (this.strucData.default.type) {
                 if (this.strucData.default.type === 'static' && this.strucData.default.value === '$author') {
                   const user = this.$store.state.userinfo.userId
@@ -453,8 +481,6 @@
                 }
               }
             }
-            // console.log(this.vmodel[this.strucData.id], this.strucData.id, this.strucData.name)
-            // this.renderData()
           }
         })
       }
