@@ -4,7 +4,7 @@
       <el-select
         v-if="!strucData.isAlias"
         v-model="vmodel[strucData.id]"
-        :clearable="!strucData.required"
+        clearable
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
@@ -32,10 +32,8 @@
         v-model="vmodel[strucData.id]"
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
-        multiple
-        remote
-        :remote-method="filterList">
-          <el-option  v-for="(option, optionIndex) in showOptionList"
+        multiple>
+          <el-option  v-for="(option, optionIndex) in optionList"
                       :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
@@ -155,13 +153,16 @@
     },
     methods: {
       filterList (query) {
+        console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
-            if (Array.isArray(query) && query.length) {
-              return query.indexOf(this.showLabel(val)) > -1
-            } else if (typeof this.showLabel(val) === 'number') {
-              return this.showLabel(val) === query
+            // if (Array.isArray(query) && query.length) {
+            //   return query.indexOf(this.showLabel(val)) > -1
+            // } else
+            if (typeof this.showLabel(val) === 'number') {
+              // return this.showLabel(val) === query
+              return this.showLabel(val).indexOf(query + '') > -1
             } else {
               return this.showLabel(val).indexOf(query) > -1
             }
@@ -170,8 +171,14 @@
         } else {
           this.showOptionList = this.optionList.slice(0, 50)
         }
+        Array.isArray(this.vmodel[this.strucData.id]) && this.vmodel[this.strucData.id].map(val => {
+          if (!this.showOptionList.find(option => { return option[this.strucData.value.source.res.show_key[0]] === val[this.strucData.value.source.res.show_key[0]] })) {
+            this.showOptionList.push(val)
+          }
+        })
       },
       renderData (newVal, oldVal) {
+        // console.log(this.strucData.id, newVal, oldVal)
         // setTimeout(() => {
         // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
         if (this.vmodel[this.strucData.id]) {
@@ -200,7 +207,7 @@
               }
             })
           } else {
-            // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes
               for (var option of this.optionList) {

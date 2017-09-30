@@ -611,7 +611,8 @@
       width: 80%;
       // width:-moz-calc(100% - 100px);
       // width:-webkit-calc(100% - 100px);
-      width: calc(100% - 100px);
+      width: calc(100% - 210px);
+      margin-right: 105px;
     }
   }
 

@@ -23,7 +23,7 @@
             </el-col>
           </el-row>
 
-          <el-form label-position="right" ref="postForm" :model="postForm" :inline="true" label-width="100px">
+          <el-form label-position="right" ref="postForm" :model="postForm" :inline="true" label-width="105px">
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
               <div v-for="(task, index) in taskFormData.header" :key="index">
@@ -277,14 +277,16 @@
           this.taskFormData = res.data.data.form
           this.taskFormData.header.map(group => {
             group.value.map(item => {
-              // if (this.showFormItem(item, this.postForm)) {
-              this.setDataType(item, this.postForm.header)
-              // }
+              if (this.showFormItem(item, this.postForm)) {
+                this.setDataType(item, this.postForm.header)
+              }
               if (item.show.type === 'form_header') {
+                console.log(item.show.key_path)
                 this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                  if (this.showFormItem(item, this.postForm)) {
-                    this.setDataType(item, this.postForm.header)
-                  } else {
+                  this.setDataType(item, this.postForm.header)
+                  if (!this.showFormItem(item, this.postForm)) {
+                  //   this.setDataType(item, this.postForm.header)
+                  // } else {
                     delete this.postForm.header[item.id]
                   }
                 })

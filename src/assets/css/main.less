@@ -251,7 +251,7 @@ h5 {
     color: @textColor;
   }
   .el-select {
-    width: 25%;
+    width: 90px!important;
     margin-right: 10px;
   }
   .el-input {
@@ -432,11 +432,23 @@ h5 {
   }
 }
 
-// .formbody {
-//   .el-form-item__content {
-//     line-height: 1;
-//   }
-// }
+.el-form--inline {
+  // .el-form-item {
+  //   margin-right: 30px;
+  // }
+  .el-form-item__content {
+    width: 200px;
+    .el-select {
+      width: 100%;
+    }
+    .el-input-number {
+      width: 100%;
+    }
+    .el-date-editor.el-input {
+      width: 100%;
+    }
+  }
+}
 
 .process-desc {
   padding-left: 6px;
