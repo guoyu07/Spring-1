@@ -90,7 +90,7 @@
     <template v-else-if="formItem.value.type === 'enum'">
       <el-select
         filterable
-        :clearable="!formItem.required"
+        clearable
         :disabled="formItem.readonly"
         v-if="!formItem.isAlias"
         v-model="item[formItem.id]">
@@ -525,7 +525,7 @@
             trigger = 'change, blur'
           } else if (formItem.value.type === 'enum') {
             type = 'string'
-            trigger = 'change'
+            trigger = 'change, blur'
           } else {
             type = 'string'
             trigger = 'blur'
