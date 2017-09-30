@@ -277,12 +277,11 @@
           this.taskFormData = res.data.data.form
           this.taskFormData.header.map(group => {
             group.value.map(item => {
-              if (this.showFormItem(item, this.postForm)) {
-                this.setDataType(item, this.postForm.header)
-              }
+              // if (this.showFormItem(item, this.postForm)) {
+              this.setDataType(item, this.postForm.header)
+              // }
               if (item.show.type === 'form_header') {
                 this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                  console.log(item.name)
                   if (this.showFormItem(item, this.postForm)) {
                     this.setDataType(item, this.postForm.header)
                   } else {
@@ -305,7 +304,7 @@
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.taskFormData.body.body_list.map(bodyList => {
-                    if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+                    if (this.showBodyList(bodyList, this.postForm)) {
                       this.$set(this.postForm, 'body', [{}]) // 初始化表单数据
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
@@ -316,9 +315,11 @@
                             if (value.show.type === 'form_header') {
                               this.$watch('postForm.header.' + value.show.key_path, (newVal, oldVal) => {
                                 if (this.showFormItem(value, this.postForm)) {
+                                  console.log('set', value.name)
                                   this.setDataType(value, this.postForm.body[0])
                                 } else {
                                   if (this.postForm.body[0]) {
+                                    console.log('delete', value.name)
                                     delete this.postForm.body[0][value.id]
                                   }
                                 }
@@ -331,6 +332,8 @@
                           if (this.taskFormData.body.count.type === 'form_header') {
                             this.$watch('postForm.header.' + this.taskFormData.body.count.key_path, (newVal, oldVal) => {
                               if (Array.isArray(newVal) && newVal.length) {
+                                this.$set(this.postForm.body, 0, {})
+                                this.setDataType(value, this.postForm.body[0])
                                 // i = 1 开始而不是从0开始，因为初始化默认会有一个body
                                 for (let i = 1; i < newVal.length; i++) {
                                   if (this.postForm.body.length <= newVal.length) {
@@ -356,12 +359,13 @@
                           }
                         })
                       })
-                    } else {
-                      console.log('delete body[0]')
-                      // 若没有body 表单，删除整个body
-                      this.postForm.body = []
                     }
                   })
+                  if (this.taskFormData.body.body_list.every(bodyList => { return !this.showBodyList(bodyList, this.postForm) })) {
+                    console.log('delete body[0]')
+                    // 若没有body 表单，删除整个body
+                    this.postForm.body = []
+                  }
                 })
               }
             } else {
