@@ -167,9 +167,28 @@
               return this.showLabel(val).indexOf(query) > -1
             }
           })
-          this.showOptionList = arr.slice(0, 50)
+          let targetArr = arr.slice(0, 50)
+          if (this.vmodel[this.strucData.id]) {
+            this.vmodel[this.strucData.id].map((val) => {
+              if (!targetArr.find((el) => { return el.name === val.name })) {
+                targetArr.unshift(val)
+                console.log(targetArr)
+              }
+            })
+          }
+          this.showOptionList = targetArr
         } else {
-          this.showOptionList = this.optionList.slice(0, 50)
+          let targetArr = this.optionList.slice(0, 50)
+          if (this.vmodel[this.strucData.id]) {
+            this.vmodel[this.strucData.id].map((val) => {
+              console.log(targetArr.find((el) => { return el.name === val.name }))
+              if (!targetArr.find((el) => { return el.name === val.name })) {
+                targetArr.unshift(val)
+                console.log(targetArr)
+              }
+            })
+          }
+          this.showOptionList = targetArr
         }
         Array.isArray(this.vmodel[this.strucData.id]) && this.vmodel[this.strucData.id].map(val => {
           if (!this.showOptionList.find(option => { return option[this.strucData.value.source.res.show_key[0]] === val[this.strucData.value.source.res.show_key[0]] })) {
@@ -178,12 +197,12 @@
         })
       },
       renderData (newVal, oldVal) {
-        // console.log(this.strucData.id, newVal, oldVal)
         // setTimeout(() => {
         // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
         if (this.vmodel[this.strucData.id]) {
           // console.log(this.strucData.id, this.strucData.name)
           if (Array.isArray(this.vmodel[this.strucData.id])) {
+            console.log('qq')
             // const key = []
             // if (this.vmodel[this.strucData.id].length) {
             //   this.vmodel[this.strucData.id].map(model => {
@@ -207,7 +226,7 @@
               }
             })
           } else {
-            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes
               for (var option of this.optionList) {
@@ -232,16 +251,14 @@
       },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
-          // console.log(option[this.strucData.value.source.res.show_key[0]])
-          // let key = this.strucData.value.source.res.show_key[0]
-          // if (Array.isArray(option)) {
-          //   let arr = option.map((val) => {
-          //     return val[this.strucData.value.source.res.show_key[0]]
-          //   })
-          //   return arr
-          // } else if (option) {
-          return option[this.strucData.value.source.res.show_key[0]]
-          // }
+          if (Array.isArray(option)) {
+            let arr = option.map((val) => {
+              return val[this.strucData.value.source.res.show_key[0]]
+            })
+            return arr
+          } else if (option) {
+            return option[this.strucData.value.source.res.show_key[0]]
+          }
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
           //   return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
           // }, '')
@@ -259,8 +276,6 @@
               return ''
             }
           }, '')
-        } else {
-          return ''
         }
       },
       renderOptions () {
