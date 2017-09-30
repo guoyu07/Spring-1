@@ -232,8 +232,7 @@
               return val[this.strucData.value.source.res.show_key[0]]
             })
             return arr
-          } else {
-            console.log(option[this.strucData.value.source.res.show_key[0]])
+          } else if (option) {
             return option[this.strucData.value.source.res.show_key[0]]
           }
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
