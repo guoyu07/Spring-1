@@ -175,7 +175,7 @@
       },
       renderData (newVal, oldVal) {
         // setTimeout(() => {
-        this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+        // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
         if (this.vmodel[this.strucData.id]) {
           // console.log(this.strucData.id, this.strucData.name)
           if (Array.isArray(this.vmodel[this.strucData.id])) {
@@ -185,7 +185,7 @@
             //     key.push(this.showLabel(model))
             //   })
             // }
-            // this.filterList(key)
+            this.filterList('')
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
@@ -229,13 +229,14 @@
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
           // console.log(option[this.strucData.value.source.res.show_key[0]])
           // let key = this.strucData.value.source.res.show_key[0]
-          if (Array.isArray(option)) {
-            let arr = option.map((val) => {
-              return val[this.strucData.value.source.res.show_key[0]]
-            })
-            return arr
-          }
+          // if (Array.isArray(option)) {
+          //   let arr = option.map((val) => {
+          //     return val[this.strucData.value.source.res.show_key[0]]
+          //   })
+          //   return arr
+          // } else if (option) {
           return option[this.strucData.value.source.res.show_key[0]]
+          // }
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
           //   return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
           // }, '')

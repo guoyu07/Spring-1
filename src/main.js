@@ -126,8 +126,6 @@ const getPathResult = (result, path, k, kindex) => {
     if (_result[_path[0]].length) {
       _path.reduce((prev, cur, index) => {
         if (Array.isArray(_result[cur]) && kindex !== undefined) {
-          // _result = getPathResult(_result[_path[0]][k], _path.slice(index).join('.'), index)
-          // return _result
           _result = _result[cur][kindex]
         } else {
           _result = index ? _result[cur] : _result[cur][k]
