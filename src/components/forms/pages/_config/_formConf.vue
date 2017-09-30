@@ -177,7 +177,7 @@
                     <!--表格-->
                     <el-popover v-if="itemConf.value.type === 'table'" placement="top" trigger="click" @show="showTableConf(itemConf)">
                       <!-- <lazy-render> -->
-                        <table-conf :dialog-props="itemConf"></table-conf>
+                        <table-conf :dialog-props="itemConf" :option-presets="optionPresets"></table-conf>
                       <!-- </lazy-render> -->
                       <el-button size="small" slot="reference">配置表格</el-button>
                     </el-popover>

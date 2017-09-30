@@ -232,8 +232,10 @@
               return val[this.strucData.value.source.res.show_key[0]]
             })
             return arr
+          } else {
+            console.log(option[this.strucData.value.source.res.show_key[0]])
+            return option[this.strucData.value.source.res.show_key[0]]
           }
-          return option[this.strucData.value.source.res.show_key[0]]
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
           //   return prev ? (prev + ' - ' + option[cur]) : (prev + option[cur])
           // }, '')
@@ -251,8 +253,6 @@
               return ''
             }
           }, '')
-        } else {
-          return ''
         }
       },
       renderOptions () {
