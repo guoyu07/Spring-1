@@ -54,8 +54,8 @@ export default {
           page_size: this.currentSize
         }
       }
-      if (this.pagesCache[this.currentPage]) {
-        this.filteredTasks = this.pagesCache[this.currentPage]
+      if (this.pagesCache[`${this.currentPage}-${this.currentSize}`]) {
+        this.filteredTasks = this.pagesCache[`${this.currentPage}-${this.currentSize}`]
         return
       }
       this.loading = true
@@ -76,7 +76,7 @@ export default {
               task.columns.push(Object.assign({}, col, { value }))// 将 columns 赋值为带值的 col 对象
             })
           })
-          this.pagesCache[this.currentPage] = this.filteredTasks
+          this.pagesCache[`${this.currentPage}-${this.currentSize}`] = this.filteredTasks
         }
       })
     },
