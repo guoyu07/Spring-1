@@ -10,13 +10,16 @@
         v-loading="loading"
         width="100%"
         stripe
-        border>
+        border
+        @cell-click='check'
+        >
         <el-table-column
           v-for="col in filterData.show"
           :key="col.key_path"
           inline-template
           :context="_self"
-          :label="col.label">
+          :label="col.label"
+          >
           <template>
             <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
               {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
@@ -85,6 +88,11 @@
     },
 
     methods: {
+      check (row, column, cell) {
+        console.log(row)
+        console.log(column.id)
+        console.log(column.id.indexOf('_column_1'))
+      },
       getFilterData (id) {
         let postData = {
           action: 'filter',
@@ -103,6 +111,7 @@
       },
 
       onViewTask (order) {
+        console.log(order)
         Object.assign(this.taskViewData, { visible: true, order })
       },
 
