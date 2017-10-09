@@ -90,7 +90,6 @@
                 if (this.strucData.value.type === 'dicts') {
                   this.vmodel[this.strucData.id] = []
                 } else {
-                  console.log(this.strucData.name)
                   this.vmodel[this.strucData.id] = null
                 }
               }
@@ -167,32 +166,13 @@
               return this.showLabel(val).indexOf(query) > -1
             }
           })
-          let targetArr = arr.slice(0, 50)
-          if (this.vmodel[this.strucData.id]) {
-            this.vmodel[this.strucData.id].map((val) => {
-              if (!targetArr.find((el) => { return el.name === val.name })) {
-                targetArr.unshift(val)
-                console.log(targetArr)
-              }
-            })
-          }
-          this.showOptionList = targetArr
+          this.showOptionList = arr.slice(0, 50)
         } else {
-          let targetArr = this.optionList.slice(0, 50)
-          if (this.vmodel[this.strucData.id]) {
-            this.vmodel[this.strucData.id].map((val) => {
-              console.log(targetArr.find((el) => { return el.name === val.name }))
-              if (!targetArr.find((el) => { return el.name === val.name })) {
-                targetArr.unshift(val)
-                console.log(targetArr)
-              }
-            })
-          }
-          this.showOptionList = targetArr
+          this.showOptionList = this.optionList.slice(0, 50)
         }
         Array.isArray(this.vmodel[this.strucData.id]) && this.vmodel[this.strucData.id].map(val => {
           if (!this.showOptionList.find(option => { return option[this.strucData.value.source.res.show_key[0]] === val[this.strucData.value.source.res.show_key[0]] })) {
-            this.showOptionList.push(val)
+            this.showOptionList.unshift(val)
           }
         })
       },

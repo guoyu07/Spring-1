@@ -5,7 +5,7 @@
         <!-- @change="groupChange" -->
       <el-select
         v-model="member.group"
-        :clearable="!strucData.required"
+        clearable
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
@@ -19,7 +19,7 @@
       </el-select>
       <el-select
         v-model="member.user"
-        :clearable="!strucData.required"
+        clearable
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
@@ -43,7 +43,7 @@
     <div v-else>
       <el-select
         v-model="vmodel[strucData.id]"
-        :clearable="!strucData.required"
+        clearable
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         filterable
