@@ -42,7 +42,7 @@ export default {
       })
     },
 
-    getFilteredTasks () {
+    getFilteredTasks (needCache = true) {
       let { filters, order } = this.filterData
       let postData = {
         action: 'filter/tasks',
@@ -54,7 +54,7 @@ export default {
           page_size: this.currentSize
         }
       }
-      if (this.pagesCache[`${this.currentPage}-${this.currentSize}`]) {
+      if (needCache && this.pagesCache[`${this.currentPage}-${this.currentSize}`]) {
         this.filteredTasks = this.pagesCache[`${this.currentPage}-${this.currentSize}`]
         return
       }
