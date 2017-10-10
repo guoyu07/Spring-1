@@ -81,7 +81,7 @@
       onFilterMutated (args) {
         // if (!args.filters) return
         Object.assign(this.filterData, args)
-        this.getFilteredTasks()
+        this.getFilteredTasks(false)
       },
 
       onColumnMutated (args) {
