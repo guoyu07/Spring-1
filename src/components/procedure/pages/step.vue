@@ -778,40 +778,48 @@
           header: {},
           body: []
         }
-        for (const headerid in data.header) {
-          if (Array.isArray(data.header[headerid])) {
-            this.taskForm.header.map(header => {
-              header.value.map(item => {
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.need_submit) {
+              for (const headerid in data.header) {
                 if (item.id === headerid) {
-                  if (item.required || data.header[headerid].length !== 0) {
+                  if (Array.isArray(data.header[headerid])) {
+                    if (item.required || data.header[headerid].length !== 0) {
+                      postFormData.header[headerid] = data.header[headerid]
+                    }
+                  } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
+                    // 整型为 0 时可以提交
                     postFormData.header[headerid] = data.header[headerid]
                   }
                 }
-              })
-            })
-          } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
-            postFormData.header[headerid] = data.header[headerid]
-          }
-        }
+              }
+            }
+          })
+        })
         data.body.map((body, bodyIndex) => {
           postFormData.body[bodyIndex] = {}
-          for (const bodyid in body) {
-            if (Array.isArray(body[bodyid])) {
-              this.taskForm.body.body_list.map(bodyList => {
-                bodyList.attr_list.map(list => {
-                  list.value.map(item => {
-                    if (item.id === bodyid) {
-                      if (item.required || body[bodyid].length !== 0) {
-                        postFormData.body[bodyIndex][bodyid] = body[bodyid]
+          this.taskForm.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData, bodyIndex)) {
+              bodyList.attr_list.map(list => {
+                list.value.map(item => {
+                  if (item.need_submit) {
+                    for (const bodyid in body) {
+                      if (item.id === bodyid) {
+                        if (Array.isArray(body[bodyid])) {
+                          if (item.required || body[bodyid].length !== 0) {
+                            postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                          }
+                        } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
+                          // 整型为 0 时可以提交
+                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                        }
                       }
                     }
-                  })
+                  }
                 })
               })
-            } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
-              postFormData.body[bodyIndex][bodyid] = body[bodyid]
             }
-          }
+          })
         })
         const postData = {
           action: 'task',

@@ -1,30 +1,36 @@
 <template>
   <div>
     <template v-if="strucData.value.type === 'dict'">
-      <!-- {{ showLabel(vmodel[strucData.id]) }} -->
-      <el-select
-        v-if="!strucData.isAlias"
-        v-model="vmodel[strucData.id]"
-        clearable
-        :allow-create="strucData.value.allow_create"
-        :disabled="strucData.readonly"
-        filterable
-        remote
-        :remote-method="filterList">
-          <el-option  v-for="(option, optionIndex) in showOptionList"
-                      :key="optionIndex"
-                      :label="showLabel(option)"
-                      :value="option">
-                      <span>{{ showLabel(option) }}</span>
-                      <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
-          </el-option>
-      </el-select>
-      <el-radio-group
-        v-else
-        v-model="vmodel[strucData.id]"
-        :disabled="strucData.readonly">
-        <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
-      </el-radio-group>
+      <template v-if="strucData.readonly">
+        <el-input
+          :placeholder="showLabel(vmodel[strucData.id])"
+          :disabled="true">
+        </el-input>
+      </template>
+      <template v-if="!strucData.readonly">
+        <el-select
+          v-if="!strucData.isAlias"
+          v-model="vmodel[strucData.id]"
+          clearable
+          :allow-create="strucData.value.allow_create"
+          filterable
+          remote
+          :remote-method="filterList">
+            <el-option  v-for="(option, optionIndex) in showOptionList"
+                        :key="optionIndex"
+                        :label="showLabel(option)"
+                        :value="option">
+                        <span>{{ showLabel(option) }}</span>
+                        <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+            </el-option>
+        </el-select>
+        <el-radio-group
+          v-else
+          v-model="vmodel[strucData.id]"
+          :disabled="strucData.readonly">
+          <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
+        </el-radio-group>
+      </template>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
       <el-select
