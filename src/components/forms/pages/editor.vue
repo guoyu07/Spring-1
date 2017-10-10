@@ -180,7 +180,7 @@
               </el-popover>
             </el-row>
             <el-row v-for="(body, index) in formConfig.form.body.body_list" :key="index">
-              <h5>Body #{{index + 1}} {{body.name}}</h5>
+              <h5>#{{index + 1}} - <span class="text-info">{{body.name}}</span></h5>
               <el-card>
                 <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
@@ -195,7 +195,7 @@
             <el-dropdown trigger="click" @command="selectClonedBody">
               <el-button type="primary" :plain="true" size="small"><i class="el-icon-fa-clone"></i> 克隆 Body</el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-for="(body, index) of formConfig.form.body.body_list" :key="index" :command="index.toString()">Body #{{index + 1}}</el-dropdown-item>
+                <el-dropdown-item v-for="(body, index) of formConfig.form.body.body_list" :key="index" :command="index.toString()">#{{index + 1}} - {{body.name}}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-row>
