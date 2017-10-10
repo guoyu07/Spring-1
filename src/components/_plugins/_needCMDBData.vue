@@ -1,6 +1,7 @@
 <template>
   <div>
     <template v-if="strucData.value.type === 'dict'">
+      <!-- {{ showLabel(vmodel[strucData.id]) }} -->
       <el-select
         v-if="!strucData.isAlias"
         v-model="vmodel[strucData.id]"
@@ -87,11 +88,12 @@
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
               if (!this.isEditing) {
-                if (this.strucData.value.type === 'dicts') {
-                  this.vmodel[this.strucData.id] = []
-                } else {
-                  this.vmodel[this.strucData.id] = null
-                }
+                // if (this.strucData.value.type === 'dicts') {
+                //   this.vmodel[this.strucData.id] = []
+                // } else {
+                //   this.vmodel[this.strucData.id] = null
+                // }
+                this.setDataType(this.strucData, this.vmodel)
               }
               this.renderOptions()
             })
@@ -99,22 +101,24 @@
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
-                  if (this.strucData.value.type === 'dicts') {
-                    this.vmodel[this.strucData.id] = []
-                  } else {
-                    this.vmodel[this.strucData.id] = null
-                  }
+                  // if (this.strucData.value.type === 'dicts') {
+                  //   this.vmodel[this.strucData.id] = []
+                  // } else {
+                  //   this.vmodel[this.strucData.id] = null
+                  // }
+                  this.setDataType(this.strucData, this.vmodel)
                 }
                 this.renderOptions()
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
-                  if (this.strucData.value.type === 'dicts') {
-                    this.vmodel[this.strucData.id] = []
-                  } else {
-                    this.vmodel[this.strucData.id] = null
-                  }
+                  // if (this.strucData.value.type === 'dicts') {
+                  //   this.vmodel[this.strucData.id] = []
+                  // } else {
+                  //   this.vmodel[this.strucData.id] = null
+                  // }
+                  this.setDataType(this.strucData, this.vmodel)
                 }
                 this.renderOptions()
               })
@@ -127,11 +131,12 @@
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
             if (!this.isEditing) {
-              if (this.strucData.value.type === 'dicts') {
-                this.vmodel[this.strucData.id] = []
-              } else {
-                this.vmodel[this.strucData.id] = null
-              }
+              // if (this.strucData.value.type === 'dicts') {
+              //   this.vmodel[this.strucData.id] = []
+              // } else {
+              //   this.vmodel[this.strucData.id] = null
+              // }
+              this.setDataType(this.strucData, this.vmodel)
             }
             this.renderOptions()
           })
@@ -161,7 +166,8 @@
             // } else
             if (typeof this.showLabel(val) === 'number') {
               // return this.showLabel(val) === query
-              return this.showLabel(val).indexOf(query + '') > -1
+              const value = this.showLabel(val) + ''
+              return value.indexOf(query + '') > -1
             } else {
               return this.showLabel(val).indexOf(query) > -1
             }
@@ -182,7 +188,6 @@
         if (this.vmodel[this.strucData.id]) {
           // console.log(this.strucData.id, this.strucData.name)
           if (Array.isArray(this.vmodel[this.strucData.id])) {
-            console.log('qq')
             // const key = []
             // if (this.vmodel[this.strucData.id].length) {
             //   this.vmodel[this.strucData.id].map(model => {
@@ -206,7 +211,7 @@
               }
             })
           } else {
-            // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes
               for (var option of this.optionList) {
@@ -421,6 +426,7 @@
                   const selectedIndex = optionIndex + +this.strucData.default.value
                   if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
+                    console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
                   } else if (this.optionList[0]) {
                     this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
@@ -431,6 +437,7 @@
                   }
                 }
               } else if (this.strucData.default.type === 'static') {
+                // 若识别不到则置空
                 for (const option of this.optionList) {
                   if (option[this.strucData.value.source.res.show_key[0]] === this.strucData.default.value) {
                     if (this.strucData.value.type === 'dicts') {

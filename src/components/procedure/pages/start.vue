@@ -281,28 +281,17 @@
                 this.setDataType(item, this.postForm.header)
               }
               if (item.show.type === 'form_header') {
-                console.log(item.show.key_path)
                 this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
                   this.setDataType(item, this.postForm.header)
                   if (!this.showFormItem(item, this.postForm)) {
-                  //   this.setDataType(item, this.postForm.header)
-                  // } else {
                     delete this.postForm.header[item.id]
                   }
                 })
               }
-              // else if (!item.show.type) {
-              //   // console.log(item.name)
-              //   this.setDataType(item, this.postForm.header)
-              // }
             })
           })
-          // if (this.taskFormData.body.body_list.length) {
-          //   this.$set(this.postForm, 'body', [{}])
-          // }
           this.taskFormData.body.body_list.forEach(body => {
             if (body.show.type) {
-              // const keyPath = body.show.key_path.split('.')
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.taskFormData.body.body_list.map(bodyList => {
@@ -519,9 +508,15 @@
         }
         for (const headerid in data.header) {
           if (Array.isArray(data.header[headerid])) {
-            if (data.header[headerid].length !== 0) {
-              postFormData.header[headerid] = data.header[headerid]
-            }
+            this.taskFormData.header.map(header => {
+              header.value.map(item => {
+                if (item.id === headerid) {
+                  if (item.required || data.header[headerid].length !== 0) {
+                    postFormData.header[headerid] = data.header[headerid]
+                  }
+                }
+              })
+            })
           } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
             // 整型为 0 时可以提交
             postFormData.header[headerid] = data.header[headerid]
@@ -531,9 +526,17 @@
           postFormData.body[bodyIndex] = {}
           for (const bodyid in body) {
             if (Array.isArray(body[bodyid])) {
-              if (body[bodyid].length !== 0) {
-                postFormData.body[bodyIndex][bodyid] = body[bodyid]
-              }
+              this.taskFormData.body.body_list.map(body => {
+                body.attr_list.map(list => {
+                  list.value.map(item => {
+                    if (item.id === bodyid) {
+                      if (item.required || body[bodyid].length !== 0) {
+                        postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                      }
+                    }
+                  })
+                })
+              })
             } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
               // 整型为 0 时可以提交
               postFormData.body[bodyIndex][bodyid] = body[bodyid]

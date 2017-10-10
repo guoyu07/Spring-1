@@ -245,6 +245,23 @@
     created () {
       // console.log(this.isEditing)
       // console.log('formbody' + this.formItem.name)
+      if (!this.headerTable && !this.bodyTable) {
+        if (this.header) {
+          this.setDataType(this.formItem, this.whole.header)
+        } else {
+          this.setDataType(this.formItem, this.whole.body[this.index])
+        }
+      }
+    },
+    destroyed () {
+      // console.log('%c%s', 'color:red', 'name: ' + this.formItem.name)
+      if (!this.headerTable && !this.bodyTable) {
+        if (this.header) {
+          delete this.whole.header[this.formItem.id]
+        } else {
+          delete this.whole.body[this.index][this.formItem.id]
+        }
+      }
     },
     computed: {
       multiFiles () {
