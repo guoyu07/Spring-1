@@ -44,8 +44,10 @@
                       :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
-                      <span>{{ showLabel(option) }}</span>
-                      <p v-if="toolTipContent(option)" style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+                      <div class="left-content">
+                        <span>{{ showLabel(option) }}</span>
+                        <p v-if="toolTipContent(option)" style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+                      </div>
           </el-option>
       </el-select>
       <el-checkbox-group
@@ -503,3 +505,16 @@
     }
   }
 </script>
+<style scoped lang="less">
+  .left-content {
+    float: left;
+    overflow: hidden;
+    width: 100%;
+    p {
+      width: 100%;
+      overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: nowrap;
+    }
+  }
+</style>
