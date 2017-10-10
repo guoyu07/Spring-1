@@ -656,6 +656,64 @@
                 this.assignForm.body.push(newData)
               }
             })
+            // U 位默认值
+            if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host') {
+              // console.log(this.assignForm.body[k])
+              this.$watch('assignForm.body.' + k + '.idcrack', (newVal, oldVal) => {
+                // console.log(newVal)
+                // console.log(newVal, oldVal, this.applyData.body)
+                const uHeight = newVal.u_info.jgUHeight
+                // 整理出一个未被占用的 U位 列表
+                let untakedData = []
+                for (let i = 1; i <= uHeight; i++) {
+                  if (newVal.u_info.assetList.length !== 0) {
+                    if (newVal.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
+                      untakedData.push(i)
+                    }
+                  }
+                }
+                // console.log(untakedData)
+                // 整理出被当前其他表单占用的 U位
+                let formTakedData = []
+                this.assignForm.body.map((body, bodyk) => {
+                  if (body.idcracku && body.idcrack && (body.idcrack.instanceId === newVal.instanceId)) {
+                    let eU
+                    if (this.taskData.pinstance.pkey === 'host') {
+                      eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                      // console.log(eU, body.idcracku, this.applyData.header.host_list[bodyk].u_num)
+                    } else if (this.taskData.pinstance.pkey === 'host_my') {
+                      eU = body.idcracku + +this.applyData.body[bodyk].host.u_num - 1
+                    }
+                    // console.log(eU)
+                    for (let tU = body.idcracku; tU <= eU; tU++) {
+                      if (!formTakedData.includes(tU)) {
+                        formTakedData.push(tU)
+                      }
+                    }
+                  }
+                })
+                // console.log(formTakedData)
+                if (formTakedData.length !== 0) {
+                  const untakedDataLenght = untakedData.length
+                  for (let i = 0; i <= untakedDataLenght; i++) {
+                    let Uend
+                    if (this.taskData.pinstance.pkey === 'host') {
+                      Uend = untakedData[i] + +this.applyData.header.host_list[k].u_num - 1
+                    } else if (this.taskData.pinstance.pkey === 'host_my') {
+                      Uend = untakedData[i] + +this.applyData.body[k].host.u_num - 1
+                    }
+                    if (!formTakedData.includes(untakedData[i]) && !formTakedData.includes(Uend)) {
+                      this.assignForm.body[k].idcracku = untakedData[i]
+                      console.log(k, untakedData[i])
+                      return false
+                    }
+                  }
+                } else {
+                  this.assignForm.body[k].idcracku = untakedData[0]
+                  // console.log(k, untakedData[0])
+                }
+              })
+            }
           })
           // 宿主机 U 位默认值
           if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
@@ -674,11 +732,27 @@
               resData.map(list => {
                 if (!this.isEmptyObj(list._default)) {
                   for (const i in list._default) {
-                    const index = i - 1
-                    this.assignForm.body[index].idcracku = list._default[i]
-                    this.assignForm.body[index].idcrack = list
+                    // const index = i - 1
+                    this.assignForm.body[i].idcracku = list._default[i]
+                    this.assignForm.body[i].idcrack = list
                   }
                 }
+              })
+            })
+          }
+          // 主机名
+          if (this.taskData.ptask.tkey === 'confirm1') {
+            const postHeadvData = {
+              action: 'recommend_hostname_list',
+              method: 'get',
+              data: {
+                tid: this.$route.params.tid
+              }
+            }
+            this.http.post('/data/', this.parseData(postHeadvData))
+            .then((response) => {
+              response.data.data.list.map((list, index) => {
+                this.assignForm.body[index].hostname = list
               })
             })
           }

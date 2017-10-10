@@ -46,7 +46,7 @@
                       :value="option">
                       <div class="left-content">
                         <span>{{ showLabel(option) }}</span>
-                        <p v-if="toolTipContent(option)" style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+                        <p v-if="toolTipContent(option)">{{ toolTipContent(option) }}</p>
                       </div>
           </el-option>
       </el-select>
@@ -127,6 +127,7 @@
                   //   this.vmodel[this.strucData.id] = null
                   // }
                   this.setDataType(this.strucData, this.vmodel)
+                  // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
                 this.renderOptions()
               })
@@ -515,6 +516,8 @@
       overflow: hidden;
       text-overflow:ellipsis;
       white-space: nowrap;
+      color: #8492a6;
+      font-size: 13px
     }
   }
 </style>
