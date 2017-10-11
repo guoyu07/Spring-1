@@ -93,7 +93,7 @@
         <el-table
           class="margin-bottom"
           v-else-if="formItem.value.type === 'search_bar'"
-          :data="item[formItem.id]">
+          :data="formItem.respectively_show ? item[formItem.id].slice(index, index + 1) : item[formItem.id]">
           <el-table-column
             v-for="col in formItem.value.source.data.params.filter(param => {return param.value.type === 'input'})"
             :key="col.id"
@@ -111,6 +111,7 @@
           </el-table-column>
         </el-table>
       </template>
+      <!-- <div v-if="formItem.value.type === 'search_bar'">{{formItem.respectively_show}}</div> -->
     </el-form-item>
 </template>
 
@@ -122,7 +123,8 @@
       hideName: { type: Boolean },
       formItem: { type: Object },
       isEditing: { type: Boolean },
-      keyData: { type: Object }
+      keyData: { type: Object },
+      index: { type: Number }
     },
 
     data () {

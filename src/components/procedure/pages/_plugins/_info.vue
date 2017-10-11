@@ -74,6 +74,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -99,6 +100,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -117,6 +119,7 @@
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                 <header-form-display
+                                  :index="index"
                                   :item="applyData.header"
                                   :form-item="valueheader">
                                 </header-form-display>
@@ -188,6 +191,7 @@
                                   <span v-for="valueheader in taskformheader.value">
                                     <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                       <header-form-display
+                                        :index="index"
                                         :item="applyData.header"
                                         :form-item="valueheader">
                                       </header-form-display>
@@ -215,6 +219,7 @@
                               <span v-for="valueheader in taskformheader.value">
                                 <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
                                   <header-form-display
+                                    :index="index"
                                     :item="applyData.header"
                                     :form-item="valueheader">
                                   </header-form-display>

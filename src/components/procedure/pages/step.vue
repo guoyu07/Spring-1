@@ -102,6 +102,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -127,6 +128,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -145,6 +147,7 @@
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                 <header-form-display
+                                  :index="index"
                                   :item="applyData.header"
                                   :form-item="valueheader">
                                 </header-form-display>
@@ -222,6 +225,7 @@
                                   <span v-for="valueheader in taskformheader.value">
                                     <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                       <header-form-display
+                                        :index="index"
                                         :item="applyData.header"
                                         :form-item="valueheader">
                                       </header-form-display>
@@ -249,6 +253,7 @@
                               <span v-for="valueheader in taskformheader.value">
                                 <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                   <header-form-display
+                                    :index="index"
                                     :item="applyData.header"
                                     :form-item="valueheader">
                                   </header-form-display>
@@ -363,7 +368,7 @@
   import bodyTable from '../../_plugins/_bodyTable'
   import headerTable from '../../_plugins/_headerTable'
   import progressWrap from '../../_plugins/_progress'
-  
+
   export default {
     data () {
       return {

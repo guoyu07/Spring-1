@@ -4,7 +4,7 @@
       <h4>{{formBlock.name}}</h4>
       <div class="headerform">
         <span v-for="formItem in formBlock.value">
-          <header-form-display :item="item" :form-item="formItem"></header-form-display>
+          <header-form-display :item="item" :form-item="formItem" :index="index"></header-form-display>
         </span>
       </div>
     </div>

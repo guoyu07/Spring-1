@@ -193,56 +193,49 @@
         })
       },
       renderData (newVal, oldVal) {
-        // setTimeout(() => {
-        // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-        if (this.vmodel[this.strucData.id]) {
-          // console.log(this.strucData.id, this.strucData.name)
-          if (Array.isArray(this.vmodel[this.strucData.id])) {
-            // const key = []
-            // if (this.vmodel[this.strucData.id].length) {
-            //   this.vmodel[this.strucData.id].map(model => {
-            //     key.push(this.showLabel(model))
-            //   })
-            // }
-            this.filterList('')
-            this.vmodel[this.strucData.id].map((item, itemindex) => {
-              if (item[this.strucData.value.source.res.show_key[0]]) {
-                this.optionList.map(option => {
-                  if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
-                    // item = option
-                    this.vmodel[this.strucData.id][itemindex] = option
-                  } else {
-                    if (!this.optionList.includes(item)) {
-                      this.optionList.push(item)
+        setTimeout(() => {
+          // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+          if (this.vmodel[this.strucData.id]) {
+            if (Array.isArray(this.vmodel[this.strucData.id])) {
+              this.filterList('')
+              this.vmodel[this.strucData.id].map((item, itemindex) => {
+                if (item[this.strucData.value.source.res.show_key[0]]) {
+                  this.optionList.map(option => {
+                    if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
+                      // item = option
+                      this.vmodel[this.strucData.id][itemindex] = option
+                    } else {
+                      if (!this.optionList.includes(item)) {
+                        this.optionList.push(item)
+                        this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+                      }
+                    }
+                  })
+                }
+              })
+            } else {
+              this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                let isIncludes
+                for (var option of this.optionList) {
+                  if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                    this.vmodel[this.strucData.id] = option
+                    isIncludes = true
+                    return false
+                  }
+                }
+                setTimeout(() => {
+                  if (!isIncludes) {
+                    if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                      this.optionList.push(this.vmodel[this.strucData.id])
                       this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
                     }
                   }
-                })
+                }, 100)
               }
-            })
-          } else {
-            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-            if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-              let isIncludes
-              for (var option of this.optionList) {
-                if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                  this.vmodel[this.strucData.id] = option
-                  isIncludes = true
-                  return false
-                }
-              }
-              setTimeout(() => {
-                if (!isIncludes) {
-                  if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
-                    this.optionList.push(this.vmodel[this.strucData.id])
-                    this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-                  }
-                }
-              }, 100)
             }
           }
-        }
-        // }, 100)
+        }, 1000)
       },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
