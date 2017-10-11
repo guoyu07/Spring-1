@@ -137,6 +137,7 @@
       }
       // console.log(keyPaths)
       if (this.strucData.watch && typeof this.strucData.watch === 'string') {
+        // console.log(!this.keyPaths.includes(this.strucData.watch), this.strucData.name)
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
             if (!this.isEditing) {
@@ -439,7 +440,7 @@
                     return false
                   } else if (this.optionList[0]) {
                     this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
-                    // this.vmodel[this.strucData.id] = this.optionList[0]
+                    this.vmodel[this.strucData.id] = this.optionList[0]
                     return false
                   } else {
                     this.$message.warning(`${this.strucData.name}无数据`)

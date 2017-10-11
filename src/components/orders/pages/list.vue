@@ -14,16 +14,18 @@
           border
           @cell-click='check'>
           <el-table-column
-            v-for="col in filterData.show"
+            v-for="(col, colIndex) in filterData.show"
             :key="col.key_path"
             inline-template
             :context="_self"
             :label="col.label">
             <template>
-              <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
-                {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
+              <span :class="colIndex ? '' : 'link-block'">
+                <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
+                  {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
+                </span>
+                <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
               </span>
-              <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
             </template>
           </el-table-column>
         </el-table>
@@ -37,7 +39,7 @@
           layout="total, sizes, prev, pager, next, jumper"
           :total="filteredTasks.total"></el-pagination>
       </div>
-      
+
       <div v-else class="placeholder-card">
         <i class="el-icon-fa-coffee"></i>
         <h3>你的队列为空，可以喝杯咖啡去！</h3>
@@ -192,5 +194,10 @@
     &.collapsed {
       padding-left: 20px;
     }
+  }
+
+  .link-block {
+    color: #1d90e6;
+    cursor: pointer;
   }
 </style>
