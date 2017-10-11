@@ -66,7 +66,10 @@
         this.filterData = {
           name: '新过滤器',
           order: 'pinstance__pd__pname',
-          show: [],
+          show: [{
+            key_path: 'pinstance.pnum',
+            label: '流程单号'
+          }],
           filters: [{
             key: 'pinstance__pd__pname',
             label: '流程名称',
