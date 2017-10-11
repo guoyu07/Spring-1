@@ -6,7 +6,7 @@
       :value="col"></el-option>
   </el-select> -->
   <div class="column-conf">
-    <draggable v-model="selectedColumns" @start="drag=true" @end="drag=false">
+    <draggable v-model="selectedColumns" :move="checkDrag">
       <el-tag
         v-for="col in selectedColumns"
         :key="col.label"
@@ -51,7 +51,8 @@
         columnList: [],
         selectedColumns: [],
         selectedColumnLabels: [],
-        searchLabel: ''
+        searchLabel: '',
+        prompted: false
       }
     },
 
@@ -104,6 +105,16 @@
           columnBuffer.push(this.columnList.find(_ => _.label === item))
         }
         this.selectedColumns = columnBuffer
+      },
+
+      checkDrag (e) {
+        if (e.draggedContext.element.label === '流程单号') {
+          if (!this.prompted) {
+            this.$message.warning('流程单号只能是第一列，无法拖动 :(')
+          }
+          this.prompted = true
+          return false
+        }
       }
     },
 
@@ -116,8 +127,14 @@
 <style lang="less">
   .column-conf {
     .el-tag {
+
+      &:first-child {
+        i {
+          display: none;
+        }
+      }
       
-      &:hover {
+      &:not(:first-child):hover {
         cursor: move;
         transform: translateY(-2px);
       }
