@@ -11,7 +11,8 @@
           v-loading="loading"
           width="100%"
           stripe
-          border>
+          border
+          @cell-click='check'>
           <el-table-column
             v-for="col in filterData.show"
             :key="col.key_path"
@@ -23,6 +24,16 @@
                 {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
               </span>
               <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
+            </template>
+          </el-table-column>
+          <el-table-column
+            width="80"
+            inline-template
+            :context="_self"
+            label="操作">
+            <template>
+              <el-button v-if="filterData.name === '已完成'" size="small" @click="onViewProcess(row)">详情</el-button>
+              <el-button v-else size="small" @click="onViewTask(row)">详情</el-button>
             </template>
           </el-table-column>
         </el-table>
