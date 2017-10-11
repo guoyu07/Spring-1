@@ -146,7 +146,7 @@ const getPathResult = (result, path, k, kindex) => {
           _result = _result[_path[i]]
         } else {
           // console.log(_result[_path[i]])
-          console.log(`读不到${_path[i]}的值`)
+          // console.log(`读不到${_path[i]}的值`)
           return undefined
         }
       } else {

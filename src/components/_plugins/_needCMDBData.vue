@@ -95,7 +95,7 @@
           this.keyPaths.push(para.value.key_path.split('.')[0])
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
-              if (!this.isEditing) {
+              if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                 // if (this.strucData.value.type === 'dicts') {
                 //   this.vmodel[this.strucData.id] = []
                 // } else {
@@ -108,7 +108,7 @@
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
-                if (!this.isEditing) {
+                if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   // if (this.strucData.value.type === 'dicts') {
                   //   this.vmodel[this.strucData.id] = []
                   // } else {
@@ -120,7 +120,7 @@
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
-                if (!this.isEditing) {
+                if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   // if (this.strucData.value.type === 'dicts') {
                   //   this.vmodel[this.strucData.id] = []
                   // } else {
@@ -140,7 +140,7 @@
         // console.log(!this.keyPaths.includes(this.strucData.watch), this.strucData.name)
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-            if (!this.isEditing) {
+            if (!this.isEditing && !this.vmodel[this.strucData.id]) {
               // if (this.strucData.value.type === 'dicts') {
               //   this.vmodel[this.strucData.id] = []
               // } else {
@@ -194,49 +194,50 @@
         })
       },
       renderData (newVal, oldVal) {
-        setTimeout(() => {
-          // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-          if (this.vmodel[this.strucData.id]) {
-            if (Array.isArray(this.vmodel[this.strucData.id])) {
-              this.filterList('')
-              this.vmodel[this.strucData.id].map((item, itemindex) => {
-                if (item[this.strucData.value.source.res.show_key[0]]) {
-                  this.optionList.map(option => {
-                    if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
-                      // item = option
-                      this.vmodel[this.strucData.id][itemindex] = option
-                    } else {
-                      if (!this.optionList.includes(item)) {
-                        this.optionList.push(item)
-                        this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-                      }
-                    }
-                  })
-                }
-              })
-            } else {
-              this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-              if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                let isIncludes
-                for (var option of this.optionList) {
-                  if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-                    this.vmodel[this.strucData.id] = option
-                    isIncludes = true
-                    return false
-                  }
-                }
-                setTimeout(() => {
-                  if (!isIncludes) {
-                    if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
-                      this.optionList.push(this.vmodel[this.strucData.id])
+        console.log(this.vmodel[this.strucData.id], this.strucData.name)
+        // setTimeout(() => {
+        // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+        if (this.vmodel[this.strucData.id]) {
+          if (Array.isArray(this.vmodel[this.strucData.id])) {
+            this.filterList('')
+            this.vmodel[this.strucData.id].map((item, itemindex) => {
+              if (item[this.strucData.value.source.res.show_key[0]]) {
+                this.optionList.map(option => {
+                  if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
+                    // item = option
+                    this.vmodel[this.strucData.id][itemindex] = option
+                  } else {
+                    if (!this.optionList.includes(item)) {
+                      this.optionList.push(item)
                       this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
                     }
                   }
-                }, 100)
+                })
               }
+            })
+          } else {
+            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+              let isIncludes
+              for (var option of this.optionList) {
+                if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
+                  this.vmodel[this.strucData.id] = option
+                  isIncludes = true
+                  return false
+                }
+              }
+              setTimeout(() => {
+                if (!isIncludes) {
+                  if (!this.optionList.includes(this.vmodel[this.strucData.id])) {
+                    this.optionList.push(this.vmodel[this.strucData.id])
+                    this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+                  }
+                }
+              }, 100)
             }
           }
-        }, 1000)
+        }
+        // }, 1000)
       },
       showLabel (option) {
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
