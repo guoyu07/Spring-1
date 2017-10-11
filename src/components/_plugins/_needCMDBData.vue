@@ -182,7 +182,6 @@
         if (this.vmodel[this.strucData.id]) {
           // console.log(this.strucData.id, this.strucData.name)
           if (Array.isArray(this.vmodel[this.strucData.id])) {
-            console.log('qq')
             // const key = []
             // if (this.vmodel[this.strucData.id].length) {
             //   this.vmodel[this.strucData.id].map(model => {

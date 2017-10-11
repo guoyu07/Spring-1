@@ -6,7 +6,7 @@
           <h3 class="form-title">
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
-            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">工作流</el-button>
+            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
             <el-button class="not-print" type="text" @click="createPdf">打印</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
@@ -16,6 +16,7 @@
              taskList: taskData.pinstance.task_list
              }"></progress-wrap>
           </div>
+          <process-dialog></process-dialog>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
@@ -327,7 +328,8 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog
+    <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData"></task-dialog>
+<!--     <el-dialog
       title="工作流"
       v-model="showHistory">
       <el-collapse v-if="taskData && taskData.pinstance">
@@ -345,11 +347,12 @@
           </el-form>
         </el-collapse-item>
       </el-collapse>
-    </el-dialog>
+    </el-dialog> -->
   </div>
 </template>
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import taskDialog from './_plugins/_taskDialog'
   import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
@@ -360,9 +363,14 @@
   import bodyTable from '../../_plugins/_bodyTable'
   import headerTable from '../../_plugins/_headerTable'
   import progressWrap from '../../_plugins/_progress'
+  
   export default {
     data () {
       return {
+        taskViewData: {
+          visible: false,
+          order: {}
+        },
         routerInfo: {},
         applyData: {},
         taskData: {},
@@ -405,7 +413,7 @@
       'applyData.body' (oldVal, newVal) {
         this.applyData.body.map((body, index) => {
           // this.infoShow[index] = true
-          this.$set(this.infoShow, index, false)
+          this.$set(this.infoShow, index, true)
         })
       },
       'infoShow': {
@@ -414,6 +422,10 @@
       }
     },
     methods: {
+      onViewTask (order) {
+        console.log(order)
+        Object.assign(this.taskViewData, { visible: true, order })
+      },
       copyValue (index) {
         console.log(index)
         let bodyList = this.taskForm.body.body_list
@@ -950,7 +962,8 @@
       searchBar,
       bodyTable,
       headerTable,
-      progressWrap
+      progressWrap,
+      taskDialog
     }
   }
 </script>

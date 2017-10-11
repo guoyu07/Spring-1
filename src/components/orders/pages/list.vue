@@ -27,7 +27,7 @@
             <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
           </template>
         </el-table-column>
-        <el-table-column
+<!--         <el-table-column
           width="80"
           inline-template
           :context="_self"
@@ -36,7 +36,7 @@
             <el-button v-if="filterData.name === '已完成'" size="small" @click="onViewProcess(row)">详情</el-button>
             <el-button v-else size="small" @click="onViewTask(row)">详情</el-button>
           </template>
-        </el-table-column>
+        </el-table-column> -->
       </el-table>
       <el-pagination
         class="margin-top margin-bottom fr"
@@ -60,7 +60,6 @@
 <script>
   import taskDialog from './_plugins/_taskDialog'
   import processDialog from './_plugins/_processDialog'
-
   import getFilteredTasks from './../../../mixins/getFilteredTasks'
 
   export default {
@@ -72,6 +71,10 @@
 
     data () {
       return {
+        filterName: '',
+        isEnded: '',
+        isAssignee: '',
+        isGuosen: '',
         taskViewData: {
           visible: false,
           order: {}
@@ -88,10 +91,55 @@
     },
 
     methods: {
+      getIsEnded () {
+        this.isEnded = this.taskViewData.order.isend
+      },
+
+      getIsAssignee () {
+        if (this.taskViewData.order.assign && this.taskViewData.order.assign.userId) {
+          console.log('isAssignee' + this.taskViewData.order.assign.userId === this.$store.state.userinfo.userId)
+          this.isAssignee = this.taskViewData.order.assign.userId === this.$store.state.userinfo.userId
+        } else if (this.taskViewData.order.assign_group) {
+          const keyList = this.$store.state.userinfo.groups.reduce((pre, cur) => {
+            pre.push(cur.key)
+            console.log('isAssignee' + pre)
+            this.isAssignee = pre
+          }, [])
+          console.log('isAssignee' + keyList.includes(this.taskViewData.order.assign_group.key))
+          this.isAssignee = keyList.includes(this.taskViewData.order.assign_group.key)
+        } else {
+          this.isAssignee = false
+        }
+      },
+
+      getIsGuosen () {
+        if (this.filterName === '已完成') {
+          this.isGuosen = ['host', 'host_my', 'host_machine'].includes(this.processViewData.order.pkey)
+        } else {
+          this.isGuosen = ['host', 'host_my', 'host_machine'].includes(this.taskViewData.order.pinstance.pkey)
+        }
+      },
+
+      turnTofinishTask (row) {
+        this.onViewProcess(row)
+        this.$router.push({ path: `/${this.isGuosen ? 'guosen' : 'procedure'}-info/${this.processViewData.order.pid}/${this.processViewData.order.pd.pname}` })
+      },
+      turnToUnfinishTask (row) {
+        this.onViewTask(row)
+        if (this.filterName === '待认领' || this.filterName === '指派') {
+          this.$router.push({path: `/procedure-info/${this.taskViewData.order.pinstance.pid}/${this.taskViewData.order.ptask.tname}`, query: { tid: this.taskViewData.order.tid, filter: this.filterName }})
+        } else {
+          this.$router.push({ path: `/${this.isGuosen ? 'guosen' : 'procedure'}${!this.isAssignee || this.isEnded ? '-info' : ''}/${this.taskViewData.order.pinstance.pid}${!this.isAssignee || this.isEnded ? '' : ('/' + this.taskViewData.order.tid)}/${this.taskViewData.order.ptask.tname}` })
+        }
+      },
       check (row, column, cell) {
-        console.log(row)
-        console.log(column.id)
-        console.log(column.id.indexOf('_column_1'))
+        if (column.label.indexOf('流程单号') > -1) {
+          if (this.filterName === '已完成') {
+            this.turnTofinishTask(row)
+          } else {
+            this.turnToUnfinishTask(row)
+          }
+        }
       },
       getFilterData (id) {
         let postData = {
@@ -102,6 +150,7 @@
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             this.filterData = res.data.data
+            this.filterName = this.filterData.name
             this.getFilteredTasks()
             this.$nextTick(() => {
               this.resetMessageState()
@@ -111,12 +160,15 @@
       },
 
       onViewTask (order) {
-        console.log(order)
-        Object.assign(this.taskViewData, { visible: true, order })
+        Object.assign(this.taskViewData, { order })
+        this.getIsGuosen()
+        this.getIsEnded()
+        this.getIsAssignee()
       },
 
       onViewProcess (order) {
-        Object.assign(this.processViewData, { visible: true, order })
+        Object.assign(this.processViewData, { order })
+        this.getIsGuosen()
       },
 
       resetMessageState () {

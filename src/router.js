@@ -258,7 +258,6 @@ router.beforeEach((to, from, next) => {
 router.afterEach((to, from) => {
   NProgress.start()
   let sidebarMeta = to.matched.find(m => m.meta.sidebar).meta
-  console.log(sidebarMeta)
   Object.assign(to.meta, sidebarMeta)
 })
 
