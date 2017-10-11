@@ -11,8 +11,7 @@
           v-loading="loading"
           width="100%"
           stripe
-          border
-          @cell-click='check'>
+          border>
           <el-table-column
             v-for="(col, colIndex) in filterData.show"
             :key="col.key_path"
@@ -20,11 +19,12 @@
             :context="_self"
             :label="col.label">
             <template>
-              <span :class="colIndex ? '' : 'link-block'">
+              <span :class="colIndex ? '' : 'link-block'" @click="check(row, colIndex)">
                 <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
                   {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
                 </span>
-                <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
+                <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}
+                </span>
               </span>
             </template>
           </el-table-column>
@@ -121,8 +121,9 @@
           this.$router.push({ path: `/${this.isGuosen ? 'guosen' : 'procedure'}${!this.isAssignee || this.isEnded ? '-info' : ''}/${this.taskViewData.order.pinstance.pid}${!this.isAssignee || this.isEnded ? '' : ('/' + this.taskViewData.order.tid)}/${this.taskViewData.order.ptask.tname}` })
         }
       },
-      check (row, column, cell) {
-        if (column.label.indexOf('流程单号') > -1) {
+      check (row, colIndex) {
+        console.log(row, colIndex)
+        if (!colIndex) {
           if (this.filterName === '已完成') {
             this.turnTofinishTask(row)
           } else {
