@@ -179,6 +179,7 @@
               const value = this.showLabel(val) + ''
               return value.indexOf(query + '') > -1
             } else {
+              console.log(this.showLabel(val), val)
               return this.showLabel(val).indexOf(query) > -1
             }
           })

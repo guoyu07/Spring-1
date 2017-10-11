@@ -485,8 +485,6 @@
         })
       },
       stickValue (index) {
-        console.log(index)
-        console.log(this.copyObj)
         Object.assign(this.assignForm.body[index], this.copyObj)
       },
       idcrackIsTaked () {
@@ -788,8 +786,8 @@
               method: 'GET',
               data: {
                 ipscopeId: this.applyData.body[0].esxi_ipscope.instanceId,
-                host_u: this.applyData.header.hosts[0].u_num,
-                host_num: this.applyData.header.hosts.length,
+                host_u: this.applyData.header.host_list[0].u_num,
+                host_num: this.applyData.header.host_list.length,
                 vmware_type: this.applyData.header.vmware_type
               }
             }
