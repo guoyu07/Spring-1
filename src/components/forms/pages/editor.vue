@@ -12,6 +12,15 @@
     label {
       line-height: 36px;
     }
+      
+    .el-form-item__content {
+      width: auto;
+      
+      .el-select {
+        width: auto;
+        max-width: 200px;
+      }
+    }
   }
   .show-flag {
     position: absolute;
