@@ -20,10 +20,10 @@
             :context="_self"
             :label="col.label">
             <template>
-              <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)">
+              <span v-if="row.columns.find(c => c.key_path === col.key_path) && Array.isArray(row.columns.find(c => c.key_path === col.key_path).value)" style='color:blue'>
                 {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
               </span>
-              <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
+              <span v-else style='color:blue'>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
             </template>
           </el-table-column>
         </el-table>
