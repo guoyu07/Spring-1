@@ -1,4 +1,4 @@
-<template>
+is<template>
   <div :class="{ 'order-list': true, collapsed: !isExpanded }">
     <el-card class="box-card">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
@@ -92,7 +92,7 @@
           const keyList = this.$store.state.userinfo.groups.reduce((pre, cur) => {
             pre.push(cur.key)
             console.log('isAssignee' + pre)
-            this.isAssignee = pre
+            return pre
           }, [])
           console.log('isAssignee' + keyList.includes(this.taskViewData.order.assign_group.key))
           this.isAssignee = keyList.includes(this.taskViewData.order.assign_group.key)
