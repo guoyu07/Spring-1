@@ -166,7 +166,7 @@
     },
     methods: {
       filterList (query) {
-        console.log(query)
+        // console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
@@ -435,11 +435,11 @@
                   const selectedIndex = optionIndex + +this.strucData.default.value
                   if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
-                    console.log(this.strucData.name, this.vmodel[this.strucData.id])
+                    // console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
                   } else if (this.optionList[0]) {
-                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
-                    this.vmodel[this.strucData.id] = this.optionList[0]
+                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
+                    // this.vmodel[this.strucData.id] = this.optionList[0]
                     return false
                   } else {
                     this.$message.warning(`${this.strucData.name}无数据`)

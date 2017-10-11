@@ -74,7 +74,7 @@ http.interceptors.request.use(rq => {
 }, err => Promise.reject(err))
 
 http.interceptors.response.use(rs => {
-  console.log(rs)
+  // console.log(rs)
   if (rs.status === 401) {
     auth.logout()
   }
@@ -146,8 +146,8 @@ const getPathResult = (result, path, k, kindex) => {
           // console.log(_result[_path[i]])
           _result = _result[_path[i]]
         } else {
-          console.log(_result[_path[i]])
-          console.log(`读不到${_path[i]}的值，请检查配置`)
+          // console.log(_result[_path[i]])
+          console.log(`读不到${_path[i]}的值`)
           return undefined
         }
       } else {

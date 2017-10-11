@@ -243,25 +243,23 @@
       }
     },
     created () {
-      // console.log(this.isEditing)
-      // console.log('formbody' + this.formItem.name)
-      if (!this.headerTable && !this.bodyTable) {
-        if (this.header) {
+      if (!this.headerTable && !this.bodyTable) { // type 不是 table 且无值的情况下渲染一次表单（在复制表单时会有值或者有默认值）
+        if (this.header && !this.whole.header[this.formItem.id]) {
           this.setDataType(this.formItem, this.whole.header)
-        } else {
+        } else if (!this.whole.body[this.index][this.formItem.id]) {
           this.setDataType(this.formItem, this.whole.body[this.index])
         }
       }
     },
     destroyed () {
       // console.log('%c%s', 'color:red', 'name: ' + this.formItem.name)
-      if (!this.headerTable && !this.bodyTable) {
-        if (this.header) {
-          delete this.whole.header[this.formItem.id]
-        } else {
-          delete this.whole.body[this.index][this.formItem.id]
-        }
-      }
+      // if (!this.headerTable && !this.bodyTable && this.whole.body[this.index][this.formItem.id]) {
+      //   if (this.header) {
+      //     delete this.whole.header[this.formItem.id]
+      //   } else {
+      //     delete this.whole.body[this.index][this.formItem.id]
+      //   }
+      // }
     },
     computed: {
       multiFiles () {
