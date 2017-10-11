@@ -137,6 +137,7 @@
       }
       // console.log(keyPaths)
       if (this.strucData.watch && typeof this.strucData.watch === 'string') {
+        // console.log(!this.keyPaths.includes(this.strucData.watch), this.strucData.name)
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
             if (!this.isEditing) {
@@ -166,7 +167,7 @@
     },
     methods: {
       filterList (query) {
-        console.log(query)
+        // console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
@@ -435,10 +436,10 @@
                   const selectedIndex = optionIndex + +this.strucData.default.value
                   if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
-                    console.log(this.strucData.name, this.vmodel[this.strucData.id])
+                    // console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
                   } else if (this.optionList[0]) {
-                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
+                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
                     this.vmodel[this.strucData.id] = this.optionList[0]
                     return false
                   } else {
