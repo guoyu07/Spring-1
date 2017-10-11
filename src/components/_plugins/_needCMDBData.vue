@@ -46,7 +46,7 @@
                       :value="option">
                       <div class="left-content">
                         <span>{{ showLabel(option) }}</span>
-                        <p v-if="toolTipContent(option)" style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+                        <p v-if="toolTipContent(option)">{{ toolTipContent(option) }}</p>
                       </div>
           </el-option>
       </el-select>
@@ -127,6 +127,7 @@
                   //   this.vmodel[this.strucData.id] = null
                   // }
                   this.setDataType(this.strucData, this.vmodel)
+                  // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
                 this.renderOptions()
               })
@@ -165,7 +166,7 @@
     },
     methods: {
       filterList (query) {
-        console.log(query)
+        // console.log(query)
         if (query || query === 0) {
           // 这里应该是query !=='' && query !== undefined && query !== null
           let arr = this.optionList.filter((val) => {
@@ -434,11 +435,11 @@
                   const selectedIndex = optionIndex + +this.strucData.default.value
                   if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
-                    console.log(this.strucData.name, this.vmodel[this.strucData.id])
+                    // console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
                   } else if (this.optionList[0]) {
-                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
-                    this.vmodel[this.strucData.id] = this.optionList[0]
+                    this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
+                    // this.vmodel[this.strucData.id] = this.optionList[0]
                     return false
                   } else {
                     this.$message.warning(`${this.strucData.name}无数据`)
@@ -515,6 +516,8 @@
       overflow: hidden;
       text-overflow:ellipsis;
       white-space: nowrap;
+      color: #8492a6;
+      font-size: 13px
     }
   }
 </style>

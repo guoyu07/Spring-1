@@ -421,7 +421,7 @@
                   this.setNewDataType(item, newData)
                   if (!item.unique) {
                     let bodyIndex = index !== undefined ? index : this.tabsValue
-                    console.log(this.postForm.body[bodyIndex][item.id])
+                    // console.log(this.postForm.body[bodyIndex][item.id])
                     if (item.value.type === 'table') {
                       // this.postForm.body[bodyIndex][item.id].map()
                     }
@@ -447,6 +447,7 @@
         this.$refs['postForm'].validate((valid) => {
           if (valid) {
             if (that.postForm.body.length < this.taskFormData.body.count.max) {
+              console.log(newData)
               that.postForm.body.push(newData)
               this.tabsValue = that.postForm.body.length - 1 + ''
             } else {

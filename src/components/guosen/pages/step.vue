@@ -6,7 +6,7 @@
           <h3 class="form-title">
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
-            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="showHistory = true">工作流</el-button>
+            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -76,7 +76,10 @@
               </div>
             </div>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
-              <div></div>
+              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
+                <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
+                <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
+              </el-button-group>
               <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
@@ -184,7 +187,12 @@
             </template>
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
-                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick" v-for="(data, index) in applyData.body" :key="index">
+                <div v-for="(data, index) in applyData.body" style="position:relative">
+                <el-button-group style="position:absolute;right:10px;top:8px;z-index:1;width:90px">
+                  <el-button size="small" @click="copyValue(index)">复制</el-button>
+                  <el-button size="small" @click="stickValue(index)">黏贴</el-button>
+                </el-button-group>
+                <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick"  :key="index">
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
@@ -285,6 +293,7 @@
                   </el-tab-pane>
                 </el-tabs>
               </div>
+              </div>
               <div class="anchorNav">
                 <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
               </div>
@@ -308,7 +317,8 @@
         </el-card>
       </el-col>
     </el-row>
-    <el-dialog
+    <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData"></task-dialog>
+ <!--    <el-dialog
       title="工作流"
       v-model="showHistory">
       <el-collapse v-if="taskData && taskData.pinstance">
@@ -326,7 +336,7 @@
           </el-form>
         </el-collapse-item>
       </el-collapse>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 机柜图预览 -->
     <div v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
       <h5 class="cabinet-title">
@@ -359,6 +369,7 @@
 </template>
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import taskDialog from './_plugins/_taskDialog'
   import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
@@ -372,6 +383,10 @@
   export default {
     data () {
       return {
+        taskViewData: {
+          visible: false,
+          order: {}
+        },
         routerInfo: {},
         applyData: {},
         taskData: {},
@@ -392,6 +407,7 @@
         infoShow: {},
         infoHideAll: true,
         hostList: [],
+        copyObj: {},
         previewShown: false,
         idcrackData: [],
         previewPage: 1,
@@ -414,7 +430,7 @@
       'applyData.body' (oldVal, newVal) {
         this.applyData.body.map((body, index) => {
           // this.infoShow[index] = true
-          this.$set(this.infoShow, index, false)
+          this.$set(this.infoShow, index, true)
         })
       },
       'infoShow': {
@@ -423,6 +439,52 @@
       }
     },
     methods: {
+      onViewTask (order) {
+        console.log(order)
+        Object.assign(this.taskViewData, { visible: true, order })
+      },
+      copyValue (index) {
+        console.log(index)
+        let bodyList = this.taskForm.body.body_list
+        let selection = []
+        for (let taskFormData in bodyList) {
+          for (let i in bodyList[taskFormData].attr_list) {
+            bodyList[taskFormData].attr_list[i].value.map((val) => {
+              return selection.push(val)
+            })
+          }
+        }
+        var copyValues = selection.filter((val) => {
+          if (val.default.type === '' && !val.readOnly && !val.unique) {
+            return val
+          }
+        })
+        // 获取可以复制的选项id
+        copyValues = copyValues.map((val) => {
+          return val.id
+        })
+        console.log(copyValues)
+        console.log(this.assignForm.body[index])
+        // 把复制内容整合成一个对象
+        let list = {}
+        Object.assign(list, this.assignForm.body[index])
+        for (let i in list) {
+          if (!copyValues.some((val) => { return i === val })) {
+            delete list[i]
+          }
+        }
+        this.copyObj = list
+        this.$message({
+          message: '已复制',
+          type: 'success',
+          duration: '1000'
+        })
+      },
+      stickValue (index) {
+        console.log(index)
+        console.log(this.copyObj)
+        Object.assign(this.assignForm.body[index], this.copyObj)
+      },
       idcrackIsTaked () {
         for (const item of this.idcrackData) {
           item.isTaked = []
@@ -656,6 +718,64 @@
                 this.assignForm.body.push(newData)
               }
             })
+            // U 位默认值
+            if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host') {
+              // console.log(this.assignForm.body[k])
+              this.$watch('assignForm.body.' + k + '.idcrack', (newVal, oldVal) => {
+                // console.log(newVal)
+                // console.log(newVal, oldVal, this.applyData.body)
+                const uHeight = newVal.u_info.jgUHeight
+                // 整理出一个未被占用的 U位 列表
+                let untakedData = []
+                for (let i = 1; i <= uHeight; i++) {
+                  if (newVal.u_info.assetList.length !== 0) {
+                    if (newVal.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
+                      untakedData.push(i)
+                    }
+                  }
+                }
+                // console.log(untakedData)
+                // 整理出被当前其他表单占用的 U位
+                let formTakedData = []
+                this.assignForm.body.map((body, bodyk) => {
+                  if (body.idcracku && body.idcrack && (body.idcrack.instanceId === newVal.instanceId)) {
+                    let eU
+                    if (this.taskData.pinstance.pkey === 'host') {
+                      eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
+                      // console.log(eU, body.idcracku, this.applyData.header.host_list[bodyk].u_num)
+                    } else if (this.taskData.pinstance.pkey === 'host_my') {
+                      eU = body.idcracku + +this.applyData.body[bodyk].host.u_num - 1
+                    }
+                    // console.log(eU)
+                    for (let tU = body.idcracku; tU <= eU; tU++) {
+                      if (!formTakedData.includes(tU)) {
+                        formTakedData.push(tU)
+                      }
+                    }
+                  }
+                })
+                // console.log(formTakedData)
+                if (formTakedData.length !== 0) {
+                  const untakedDataLenght = untakedData.length
+                  for (let i = 0; i <= untakedDataLenght; i++) {
+                    let Uend
+                    if (this.taskData.pinstance.pkey === 'host') {
+                      Uend = untakedData[i] + +this.applyData.header.host_list[k].u_num - 1
+                    } else if (this.taskData.pinstance.pkey === 'host_my') {
+                      Uend = untakedData[i] + +this.applyData.body[k].host.u_num - 1
+                    }
+                    if (!formTakedData.includes(untakedData[i]) && !formTakedData.includes(Uend)) {
+                      this.assignForm.body[k].idcracku = untakedData[i]
+                      console.log(k, untakedData[i])
+                      return false
+                    }
+                  }
+                } else {
+                  this.assignForm.body[k].idcracku = untakedData[0]
+                  // console.log(k, untakedData[0])
+                }
+              })
+            }
           })
           // 宿主机 U 位默认值
           if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
@@ -674,11 +794,27 @@
               resData.map(list => {
                 if (!this.isEmptyObj(list._default)) {
                   for (const i in list._default) {
-                    const index = i - 1
-                    this.assignForm.body[index].idcracku = list._default[i]
-                    this.assignForm.body[index].idcrack = list
+                    // const index = i - 1
+                    this.assignForm.body[i].idcracku = list._default[i]
+                    this.assignForm.body[i].idcrack = list
                   }
                 }
+              })
+            })
+          }
+          // 主机名
+          if (this.taskData.ptask.tkey === 'confirm1') {
+            const postHeadvData = {
+              action: 'recommend_hostname_list',
+              method: 'get',
+              data: {
+                tid: this.$route.params.tid
+              }
+            }
+            this.http.post('/data/', this.parseData(postHeadvData))
+            .then((response) => {
+              response.data.data.list.map((list, index) => {
+                this.assignForm.body[index].hostname = list
               })
             })
           }
@@ -1001,7 +1137,8 @@
       searchBar,
       bodyTable,
       headerTable,
-      progressWrap
+      progressWrap,
+      taskDialog
     }
   }
 </script>
