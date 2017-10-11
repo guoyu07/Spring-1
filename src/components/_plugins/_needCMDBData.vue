@@ -1,29 +1,36 @@
 <template>
   <div>
     <template v-if="strucData.value.type === 'dict'">
-      <el-select
-        v-if="!strucData.isAlias"
-        v-model="vmodel[strucData.id]"
-        clearable
-        :allow-create="strucData.value.allow_create"
-        :disabled="strucData.readonly"
-        filterable
-        remote
-        :remote-method="filterList">
-          <el-option  v-for="(option, optionIndex) in showOptionList"
-                      :key="optionIndex"
-                      :label="showLabel(option)"
-                      :value="option">
-                      <span>{{ showLabel(option) }}</span>
-                      <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
-          </el-option>
-      </el-select>
-      <el-radio-group
-        v-else
-        v-model="vmodel[strucData.id]"
-        :disabled="strucData.readonly">
-        <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
-      </el-radio-group>
+      <template v-if="strucData.readonly">
+        <el-input
+          :placeholder="showLabel(vmodel[strucData.id])"
+          :disabled="true">
+        </el-input>
+      </template>
+      <template v-if="!strucData.readonly">
+        <el-select
+          v-if="!strucData.isAlias"
+          v-model="vmodel[strucData.id]"
+          clearable
+          :allow-create="strucData.value.allow_create"
+          filterable
+          remote
+          :remote-method="filterList">
+            <el-option  v-for="(option, optionIndex) in showOptionList"
+                        :key="optionIndex"
+                        :label="showLabel(option)"
+                        :value="option">
+                        <span>{{ showLabel(option) }}</span>
+                        <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+            </el-option>
+        </el-select>
+        <el-radio-group
+          v-else
+          v-model="vmodel[strucData.id]"
+          :disabled="strucData.readonly">
+          <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
+        </el-radio-group>
+      </template>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
       <el-select
@@ -37,8 +44,10 @@
                       :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
-                      <span>{{ showLabel(option) }}</span>
-                      <p v-if="toolTipContent(option)" style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+                      <div class="left-content">
+                        <span>{{ showLabel(option) }}</span>
+                        <p v-if="toolTipContent(option)">{{ toolTipContent(option) }}</p>
+                      </div>
           </el-option>
       </el-select>
       <el-checkbox-group
@@ -87,11 +96,12 @@
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
               if (!this.isEditing) {
-                if (this.strucData.value.type === 'dicts') {
-                  this.vmodel[this.strucData.id] = []
-                } else {
-                  this.vmodel[this.strucData.id] = null
-                }
+                // if (this.strucData.value.type === 'dicts') {
+                //   this.vmodel[this.strucData.id] = []
+                // } else {
+                //   this.vmodel[this.strucData.id] = null
+                // }
+                this.setDataType(this.strucData, this.vmodel)
               }
               this.renderOptions()
             })
@@ -99,22 +109,25 @@
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
-                  if (this.strucData.value.type === 'dicts') {
-                    this.vmodel[this.strucData.id] = []
-                  } else {
-                    this.vmodel[this.strucData.id] = null
-                  }
+                  // if (this.strucData.value.type === 'dicts') {
+                  //   this.vmodel[this.strucData.id] = []
+                  // } else {
+                  //   this.vmodel[this.strucData.id] = null
+                  // }
+                  this.setDataType(this.strucData, this.vmodel)
                 }
                 this.renderOptions()
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing) {
-                  if (this.strucData.value.type === 'dicts') {
-                    this.vmodel[this.strucData.id] = []
-                  } else {
-                    this.vmodel[this.strucData.id] = null
-                  }
+                  // if (this.strucData.value.type === 'dicts') {
+                  //   this.vmodel[this.strucData.id] = []
+                  // } else {
+                  //   this.vmodel[this.strucData.id] = null
+                  // }
+                  this.setDataType(this.strucData, this.vmodel)
+                  // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
                 this.renderOptions()
               })
@@ -127,11 +140,12 @@
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
             if (!this.isEditing) {
-              if (this.strucData.value.type === 'dicts') {
-                this.vmodel[this.strucData.id] = []
-              } else {
-                this.vmodel[this.strucData.id] = null
-              }
+              // if (this.strucData.value.type === 'dicts') {
+              //   this.vmodel[this.strucData.id] = []
+              // } else {
+              //   this.vmodel[this.strucData.id] = null
+              // }
+              this.setDataType(this.strucData, this.vmodel)
             }
             this.renderOptions()
           })
@@ -161,7 +175,8 @@
             // } else
             if (typeof this.showLabel(val) === 'number') {
               // return this.showLabel(val) === query
-              return this.showLabel(val).indexOf(query + '') > -1
+              const value = this.showLabel(val) + ''
+              return value.indexOf(query + '') > -1
             } else {
               return this.showLabel(val).indexOf(query) > -1
             }
@@ -205,7 +220,7 @@
               }
             })
           } else {
-            // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes
               for (var option of this.optionList) {
@@ -420,6 +435,7 @@
                   const selectedIndex = optionIndex + +this.strucData.default.value
                   if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
+                    console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
                   } else if (this.optionList[0]) {
                     this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex}项`)
@@ -430,6 +446,7 @@
                   }
                 }
               } else if (this.strucData.default.type === 'static') {
+                // 若识别不到则置空
                 for (const option of this.optionList) {
                   if (option[this.strucData.value.source.res.show_key[0]] === this.strucData.default.value) {
                     if (this.strucData.value.type === 'dicts') {
@@ -489,3 +506,18 @@
     }
   }
 </script>
+<style scoped lang="less">
+  .left-content {
+    float: left;
+    overflow: hidden;
+    width: 100%;
+    p {
+      width: 100%;
+      overflow: hidden;
+      text-overflow:ellipsis;
+      white-space: nowrap;
+      color: #8492a6;
+      font-size: 13px
+    }
+  }
+</style>

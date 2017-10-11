@@ -645,8 +645,13 @@
           // console.log(this.assignForm.header.host_type)
           this.renderForm()
           this.applyData.body.forEach((item, k) => {
-            let newData = {}
+            // console.log(this.taskForm.body.body_list)
+            if (this.taskForm.body.body_list.length === 0) {
+              // body的数量不正确,应继承上一环节body的数量
+              this.assignForm.body.push({})
+            }
             this.taskForm.body.body_list.forEach((body, bodyIndex) => {
+              // console.log(body)
               if (body.show.type === 'form_header') {
                 this.$watch('assignForm.header.' + body.show.key_path, (newVal, oldVal) => {
                   this.$set(this.assignForm, 'body', [{}]) // 初始化表单数据
@@ -654,41 +659,65 @@
                     if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setNewDataType(value, newData)
-                          // // 有默认值时 只有 form_body 和 form_header 2种
-                          // if (value.default && value.default.type) {
-                          //   if (value.default.type === 'form_body') {
-                          //     this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                          //       this.assignForm.body[0][value.id] = newVal
-                          //     })
-                          //   } else if (value.default.type === 'form_header') {
-                          //     this.$watch('assignForm.body.0.' + value.default.key_path, (newVal, oldVal) => {
-                          //       this.assignForm.body[0][value.id] = newVal
-                          //     })
-                          //   }
-                          // }
+                          // this.setDataType(value, this.assignForm.body[0])
+                          if (value.need_submit) {
+                            if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                              this.setDataType(value, this.assignForm.body[k])
+                            }
+                            if (value.show.type === 'form_header') {
+                              this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                                if (this.showFormItem(value, this.assignForm)) {
+                                  this.setDataType(value, this.assignForm.body[k])
+                                } else {
+                                  delete this.assignForm.body[k][value.id]
+                                }
+                              })
+                            } else if (value.show.type === 'form_body') {
+                              this.$watch('assignForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
+                                if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                                  this.setDataType(value, this.assignForm.body[k])
+                                } else {
+                                  delete this.assignForm.body[k][value.id]
+                                }
+                              })
+                            }
+                          }
                         })
                       })
                     }
                   })
                 })
-              } else if (this.showBodyList(body, this.assignForm, this.applyData, k)) {
+              } else if (this.showBodyList(body, this.assignForm, this.applyData, k, true, false)) {
+                let newData = {}
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
-                      this.setNewDataType(value, newData)
+                      if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                        this.setNewDataType(value, newData)
+                      }
+                      if (value.show.type === 'form_header') {
+                        this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                          if (this.showFormItem(value, this.assignForm)) {
+                            this.setDataType(value, this.assignForm.body[k])
+                          } else {
+                            delete this.assignForm.body[k][value.id]
+                          }
+                        })
+                      } else if (value.show.type === 'form_body') {
+                        this.$watch('assignForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
+                          if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                            this.setDataType(value, this.assignForm.body[k])
+                          } else {
+                            delete this.assignForm.body[k][value.id]
+                          }
+                        })
+                      }
                     }
                   })
                 })
+                this.assignForm.body.push(newData)
               }
             })
-            this.assignForm.body.push(newData)
-            for (const id in item) {
-              // console.log(item[id], this.assignForm.body[k][id])
-              if (this.assignForm.body[k][id] !== undefined) {
-                this.assignForm.body[k][id] = item[id]
-              }
-            }
             // U 位默认值
             if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host') {
               // console.log(this.assignForm.body[k])
@@ -747,38 +776,6 @@
                 }
               })
             }
-            // 主机名
-            if (this.taskData.ptask.tkey === 'confirm1') {
-              let prefix
-              if (this.taskData.pinstance.pkey === 'host' || this.taskData.pinstance.pkey === 'host_machine') {
-                prefix = [
-                  this.applyData.header.idc.abbreviation,
-                  this.applyData.header.host_type.abbreviation,
-                  this.applyData.header.app.abbreviation
-                ].join('') + '-' + this.applyData.header.component.abbreviation
-              } else if (this.taskData.pinstance.pkey === 'host_my') {
-                prefix = [
-                  this.applyData.header.idc.abbreviation,
-                  this.applyData.header.hosts[k].hosttype.abbreviation,
-                  this.applyData.body[k].app.abbreviation
-                ].join('') + '-' + this.applyData.body[k].component.abbreviation
-              }
-              const postHeadvData = {
-                action: `hostname/minnumber`,
-                method: 'get',
-                data: {
-                  prefix: prefix
-                }
-              }
-              this.http.post('/data/', this.parseData(postHeadvData))
-              .then((response) => {
-                if (response.status === 200) {
-                  this.assignForm.body.map((body, bodyIndex) => {
-                    body.hostname = postHeadvData.data.prefix + (response.data.data + bodyIndex)
-                  })
-                }
-              })
-            }
           })
           // 宿主机 U 位默认值
           if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
@@ -788,7 +785,8 @@
               data: {
                 ipscopeId: this.applyData.body[0].esxi_ipscope.instanceId,
                 host_u: this.applyData.header.host_list[0].u_num,
-                host_num: this.applyData.header.host_list.length
+                host_num: this.applyData.header.host_list.length,
+                vmware_type: this.applyData.header.vmware_type
               }
             }
             this.http.post('/data/', this.parseData(UData)).then((res) => {
@@ -796,11 +794,27 @@
               resData.map(list => {
                 if (!this.isEmptyObj(list._default)) {
                   for (const i in list._default) {
-                    const index = i - 1
-                    this.assignForm.body[index].idcracku = list._default[i]
-                    this.assignForm.body[index].idcrack = list
+                    // const index = i - 1
+                    this.assignForm.body[i].idcracku = list._default[i]
+                    this.assignForm.body[i].idcrack = list
                   }
                 }
+              })
+            })
+          }
+          // 主机名
+          if (this.taskData.ptask.tkey === 'confirm1') {
+            const postHeadvData = {
+              action: 'recommend_hostname_list',
+              method: 'get',
+              data: {
+                tid: this.$route.params.tid
+              }
+            }
+            this.http.post('/data/', this.parseData(postHeadvData))
+            .then((response) => {
+              response.data.data.list.map((list, index) => {
+                this.assignForm.body[index].hostname = list
               })
             })
           }
@@ -918,32 +932,6 @@
         // console.log(this.tabIndex)
       },
       onSubmit (assignForm) {
-        let postFormData = {
-          header: {},
-          body: []
-        }
-        for (const headerid in this.assignForm.header) {
-          if (Array.isArray(this.assignForm.header[headerid])) {
-            if (this.assignForm.header[headerid].length !== 0) {
-              postFormData.header[headerid] = this.assignForm.header[headerid]
-            }
-          } else if (this.assignForm.header[headerid]) {
-            postFormData.header[headerid] = this.assignForm.header[headerid]
-          }
-        }
-        this.assignForm.body.map((body, bodyIndex) => {
-          postFormData.body[bodyIndex] = {}
-          for (const bodyid in body) {
-            if (Array.isArray(body[bodyid])) {
-              if (body[bodyid].length !== 0) {
-                postFormData.body[bodyIndex][bodyid] = body[bodyid]
-              }
-            } else if (body[bodyid]) {
-              postFormData.body[bodyIndex][bodyid] = body[bodyid]
-            }
-          }
-        })
-        console.log(postFormData)
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
@@ -952,7 +940,7 @@
         }).then(() => {
           this.$refs['assignForm'].validate((valid) => {
             if (valid) {
-              this.postMethod(this.routerInfo.tid, postFormData)
+              this.postMethod(this.routerInfo.tid, this.assignForm)
               // console.dir(this.assignForm)
             } else {
               console.log('error submit!!')
@@ -973,27 +961,50 @@
           header: {},
           body: []
         }
-        for (const headerid in data.header) {
-          if (Array.isArray(data.header[headerid])) {
-            if (data.header[headerid].length !== 0) {
-              postFormData.header[headerid] = data.header[headerid]
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.need_submit) {
+              for (const headerid in data.header) {
+                if (item.id === headerid) {
+                  if (Array.isArray(data.header[headerid])) {
+                    if (item.required || data.header[headerid].length !== 0) {
+                      postFormData.header[headerid] = data.header[headerid]
+                    }
+                  } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
+                    // 整型为 0 时可以提交
+                    postFormData.header[headerid] = data.header[headerid]
+                  }
+                }
+              }
             }
-          } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
-            postFormData.header[headerid] = data.header[headerid]
-          }
-        }
+          })
+        })
         data.body.map((body, bodyIndex) => {
           postFormData.body[bodyIndex] = {}
-          for (const bodyid in body) {
-            if (Array.isArray(body[bodyid])) {
-              if (body[bodyid].length !== 0) {
-                postFormData.body[bodyIndex][bodyid] = body[bodyid]
-              }
-            } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
-              postFormData.body[bodyIndex][bodyid] = body[bodyid]
+          this.taskForm.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData, bodyIndex)) {
+              bodyList.attr_list.map(list => {
+                list.value.map(item => {
+                  if (item.need_submit) {
+                    for (const bodyid in body) {
+                      if (item.id === bodyid) {
+                        if (Array.isArray(body[bodyid])) {
+                          if (item.required || body[bodyid].length !== 0) {
+                            postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                          }
+                        } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
+                          // 整型为 0 时可以提交
+                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                        }
+                      }
+                    }
+                  }
+                })
+              })
             }
-          }
+          })
         })
+        // console.log(postFormData)
         const postData = {
           action: 'task',
           method: 'POST',

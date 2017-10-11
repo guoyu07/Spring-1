@@ -281,4 +281,10 @@
     align-items: center;
     border-bottom: 2px solid #ccc;
   }
+  .el-checkbox {
+    width: 180px;
+  }
+  .el-checkbox+.el-checkbox {
+    margin-left: 0;
+  }
 </style>

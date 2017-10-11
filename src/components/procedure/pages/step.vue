@@ -594,7 +594,29 @@
                     if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          this.setDataType(value, this.assignForm.body[0])
+                          // this.setDataType(value, this.assignForm.body[0])
+                          if (value.need_submit) {
+                            if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                              this.setDataType(value, this.assignForm.body[k])
+                            }
+                            if (value.show.type === 'form_header') {
+                              this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                                if (this.showFormItem(value, this.assignForm)) {
+                                  this.setDataType(value, this.assignForm.body[k])
+                                } else {
+                                  delete this.assignForm.body[k][value.id]
+                                }
+                              })
+                            } else if (value.show.type === 'form_body') {
+                              this.$watch('assignForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
+                                if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                                  this.setDataType(value, this.assignForm.body[k])
+                                } else {
+                                  delete this.assignForm.body[k][value.id]
+                                }
+                              })
+                            }
+                          }
                         })
                       })
                     }
@@ -605,48 +627,32 @@
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
+                      if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                        this.setNewDataType(value, newData)
+                      }
                       if (value.show.type === 'form_header') {
                         this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
                           if (this.showFormItem(value, this.assignForm)) {
-                            this.setDataType(value, this.assignForm.header)
+                            this.setDataType(value, this.assignForm.body[k])
                           } else {
-                            delete this.assignForm.header[value.id]
+                            delete this.assignForm.body[k][value.id]
                           }
                         })
-                      } else if (this.showFormItem(value, this.assignForm, this.applyData)) {
-                        this.setNewDataType(value, newData)
+                      } else if (value.show.type === 'form_body') {
+                        this.$watch('assignForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
+                          if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                            this.setDataType(value, this.assignForm.body[k])
+                          } else {
+                            delete this.assignForm.body[k][value.id]
+                          }
+                        })
                       }
-                      // this.setDataType(value, this.assignForm.body[0])
-                      // // 有默认值时
-                      // if (value.default && value.default.type) {
-                      //   if (value.default.type === 'message_header') {
-                      //     this.assignForm.body[k][value.id] = this.getPathResult(this.applyData.header, value.default.key_path, k)
-                      //   } else if (value.default.type === 'form_body') {
-                      //     this.$watch('assignForm.body.' + k + '.' + value.default.key_path, (newVal, oldVal) => {
-                      //       // console.log(newVal, k, value.id)
-                      //       this.assignForm.body[k][value.id] = newVal
-                      //     })
-                      //   } else if (value.default.type === 'message_body') {
-                      //     this.assignForm.body[k][value.id] = this.getPathResult(this.applyData.body[k], value.default.key_path)
-                      //   } else if (value.default.type === 'form_header') {
-                      //     this.$watch('assignForm.header.' + value.default.key_path, (newVal, oldVal) => {
-                      //       this.assignForm.body[k][value.id] = newVal
-                      //     })
-                      //   } else if (value.default.type === 'static') {
-                      //     this.assignForm.body[k][value.id] = value.default.value
-                      //   }
-                      // }
                     }
                   })
                 })
                 this.assignForm.body.push(newData)
               }
             })
-            // for (const id in item) {
-            //   if (this.assignForm.body[k][id] !== undefined) {
-            //     this.assignForm.body[k][id] = item[id]
-            //   }
-            // }
           })
           // 判断是否为驳回信息
           let newDataBody = []
@@ -756,31 +762,6 @@
         this.tabIndex = tab.index
       },
       onSubmit (assignForm) {
-        let postFormData = {
-          header: {},
-          body: []
-        }
-        for (const headerid in this.assignForm.header) {
-          if (Array.isArray(this.assignForm.header[headerid])) {
-            if (this.assignForm.header[headerid].length !== 0) {
-              postFormData.header[headerid] = this.assignForm.header[headerid]
-            }
-          } else if (this.assignForm.header[headerid]) {
-            postFormData.header[headerid] = this.assignForm.header[headerid]
-          }
-        }
-        this.assignForm.body.map((body, bodyIndex) => {
-          postFormData.body[bodyIndex] = {}
-          for (const bodyid in body) {
-            if (Array.isArray(body[bodyid])) {
-              if (body[bodyid].length !== 0) {
-                postFormData.body[bodyIndex][bodyid] = body[bodyid]
-              }
-            } else if (body[bodyid]) {
-              postFormData.body[bodyIndex][bodyid] = body[bodyid]
-            }
-          }
-        })
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -788,7 +769,7 @@
         }).then(() => {
           this.$refs['assignForm'].validate((valid) => {
             if (valid) {
-              this.postMethod(this.routerInfo.tid, postFormData)
+              this.postMethod(this.routerInfo.tid, this.assignForm)
               // console.dir(this.assignForm)
             } else {
               console.log('error submit!!')
@@ -809,26 +790,48 @@
           header: {},
           body: []
         }
-        for (const headerid in data.header) {
-          if (Array.isArray(data.header[headerid])) {
-            if (data.header[headerid].length !== 0) {
-              postFormData.header[headerid] = data.header[headerid]
+        this.taskForm.header.map(header => {
+          header.value.map(item => {
+            if (item.need_submit) {
+              for (const headerid in data.header) {
+                if (item.id === headerid) {
+                  if (Array.isArray(data.header[headerid])) {
+                    if (item.required || data.header[headerid].length !== 0) {
+                      postFormData.header[headerid] = data.header[headerid]
+                    }
+                  } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
+                    // 整型为 0 时可以提交
+                    postFormData.header[headerid] = data.header[headerid]
+                  }
+                }
+              }
             }
-          } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
-            postFormData.header[headerid] = data.header[headerid]
-          }
-        }
+          })
+        })
         data.body.map((body, bodyIndex) => {
           postFormData.body[bodyIndex] = {}
-          for (const bodyid in body) {
-            if (Array.isArray(body[bodyid])) {
-              if (body[bodyid].length !== 0) {
-                postFormData.body[bodyIndex][bodyid] = body[bodyid]
-              }
-            } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
-              postFormData.body[bodyIndex][bodyid] = body[bodyid]
+          this.taskForm.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData, bodyIndex)) {
+              bodyList.attr_list.map(list => {
+                list.value.map(item => {
+                  if (item.need_submit) {
+                    for (const bodyid in body) {
+                      if (item.id === bodyid) {
+                        if (Array.isArray(body[bodyid])) {
+                          if (item.required || body[bodyid].length !== 0) {
+                            postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                          }
+                        } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
+                          // 整型为 0 时可以提交
+                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                        }
+                      }
+                    }
+                  }
+                })
+              })
             }
-          }
+          })
         })
         const postData = {
           action: 'task',

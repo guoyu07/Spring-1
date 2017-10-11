@@ -392,10 +392,15 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
       } else {
         compareVariable = postForm.header
       }
+    } else if (taskform.show.type === 'form_body') {
+      if (historyTask && (historyTask !== currentTask)) {
+        compareVariable = messageData.body[index]
+      } else {
+        compareVariable = postForm.body[index]
+      }
     } else if (taskform.show.type === 'message_header') {
       compareVariable = messageData.header
     } else if (taskform.show.type === 'message_body') {
-      // console.log('message_body', index)
       compareVariable = messageData.body[index]
     }
     const keyPath = taskform.show.key_path.split('.')
