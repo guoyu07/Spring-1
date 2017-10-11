@@ -26,16 +26,6 @@
               <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}</span>
             </template>
           </el-table-column>
-          <el-table-column
-            width="80"
-            inline-template
-            :context="_self"
-            label="操作">
-            <template>
-              <el-button v-if="filterData.name === '已完成'" size="small" @click="onViewProcess(row)">详情</el-button>
-              <el-button v-else size="small" @click="onViewTask(row)">详情</el-button>
-            </template>
-          </el-table-column>
         </el-table>
         <el-pagination
           class="margin-top margin-bottom fr"
@@ -53,14 +43,10 @@
         <h3>你的队列为空，可以喝杯咖啡去！</h3>
       </div>
     </el-card>
-    <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData" :filter-name="filterData.name"></task-dialog>
-    <process-dialog v-if="processViewData.visible" :process-view-data="processViewData"></process-dialog>
   </div>
 </template>
 
 <script>
-  import taskDialog from './_plugins/_taskDialog'
-  import processDialog from './_plugins/_processDialog'
   import getFilteredTasks from './../../../mixins/getFilteredTasks'
 
   export default {
@@ -187,11 +173,6 @@
           default: break
         }
       }
-    },
-
-    components: {
-      taskDialog,
-      processDialog
     }
   }
 </script>
