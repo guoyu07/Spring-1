@@ -378,8 +378,8 @@
               }
             }
             this.filterList('')
-            // this.isEditing 编辑状态下不配置默认值
-            if (this.strucData.default && this.strucData.default.type && !this.isEditing && !this.vmodel[this.strucData.id]) {
+            // this.vmodel[this.strucData.id] 有值时不配置默认值，编辑状态下是会配置默认值的
+            if (this.strucData.default && this.strucData.default.type && !this.vmodel[this.strucData.id]) {
               if (this.strucData.default.type === 'api') {
                 if (Array.isArray(this.vmodel[this.strucData.id])) {
                   let keyData
