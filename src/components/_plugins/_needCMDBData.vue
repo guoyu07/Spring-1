@@ -380,7 +380,7 @@
             }
             this.filterList('')
             // this.isEditing 编辑状态下不配置默认值
-            if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
+            if (this.strucData.default && this.strucData.default.type && !this.isEditing && !this.vmodel[this.strucData.id]) {
               if (this.strucData.default.type === 'api') {
                 if (Array.isArray(this.vmodel[this.strucData.id])) {
                   let keyData
