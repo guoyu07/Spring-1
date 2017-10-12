@@ -429,16 +429,16 @@
                     }
                   }
                   const selectedIndex = optionIndex + +this.strucData.default.value
-                  if (selectedIndex < this.optionList.length) {
+                  if (this.optionList.length === 0) {
+                    this.$message.warning(`${this.strucData.name}无数据`)
+                  } else if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
                     // console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
-                  } else if (this.optionList[0]) {
+                  } else if (this.optionList.length) {
                     this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
-                    this.vmodel[this.strucData.id] = this.optionList[0]
+                    this.vmodel[this.strucData.id] = this.optionList[this.optionList.length - 1]
                     return false
-                  } else {
-                    this.$message.warning(`${this.strucData.name}无数据`)
                   }
                 }
               } else if (this.strucData.default.type === 'static') {

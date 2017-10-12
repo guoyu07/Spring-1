@@ -173,7 +173,7 @@
     watch: {
       'hosts': 'renderHostList', // ②监听外部对props属性 hosts 的变更，并同步到组件内的data属性 hostList 中  val
       'hostList' (val) {
-        this.$emit('on-hosts-change', val, this.index) // ③组件内对 hostList 变更后向外部发送事件通知
+        this.$emit('on-hosts-change', val, this.index, this.mainInfo.id, this.header) // ③组件内对 hostList 变更后向外部发送事件通知
       }
     },
 
