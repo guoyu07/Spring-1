@@ -196,7 +196,7 @@
       renderData (newVal, oldVal) {
         // setTimeout(() => {
         // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-        if (this.vmodel[this.strucData.id] && !this.strucData.default.type) {
+        if (this.vmodel[this.strucData.id] && this.optionList.length > 1) {
           if (Array.isArray(this.vmodel[this.strucData.id])) {
             this.filterList('')
             this.vmodel[this.strucData.id].map((item, itemindex) => {
