@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="form-block info-block form-display-info" v-for="formBlock in formData">
+    <div class="form-block info-block" v-for="formBlock in formData">
       <!-- <h5>{{formBlock.name}}</h5> -->
       <template v-for="formItem in formBlock.value">
         <el-form-item
@@ -108,7 +108,8 @@
           <el-table
             class="margin-bottom"
             v-else-if="formItem.value.type === 'search_bar'"
-            :data="formItem.respectively_show ? item[formItem.id].slice(index, index + 1) : item[formItem.id]">
+            :data="item[formItem.id]">
+            <!-- formItem.respectively_show ? item[formItem.id].slice(index, index + 1) :  -->
             <el-table-column
               v-for="col in formItem.value.source.data.params.filter(param => {return param.value.type === 'input'})"
               :key="col.id"

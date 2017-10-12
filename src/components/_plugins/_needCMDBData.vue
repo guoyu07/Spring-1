@@ -179,7 +179,7 @@
               const value = this.showLabel(val) + ''
               return value.indexOf(query + '') > -1
             } else {
-              console.log(this.showLabel(val), val)
+              // console.log(this.showLabel(val), val)
               return this.showLabel(val).indexOf(query) > -1
             }
           })
@@ -194,10 +194,9 @@
         })
       },
       renderData (newVal, oldVal) {
-        console.log(this.vmodel[this.strucData.id], this.strucData.name)
         // setTimeout(() => {
         // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-        if (this.vmodel[this.strucData.id]) {
+        if (this.vmodel[this.strucData.id] && this.optionList.length > 1) {
           if (Array.isArray(this.vmodel[this.strucData.id])) {
             this.filterList('')
             this.vmodel[this.strucData.id].map((item, itemindex) => {
@@ -323,17 +322,17 @@
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path, this.index))) {
+              if (this.message && (isRender(this.getPathResult(this.message.header, para.value.key_path)) || isRender(this.getPathResult(this.message.header, para.value.key_path, 0)))) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.header, para.value.key_path, this.index)
+                params[para.id] = this.getPathResult(this.message.header, para.value.key_path, 0) || this.getPathResult(this.message.header, para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'message_body') {
               // console.log(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))
-              if (this.message && isRender(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))) {
+              if (this.message && (isRender(this.getPathResult(this.message.body[this.index], para.value.key_path)) || isRender(this.getPathResult(this.message.body[this.index], para.value.key_path, 0)))) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0)
+                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0) || this.getPathResult(this.message.body[this.index], para.value.key_path)
               } else {
                 this.$message.warning(`取不到 message_body 里的 ${para.value.key_path} 值`)
                 return false // 如果没取到值就不发请求
@@ -429,16 +428,16 @@
                     }
                   }
                   const selectedIndex = optionIndex + +this.strucData.default.value
-                  if (selectedIndex < this.optionList.length) {
+                  if (this.optionList.length === 0) {
+                    this.$message.warning(`${this.strucData.name}无数据`)
+                  } else if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
                     // console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
-                  } else if (this.optionList[0]) {
+                  } else if (this.optionList.length) {
                     this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
-                    this.vmodel[this.strucData.id] = this.optionList[0]
+                    this.vmodel[this.strucData.id] = this.optionList[this.optionList.length - 1]
                     return false
-                  } else {
-                    this.$message.warning(`${this.strucData.name}无数据`)
                   }
                 }
               } else if (this.strucData.default.type === 'static') {

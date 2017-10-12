@@ -233,32 +233,48 @@
       renderBodyLabel (val) {
         this.bodyLabel(this.taskFormData, val, val, this.bodyLableName)
       },
-      onHostsChange (val) {
+      onHostsChange (val, index, id, header) {
         // console.log(val)
         // this.hostList = []
         // this.hostList = val
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
-        this.taskFormData.header.map(header => {
-          header.value.map(item => {
-            if (item.show.type) {
-              // show.type 有四种类型
-              if (item.show.type === 'form_header') {
-                if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
-                    (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
-                    (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
-                  if (item.value.type === 'search_bar') { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
-                    this.postForm.header[item.id] = val
+        if (header) {
+          this.taskFormData.header.map(header => {
+            header.value.map(item => {
+              if (item.show.type) {
+                // show.type 有四种类型
+                if (item.show.type === 'form_header') {
+                  if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
+                      (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
+                      (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                      this.postForm.header[item.id] = val
+                    }
                   }
                 }
+              } else {
+                if (item.id === id) {
+                  // this.postForm.header[item.id] = []
+                  this.postForm.header[item.id] = val
+                }
               }
-            } else {
-              if (item.value.type === 'search_bar') {
-                // this.postForm.header[item.id] = []
-                this.postForm.header[item.id] = val
-              }
+            })
+          })
+        } else {
+          this.taskFormData.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+              bodyList.attr_list.map(list => {
+                list.value.map(item => {
+                  if (this.showFormItem(item, this.postForm, this.applyData)) {
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                      this.postForm.body[index][item.id] = val
+                    }
+                  }
+                })
+              })
             }
           })
-        })
+        }
         this.$refs['postForm'].validate((valid) => {}) // 调用验证
       },
       renderForm () {
