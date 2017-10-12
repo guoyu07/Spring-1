@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="form-block info-block form-display-info" v-for="formBlock in formData">
+    <div class="form-block info-block" v-for="formBlock in formData">
       <!-- <h5>{{formBlock.name}}</h5> -->
       <template v-for="formItem in formBlock.value">
         <el-form-item

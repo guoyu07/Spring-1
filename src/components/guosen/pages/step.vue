@@ -1009,7 +1009,7 @@
             }
           })
         })
-        // console.log(postFormData)
+        console.log(postFormData)
         const postData = {
           action: 'task',
           method: 'POST',
