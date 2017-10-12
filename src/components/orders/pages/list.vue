@@ -11,7 +11,8 @@ is<template>
           v-loading="loading"
           width="100%"
           stripe
-          border>
+          border
+          >
           <el-table-column
             v-for="(col, colIndex) in filterData.show"
             :key="col.key_path"

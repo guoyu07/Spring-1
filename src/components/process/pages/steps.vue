@@ -51,7 +51,7 @@
                               size="small"
                               style="margin-left: 6px;"
                               :class="{ empty: !candidateData.isUserCheckable }"
-                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'user')">{{candidateData.isUserCheckable ? '移除所选' : ''}}</el-button>
+                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'user');currentTask = task">{{candidateData.isUserCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
                           <el-tooltip content="加入候选人" placement="top" class="fr">
                             <el-button
@@ -80,7 +80,7 @@
                               size="small"
                               style="margin-left: 6px;"
                               :class="{ empty: !candidateData.isGroupCheckable }"
-                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'group')">{{candidateData.isGroupCheckable ? '移除所选' : ''}}</el-button>
+                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'group');currentTask = task">{{candidateData.isGroupCheckable ? '移除所选' : ''}}</el-button>
                           </el-tooltip>
                           <el-tooltip content="加入候选组" placement="top" class="fr">
                             <el-button
@@ -234,6 +234,7 @@
       onAddCandidate ({ pkey, tkey, type = '' }) {
         let data
         let { toAdd } = this.candidateData
+        console.log(toAdd, this.candidateData)
         type === 'user' ? data = { pkey, tkey, users: toAdd } : data = { pkey, tkey, groups: toAdd }
         let postData = {
           action: 'process/task',
@@ -243,9 +244,24 @@
         this.candidateData.loading = true
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            Object.assign(this.candidateData, { loading: false, visible: false, toAdd: [] })
+            Object.assign(this.candidateData, { loading: false, visible: false })
             this.$message.success('加入成功！')
-            this.getPermittedProcessList()
+            if (type === 'user') {
+              toAdd.map(userid => {
+                const toAddUser = this.permittedUserList.find(user => {
+                  return user.userId === userid
+                })
+                this.currentTask.users.push(toAddUser)
+              })
+            } else {
+              toAdd.map(key => {
+                const toAddRole = this.permittedRoleList.find(role => {
+                  return role.key === key
+                })
+                this.currentTask.groups.push(toAddRole)
+              })
+            }
+            // this.getPermittedProcessList()
           }
         })
       },
@@ -280,9 +296,32 @@
           }
           this.http.post('/activiti/', this.parseData(postData)).then((res) => {
             if (res.status === 200) {
-              Object.assign(this.candidateData, { toRemove: [], isUserCheckable: false, isGroupCheckable: false })
+              Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false })
               this.$message.success('移除成功！')
-              this.getPermittedProcessList()
+              // this.getPermittedProcessList()
+              if (type === 'user') {
+                let arr = this.currentTask.users
+
+                toRemove.map(userid => {
+                  arr.map((user, index) => {
+                    console.log(user, userid)
+                    if (user.userId === userid) {
+                      arr.splice(index, 1)
+                      this.candidateData.toRemove = []
+                    }
+                  })
+                })
+              } else {
+                let arr = this.currentTask.groups
+                toRemove.map(key => {
+                  arr.map((role, index) => {
+                    if (role.key === key) {
+                      arr.splice(index, 1)
+                      this.candidateData.toRemove = []
+                    }
+                  })
+                })
+              }
             }
           })
         })
@@ -298,9 +337,10 @@
         this.assigneeData.loading = true
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            Object.assign(this.assigneeData, { visible: false, loading: false, assignee: '' })
+            Object.assign(this.assigneeData, { visible: false, loading: false })
             this.$message.success('操作成功！')
-            this.getPermittedProcessList()
+            // this.getPermittedProcessList()
+            this.currentTask.assign = assignee
           }
         })
       },
