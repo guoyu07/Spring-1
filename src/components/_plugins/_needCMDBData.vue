@@ -86,18 +86,11 @@
     created () {
       this.keyPaths = []
       for (const para of this.strucData.value.source.data.params) {
-        // let keyPath
         if (para.value.key_path) {
-          // keyPath = para.value.key_path.split('.')
           this.keyPaths.push(para.value.key_path.split('.')[0])
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
               if (!this.isEditing && !this.vmodel[this.strucData.id]) {
-                // if (this.strucData.value.type === 'dicts') {
-                //   this.vmodel[this.strucData.id] = []
-                // } else {
-                //   this.vmodel[this.strucData.id] = null
-                // }
                 this.setDataType(this.strucData, this.vmodel)
               }
               this.renderOptions()
@@ -106,11 +99,6 @@
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
-                  // if (this.strucData.value.type === 'dicts') {
-                  //   this.vmodel[this.strucData.id] = []
-                  // } else {
-                  //   this.vmodel[this.strucData.id] = null
-                  // }
                   this.setDataType(this.strucData, this.vmodel)
                 }
                 this.renderOptions()
@@ -118,11 +106,6 @@
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
-                  // if (this.strucData.value.type === 'dicts') {
-                  //   this.vmodel[this.strucData.id] = []
-                  // } else {
-                  //   this.vmodel[this.strucData.id] = null
-                  // }
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
@@ -132,17 +115,12 @@
           }
         }
       }
-      // console.log(keyPaths)
+      // typeof this.strucData.watch === 'string' 是为了兼容 firfox
       if (this.strucData.watch && typeof this.strucData.watch === 'string') {
         // console.log(!this.keyPaths.includes(this.strucData.watch), this.strucData.name)
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
             if (!this.isEditing && !this.vmodel[this.strucData.id]) {
-              // if (this.strucData.value.type === 'dicts') {
-              //   this.vmodel[this.strucData.id] = []
-              // } else {
-              //   this.vmodel[this.strucData.id] = null
-              // }
               this.setDataType(this.strucData, this.vmodel)
             }
             this.renderOptions()
@@ -150,13 +128,16 @@
         }
       }
       this.renderOptions()
+      // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
+      this.$watch('vmodel.' + this.strucData.id, (newVal, oldVal) => {
+        this.renderData()
+      }, { deep: true })
     },
-    // 这个 watch 是为了上传Excel文档时或者有默认值时，填入对应的值
     watch: {
-      'vmodel': { // 监控默认值
-        handler: 'renderData',
-        deep: true
-      },
+      // 'vmodel': { // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
+      //   handler: 'renderData',
+      //   deep: true
+      // },
       'optionList': { // 监控数据加载
         handler: 'renderData',
         deep: true
@@ -191,9 +172,8 @@
         })
       },
       renderData (newVal, oldVal) {
-        // setTimeout(() => {
-        // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-        if (this.vmodel[this.strucData.id] && this.optionList.length > 1) {
+        if (this.vmodel[this.strucData.id]) {
+          // type 为 dicts 时
           if (Array.isArray(this.vmodel[this.strucData.id])) {
             this.filterList('')
             this.vmodel[this.strucData.id].map((item, itemindex) => {
@@ -211,10 +191,11 @@
                 })
               }
             })
-          } else {
+          } else { // type 为 dict 时
             this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            if (this.optionList.length === 1) return // 当数据只有1条时，默认值不需要执行以下代码
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-              let isIncludes
+              let isIncludes = false
               for (var option of this.optionList) {
                 if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
                   this.vmodel[this.strucData.id] = option
@@ -233,16 +214,16 @@
             }
           }
         }
-        // }, 1000)
       },
-      showLabel (option) {
+      showLabel (option) { // 显示 show_key 的信息
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
+          // type 为 dicts 时
           if (Array.isArray(option)) {
             let arr = option.map((val) => {
               return val[this.strucData.value.source.res.show_key[0]]
             })
             return arr
-          } else if (option) {
+          } else if (option) { // type 为 dict 时
             return option[this.strucData.value.source.res.show_key[0]]
           }
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
