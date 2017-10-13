@@ -84,9 +84,6 @@
       }
     },
     created () {
-      // if (this.strucData.value.source.res.show_key.length <= 1) {
-      //   this.showToolTip = true
-      // }
       this.keyPaths = []
       for (const para of this.strucData.value.source.data.params) {
         // let keyPath

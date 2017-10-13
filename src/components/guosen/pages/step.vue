@@ -355,8 +355,13 @@
         <el-button type="primary" size="mini" :disabled="previewPage === pageNum || pageNum === 0" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
       </div>
       <el-row :gutter="10">
-        <el-col :sm="6" v-for="idcrack in idcrackData" :key="idcrack.code">
-          <table class="el-table__body table-condensed table-cabinet text-navy">
+        <el-col :sm="6" class="idcrack-view" v-for="idcrack in idcrackData" :key="idcrack.code">
+          <!-- {{ idcrack.code }} -->
+          {{idcrack.code}}
+          <p v-for="(n, nindex) in idcrack.u_info.jgUHeight" class="idcrack-view__span" :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - nindex)) }">
+            {{idcrack.u_info.jgUHeight - nindex}}
+          </p>
+          <!-- <table class="el-table__body table-condensed table-cabinet text-navy">
             <caption>{{ idcrack.code }}</caption>
             <tbody>
               <tr v-for="(nindex, n) in idcrack.u_info.jgUHeight">
@@ -365,7 +370,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </table> -->
         </el-col>
       </el-row>
     </div>
@@ -1304,6 +1309,24 @@
   color: #fff;
   &:hover {
     text-decoration: none;
+  }
+}
+.idcrack-view {
+  .idcrack-view__span {
+    border: 1px solid #ccc;
+    margin-bottom: 0;
+    padding: 2px 0;
+    line-height: 15px;
+    & + .idcrack-view__span {
+      border-top: none;
+    }
+    &.occupied {
+      background-color: #b5bbc8;
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(0,0,0,.3);
+      font-weight: bold;
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,.3) 4px, rgba(255,255,255,.3) 8px);
+    }
   }
 }
 </style>
