@@ -352,22 +352,10 @@
           }
           return false
         }
-        // let p = ''
-        // let key
-        // for (const i in params) {
-        //   p = `${p}${i}=${params[i]}&`
-        // }
-        // key = `${this.strucData.value.source.data.action}?${p}`
-        // if (this.$store.state.apiCache[key]) {
-        //   this.optionList = this.$store.state.apiCache[key]
-        //   return false
-        // }
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           if (response) {
             this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
-            // const apicache = { key: key, value: this.optionList }
-            // this.$store.dispatch('update_apicache', apicache)
             if (this.optionList.length === 0) {
               this.$message.info(`${this.strucData.name}无数据`)
               if (!this.isAlias) {

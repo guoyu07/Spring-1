@@ -358,11 +358,8 @@
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
   import taskDialog from './_plugins/_taskDialog'
-  import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
-  import formStructure from '../../_plugins/_formStructure'
-  import headerFormStructure from '../../_plugins/_headerFormStructure'
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
@@ -963,12 +960,8 @@
       }
     },
     components: {
-      // searchFormStructure,
-      headerFormStructureDisplay,
       headerFormDisplay,
       formStructureDisplay,
-      formStructure,
-      headerFormStructure,
       formBody,
       searchBar,
       bodyTable,

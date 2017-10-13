@@ -289,7 +289,6 @@
 </template>
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
-  import headerFormStructureDisplay from '../../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../../_plugins/_formStructureDisplay'
   import getPermittedUserList from './../../../../mixins/getPermittedUserList'
@@ -477,7 +476,6 @@
       }
     },
     components: {
-      headerFormStructureDisplay,
       headerFormDisplay,
       formStructureDisplay
     }

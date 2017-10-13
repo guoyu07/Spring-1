@@ -34,7 +34,6 @@
 </template>
 
 <script>
-  import formStructure from './_formStructure'
   import formBody from './_formBody'
   export default {
     props: {
@@ -233,7 +232,6 @@
     },
 
     components: {
-      formStructure,
       formBody
     }
   }

@@ -202,7 +202,6 @@
   import needCmdbData from './_needCMDBData'
   import memberSelect from './_memberSelect'
   import cascaders from './_cascaders'
-  import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
   // import formStructure from './_formStructure'
@@ -611,7 +610,6 @@
       needCmdbData,
       memberSelect,
       cascaders,
-      formStructure,
       quillEditor,
       Dropzone
     }
