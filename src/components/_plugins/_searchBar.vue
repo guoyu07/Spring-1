@@ -49,7 +49,7 @@
       <div class="pagination-block clear">
         <el-pagination
           class="fr"
-          layout="prev, pager, next"
+          layout="total, prev, pager, next"
           :current-page="currentPage"
           :page-size="pageSize"
           @current-change="onPageChange"

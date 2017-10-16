@@ -111,7 +111,7 @@
             :current-page.sync="currentPage"
             :page-sizes="[10, 20, 30, 50, 100]"
             :page-size="currentPageSize"
-            layout="sizes, prev, pager, next"
+            layout="total, sizes, prev, pager, next"
             :total="totalPage">
           </el-pagination>
         </div>
