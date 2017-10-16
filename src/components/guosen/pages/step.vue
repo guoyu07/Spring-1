@@ -18,7 +18,6 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
-
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
@@ -553,33 +552,38 @@
         if (header) {
           this.taskForm.header.map(header => {
             header.value.map(item => {
-              if (item.show.type) {
-                // show.type 有四种类型
-                if (item.show.type === 'form_header') {
-                  if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
-                      (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
-                      (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
-                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
-                      this.postForm.header[item.id] = val
-                    }
-                  }
-                }
-              } else {
-                if (item.id === id) {
-                  // this.postForm.header[item.id] = []
-                  this.postForm.header[item.id] = val
+              // if (item.show.type) {
+              //   // show.type 有四种类型
+              //   if (item.show.type === 'form_header') {
+              //     if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
+              //         (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
+              //         (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+              //       if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+              //         this.postForm.header[item.id] = val
+              //       }
+              //     }
+              //   }
+              // } else {
+              //   if (item.id === id) {
+              //     // this.postForm.header[item.id] = []
+              //     this.postForm.header[item.id] = val
+              //   }
+              // }
+              if (this.showFormItem(item, this.assignForm, this.applyData)) {
+                if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                  this.assignForm.header[item.id] = val
                 }
               }
             })
           })
         } else {
           this.taskForm.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
-                  if (this.showFormItem(item, this.postForm, this.applyData)) {
+                  if (this.showFormItem(item, this.assignForm, this.applyData)) {
                     if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
-                      this.postForm.body[index][item.id] = val
+                      this.assignForm.body[index][item.id] = val
                     }
                   }
                 })
@@ -600,7 +604,7 @@
       renderBodyLabel (val) {
         this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
       },
-      renderTaskForm () { // 渲染表单数据
+      renderTaskForm () { // 渲染表单数据（当前处理表单就是要填什么）
         const renderFromData = {
           action: 'task/form/group',
           method: 'GET',
@@ -612,6 +616,7 @@
           this.taskForm = res.data.data.form
           this.taskFormAll = res.data.data
           // 渲染 body 个数
+          // 当前表单的body是上一步header拆出来的（特殊）
           if (this.applyData.body.length === 0) {
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               this.renderBodyLength(this.applyData.header)
@@ -625,7 +630,6 @@
               }
             }
           }
-
           this.taskForm.header.forEach((header, k) => {
             if (header) {
               header.value.map(value => {
