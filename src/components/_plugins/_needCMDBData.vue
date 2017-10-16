@@ -84,23 +84,13 @@
       }
     },
     created () {
-      // if (this.strucData.value.source.res.show_key.length <= 1) {
-      //   this.showToolTip = true
-      // }
       this.keyPaths = []
       for (const para of this.strucData.value.source.data.params) {
-        // let keyPath
         if (para.value.key_path) {
-          // keyPath = para.value.key_path.split('.')
           this.keyPaths.push(para.value.key_path.split('.')[0])
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
-              if (!this.isEditing) {
-                // if (this.strucData.value.type === 'dicts') {
-                //   this.vmodel[this.strucData.id] = []
-                // } else {
-                //   this.vmodel[this.strucData.id] = null
-                // }
+              if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                 this.setDataType(this.strucData, this.vmodel)
               }
               this.renderOptions()
@@ -108,24 +98,14 @@
           } else if (para.value.type === 'form_body') {
             if (this.bodyTable || this.headerTable) {
               this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
-                if (!this.isEditing) {
-                  // if (this.strucData.value.type === 'dicts') {
-                  //   this.vmodel[this.strucData.id] = []
-                  // } else {
-                  //   this.vmodel[this.strucData.id] = null
-                  // }
+                if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   this.setDataType(this.strucData, this.vmodel)
                 }
                 this.renderOptions()
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
-                if (!this.isEditing) {
-                  // if (this.strucData.value.type === 'dicts') {
-                  //   this.vmodel[this.strucData.id] = []
-                  // } else {
-                  //   this.vmodel[this.strucData.id] = null
-                  // }
+                if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
@@ -135,17 +115,12 @@
           }
         }
       }
-      // console.log(keyPaths)
+      // typeof this.strucData.watch === 'string' 是为了兼容 firfox
       if (this.strucData.watch && typeof this.strucData.watch === 'string') {
         // console.log(!this.keyPaths.includes(this.strucData.watch), this.strucData.name)
         if (!this.keyPaths.includes(this.strucData.watch)) {
           this.$watch('vmodel.' + this.strucData.watch, (newVal, oldVal) => {
-            if (!this.isEditing) {
-              // if (this.strucData.value.type === 'dicts') {
-              //   this.vmodel[this.strucData.id] = []
-              // } else {
-              //   this.vmodel[this.strucData.id] = null
-              // }
+            if (!this.isEditing && !this.vmodel[this.strucData.id]) {
               this.setDataType(this.strucData, this.vmodel)
             }
             this.renderOptions()
@@ -153,13 +128,16 @@
         }
       }
       this.renderOptions()
+      // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
+      this.$watch('vmodel.' + this.strucData.id, (newVal, oldVal) => {
+        this.renderData()
+      }, { deep: true })
     },
-    // 这个 watch 是为了上传Excel文档时或者有默认值时，填入对应的值
     watch: {
-      'vmodel': { // 监控默认值
-        handler: 'renderData',
-        deep: true
-      },
+      // 'vmodel': { // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
+      //   handler: 'renderData',
+      //   deep: true
+      // },
       'optionList': { // 监控数据加载
         handler: 'renderData',
         deep: true
@@ -179,6 +157,7 @@
               const value = this.showLabel(val) + ''
               return value.indexOf(query + '') > -1
             } else {
+              // console.log(this.showLabel(val), val)
               return this.showLabel(val).indexOf(query) > -1
             }
           })
@@ -193,17 +172,9 @@
         })
       },
       renderData (newVal, oldVal) {
-        // setTimeout(() => {
-        // this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
         if (this.vmodel[this.strucData.id]) {
-          // console.log(this.strucData.id, this.strucData.name)
+          // type 为 dicts 时
           if (Array.isArray(this.vmodel[this.strucData.id])) {
-            // const key = []
-            // if (this.vmodel[this.strucData.id].length) {
-            //   this.vmodel[this.strucData.id].map(model => {
-            //     key.push(this.showLabel(model))
-            //   })
-            // }
             this.filterList('')
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
@@ -220,10 +191,11 @@
                 })
               }
             })
-          } else {
+          } else { // type 为 dict 时
             this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
+            if (this.optionList.length === 1) return // 当数据只有1条时，默认值不需要执行以下代码
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
-              let isIncludes
+              let isIncludes = false
               for (var option of this.optionList) {
                 if (option[this.strucData.value.source.res.show_key[0]] === this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
                   this.vmodel[this.strucData.id] = option
@@ -242,16 +214,16 @@
             }
           }
         }
-        // }, 100)
       },
-      showLabel (option) {
+      showLabel (option) { // 显示 show_key 的信息
         if (Array.isArray(this.strucData.value.source.res.show_key)) {
+          // type 为 dicts 时
           if (Array.isArray(option)) {
             let arr = option.map((val) => {
               return val[this.strucData.value.source.res.show_key[0]]
             })
             return arr
-          } else if (option) {
+          } else if (option) { // type 为 dict 时
             return option[this.strucData.value.source.res.show_key[0]]
           }
           // return this.strucData.value.source.res.show_key.reduce((prev, cur) => {
@@ -328,17 +300,17 @@
                 }
               }
             } else if (para.value.type === 'message_header') {
-              if (this.message && isRender(this.getPathResult(this.message.header, para.value.key_path, this.index))) {
+              if (this.message && (isRender(this.getPathResult(this.message.header, para.value.key_path)) || isRender(this.getPathResult(this.message.header, para.value.key_path, 0)))) {
                 // 这里要区分一下 this.message.header 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.header, para.value.key_path, this.index)
+                params[para.id] = this.getPathResult(this.message.header, para.value.key_path, 0) || this.getPathResult(this.message.header, para.value.key_path)
               } else {
                 return false // 如果没取到值就不发请求
               }
             } else if (para.value.type === 'message_body') {
               // console.log(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))
-              if (this.message && isRender(this.getPathResult(this.message.body[this.index], para.value.key_path, 0))) {
+              if (this.message && (isRender(this.getPathResult(this.message.body[this.index], para.value.key_path)) || isRender(this.getPathResult(this.message.body[this.index], para.value.key_path, 0)))) {
                 // 这里要区分一下 this.message.body[this.index] 的 id 的值是对象还是数组
-                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0)
+                params[para.id] = this.getPathResult(this.message.body[this.index], para.value.key_path, 0) || this.getPathResult(this.message.body[this.index], para.value.key_path)
               } else {
                 this.$message.warning(`取不到 message_body 里的 ${para.value.key_path} 值`)
                 return false // 如果没取到值就不发请求
@@ -361,22 +333,10 @@
           }
           return false
         }
-        // let p = ''
-        // let key
-        // for (const i in params) {
-        //   p = `${p}${i}=${params[i]}&`
-        // }
-        // key = `${this.strucData.value.source.data.action}?${p}`
-        // if (this.$store.state.apiCache[key]) {
-        //   this.optionList = this.$store.state.apiCache[key]
-        //   return false
-        // }
         this.http.post(this.strucData.value.source.url.substring(4), postHeadvData)
         .then((response) => {
           if (response) {
             this.optionList = this.getPathResult(response, this.strucData.value.source.res.data_path)
-            // const apicache = { key: key, value: this.optionList }
-            // this.$store.dispatch('update_apicache', apicache)
             if (this.optionList.length === 0) {
               this.$message.info(`${this.strucData.name}无数据`)
               if (!this.isAlias) {
@@ -384,8 +344,8 @@
               }
             }
             this.filterList('')
-            // this.isEditing 编辑状态下不配置默认值
-            if (this.strucData.default && this.strucData.default.type && !this.isEditing) {
+            // this.vmodel[this.strucData.id] 有值时不配置默认值，编辑状态下是会配置默认值的
+            if (this.strucData.default && this.strucData.default.type && !this.vmodel[this.strucData.id]) {
               if (this.strucData.default.type === 'api') {
                 if (Array.isArray(this.vmodel[this.strucData.id])) {
                   let keyData
@@ -434,16 +394,16 @@
                     }
                   }
                   const selectedIndex = optionIndex + +this.strucData.default.value
-                  if (selectedIndex < this.optionList.length) {
+                  if (this.optionList.length === 0) {
+                    this.$message.warning(`${this.strucData.name}无数据`)
+                  } else if (selectedIndex < this.optionList.length) {
                     this.vmodel[this.strucData.id] = this.optionList[selectedIndex]
                     // console.log(this.strucData.name, this.vmodel[this.strucData.id])
                     return false
-                  } else if (this.optionList[0]) {
+                  } else if (this.optionList.length) {
                     this.$message.warning(`${this.strucData.name}的选项不够${selectedIndex + 1}项`)
-                    this.vmodel[this.strucData.id] = this.optionList[0]
+                    this.vmodel[this.strucData.id] = this.optionList[this.optionList.length - 1]
                     return false
-                  } else {
-                    this.$message.warning(`${this.strucData.name}无数据`)
                   }
                 }
               } else if (this.strucData.default.type === 'static') {

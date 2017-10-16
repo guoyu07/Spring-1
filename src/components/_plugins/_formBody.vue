@@ -202,7 +202,6 @@
   import needCmdbData from './_needCMDBData'
   import memberSelect from './_memberSelect'
   import cascaders from './_cascaders'
-  import formStructure from './_formStructure'
   import { quillEditor } from 'vue-quill-editor'
   import Dropzone from 'vue2-dropzone'
   // import formStructure from './_formStructure'
@@ -284,89 +283,95 @@
       }
     },
     mounted () {
-      // this.isEditing 编辑状态下或者无原值时配置默认值
-      if (!this.isEditing || !this.item[this.formItem.id]) {
-        // 默认值
-        if (this.formItem && this.formItem.default && this.formItem.default.type) {
-          if (this.formItem.default.type === 'message_header') {
+      // 默认值
+      if (this.formItem && this.formItem.default && this.formItem.default.type) {
+        if (this.formItem.default.type === 'message_header') {
+          if (this.headerTable || this.bodyTable) {
+            // console.log('formbody default')
+            // this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
+            // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
+            if (!Array.isArray(this.whole[this.formItem.id]) && Array.isArray(this.getPathResult(this.message.header, this.formItem.default.key_path, this.tableIndex))) {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole[this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.header, this.formItem.default.key_path)[this.tableIndex]
+            } else {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole[this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex)
+              // console.log(this.getPathResult(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex))
+              // console.log(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex)
+            }
+          } else {
+            if (this.header) {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole.header[this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.header, this.formItem.default.key_path)
+            } else {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole.body[this.index][this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
+            }
+          }
+        } else if (this.formItem.default.type === 'message_body') {
+          if (this.headerTable || this.bodyTable) {
+            // 优先填入原值（驳回信息的值或者通过表格上传的值）
+            this.whole[this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.body[this.index], this.formItem.default.key_path, this.tableIndex)
+          } else {
+            if (this.header) {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole.header[this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.body[this.index], this.formItem.default.key_path)
+            } else {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole.body[this.index][this.formItem.id] = this.item[this.formItem.id] || this.getPathResult(this.message.body[this.index], this.formItem.default.key_path, this.tableIndex)
+            }
+          }
+        } else if (this.formItem.default.type === 'static' && this.formItem.default.value !== '$author' && !['dict', 'dicts'].includes(this.formItem.value.type)) {
+          if (this.headerTable || this.bodyTable) {
+            // 优先填入原值（驳回信息的值或者通过表格上传的值）
+            this.whole[this.formItem.id] = this.item[this.formItem.id] || this.formItem.default.value
+          } else {
+            if (this.header) {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole.header[this.formItem.id] = this.item[this.formItem.id] || this.formItem.default.value
+            } else {
+              // 优先填入原值（驳回信息的值或者通过表格上传的值）
+              this.whole.body[this.index][this.formItem.id] = this.item[this.formItem.id] || this.formItem.default.value
+            }
+          }
+        } else if (this.formItem.default.type === 'form_header') {
+          this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+            // console.log(this.formItem.default.key_path)
+            const val = this.getPathResult(this.whole.header, this.formItem.default.key_path, this.index)
+            if (!val || newVal === oldVal) return false
             if (this.headerTable || this.bodyTable) {
-              // console.log('formbody default')
-              // this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
-              // 如果原值不是数组，而默认值取到一个数组，则按 table 的索引来取默认值
-              if (!Array.isArray(this.whole[this.formItem.id]) && Array.isArray(this.getPathResult(this.message.header, this.formItem.default.key_path, this.tableIndex))) {
-                this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)[this.tableIndex]
-              } else {
-                this.whole[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex)
-                // console.log(this.getPathResult(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex))
-                // console.log(this.message.header, this.formItem.default.key_path, this.index, this.tableIndex)
-              }
+              this.whole[this.formItem.id] = val
             } else {
               if (this.header) {
-                // console.log(this.whole.header[this.formItem.id])
-                this.whole.header[this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path)
+                // console.log(val, newVal, oldVal)
+                this.whole.header[this.formItem.id] = val
               } else {
-                this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.header, this.formItem.default.key_path, this.index)
+                this.whole.body.map((body, bodyindex) => {
+                  const bodyVal = this.getPathResult(this.whole.header, this.formItem.default.key_path, bodyindex)
+                  this.whole.body[bodyindex][this.formItem.id] = bodyVal
+                })
               }
             }
-          } else if (this.formItem.default.type === 'message_body') {
-            if (this.headerTable || this.bodyTable) {
-              this.whole[this.formItem.id] = this.getPathResult(this.message.body[this.index], this.formItem.default.key_path, this.tableIndex)
-            } else {
-              if (this.header) {
-                this.whole.header[this.formItem.id] = this.getPathResult(this.message.body[this.index], this.formItem.default.key_path)
-              } else {
-                this.whole.body[this.index][this.formItem.id] = this.getPathResult(this.message.body[this.index], this.formItem.default.key_path, this.tableIndex)
-              }
-            }
-          } else if (this.formItem.default.type === 'static' && !['dict', 'dicts'].includes(this.formItem.value.type) && this.formItem.default.value !== '$author') {
-            // dict', 'dicts'的static类型默认值在 _needCMDBData.vue
-            if (this.headerTable || this.bodyTable) {
-              this.whole[this.formItem.id] = this.formItem.default.value
-            } else {
-              if (this.header) {
-                this.whole.header[this.formItem.id] = this.formItem.default.value
-              } else {
-                this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
-              }
-            }
-          } else if (this.formItem.default.type === 'form_header') {
-            this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-              // console.log(this.formItem.default.key_path)
-              const val = this.getPathResult(this.whole.header, this.formItem.default.key_path, this.index)
-              if (!val || newVal === oldVal) return false
-              if (this.headerTable || this.bodyTable) {
-                this.whole[this.formItem.id] = val
-              } else {
-                if (this.header) {
-                  // console.log(val, newVal, oldVal)
-                  this.whole.header[this.formItem.id] = val
-                } else {
-                  this.whole.body.map((body, bodyindex) => {
-                    const bodyVal = this.getPathResult(this.whole.header, this.formItem.default.key_path, bodyindex)
-                    this.whole.body[bodyindex][this.formItem.id] = bodyVal
-                  })
-                }
-              }
-            }, {deep: true})
-          } else if (this.formItem.default.type === 'form_body') {
-            if (this.headerTable || this.bodyTable) {
-              this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                this.whole[this.formItem.id] = newVal
+          }, {deep: true})
+        } else if (this.formItem.default.type === 'form_body') {
+          if (this.headerTable || this.bodyTable) {
+            this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {
+              this.whole[this.formItem.id] = newVal
+            })
+          } else {
+            if (this.header) {
+              this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole.header[this.formItem.id] = newVal
               })
             } else {
-              if (this.header) {
-                this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                  this.whole.header[this.formItem.id] = newVal
-                })
-              } else {
-                this.$watch('whole.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
-                  this.whole.body[this.index][this.formItem.id] = newVal
-                })
-              }
+              this.$watch('whole.body.' + this.index + '.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                this.whole.body[this.index][this.formItem.id] = newVal
+              })
             }
           }
         }
       }
+      // }
     },
     methods: {
       prop (formItem) {
@@ -611,7 +616,6 @@
       needCmdbData,
       memberSelect,
       cascaders,
-      formStructure,
       quillEditor,
       Dropzone
     }

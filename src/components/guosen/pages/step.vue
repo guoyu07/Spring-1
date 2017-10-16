@@ -18,7 +18,6 @@
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
-
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
@@ -100,6 +99,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -127,6 +127,7 @@
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                 <header-form-display
+                                  :index="index"
                                   :item="applyData.header"
                                   :form-item="valueheader">
                                 </header-form-display>
@@ -208,6 +209,7 @@
                                   <span v-for="valueheader in taskformheader.value">
                                     <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                       <header-form-display
+                                        :index="index"
                                         :item="applyData.header"
                                         :form-item="valueheader">
                                       </header-form-display>
@@ -235,6 +237,7 @@
                               <span v-for="valueheader in taskformheader.value">
                                 <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                   <header-form-display
+                                    :index="index"
                                     :item="applyData.header"
                                     :form-item="valueheader">
                                   </header-form-display>
@@ -351,8 +354,13 @@
         <el-button type="primary" size="mini" :disabled="previewPage === pageNum || pageNum === 0" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
       </div>
       <el-row :gutter="10">
-        <el-col :sm="6" v-for="idcrack in idcrackData" :key="idcrack.code">
-          <table class="el-table__body table-condensed table-cabinet text-navy">
+        <el-col :sm="6" class="idcrack-view" v-for="idcrack in idcrackData" :key="idcrack.code">
+          <!-- {{ idcrack.code }} -->
+          {{idcrack.code}}
+          <p v-for="(n, nindex) in idcrack.u_info.jgUHeight" class="idcrack-view__span" :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - nindex)) }">
+            {{idcrack.u_info.jgUHeight - nindex}}
+          </p>
+          <!-- <table class="el-table__body table-condensed table-cabinet text-navy">
             <caption>{{ idcrack.code }}</caption>
             <tbody>
               <tr v-for="(nindex, n) in idcrack.u_info.jgUHeight">
@@ -361,7 +369,7 @@
                 </td>
               </tr>
             </tbody>
-          </table>
+          </table> -->
         </el-col>
       </el-row>
     </div>
@@ -370,11 +378,8 @@
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
   import taskDialog from './_plugins/_taskDialog'
-  import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
-  import formStructure from '../../_plugins/_formStructure'
-  import headerFormStructure from '../../_plugins/_headerFormStructure'
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
@@ -481,8 +486,6 @@
         })
       },
       stickValue (index) {
-        console.log(index)
-        console.log(this.copyObj)
         Object.assign(this.assignForm.body[index], this.copyObj)
       },
       idcrackIsTaked () {
@@ -542,44 +545,52 @@
           this.previewPage = page
         }
       },
-      onHostsChange (val, index) {
+      onHostsChange (val, index, id, header) {
         // console.log(val)
         // this.hostList = []
         // this.hostList = val
-        this.taskForm.header.map(header => {
-          header.value.map(item => {
-            if (item.show.type) {
-              // show.type 有四种类型
-              if (item.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
-                  if (item.value.type === 'search_bar') {
-                    // this.assignForm.header[item.id] = []
-                    this.assignForm.header[item.id] = val
-                  }
+        if (header) {
+          this.taskForm.header.map(header => {
+            header.value.map(item => {
+              // if (item.show.type) {
+              //   // show.type 有四种类型
+              //   if (item.show.type === 'form_header') {
+              //     if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
+              //         (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
+              //         (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+              //       if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+              //         this.postForm.header[item.id] = val
+              //       }
+              //     }
+              //   }
+              // } else {
+              //   if (item.id === id) {
+              //     // this.postForm.header[item.id] = []
+              //     this.postForm.header[item.id] = val
+              //   }
+              // }
+              if (this.showFormItem(item, this.assignForm, this.applyData)) {
+                if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                  this.assignForm.header[item.id] = val
                 }
               }
-            } else {
-              if (item.value.type === 'search_bar') {
-                // this.assignForm.header[item.id] = []
-                this.assignForm.header[item.id] = val
-              }
+            })
+          })
+        } else {
+          this.taskForm.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
+              bodyList.attr_list.map(list => {
+                list.value.map(item => {
+                  if (this.showFormItem(item, this.assignForm, this.applyData)) {
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                      this.assignForm.body[index][item.id] = val
+                    }
+                  }
+                })
+              })
             }
           })
-        })
-        this.taskForm.body.body_list.map(body => {
-          if (this.showBodyList(body, this.assignForm, this.applyData, index)) {
-            body.attr_list.map(list => {
-              list.value.map(item => {
-                if (this.showFormItem(item, this.assignForm, this.applyData, true, false, index)) {
-                  if (item.value.type === 'search_bar') {
-                    this.assignForm.body[index][item.id] = []
-                    this.assignForm.body[index][item.id] = val
-                  }
-                }
-              })
-            })
-          }
-        })
+        }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
         this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
@@ -593,7 +604,7 @@
       renderBodyLabel (val) {
         this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
       },
-      renderTaskForm () { // 渲染表单数据
+      renderTaskForm () { // 渲染表单数据（当前处理表单就是要填什么）
         const renderFromData = {
           action: 'task/form/group',
           method: 'GET',
@@ -605,6 +616,7 @@
           this.taskForm = res.data.data.form
           this.taskFormAll = res.data.data
           // 渲染 body 个数
+          // 当前表单的body是上一步header拆出来的（特殊）
           if (this.applyData.body.length === 0) {
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               this.renderBodyLength(this.applyData.header)
@@ -618,7 +630,6 @@
               }
             }
           }
-
           this.taskForm.header.forEach((header, k) => {
             if (header) {
               header.value.map(value => {
@@ -1004,7 +1015,7 @@
             }
           })
         })
-        // console.log(postFormData)
+        console.log(postFormData)
         const postData = {
           action: 'task',
           method: 'POST',
@@ -1128,11 +1139,8 @@
     },
     components: {
       // searchFormStructure,
-      headerFormStructureDisplay,
       headerFormDisplay,
       formStructureDisplay,
-      formStructure,
-      headerFormStructure,
       formBody,
       searchBar,
       bodyTable,
@@ -1299,6 +1307,24 @@
   color: #fff;
   &:hover {
     text-decoration: none;
+  }
+}
+.idcrack-view {
+  .idcrack-view__span {
+    border: 1px solid #ccc;
+    margin-bottom: 0;
+    padding: 2px 0;
+    line-height: 15px;
+    & + .idcrack-view__span {
+      border-top: none;
+    }
+    &.occupied {
+      background-color: #b5bbc8;
+      color: #fff;
+      text-shadow: 1px 1px 4px rgba(0,0,0,.3);
+      font-weight: bold;
+      background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,.3) 4px, rgba(255,255,255,.3) 8px);
+    }
   }
 }
 </style>

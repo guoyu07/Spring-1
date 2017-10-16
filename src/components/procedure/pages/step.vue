@@ -102,6 +102,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -127,6 +128,7 @@
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                     <header-form-display
+                                      :index="index"
                                       :item="applyData.header"
                                       :form-item="valueheader">
                                     </header-form-display>
@@ -145,6 +147,7 @@
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                 <header-form-display
+                                  :index="index"
                                   :item="applyData.header"
                                   :form-item="valueheader">
                                 </header-form-display>
@@ -222,6 +225,7 @@
                                   <span v-for="valueheader in taskformheader.value">
                                     <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                       <header-form-display
+                                        :index="index"
                                         :item="applyData.header"
                                         :form-item="valueheader">
                                       </header-form-display>
@@ -249,6 +253,7 @@
                               <span v-for="valueheader in taskformheader.value">
                                 <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
                                   <header-form-display
+                                    :index="index"
                                     :item="applyData.header"
                                     :form-item="valueheader">
                                   </header-form-display>
@@ -353,17 +358,14 @@
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
   import taskDialog from './_plugins/_taskDialog'
-  import headerFormStructureDisplay from '../../_plugins/_headerFormStructureDisplay'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
-  import formStructure from '../../_plugins/_formStructure'
-  import headerFormStructure from '../../_plugins/_headerFormStructure'
   import formBody from '../../_plugins/_formBody'
   import searchBar from '../../_plugins/_searchBar'
   import bodyTable from '../../_plugins/_bodyTable'
   import headerTable from '../../_plugins/_headerTable'
   import progressWrap from '../../_plugins/_progress'
-  
+
   export default {
     data () {
       return {
@@ -478,44 +480,47 @@
         }, 100)
         return true
       },
-      onHostsChange (val, index) {
+      onHostsChange (val, index, id, header) {
         // console.log(val)
         // this.hostList = []
         // this.hostList = val
-        this.taskForm.header.map(header => {
-          header.value.map(item => {
-            if (item.show.type) {
-              // show.type 有四种类型
-              if (item.show.type === 'form_header') {
-                if (this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) {
-                  if (item.value.type === 'search_bar') {
-                    this.assignForm.header[item.id] = []
-                    this.assignForm.header[item.id] = val
+        if (header) {
+          this.taskForm.header.map(header => {
+            header.value.map(item => {
+              if (item.show.type) {
+                // show.type 有四种类型
+                if (item.show.type === 'form_header') {
+                  if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
+                      (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
+                      (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                      this.postForm.header[item.id] = val
+                    }
                   }
                 }
+              } else {
+                if (item.id === id) {
+                  // this.postForm.header[item.id] = []
+                  this.postForm.header[item.id] = val
+                }
               }
-            } else {
-              if (item.value.type === 'search_bar') {
-                this.assignForm.header[item.id] = []
-                this.assignForm.header[item.id] = val
-              }
+            })
+          })
+        } else {
+          this.taskForm.body.body_list.map(bodyList => {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+              bodyList.attr_list.map(list => {
+                list.value.map(item => {
+                  if (this.showFormItem(item, this.postForm, this.applyData)) {
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                      this.postForm.body[index][item.id] = val
+                    }
+                  }
+                })
+              })
             }
           })
-        })
-        this.taskForm.body.body_list.map(body => {
-          if (this.showBodyList(body, this.assignForm, this.applyData, index)) {
-            body.attr_list.map(list => {
-              list.value.map(item => {
-                if (this.showFormItem(item, this.assignForm, this.applyData, true, false, index)) {
-                  if (item.value.type === 'search_bar') {
-                    this.assignForm.body[index][item.id] = []
-                    this.assignForm.body[index][item.id] = val
-                  }
-                }
-              })
-            })
-          }
-        })
+        }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
         this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
@@ -900,7 +905,7 @@
               type: 'success',
               message: '提交成功!'
             })
-            this.$router.replace('/menu') // 分配成功跳转工单管理
+            // this.$router.replace('/menu') // 分配成功跳转工单管理
           }
         })
       },
@@ -955,12 +960,8 @@
       }
     },
     components: {
-      // searchFormStructure,
-      headerFormStructureDisplay,
       headerFormDisplay,
       formStructureDisplay,
-      formStructure,
-      headerFormStructure,
       formBody,
       searchBar,
       bodyTable,
