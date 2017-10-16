@@ -12,13 +12,21 @@
             <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
               <el-form-item label="处理人" :inline="true">
-                <el-select v-model="newAssignee" filterable clearable placeholder="请选择处理人">
+                <el-select
+                  v-model="newAssignee"
+                  filterable
+                  clearable
+                  :filter-method="filterUsers"
+                  placeholder="请选择处理人">
                   <el-option
-                    v-for="user in permittedUserList"
+                    v-for="user in filteredUserList"
                     :key="user.userId"
                     :label="user.nick"
                     :value="user.userId">
-                    <p>{{ user.nick }}</p>
+                    <p>
+                      <span>{{ user.nick }}</span>
+                      <span style="float: right; color: #8492a6; font-size: 13px">{{ user.userId }}</span>
+                    </p>
                     <p style="color: #8492a6; font-size: 13px">{{ user.email }}</p>
                  </el-option>
                 </el-select>
@@ -321,7 +329,8 @@
         taskData: {},
         newAssignee: '',
         newassignGroup: '',
-        assignViewLoading: false
+        assignViewLoading: false,
+        filteredUserList: []
       }
     },
     created () {
@@ -361,6 +370,14 @@
         console.log(val[val.length - 1].form.form)
         this.bodyLabel(val[val.length - 1].form.form, this.assignForm, this.applyData, this.bodyLableName)
       },
+
+      // custom filter method for 处理人
+      filterUsers (query) {
+        console.log(query)
+        this.filteredUserList = this.permittedUserList.filter(user =>
+          (user.nick + user.userId).indexOf(query) > -1)
+      },
+
       toJumper (jumper) {
         let path = ''
         let query = {}
