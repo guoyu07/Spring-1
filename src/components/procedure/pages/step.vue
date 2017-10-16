@@ -16,7 +16,6 @@
              taskList: taskData.pinstance.task_list
              }"></progress-wrap>
           </div>
-          <process-dialog></process-dialog>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
@@ -205,7 +204,7 @@
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
                 <div v-for="(data, index) in applyData.body" style="position:relative">
-                <el-button-group style="position:absolute;right:10px;top:8px;z-index:1;width:90px">
+                <el-button-group style="position:absolute;right:15px;top:8px;z-index:1;width:90px">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
                   <el-button size="small" @click="stickValue(index)">黏贴</el-button>
                 </el-button-group>
@@ -421,9 +420,33 @@
       'infoShow': {
         handler: 'infoShowFunction',
         deep: true
+      },
+      'taskFormAll': {
+        handler: 'getAutoFillData',
+        deep: true
       }
     },
     methods: {
+      getAutoFillData () {
+        console.log(this.taskFormAll.fill_form)
+        if (this.taskFormAll.fill_form) {
+          const renderFromData = {
+            action: 'auto/fill/form',
+            method: 'post',
+            data: {
+              tid: this.routerInfo.tid
+            }
+          }
+          this.http.post('/data/', this.parseData(renderFromData)).then((res) => {
+            console.log(res.data.data)
+            console.log(this.assignForm)
+            for (let i = 0; i < res.data.data.body.length; i++) {
+              let list = res.data.data.body[i]
+              Object.assign(this.assignForm.body[i], list)
+            }
+          })
+        }
+      },
       onViewTask (order) {
         console.log(order)
         Object.assign(this.taskViewData, { visible: true, order })

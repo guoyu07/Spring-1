@@ -8,6 +8,12 @@
         </el-input>
       </template>
       <template v-if="!strucData.readonly">
+<!--         <el-popover ref="p"
+                placement="top"
+                trigger="hover"
+                v-model="prevMessage">
+                <p>{{prevMessage}}</p>
+        </el-popover> -->
         <el-select
           v-if="!strucData.isAlias"
           v-model="vmodel[strucData.id]"
@@ -15,7 +21,8 @@
           :allow-create="strucData.value.allow_create"
           filterable
           remote
-          :remote-method="filterList">
+          :remote-method="filterList"
+          >
             <el-option  v-for="(option, optionIndex) in showOptionList"
                         :key="optionIndex"
                         :label="showLabel(option)"
@@ -80,7 +87,8 @@
         showToolTip: false,
         showOptionList: [],
         keyPaths: [],
-        params: {}
+        params: {},
+        prevMessage: true
       }
     },
     created () {
