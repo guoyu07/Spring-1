@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" ref="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
@@ -7,6 +7,7 @@
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
+            <el-button class="not-print" type="text" @click="createPdf">打印</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -519,6 +520,16 @@
       },
       stickValue (index) {
         Object.assign(this.assignForm.body[index], this.copyObj)
+      },
+      createPdf () {
+        let newWindow = window.open('_blank')  // 打开新窗口
+        newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
+        newWindow.document.head.innerHTML = window.document.head.innerHTML // 向文档写入头部信息
+        newWindow.document.close() // 关闭document的输出流, 显示选定的数据
+        setTimeout(() => {
+          newWindow.print()  // 打印当前窗口
+        }, 100)
+        return true
       },
       idcrackIsTaked () {
         for (const item of this.idcrackData) {
