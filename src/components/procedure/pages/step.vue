@@ -905,7 +905,7 @@
               type: 'success',
               message: '提交成功!'
             })
-            this.$router.replace('/menu') // 分配成功跳转工单管理
+            // this.$router.replace('/menu') // 分配成功跳转工单管理
           }
         })
       },
