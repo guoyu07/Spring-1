@@ -20,12 +20,12 @@
                 :value="option.id">
               </el-option>
             </el-select>
-            <el-input size="small" v-model="searchKeys[search.id].value"></el-input>
+            <el-input size="small" v-model="searchKeys[search.id].value" @keyup.enter.native="onSearchDevices()"></el-input>
           </div>
           <br>
         <!-- </el-form-item> -->
         <!-- <el-form-item> -->
-          <el-button size="small" type="primary" @click="onSearchDevices()">搜索</el-button>
+          <el-button size="small" type="primary" @click="onSearchDevices()" icon="search">搜索</el-button>
           <!-- <el-button size="small" @click="resetForm('searchKeys')">清空</el-button> -->
         <!-- </el-form-item> -->
       <!-- </el-form> -->
@@ -57,7 +57,7 @@
         </el-pagination>
       </div>
       <div class="btn-area">
-        <el-button class="md" type="info" size="small" @click="onAddtoOff">添加至{{mainInfo.name}}列表</el-button>
+        <el-button class="md" type="primary" size="small" @click="onAddtoOff" icon="fa-download">添加至{{mainInfo.name}}列表</el-button>
       </div>
       <h5>{{mainInfo.name}}列表</h5>
       <el-table
@@ -71,7 +71,7 @@
           label="操作"
           width="65">
           <span>
-            <el-button size="mini" type="warning" @click="onRemove(row)">移除</el-button>
+            <el-button size="mini" type="text" icon="fa-times" @click="onRemove(row)">移除</el-button>
           </span>
         </el-table-column>
 
