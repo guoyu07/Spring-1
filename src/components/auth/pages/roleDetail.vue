@@ -45,7 +45,7 @@
     			</el-table-column>
     			<el-table-column label='操作' inline-template v-if="isQualified" width="170px">
     				<template>
-    					<el-button type='danger'  size="small" @click="deleteRow(row.userId)">删除</el-button>
+    					<el-button type='danger' :disabled="row.userId != currentUser.userId && row.level < currentUser.level" size="small" @click="deleteRow(row.userId)">删除</el-button>
               <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高等级</el-button>
     				</template>
     			</el-table-column>
@@ -83,6 +83,7 @@ export default {
   mixins: [getAllUserList],
   data () {
     return {
+      currentUser: {},
       usersToAdd: [],
       userListToAdd: [],
       usersFilterList: [],
@@ -120,7 +121,8 @@ export default {
         return val.key
       })
       let key = +this.$route.query.key
-      let level = this.$store.state.userinfo.level
+      this.currentUser = this.$store.state.userinfo
+      let level = this.currentUser.level
       if (level > 1) {
         return false
       }
