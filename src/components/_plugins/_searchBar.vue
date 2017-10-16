@@ -59,7 +59,7 @@
       <div class="btn-area">
         <el-button class="md" type="primary" size="small" @click="onAddtoOff" icon="fa-download">添加至{{mainInfo.name}}列表</el-button>
       </div>
-      <h5>{{mainInfo.name}}列表</h5>
+      <h5>{{mainInfo.name}}列表 ({{hostList.length}})</h5>
       <el-table
         :data="hostList"
         border
