@@ -6,8 +6,8 @@
           <h3 class="form-title">
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
-            <el-button type="text" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
-            <el-button class="not-print" type="text" @click="createPdf">打印</el-button>
+            <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
+            <el-button class="not-print" type="info" :plain="true" @click="createPdf">打印</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -80,7 +80,11 @@
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
                 <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
               </el-button-group>
-              <el-button size="small" type="text" @click="retractInfo(true)">{{ infoHideAll ? '展开' : '收起' }}历史信息</el-button>
+              <el-button
+                size="small"
+                type="text"
+                @click="retractInfo(true)"
+                :icon="infoHideAll ? 'fa-angle-double-down' : 'fa-angle-double-up'">全部{{ infoHideAll ? '展开' : '收起' }}</el-button>
             </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
@@ -88,7 +92,7 @@
                 <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
-                    <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
+                    <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'fa-angle-up' : 'fa-angle-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
                     <div v-for="task in form">
                       <div v-if="task.form.form.body.body_list.length">
                         <div v-for="taskbody in task.form.form.body.body_list">
@@ -212,7 +216,7 @@
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
-                      <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'arrow-up' : 'arrow-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
+                      <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'fa-angle-up' : 'fa-angle-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
                       <div v-for="task in form">
                         <div v-if="task.form.form.body.body_list.length">
                           <div v-for="taskbody in task.form.form.body.body_list">
