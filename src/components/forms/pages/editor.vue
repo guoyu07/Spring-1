@@ -189,9 +189,21 @@
               </el-popover>
             </el-row>
             <el-row v-for="(body, index) in formConfig.form.body.body_list" :key="index">
-              <h5>#{{index + 1}} - <span class="text-info">{{body.name}}</span></h5>
+              <h5>
+                #{{index + 1}} - 
+                <span class="text-info">{{body.name}}</span>
+                <i
+                  class="el-icon-edit"
+                  style="margin-left: 6px"
+                  @click="nameConfVisible = true; editBody = body"></i></h5>
               <el-card>
-                <form-conf :config-data="body.attr_list" :presets="presetList" :option-presets="optionPresets" :fieldsets="fieldsets" :body-index="index" @on-config-change="onBodyConfigChange"></form-conf>
+                <form-conf
+                  :config-data="body.attr_list"
+                  :presets="presetList"
+                  :option-presets="optionPresets"
+                  :fieldsets="fieldsets"
+                  :body-index="index"
+                  @on-config-change="onBodyConfigChange"></form-conf>
                 <div class="options-btn">
                   <el-button size="small" type="info" :plain="true" icon="setting" @click="showCondition(body)">显示条件</el-button>
                   <el-button size="small" type="danger" :plain="true" icon="close"
@@ -210,9 +222,6 @@
           </el-row>
           <el-dialog title="Body 显示条件配置" v-model="showConditionVisible" v-if="showConditionVisible">
             <el-form label-width="100px">
-              <el-form-item label="Body 名称">
-                <el-input v-model="editBody.name"></el-input>
-              </el-form-item>
               <el-form-item label="比较变量">
                 <el-select v-model="editBody.show.type">
                   <el-option label="form_header" value="form_header"></el-option>
@@ -237,6 +246,13 @@
             <div slot="footer" class="dialog-footer">
               <el-button @click="onResetShowCondition">重置</el-button>
               <el-button type="primary" icon="check" @click="showConditionVisible = false">OK</el-button>
+            </div>
+          </el-dialog>
+
+          <el-dialog title="修改 body 名称" v-model="nameConfVisible" v-if="nameConfVisible" size="tiny">
+            <el-input v-model="editBody.name"></el-input>
+            <div slot="footer" class="dialog-footer">
+              <el-button type="primary" icon="check" @click="nameConfVisible = false">OK</el-button>
             </div>
           </el-dialog>
           <el-row type="flex" justify="end">
@@ -275,6 +291,7 @@ export default {
       formConfig: null,
       editBody: null,
       showConditionVisible: false,
+      nameConfVisible: false,
       submitting: false
     }
   },
