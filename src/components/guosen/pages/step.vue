@@ -441,9 +441,37 @@
       'infoShow': {
         handler: 'infoShowFunction',
         deep: true
+      },
+      'taskFormAll': {
+        handler: 'getAutoFillData',
+        deep: true
       }
     },
     methods: {
+      getAutoFillData () {
+        console.log(this.taskFormAll.fill_form)
+        if (this.taskFormAll.fill_form) {
+          const renderFromData = {
+            action: 'auto/fill/form',
+            method: 'post',
+            data: {
+              tid: this.routerInfo.tid
+            }
+          }
+          this.http.post('/data/', this.parseData(renderFromData)).then((res) => {
+            console.log(res.data.data)
+            console.log(this.assignForm)
+            for (let i = 0; i < res.data.data.body.length; i++) {
+              let list = res.data.data.body[i]
+              Object.assign(this.assignForm.body[i], list)
+            }
+            for (let i = 0; i < res.data.data.header.length; i++) {
+              let list = res.data.data.header[i]
+              Object.assign(this.assignForm.header[i], list)
+            }
+          })
+        }
+      },
       onViewTask (order) {
         console.log(order)
         Object.assign(this.taskViewData, { visible: true, order })
