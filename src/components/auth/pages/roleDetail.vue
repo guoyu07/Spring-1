@@ -45,7 +45,7 @@
     			</el-table-column>
     			<el-table-column label='操作' inline-template v-if="isQualified" width="170px">
     				<template>
-    					<el-button type='danger' :disabled="row.level === 0" size="small" @click="deleteRow(row.userId)">删除</el-button>
+    					<el-button type='danger'  size="small" @click="deleteRow(row.userId)">删除</el-button>
               <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高等级</el-button>
     				</template>
     			</el-table-column>
