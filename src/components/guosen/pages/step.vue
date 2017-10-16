@@ -194,7 +194,7 @@
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
                 <div v-for="(data, index) in applyData.body" style="position:relative">
-                <el-button-group style="position:absolute;right:10px;top:8px;z-index:1;width:90px">
+                <el-button-group style="position:absolute;right:15px;top:8px;z-index:1">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
                   <el-button size="small" @click="stickValue(index)">黏贴</el-button>
                 </el-button-group>
