@@ -96,7 +96,7 @@
                 </el-form-item>
               </template>
               <template v-if="formConfig.action.find(_ => _.type === 'auto') || checkedActions.includes('auto')">
-                <!-- <br> -->
+                <br>
                 <el-form-item label="自动触发">
                   <el-select
                     v-model="selectedAuto"
@@ -108,9 +108,13 @@
                       :value="ac"></el-option>
                   </el-select>
                 </el-form-item>
+                <!-- <el-form-item label="按钮名称">
+                  <el-input v-model="selectedAuto.name"></el-input>
+                </el-form-item> -->
+                <br>
               </template>
               <template v-if="formConfig.action.find(_ => _.type === 'manual') || checkedActions.includes('manual')">
-                <!-- <br> -->
+                <br>
                 <el-form-item label="手动触发">
                   <el-select
                     v-model="selectedManual"
@@ -122,6 +126,9 @@
                       :value="ac"></el-option>
                   </el-select>
                 </el-form-item>
+                <!-- <el-form-item label="按钮名称">
+                  <el-input v-model="selectedManual.name"></el-input>
+                </el-form-item> -->
                 <br>
               </template>
 
