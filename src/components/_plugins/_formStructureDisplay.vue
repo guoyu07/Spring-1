@@ -6,6 +6,7 @@
         <el-form-item
           v-if="(showFormItem(formItem, postForm, messageData, historyTask, currentTask, index) && item[formItem.id]) || currentTask === 'current'"
           :label="formItem.name"
+          :label-width="historyTask === 'switch' ? '160px': ''"
           :class="['search_bar','table', 'richtext'].includes(formItem.value.type) || (formItem.isAlias && formItem.value.type !== 'users') ? 'blockElement' : ''">
 
           <span v-if="formItem.value.type === 'dict'">
