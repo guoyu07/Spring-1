@@ -832,46 +832,46 @@
             }
           })
           // 宿主机 U 位默认值
-          if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
-            const UData = {
-              action: 'get/racku',
-              method: 'GET',
-              data: {
-                ipscopeId: this.applyData.body[0].esxi_ipscope.instanceId,
-                host_u: this.applyData.header.hosts[0].u_num,
-                host_num: this.applyData.header.hosts.length,
-                vmware_type: this.applyData.header.vmware_type
-              }
-            }
-            this.http.post('/data/', this.parseData(UData)).then((res) => {
-              const resData = res.data.data.list
-              resData.map(list => {
-                if (!this.isEmptyObj(list._default)) {
-                  for (const i in list._default) {
-                    // const index = i - 1
-                    this.assignForm.body[i].idcracku = list._default[i]
-                    this.assignForm.body[i].idcrack = list
-                  }
-                }
-              })
-            })
-          }
+          // if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
+          //   const UData = {
+          //     action: 'get/racku',
+          //     method: 'GET',
+          //     data: {
+          //       ipscopeId: this.applyData.body[0].esxi_ipscope.instanceId,
+          //       host_u: this.applyData.header.hosts[0].u_num,
+          //       host_num: this.applyData.header.hosts.length,
+          //       vmware_type: this.applyData.header.vmware_type
+          //     }
+          //   }
+          //   this.http.post('/data/', this.parseData(UData)).then((res) => {
+          //     const resData = res.data.data.list
+          //     resData.map(list => {
+          //       if (!this.isEmptyObj(list._default)) {
+          //         for (const i in list._default) {
+          //           // const index = i - 1
+          //           this.assignForm.body[i].idcracku = list._default[i]
+          //           this.assignForm.body[i].idcrack = list
+          //         }
+          //       }
+          //     })
+          //   })
+          // }
           // 主机名
-          if (this.taskData.ptask.tkey === 'confirm1') {
-            const postHeadvData = {
-              action: 'recommend_hostname_list',
-              method: 'get',
-              data: {
-                tid: this.$route.params.tid
-              }
-            }
-            this.http.post('/data/', this.parseData(postHeadvData))
-            .then((response) => {
-              response.data.data.list.map((list, index) => {
-                this.assignForm.body[index].hostname = list
-              })
-            })
-          }
+          // if (this.taskData.ptask.tkey === 'confirm1') {
+          //   const postHeadvData = {
+          //     action: 'recommend_hostname_list',
+          //     method: 'get',
+          //     data: {
+          //       tid: this.$route.params.tid
+          //     }
+          //   }
+          //   this.http.post('/data/', this.parseData(postHeadvData))
+          //   .then((response) => {
+          //     response.data.data.list.map((list, index) => {
+          //       this.assignForm.body[index].hostname = list
+          //     })
+          //   })
+          // }
           // 判断是否为驳回信息
           let newDataBody
           for (var message of this.taskData.message) {
