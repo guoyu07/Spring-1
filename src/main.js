@@ -127,7 +127,13 @@ const getPathResult = (result, path, k, kindex) => {
         if (Array.isArray(_result[cur]) && kindex !== undefined) {
           _result = _result[cur][kindex]
         } else {
-          _result = index ? _result[cur] : _result[cur][k]
+          // 当前path对应下的所有数组，未确定是否对其他表单有影响
+          if (_path.length < 2) {
+            _result = _result[cur]
+          } else {
+            // 当前path对应下的index数组
+            _result = index ? _result[cur] : _result[cur][k]
+          }
         }
       })
       // _path.reduce((prev, cur, index) => {

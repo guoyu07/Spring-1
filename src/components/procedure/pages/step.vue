@@ -60,7 +60,7 @@
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
                     :header="true"
-                    :postForm="assignForm"
+                    :assignForm="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
@@ -68,8 +68,8 @@
                     :form-data="taskform"
                     :item="assignForm.header"
                     :messageData="applyData"
-                    :postForm="assignForm"
-                    :postFormName="'assignForm'">
+                    :assignForm="assignForm"
+                    :assignFormName="'assignForm'">
                   </header-table>
                 </span>
               </div>
@@ -432,7 +432,6 @@
     },
     methods: {
       getAutoFillData () {
-        console.log(this.taskFormAll.fill_form)
         if (this.taskFormAll.fill_form) {
           const renderFromData = {
             action: 'auto/fill/form',
@@ -511,36 +510,38 @@
         // console.log(val)
         // this.hostList = []
         // this.hostList = val
+        console.log(this.assignForm)
+        console.log(val, index, id, header)
         if (header) {
           this.taskForm.header.map(header => {
             header.value.map(item => {
               if (item.show.type) {
                 // show.type 有四种类型
                 if (item.show.type === 'form_header') {
-                  if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
-                      (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
-                      (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
+                  if ((item.show.op === 'eq' && this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) ||
+                      (item.show.op === 'neq' && this.getPathResult(this.assignForm.header, item.show.key_path) !== item.show.value) ||
+                      (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.assignForm.header, item.show.key_path)))) {
                     if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
-                      this.postForm.header[item.id] = val
+                      this.assignForm.header[item.id] = val
                     }
                   }
                 }
               } else {
                 if (item.id === id) {
-                  // this.postForm.header[item.id] = []
-                  this.postForm.header[item.id] = val
+                  // this.assignForm.header[item.id] = []
+                  this.assignForm.header[item.id] = val
                 }
               }
             })
           })
         } else {
           this.taskForm.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
-                  if (this.showFormItem(item, this.postForm, this.applyData)) {
+                  if (this.showFormItem(item, this.assignForm, this.applyData)) {
                     if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
-                      this.postForm.body[index][item.id] = val
+                      this.assignForm.body[index][item.id] = val
                     }
                   }
                 })
@@ -809,7 +810,8 @@
               return false
             }
           })
-        }).catch(() => {
+        }).catch((err) => {
+          console.log(err)
           this.$message({
             type: 'info',
             message: '已取消审批'
@@ -818,7 +820,7 @@
       },
       postMethod (id, data) {
         this.submitLoading = true
-        let postFormData = {
+        let assignFormData = {
           header: {},
           body: []
         }
@@ -829,11 +831,11 @@
                 if (item.id === headerid) {
                   if (Array.isArray(data.header[headerid])) {
                     if (item.required || data.header[headerid].length !== 0) {
-                      postFormData.header[headerid] = data.header[headerid]
+                      assignFormData.header[headerid] = data.header[headerid]
                     }
                   } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
                     // 整型为 0 时可以提交
-                    postFormData.header[headerid] = data.header[headerid]
+                    assignFormData.header[headerid] = data.header[headerid]
                   }
                 }
               }
@@ -841,7 +843,7 @@
           })
         })
         data.body.map((body, bodyIndex) => {
-          postFormData.body[bodyIndex] = {}
+          assignFormData.body[bodyIndex] = {}
           this.taskForm.body.body_list.map(bodyList => {
             if (this.showBodyList(bodyList, this.assignForm, this.applyData, bodyIndex)) {
               bodyList.attr_list.map(list => {
@@ -851,11 +853,11 @@
                       if (item.id === bodyid) {
                         if (Array.isArray(body[bodyid])) {
                           if (item.required || body[bodyid].length !== 0) {
-                            postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                            assignFormData.body[bodyIndex][bodyid] = body[bodyid]
                           }
                         } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
                           // 整型为 0 时可以提交
-                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                          assignFormData.body[bodyIndex][bodyid] = body[bodyid]
                         }
                       }
                     }
@@ -870,7 +872,7 @@
           method: 'POST',
           data: {
             tid: id,
-            form: postFormData // 通过审批 需要判断一下登录的账号的角色身份
+            form: assignFormData // 通过审批 需要判断一下登录的账号的角色身份
               // pass: "流程走向控制变量,整型(可选,默认为0)"
           }
         }

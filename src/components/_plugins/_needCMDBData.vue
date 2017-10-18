@@ -7,13 +7,14 @@
           :disabled="true">
         </el-input>
       </template>
-      <template v-if="!strucData.readonly">
+      <template v-if="!strucData.readonly"  style="position:relative">
 <!--         <el-popover ref="p"
                 placement="top"
                 trigger="hover"
                 v-model="prevMessage">
                 <p>{{prevMessage}}</p>
         </el-popover> -->
+<!--         <i style="position:absolute;z-index:123;right:-20px">123</i> -->
         <el-select
           v-if="!strucData.isAlias"
           v-model="vmodel[strucData.id]"
@@ -327,6 +328,7 @@
           }
         }
         this.params = params
+        console.log(params)
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
