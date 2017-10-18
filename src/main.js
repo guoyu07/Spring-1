@@ -406,7 +406,7 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
     const keyPath = taskform.show.key_path.split('.')
     const _keyPath = keyPath[0]
     if (taskform.show.op === 'eq') {
-      // console.log(Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index), taskform.show.value)
+      console.log(Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index), taskform.show.value)
       if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) + '' === taskform.show.value) {
         return true
       }
