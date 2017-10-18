@@ -114,7 +114,6 @@ Vue.prototype.parseData = parseData
  * @return {arr, object, string, number, null, ''} 直接返回path对应的值
 */
 const getPathResult = (result, path, k, kindex) => {
-  console.log(result, path, k)
   if (!result) {
     // console.log('找不到result')
     return false
@@ -124,18 +123,20 @@ const getPathResult = (result, path, k, kindex) => {
   // console.log(_path, Array.isArray(_result[_path[0]]), k)
   if (Array.isArray(_result[_path[0]]) && k !== undefined) { // 为数组时
     if (_result[_path[0]].length) {
-      console.log(_result[_path[0]][k][_path[1]])
-      _path.reduce((prev, cur, index) => {
-        console.log(prev, cur)
-        if (Array.isArray(_result[cur]) && k !== undefined) {
-          console.log(_result[cur][k][_path[1]])
-        }
+      _path.map((cur, index) => {
         if (Array.isArray(_result[cur]) && kindex !== undefined) {
           _result = _result[cur][kindex]
         } else {
           _result = index ? _result[cur] : _result[cur][k]
         }
-      }, null)
+      })
+      // _path.reduce((prev, cur, index) => {
+      //   if (Array.isArray(_result[cur]) && kindex !== undefined) {
+      //     _result = _result[cur][kindex]
+      //   } else {
+      //     _result = index ? _result[cur] : _result[cur][k]
+      //   }
+      // }, null)
     } else {
       return false
     }
@@ -149,9 +150,7 @@ const getPathResult = (result, path, k, kindex) => {
         if (_result[_path[i]] !== undefined) { // 读取不到值时 return false
           _result = _result[_path[i]]
         } else {
-          let host = path.split('.')[0]
           _result = _result[k]
-          console.log(k, _result, _path[i], host)
           // console.log(`读不到${_path[i]}的值`)
           return undefined
         }
@@ -412,11 +411,11 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
     const keyPath = taskform.show.key_path.split('.')
     const _keyPath = keyPath[0]
     if (taskform.show.op === 'eq') {
-      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) === taskform.show.value) {
+      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) + '' === taskform.show.value) {
         return true
       }
     } else if (taskform.show.op === 'neq') {
-      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) !== taskform.show.value) {
+      if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) + '' !== taskform.show.value) {
         return true
       }
     } else if (taskform.show.op === 'reg') {
