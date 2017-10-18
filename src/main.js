@@ -135,18 +135,16 @@ const getPathResult = (result, path, k, kindex) => {
     }
   } else {
     for (const i in _path) {
-      // console.log(_result[_path[i]])
       if (!_result) {
         // console.log('找不到_result')
         return false
       }
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
         if (_result[_path[i]] !== undefined) { // 读取不到值时 return false
-          // console.log(_result[_path[i]])
           _result = _result[_path[i]]
         } else {
-          // console.log(_result[_path[i]])
           // console.log(`读不到${_path[i]}的值`)
+          // 极度不严谨，需要后期改善
           return undefined
         }
       } else {
@@ -406,7 +404,9 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
     const keyPath = taskform.show.key_path.split('.')
     const _keyPath = keyPath[0]
     if (taskform.show.op === 'eq') {
-      // console.log(compareVariable, _keyPath, Vue.prototype.getPathResult(compareVariable, _keyPath))
+      console.log(taskform.show.key_path)
+      console.log(compareVariable)
+      console.log(Vue.prototype.getPathResult(compareVariable, taskform.show.key_path))
       if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path) === taskform.show.value) {
         return true
       }

@@ -454,7 +454,6 @@
     },
     methods: {
       getAutoFillData () {
-        console.log(this.taskFormAll.fill_form)
         if (this.taskFormAll.fill_form) {
           const renderFromData = {
             action: 'auto/fill/form',
@@ -977,7 +976,6 @@
         }
         // this.loading = true
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
-          console.log(res)
           this.form = res.data.data.list
         })
       },

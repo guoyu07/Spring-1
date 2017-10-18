@@ -250,16 +250,6 @@
         }
       }
     },
-    destroyed () {
-      // console.log('%c%s', 'color:red', 'name: ' + this.formItem.name)
-      // if (!this.headerTable && !this.bodyTable && this.whole.body[this.index][this.formItem.id]) {
-      //   if (this.header) {
-      //     delete this.whole.header[this.formItem.id]
-      //   } else {
-      //     delete this.whole.body[this.index][this.formItem.id]
-      //   }
-      // }
-    },
     computed: {
       multiFiles () {
         if (!this.isEditing) {
