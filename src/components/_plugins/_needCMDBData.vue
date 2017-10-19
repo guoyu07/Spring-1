@@ -118,6 +118,7 @@
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
+                this.vmodel[this.strucData.id] = ''
                 this.renderOptions()
               })
             }
