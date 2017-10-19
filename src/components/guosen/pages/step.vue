@@ -8,6 +8,7 @@
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
+            <el-button v-if="routerInfo.name === '现场管理'" class="not-print fr" type="info"  icon="fa-print" @click="createExcel">导出excel</el-button>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
