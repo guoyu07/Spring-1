@@ -9,7 +9,7 @@
             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
             <!-- <el-button v-if="routerInfo.name === '现场管理'" class="not-print fr" type="info"  icon="fa-print" @click="createExcel">导出excel</el-button> -->
-            <a v-if="routerInfo.name === '现场管理'" class="fr excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid">下载excel表格</a>
+            <a v-if="routerInfo.name === '现场管理'" class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -405,7 +405,6 @@
         isEditing: false,
         showHistory: false,
         edtingInfo: '',
-        excelHref: '',
         form: {},
         taskForm: {},
         taskFormAll: {},
@@ -433,7 +432,6 @@
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
-      this.createExcel()
     },
     watch: {
       'idcrackData': 'idcrackIsTaked',
@@ -524,15 +522,6 @@
       },
       stickValue (index) {
         Object.assign(this.assignForm.body[index], this.copyObj)
-      },
-      createExcel () {
-        let renderData = {
-          action: 'export_process_to_excel',
-          pids: this.routerInfo.pid
-        }
-        this.http.get('/data/', { params: renderData }).then((res) => {
-          this.excelHref = res.data
-        })
       },
       createPdf () {
         let newWindow = window.open('_blank')  // 打开新窗口
@@ -1207,15 +1196,13 @@
 </script>
 <style lang="less" scoped>
 .excelDown {
-  border:1px solid black;
-  height:36px;
-  line-height:36px;
+  &:link {
+    text-decoration: none;
+  }
+  margin-right: -4px;
 }
 .el-tag {
   font-size: 14px;
-  & +.el-tag {
-    margin-left: 10px;
-  }
 }
 .advance-search-form .el-form-item {
   margin-bottom: 18px;
