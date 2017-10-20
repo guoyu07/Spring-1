@@ -447,6 +447,8 @@
               let list = res.data.data.body[i]
               Object.assign(this.assignForm.body[i], list)
             }
+          }).catch((err) => {
+            console.log(err)
           })
         }
       },

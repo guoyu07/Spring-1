@@ -7,15 +7,10 @@
           :disabled="true">
         </el-input>
       </template>
-      <template v-if="!strucData.readonly"  style="position:relative">
-<!--         <el-popover ref="p"
-                placement="top"
-                trigger="hover"
-                v-model="prevMessage">
-                <p>{{prevMessage}}</p>
-        </el-popover> -->
+      <template v-if="!strucData.readonly" >  
 <!--         <i style="position:absolute;z-index:123;right:-20px">123</i> -->
         <el-select
+          class="seeDescription"
           v-if="!strucData.isAlias"
           v-model="vmodel[strucData.id]"
           clearable
@@ -38,6 +33,9 @@
           :disabled="strucData.readonly">
           <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
         </el-radio-group>
+      <div  v-if="showDescription && showOptionList.length === 1" class="showDescription" >
+      {{showOptionList[0].describ}}
+      </div>
       </template>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
@@ -151,6 +149,13 @@
       'optionList': { // 监控数据加载
         handler: 'renderData',
         deep: true
+      }
+    },
+    computed: {
+      showDescription () {
+        if (this.params.object_id === 'activitiHostType') {
+          return true
+        } else { return false }
       }
     },
     methods: {
@@ -479,6 +484,21 @@
   }
 </script>
 <style scoped lang="less">
+  .seeDescription {
+    &:hover + .showDescription{
+      display:block;
+    }
+  }
+  .showDescription {
+    position: absolute;
+    width: 200px;
+    display: none;
+    font-size: 12px;
+    line-height: 1;
+    padding-top: 16px;
+    z-index:100;
+    background:#fff;
+  }
   .left-content {
     float: left;
     overflow: hidden;
