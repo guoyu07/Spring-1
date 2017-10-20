@@ -112,11 +112,14 @@
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
+                console.log(newVal, oldVal)
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
-                this.vmodel[this.strucData.id] = ''
+                if (oldVal !== undefined) {
+                  this.vmodel[this.strucData.id] = ''
+                }
                 this.renderOptions()
               })
             }
@@ -208,7 +211,7 @@
             })
           } else { // type 为 dict 时
             this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-            if (this.optionList.length === 1) return // 当数据只有1条时，默认值不需要执行以下代码
+            // if (this.optionList.length === 1) return false // 当数据只有1条时，默认值不需要执行以下代码
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes = false
               for (var option of this.optionList) {
@@ -334,7 +337,6 @@
           }
         }
         this.params = params
-        console.log(params)
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
