@@ -7,26 +7,43 @@
           :disabled="true">
         </el-input>
       </template>
-      <template v-if="!strucData.readonly" >  
-<!--         <i style="position:absolute;z-index:123;right:-20px">123</i> -->
-        <el-select
-          class="seeDescription"
-          v-if="!strucData.isAlias"
-          v-model="vmodel[strucData.id]"
-          clearable
-          :allow-create="strucData.value.allow_create"
-          filterable
-          remote
-          :remote-method="filterList"
-          >
-            <el-option  v-for="(option, optionIndex) in showOptionList"
-                        :key="optionIndex"
-                        :label="showLabel(option)"
-                        :value="option">
-                        <span>{{ showLabel(option) }}</span>
-                        <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
-            </el-option>
-        </el-select>
+      <template v-if="!strucData.readonly" >
+        <template v-if="!strucData.isAlias">
+          <el-select
+            class="seeDescription"
+            v-if="optionList.length > 1"
+            v-model="vmodel[strucData.id]"
+            clearable
+            :allow-create="strucData.value.allow_create"
+            filterable
+            remote
+            :remote-method="filterList"
+            >
+              <el-option  v-for="(option, optionIndex) in showOptionList"
+                          :key="optionIndex"
+                          :label="showLabel(option)"
+                          :value="option">
+                          <span>{{ showLabel(option) }}</span>
+                          <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+              </el-option>
+          </el-select>
+          <el-select
+            class="seeDescription"
+            v-else
+            v-model="vmodel[strucData.id]"
+            clearable
+            :allow-create="strucData.value.allow_create"
+            filterable
+            >
+              <el-option  v-for="(option, optionIndex) in optionList"
+                          :key="optionIndex"
+                          :label="showLabel(option)"
+                          :value="option">
+                          <span>{{ showLabel(option) }}</span>
+                          <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+              </el-option>
+          </el-select>
+        </template>
         <el-radio-group
           v-else
           v-model="vmodel[strucData.id]"
