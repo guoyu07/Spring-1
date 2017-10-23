@@ -262,10 +262,10 @@
           })
         } else {
           this.taskFormData.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.postForm, this.applyData)) {
+            if (this.showBodyList(bodyList, this.postForm, this.applyData, index)) {
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
-                  if (this.showFormItem(item, this.postForm, this.applyData)) {
+                  if (this.showFormItem(item, this.postForm, this.applyData, true, true, index)) {
                     if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                       this.postForm.body[index][item.id] = val
                     }

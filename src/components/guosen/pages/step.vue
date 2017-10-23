@@ -8,6 +8,8 @@
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
+            <!-- <el-button v-if="routerInfo.name === '现场管理'" class="not-print fr" type="info"  icon="fa-print" @click="createExcel">导出excel</el-button> -->
+            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -453,6 +455,7 @@
       }
     },
     methods: {
+
       getAutoFillData () {
         if (this.taskFormAll.fill_form) {
           const renderFromData = {
@@ -1192,11 +1195,14 @@
   }
 </script>
 <style lang="less" scoped>
+.excelDown {
+  &:link {
+    text-decoration: none;
+  }
+  margin-right: -4px;
+}
 .el-tag {
   font-size: 14px;
-  & +.el-tag {
-    margin-left: 10px;
-  }
 }
 .advance-search-form .el-form-item {
   margin-bottom: 18px;

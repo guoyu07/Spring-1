@@ -7,37 +7,52 @@
           :disabled="true">
         </el-input>
       </template>
-      <template v-if="!strucData.readonly"  style="position:relative">
-<!--         <el-popover ref="p"
-                placement="top"
-                trigger="hover"
-                v-model="prevMessage">
-                <p>{{prevMessage}}</p>
-        </el-popover> -->
-<!--         <i style="position:absolute;z-index:123;right:-20px">123</i> -->
-        <el-select
-          v-if="!strucData.isAlias"
-          v-model="vmodel[strucData.id]"
-          clearable
-          :allow-create="strucData.value.allow_create"
-          filterable
-          remote
-          :remote-method="filterList"
-          >
-            <el-option  v-for="(option, optionIndex) in showOptionList"
-                        :key="optionIndex"
-                        :label="showLabel(option)"
-                        :value="option">
-                        <span>{{ showLabel(option) }}</span>
-                        <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
-            </el-option>
-        </el-select>
+      <template v-if="!strucData.readonly" >
+        <template v-if="!strucData.isAlias">
+          <el-select
+            class="seeDescription"
+            v-if="optionList.length > 1"
+            v-model="vmodel[strucData.id]"
+            clearable
+            :allow-create="strucData.value.allow_create"
+            filterable
+            remote
+            :remote-method="filterList"
+            >
+              <el-option  v-for="(option, optionIndex) in showOptionList"
+                          :key="optionIndex"
+                          :label="showLabel(option)"
+                          :value="option">
+                          <span>{{ showLabel(option) }}</span>
+                          <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+              </el-option>
+          </el-select>
+          <el-select
+            class="seeDescription"
+            v-else
+            v-model="vmodel[strucData.id]"
+            clearable
+            :allow-create="strucData.value.allow_create"
+            filterable
+            >
+              <el-option  v-for="(option, optionIndex) in optionList"
+                          :key="optionIndex"
+                          :label="showLabel(option)"
+                          :value="option">
+                          <span>{{ showLabel(option) }}</span>
+                          <p style="color: #8492a6; font-size: 13px">{{ toolTipContent(option) }}</p>
+              </el-option>
+          </el-select>
+        </template>
         <el-radio-group
           v-else
           v-model="vmodel[strucData.id]"
           :disabled="strucData.readonly">
           <el-radio v-for="(option, optionIndex) in optionList" :key="optionIndex" :label="option">{{option[strucData.value.source.res.show_key[0]]}}</el-radio>
         </el-radio-group>
+      <div  v-if="showDescription && showOptionList.length === 1" class="showDescription" >
+      {{showOptionList[0].describ}}
+      </div>
       </template>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
@@ -114,9 +129,13 @@
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
+                console.log(newVal, oldVal)
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
+                }
+                if (oldVal !== undefined) {
+                  this.vmodel[this.strucData.id] = ''
                 }
                 this.renderOptions()
               })
@@ -150,6 +169,13 @@
       'optionList': { // 监控数据加载
         handler: 'renderData',
         deep: true
+      }
+    },
+    computed: {
+      showDescription () {
+        if (this.params.object_id === 'activitiHostType') {
+          return true
+        } else { return false }
       }
     },
     methods: {
@@ -202,7 +228,7 @@
             })
           } else { // type 为 dict 时
             this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-            if (this.optionList.length === 1) return // 当数据只有1条时，默认值不需要执行以下代码
+            // if (this.optionList.length === 1) return false // 当数据只有1条时，默认值不需要执行以下代码
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes = false
               for (var option of this.optionList) {
@@ -328,7 +354,6 @@
           }
         }
         this.params = params
-        console.log(params)
         const postHeadvData = {
           action: this.strucData.value.source.data.action,
           method: this.strucData.value.source.data.method,
@@ -478,6 +503,21 @@
   }
 </script>
 <style scoped lang="less">
+  .seeDescription {
+    &:hover + .showDescription{
+      display:block;
+    }
+  }
+  .showDescription {
+    position: absolute;
+    width: 200px;
+    display: none;
+    font-size: 12px;
+    line-height: 1;
+    padding-top: 16px;
+    z-index:100;
+    background:#fff;
+  }
   .left-content {
     float: left;
     overflow: hidden;

@@ -447,6 +447,8 @@
               let list = res.data.data.body[i]
               Object.assign(this.assignForm.body[i], list)
             }
+          }).catch((err) => {
+            console.log(err)
           })
         }
       },
@@ -536,10 +538,11 @@
           })
         } else {
           this.taskForm.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData, index)) {
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
-                  if (this.showFormItem(item, this.assignForm, this.applyData)) {
+                  if (this.showFormItem(item, this.assignForm, this.applyData, true, true, index)) {
+                    console.log('123')
                     if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                       this.assignForm.body[index][item.id] = val
                     }

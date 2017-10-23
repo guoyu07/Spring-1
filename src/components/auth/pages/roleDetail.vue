@@ -28,22 +28,22 @@
       		<el-button type='success' @click="correlateUsers()">关联用户</el-button>
          </div>
       </div>
-    		<el-table :data="currentPageList" border @selection-change="handleSelectionChange">
-    		    <el-table-column type='selection' :selectable='forbiddenChoice'></el-table-column>
-    			<el-table-column prop='userId' label="用户名">
+    		<el-table :data="currentPageList" border @selection-change="handleSelectionChange" fit>
+    		    <el-table-column type='selection' :selectable='forbiddenChoice' width="50"></el-table-column>
+    			<el-table-column prop='userId' label="用户名" width="100">
     			</el-table-column>
-    			<el-table-column label='昵称' prop='nick'></el-table-column>
-    			<el-table-column label='邮箱' prop='email'></el-table-column>
-    			<el-table-column label='手机' prop='phone'></el-table-column>
-    			<el-table-column label='用户层级' prop='level' :formatter='formatLevel' ></el-table-column>
-    			<el-table-column label='用户状态'  inline-template>
+    			<el-table-column label='昵称' prop='nick'width="100"></el-table-column>
+    			<el-table-column label='邮箱' prop='email' ></el-table-column>
+    			<el-table-column label='手机' prop='phone' ></el-table-column>
+    			<el-table-column label='用户层级' prop='level' :formatter='formatLevel' width="120"></el-table-column>
+    			<el-table-column label='用户状态'  inline-template width="100">
     				<template>
     				  <span :class="row.status ? 'text-danger' : ''">
                 {{ row.status ? '已禁用' : '使用中' }}
               </span>
     				</template>
     			</el-table-column>
-    			<el-table-column label='操作' inline-template v-if="isQualified" width="20px">
+    			<el-table-column label='操作' inline-template v-if="isQualified" width="200">
     				<template>
     					<el-button type='danger' :disabled="row.userId != currentUser.userId && row.level < currentUser.level" size="small" @click="deleteRow(row.userId)">删除</el-button>
               <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高等级</el-button>
