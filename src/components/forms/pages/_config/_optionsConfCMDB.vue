@@ -120,7 +120,7 @@
             <el-form-item label="默认值属性路径" v-if="isSearchBar && param.value.type === 'input' && ['form_header', 'form_body', 'message_header', 'message_body'].includes(param.default.type)">
               <el-input v-model="param.default.key_path" size="small"></el-input>
             </el-form-item>
-            <el-form-item label="默认值 ID" v-if="isSearchBar && param.value.type === 'input' && ['message_header', 'get'].includes(param.default.type)">
+            <el-form-item label="环节 ID" v-if="isSearchBar && param.value.type === 'input' && ['message_header', 'message_body', 'get'].includes(param.default.type)">
               <el-input v-model="param.default.id" size="small"></el-input>
             </el-form-item>
           </el-form>

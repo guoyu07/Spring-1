@@ -1,10 +1,47 @@
-is<template>
+<template>
   <div :class="{ 'order-list': true, collapsed: !isExpanded }">
     <el-card class="box-card">
       <h3><i class="el-icon-fa-calendar-o icon-lg"></i> {{filterData.name}}工单</h3>
-      <el-button class="fr" type="text" icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
-        <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
-      </el-button>
+      <div class="order-search">
+        <div :class="{ 'order-search--basic': true, 'collapsed': isAdvancedSearch }">
+          <el-row :gutter="12">
+            <el-col :span="10">
+              <el-input placeholder="模糊搜索" v-model="fuzzySearchKey">
+                <el-button slot="append" icon="search"></el-button>
+              </el-input>
+            </el-col>
+            <el-col :span="4">
+              <el-button
+                type="text"
+                icon="fa-angle-down"
+                @click="isAdvancedSearch = !isAdvancedSearch">高级搜索</el-button>
+            </el-col>
+            <el-col :span="6" :offset="4">
+              <el-button class="fr" type="text" icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
+                <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
+              </el-button>
+            </el-col>
+          </el-row>
+        </div>
+        <div :class="{ 'order-search--advanced': true, 'loomed': isAdvancedSearch }">
+          <el-row>
+            <el-col :span="20">
+              <el-form label-position="left" label-width="100px" :inline="true">
+                <el-form-item
+                  v-for="field in filterData.show"
+                  :key="field.key_path"
+                  :label="field.label">
+                  <el-input></el-input>
+                </el-form-item>
+                <el-form-item>
+                  <el-button size="small" @click="isAdvancedSearch = !isAdvancedSearch">取消</el-button>
+                </el-form-item>
+              </el-form>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+
       <div v-if="filteredTasks.list && filteredTasks.list.length">
         <el-table
           :data="filteredTasks.list"
@@ -61,6 +98,7 @@ is<template>
 
     data () {
       return {
+        isAdvancedSearch: false,
         filterName: '',
         isEnded: '',
         isAssignee: '',
@@ -182,6 +220,32 @@ is<template>
 </script>
 
 <style lang="less" scoped>
+  .order-search {
+    margin: 12px 0;
+
+    &--basic {
+      display: block;
+
+      &.collapsed {
+        display: none;
+      }
+    }
+
+    &--advanced {
+      display: none;
+
+      &.loomed {
+        display: block;
+      }
+
+      .el-form {
+        &-item {
+          margin-bottom: 12px;
+        }
+      }
+    }
+  }
+
   .el-button a {
     color: inherit;
 
