@@ -805,7 +805,25 @@
         }).then(() => {
           this.$refs['assignForm'].validate((valid) => {
             if (valid) {
-              this.postMethod(this.routerInfo.tid, this.assignForm)
+              // 退回多步后body个数要重新正确校验
+              let postForm = {}
+              Object.assign(postForm, this.assignForm)
+              let key = this.taskData.ptask.tkey
+              let messages = this.taskData.message
+              let length = 0
+              for (let i = 0; i < messages.length; i++) {
+                if (messages[i].task_key === key) {
+                  break
+                } else if (messages[i].form.body.length !== 0) {
+                  length = messages[i].form.body.length
+                  break
+                }
+              }
+              if (length === 0) {
+                delete postForm.body
+              }
+              console.log(postForm)
+              this.postMethod(this.routerInfo.tid, postForm)
               // console.dir(this.assignForm)
             } else {
               console.log('error submit!!')
