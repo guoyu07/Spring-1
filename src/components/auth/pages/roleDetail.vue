@@ -29,7 +29,7 @@
          </div>
       </div>
     		<el-table :data="currentPageList" border @selection-change="handleSelectionChange" fit>
-    		    <el-table-column type='selection' :selectable='forbiddenChoice' width="50"></el-table-column>
+    		    <el-table-column type='selection' width="50"></el-table-column>
     			<el-table-column prop='userId' label="用户名" width="100">
     			</el-table-column>
     			<el-table-column label='昵称' prop='nick'width="100"></el-table-column>
@@ -227,11 +227,6 @@ export default {
           this.getUsersList()
         }
       })
-    },
-    forbiddenChoice (row, index) {
-      if (row.level !== 0 && row.userId !== this.$store.state.userinfo.userId) {
-        return true
-      }
     },
     deleteRow (val) {
       this.$confirm('确认删除选定用户？', '提示', {

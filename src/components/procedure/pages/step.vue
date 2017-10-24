@@ -76,10 +76,13 @@
             </div>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
               <!-- <div></div> -->
-              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
+              <div>
+              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
                 <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
               </el-button-group>
+               <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
+             </div>
               <el-button
                 size="small"
                 type="text"
@@ -208,6 +211,7 @@
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
                 <div v-for="(data, index) in applyData.body" style="position:relative">
+                 <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom2 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'">查看IP</a>
                 <el-button-group style="position:absolute;right:15px;top:8px;z-index:1;width:90px">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
                   <el-button size="small" @click="stickValue(index)">黏贴</el-button>
@@ -396,7 +400,8 @@
         infoShow: {},
         infoHideAll: false,
         hostList: [],
-        copyObj: {}
+        copyObj: {},
+        ipAdress: ''
       }
     },
     created () {
@@ -431,6 +436,15 @@
       }
     },
     methods: {
+      // 查找对应的cmdbip地址
+      checkIp (index) {
+        let name = this.applyData.body[index].ipscope.name
+        let cmdb = this.$store.state.userinfo._easyops_url
+        this.ipAdress = `${cmdb}/cmdb/resource/ipaddr/fallback?aq=%5B%5B"ipscope","contain","${name}"%5D%5D&page=1`
+        console.log(this.ipAdress)
+        return this.ipAdress
+      },
+      // 自动填充已给项
       getAutoFillData () {
         if (this.taskFormAll.fill_form) {
           const renderFromData = {
@@ -476,8 +490,6 @@
         copyValues = copyValues.map((val) => {
           return val.id
         })
-        console.log(copyValues)
-        console.log(this.assignForm.body[index])
         // 把复制内容整合成一个对象
         let list = {}
         Object.assign(list, this.assignForm.body[index])
@@ -542,7 +554,6 @@
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
                   if (this.showFormItem(item, this.assignForm, this.applyData, true, true, index)) {
-                    console.log('123')
                     if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                       this.assignForm.body[index][item.id] = val
                     }
@@ -813,6 +824,7 @@
               let length = 0
               for (let i = 0; i < messages.length; i++) {
                 if (messages[i].task_key === key) {
+                  length = messages[i].form.body.length
                   break
                 } else if (messages[i].form.body.length !== 0) {
                   length = messages[i].form.body.length
@@ -820,8 +832,9 @@
                 }
               }
               if (length === 0) {
-                delete postForm.body
+                postForm.body = []
               }
+              console.log(this.assignForm)
               console.log(postForm)
               this.postMethod(this.routerInfo.tid, postForm)
               // console.dir(this.assignForm)
@@ -1022,6 +1035,24 @@
   }
 </script>
 <style lang="less" scoped>
+.checkIpButtom1 {
+  &:link {
+    text-decoration: none;
+    }
+  margin-left: 5px;
+  margin-bottom: 8px;
+  vertical-align: middle;
+
+}
+.checkIpButtom2 {
+  &:link {
+    text-decoration: none;
+    }
+  position:absolute;
+  right:110px;
+  top:8px;
+  z-index:1;
+}
 .el-tag {
   font-size: 14px;
   & +.el-tag {
