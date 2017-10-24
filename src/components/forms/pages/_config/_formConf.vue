@@ -259,7 +259,7 @@
       <el-button icon="more" type="info" :plain="true" size="small" @click="showPresetConf" v-if="selectedPreset">导入预设字段</el-button>
     </el-row>
     <!-- <lazy-render> -->
-      <preset-conf :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
+      <preset-conf @import-preset="this.importPreset" :selected-preset="selectedPreset" :current-fields="configData2" :category="category" v-if="selectedPreset"></preset-conf>
     <!-- </lazy-render> -->
 
     <!-- 避免修改 props，不写成组件 -->
@@ -408,6 +408,10 @@ export default {
   computed: {
     isBody () {
       return this.bodyIndex !== undefined
+    },
+
+    presetForExternal () {
+      return this.optionPresets[0].list[0]
     }
   },
 
@@ -475,18 +479,43 @@ export default {
     //   })
     // },
     // 导入预设集
-    importPreset (preset, currentFields) {
-      for (let i = 0; i < preset.length; i++) {
-        if (currentFields.every(j => j.id !== preset[i].id)) {
-          Object.assign(preset[i], { _timeStamp: `${new Date().getTime()}-${i}`, need_submit: true, isAlias: false, default: { type: '' } })
-          if (preset[i].value.type === 'FK') {
-            preset[i].value.type = 'dict'
+    importPreset ({ attrs, fields }) {
+      console.log(attrs)
+      console.log(fields)
+      for (let i = 0; i < attrs.length; i++) {
+        if (fields.every(j => j.id !== attrs[i].id)) {
+          Object.assign(attrs[i], { _timeStamp: `${new Date().getTime()}-${i}`, need_submit: true, isAlias: false, default: { type: '' } })
+          if (attrs[i].value.type === 'FK') {
+            attrs[i].value.type = 'dict'
+            this._modifyExternals(attrs[i])
+            // Object.assign(attrs[i].value.source.res, )
+            // attrs[i].value.source.url = this.presetForExternal.url
           }
-          if (preset[i].value.type === 'FKs') {
-            preset[i].value.type = 'dicts'
+          if (attrs[i].value.type === 'FKs') {
+            attrs[i].value.type = 'dicts'
+            this._modifyExternals(attrs[i])
           }
-          currentFields.push(preset[i])
+          fields.push(attrs[i])
         }
+      }
+    },
+    // 为外键加入 source
+    _modifyExternals (attr) {
+      console.log(attr)
+      attr.value.source = {
+        data: {
+          action: this.presetForExternal.action,
+          method: this.presetForExternal.method,
+          params: [{
+            id: 'object_id',
+            value: {
+              type: 'static',
+              value: attr.value.rule.obj
+            }
+          }]
+        },
+        res: { data_path: this.presetForExternal.data_path, show_key: ['name'] },
+        url: this.presetForExternal.url
       }
     },
     // 显示预设集弹窗

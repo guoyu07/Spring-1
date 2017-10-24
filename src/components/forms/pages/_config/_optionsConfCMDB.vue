@@ -205,19 +205,19 @@
     methods: {
       modifyExternalKey () {
         console.log('external')
-        Object.assign(this.itemConf.value.source.data, {
-          action: this.selectedPreset.action,
-          method: this.selectedPreset.method,
-          params: [{
-            id: 'object_id',
-            value: {
-              type: 'static',
-              value: this.itemConf.value.rule.obj
-            }
-          }]
-        })
-        Object.assign(this.itemConf.value.source.res, { data_path: this.selectedPreset.data_path, show_key: ['name'] })
-        this.itemConf.value.source.url = this.selectedPreset.url
+        // Object.assign(this.itemConf.value.source.data, {
+        //   action: this.selectedPreset.action,
+        //   method: this.selectedPreset.method,
+        //   params: [{
+        //     id: 'object_id',
+        //     value: {
+        //       type: 'static',
+        //       value: this.itemConf.value.rule.obj
+        //     }
+        //   }]
+        // })
+        // Object.assign(this.itemConf.value.source.res, { data_path: this.selectedPreset.data_path, show_key: ['name'] })
+        // this.itemConf.value.source.url = this.selectedPreset.url
         // this.onSelectPreset(this.selectedPreset)
         // this.itemConf.value.source.res.show_key.push(this.itemConf.value.external[0].name)
       },

@@ -143,7 +143,8 @@
           this.checkedAttributes.forEach((_) => { _.category = this.category })
         }
         console.log(this.checkedAttributes)
-        this.$parent.$options.methods.importPreset(JSON.parse(JSON.stringify(this.checkedAttributes)), this.currentFields)
+        this.$emit('import-preset', { attrs: JSON.parse(JSON.stringify(this.checkedAttributes)), fields: this.currentFields })
+        // this..methods.importPreset(JSON.parse(JSON.stringify(this.checkedAttributes)), this.currentFields)
         this.selectedPreset.confVisible = false
       }
     }
