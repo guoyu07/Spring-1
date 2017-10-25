@@ -4,7 +4,6 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
-
           <el-row type="flex" justify="space-between" v-if="$route.params.pkey === 'Storage'">
             <el-col>
               <el-upload
@@ -156,7 +155,6 @@
                   <el-button class="margin-bottom" type="primary" icon="plus" size="small" :plain="true" @click="addTab(tabsValue)">新表单</el-button>
                 </el-row>
               </template>
-
              <!--  <el-upload
                 action="/api/upload_file/"
                 accept=".xls,.xlsx"

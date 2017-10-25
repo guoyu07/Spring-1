@@ -594,28 +594,25 @@
         // console.log(val)
         // this.hostList = []
         // this.hostList = val
+        console.log(this.assignForm)
+        console.log(val, index, id, header)
         if (header) {
           this.taskForm.header.map(header => {
             header.value.map(item => {
-              // if (item.show.type) {
-              //   // show.type 有四种类型
-              //   if (item.show.type === 'form_header') {
-              //     if ((item.show.op === 'eq' && this.getPathResult(this.postForm.header, item.show.key_path) === item.show.value) ||
-              //         (item.show.op === 'neq' && this.getPathResult(this.postForm.header, item.show.key_path) !== item.show.value) ||
-              //         (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.postForm.header, item.show.key_path)))) {
-              //       if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
-              //         this.postForm.header[item.id] = val
-              //       }
-              //     }
-              //   }
-              // } else {
-              //   if (item.id === id) {
-              //     // this.postForm.header[item.id] = []
-              //     this.postForm.header[item.id] = val
-              //   }
-              // }
-              if (this.showFormItem(item, this.assignForm, this.applyData)) {
-                if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+              if (item.show.type) {
+                // show.type 有四种类型
+                if (item.show.type === 'form_header') {
+                  if ((item.show.op === 'eq' && this.getPathResult(this.assignForm.header, item.show.key_path) === item.show.value) ||
+                      (item.show.op === 'neq' && this.getPathResult(this.assignForm.header, item.show.key_path) !== item.show.value) ||
+                      (item.show.op === 'reg' && item.show.value.includes(this.getPathResult(this.assignForm.header, item.show.key_path)))) {
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                      this.assignForm.header[item.id] = val
+                    }
+                  }
+                }
+              } else {
+                if (item.id === id) {
+                  // this.assignForm.header[item.id] = []
                   this.assignForm.header[item.id] = val
                 }
               }
@@ -623,11 +620,12 @@
           })
         } else {
           this.taskForm.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.assignForm, this.applyData)) {
+            if (this.showBodyList(bodyList, this.assignForm, this.applyData, index)) {
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
-                  if (this.showFormItem(item, this.assignForm, this.applyData)) {
-                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                  if (this.showFormItem(item, this.assignForm, this.applyData, true, true, index)) {
+                    if (item.id === id) {
+                       // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                       this.assignForm.body[index][item.id] = val
                     }
                   }

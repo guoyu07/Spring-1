@@ -60,7 +60,7 @@
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
                     :header="true"
-                    :assignForm="assignForm"
+                    :post-form="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
@@ -771,7 +771,7 @@
           // console.log(res)
           this.taskData = res.data.data
           const message = res.data.data.message
-          res.data.data.message.map(list => {
+          message.map(list => {
             if (!this.path_list.includes(list.task_key)) {
               this.path_list.push(list.task_key)
             }
@@ -824,7 +824,7 @@
               let length = 0
               for (let i = 0; i < messages.length; i++) {
                 if (messages[i].task_key === key) {
-                  length = messages[i].form.body.length
+                  length = this.taskForm.body.body_list.length
                   break
                 } else if (messages[i].form.body.length !== 0) {
                   length = messages[i].form.body.length

@@ -180,8 +180,6 @@
     methods: {
       rules (formItem) {
         var validateSearchBar = (rule, value, cb) => {
-          console.log(rule, value)
-          console.log(value.length)
           if (value.length === 0 && this.limit.min !== 0) {
             return cb(new Error(`${this.mainInfo.name}不能为空`))
           } else if (this.limit && this.limit.min && (value.length < this.limit.min)) {
