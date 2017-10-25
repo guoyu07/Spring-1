@@ -221,6 +221,7 @@
 
 <style lang="less" scoped>
   .order-search {
+    display: none;
     margin: 12px 0;
 
     &--basic {

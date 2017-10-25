@@ -17,8 +17,8 @@
             <form-body
               :item="table"
               :form-item="formItem"
-              :whole="postForm.header[formData.id][tableindex]"
-              :wholeName="postFormName"
+              :whole="assignForm.header[formData.id][tableindex]"
+              :wholeName="assignFormName"
               :table-index="tableindex"
               :header-table="true"
               :is-Editing="isEditing"
@@ -38,9 +38,9 @@
     props: {
       item: { type: Object },
       formData: { type: Object },
-      postForm: { type: Object },
+      assignForm: { type: Object },
       messageData: { type: Object },
-      postFormName: { type: String }
+      assignFormName: { type: String }
     },
 
     data () {

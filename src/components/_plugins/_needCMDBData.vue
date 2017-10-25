@@ -117,6 +117,9 @@
               if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                 this.setDataType(this.strucData, this.vmodel)
               }
+              if (oldVal !== undefined) {
+                this.vmodel[this.strucData.id] = ''
+              }
               this.renderOptions()
             })
           } else if (para.value.type === 'form_body') {
@@ -124,6 +127,9 @@
               this.$watch('whole.' + para.value.key_path, (newVal, oldVal) => {
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
                   this.setDataType(this.strucData, this.vmodel)
+                }
+                if (oldVal !== undefined) {
+                  this.vmodel[this.strucData.id] = ''
                 }
                 this.renderOptions()
               })
@@ -228,7 +234,6 @@
             })
           } else { // type 为 dict 时
             this.filterList(this.showLabel(this.vmodel[this.strucData.id]))
-            // if (this.optionList.length === 1) return false // 当数据只有1条时，默认值不需要执行以下代码
             if (this.vmodel[this.strucData.id][this.strucData.value.source.res.show_key[0]]) {
               let isIncludes = false
               for (var option of this.optionList) {
