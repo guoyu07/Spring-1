@@ -29,6 +29,7 @@
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
               <div v-for="(task, index) in taskFormData.header" :key="index">
+                <h5>{{task.name}}</h5>
                 <span v-for="taskform in task.value" :key="taskform.id">
                   <form-body
                     v-if="showFormItem(taskform, postForm)"

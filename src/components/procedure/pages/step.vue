@@ -572,7 +572,17 @@
           })
         }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
-        this.$refs['assignForm'].validate((valid) => {}) // 调用验证
+        // 验证searchbar一个符不符合规则
+        if (header) {
+          let key = `header.${id}`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        } else {
+          let key = `body.${index}.id`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        }
+        // this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
       infoShowFunction (newVal) {
         const infoShow = []
