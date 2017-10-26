@@ -273,7 +273,17 @@
             }
           })
         }
-        this.$refs['postForm'].validate((valid) => {}) // 调用验证
+        // 验证searchbar一个符不符合规则
+        if (header) {
+          let key = `header.${id}`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        } else {
+          let key = `body.${index}.id`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        }
+        // this.$refs['postForm'].validateField((valid) => {}) // 调用验证
       },
       renderForm () {
         const renderFromData = {

@@ -352,7 +352,8 @@
             if (this.taskData.can_manage) {
               this.getPermittedUserList()
               this.getPermittedRoleList()
-              this.newAssignee = this.taskData.assign && this.taskData.assign.userId || ''
+              this.newAssignee = this.taskData.assign.userId
+              // this.newAssignee = this.taskData.assign && this.taskData.assign.userId || ''
               this.newassignGroup = this.taskData.assign_group && this.taskData.assign_group.key || ''
             }
           }
