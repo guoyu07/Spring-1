@@ -18,7 +18,15 @@
           </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
-            <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p>
+            <el-alert
+              v-if="isEditing"
+              title="驳回信息"
+              type="error"
+              :description="edtingInfo"
+              class="margin-bottom"
+              :closable="false"
+              show-icon></el-alert>
+            <!-- <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p> -->
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <!-- {{taskformheader.name}} 这是分组名称 因为现实了步骤任务名称，不在重复显示一个分组名称-->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">

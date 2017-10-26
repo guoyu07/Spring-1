@@ -620,9 +620,9 @@
   }
   .help-block {
     font-size: 12px;
-    color: #666;
+    color: #5e6d82;
     margin: 0.5em 0 0;
-    line-height: 1;
+    line-height: 1.3;
     // position: absolute;
     // top: 24px;
     // left: 0;

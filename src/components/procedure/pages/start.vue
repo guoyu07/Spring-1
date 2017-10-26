@@ -13,12 +13,15 @@
                 :on-change="excelFileChange"
                 :file-list="excelList"
                 class="margin-bottom">
-                <el-button icon="document" type="primary">上传入库单</el-button>
+                <el-button icon="fa-file-excel-o" type="primary">上传入库单</el-button>
                 <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
               </el-upload>
             </el-col>
             <el-col style="text-align: right;">
-              <a class="el-button el-button--info is-plain" href="/api/data/?action=download/import/server/excel" target="_blank">下载示例文件</a>
+              <el-button icon="fa-download">
+                <a href="/api/data/?action=download/import/server/excel" target="_blank">示例文件</a>
+              </el-button>
+              <!-- <a class="el-button el-button--info is-plain" href="/api/data/?action=download/import/server/excel" target="_blank">示例文件</a> -->
             </el-col>
           </el-row>
 
@@ -108,7 +111,7 @@
               </template>
               <template v-if="taskFormData.body && taskFormData.body.style === 2">
                 <div class="tab-wrap" v-for="(data, index) in postForm.body" :key="index" :id="'anchor-'+index">
-                  <el-button size="small" @click="addTab(tabsValue, index)" icon="plus" class="add-tab">复制当前表单</el-button>
+                  <el-button size="small" @click="addTab(tabsValue, index)" icon="fa-copy" class="add-tab">复制当前表单</el-button>
                   <el-tabs type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="isClosable">
                     <el-tab-pane :label="bodyLableName[index]">
                       <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">

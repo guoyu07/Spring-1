@@ -34,10 +34,19 @@
             </div>
           </el-form>
           <br>
-          <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
+          <el-dropdown @command="onAddServer" class="margin-bottom">
+            <el-button size="small">
+              增加服务器<i class="el-icon-caret-bottom el-icon--right"></i>
+            </el-button>
+            <el-dropdown-menu slot="dropdown">
+              <el-dropdown-item command="new">新增表单</el-dropdown-item>
+              <el-dropdown-item command="copy">复制当前表单</el-dropdown-item>
+            </el-dropdown-menu>
+          </el-dropdown>
+          <!-- <el-button size="small" icon="plus" class="margin-bottom" @click="addTab(tabsValue)">
             增加服务器
           </el-button>
-          <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
+          <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox> -->
           <el-form ref="applyForm" :model="applyForm" label-position="right" label-width="100px" :inline="true">
             <el-tabs v-model="tabsValue" type="border-card" @tab-remove="removeTab">
               <el-tab-pane v-for="(item, index) in applyForm.body" :key="index" :label="'服务资源' + (index + 1)" :name="index + ''" :closable="applyForm.body.length !== 1">
@@ -95,7 +104,7 @@
   export default {
     data () {
       return {
-        toCopy: false,
+        // toCopy: false,
         form: {},
         tabsValue: '0',
         tabIndex: 1,
@@ -339,35 +348,39 @@
         this.tabsValue = activeName + ''
         this.applyForm.body.splice(targetName, 1)
       },
-      addTab (targetName) {
+      onAddServer (command) {
         var that = this
         let newData = {}
-        if (that.toCopy) {
-          // 需要复制时，这里去除唯一值
-          this.form.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.applyForm)) {
-              bodyList.attr_list.map(group => {
-                group.value.map(item => {
-                  this.setNewDataType(item, newData)
-                  if (!item.unique) {
-                    // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
-                    newData[item.id] = this.applyForm.body[this.tabsValue][item.id]
-                  }
+        switch (command) {
+          case 'new':
+            // 直接新增不复制，按原 taskFormData 重新赋对应结构的空值
+            console.log('new')
+            this.form.body.body_list.map(bodyList => {
+              if (this.showBodyList(bodyList, this.applyForm, this.applyData)) {
+                bodyList.attr_list.map(group => {
+                  group.value.map(item => {
+                    this.setNewDataType(item, newData)
+                  })
                 })
-              })
-            }
-          })
-        } else {
-          // 直接新增不复制，按原 taskFormData 重新赋对应结构的空值
-          this.form.body.body_list.map(bodyList => {
-            if (this.showBodyList(bodyList, this.applyForm, this.applyData)) {
-              bodyList.attr_list.map(group => {
-                group.value.map(item => {
-                  this.setNewDataType(item, newData)
+              }
+            })
+            break
+          case 'copy':
+            // 需要复制时，这里去除唯一值
+            console.log('copy')
+            this.form.body.body_list.map(bodyList => {
+              if (this.showBodyList(bodyList, this.applyForm)) {
+                bodyList.attr_list.map(group => {
+                  group.value.map(item => {
+                    this.setNewDataType(item, newData)
+                    if (!item.unique) {
+                      // dict、dicts 无法赋值，因为 needCMDBData 每一次请求把值清空了（防止被watch时留有原值）
+                      newData[item.id] = this.applyForm.body[this.tabsValue][item.id]
+                    }
+                  })
                 })
-              })
-            }
-          })
+              }
+            })
         }
         this.$refs['applyForm'].validate((valid) => {
           if (valid) {
