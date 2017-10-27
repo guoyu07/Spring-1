@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper" ref="wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3 class="form-title">
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
@@ -88,7 +88,7 @@
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
               <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
-                <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
+                <el-button size="small" @click="stickValue(tabIndex)">粘贴</el-button>
               </el-button-group>
               <el-button
                 size="small"
@@ -206,7 +206,7 @@
                 <div v-for="(data, index) in applyData.body" style="position:relative">
                 <el-button-group style="position:absolute;right:15px;top:8px;z-index:1">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
-                  <el-button size="small" @click="stickValue(index)">黏贴</el-button>
+                  <el-button size="small" @click="stickValue(index)">粘贴</el-button>
                 </el-button-group>
                 <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick"  :key="index">
                   <el-tab-pane :label="bodyLableName[index]">

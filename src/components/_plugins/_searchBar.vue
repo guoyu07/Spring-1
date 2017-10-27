@@ -57,7 +57,7 @@
         </el-pagination>
       </div>
       <div class="btn-area">
-        <el-button class="md" type="primary" size="small" @click="onAddtoOff" icon="fa-download">添加至{{mainInfo.name}}列表</el-button>
+        <el-button class="md" type="primary" size="small" @click="onAddtoOff" :disabled="!selectedDevices.length" icon="fa-download">添加至{{mainInfo.name}}列表</el-button>
       </div>
       <h5>{{mainInfo.name}}列表 ({{hostList.length}})</h5>
       <el-table

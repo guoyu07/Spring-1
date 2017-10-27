@@ -1,24 +1,26 @@
 <template>
  <div class="wrapper">
     <el-row>
-     <el-col :md="12" :lg="12">
-      <h3><i class="el-icon-fa-info-circle"></i> 设置基本信息</h3>
-      <el-form :model='basicsForm' ref='basicsForm' :rules="basicsCheck" label-width="100px">
-      <el-form-item label="用户名" >
-       <el-input v-model='basicsForm.userId' disabled></el-input>
-      </el-form-item>
-      <el-form-item label="昵称" >
-       <el-input v-model="basicsForm.nick" ></el-input>
-      </el-form-item>
-      <el-form-item label="邮箱" prop="email">
-       <el-input v-model="basicsForm.email" ></el-input>
-      </el-form-item>
-      <el-form-item label="手机" prop="phone">
-       <el-input v-model="basicsForm.phone" ></el-input>
-      </el-form-item>
-      <el-button type="primary" @click="submitForm('basicsForm')">保存</el-button>
-      </el-form>
-     </el-col>
+      <el-col :sm="24" :md="20">
+        <el-card>
+          <h3><i class="el-icon-fa-info-circle icon-lg"></i> 设置基本信息</h3>
+          <el-form class="margin-top" :model='basicsForm' ref='basicsForm' :rules="basicsCheck" label-width="100px">
+            <el-form-item label="用户名" >
+              <el-input v-model='basicsForm.userId' disabled></el-input>
+            </el-form-item>
+            <el-form-item label="昵称" >
+              <el-input v-model="basicsForm.nick" ></el-input>
+            </el-form-item>
+            <el-form-item label="邮箱" prop="email">
+              <el-input v-model="basicsForm.email" ></el-input>
+            </el-form-item>
+            <el-form-item label="手机" prop="phone">
+              <el-input v-model="basicsForm.phone" ></el-input>
+            </el-form-item>
+            <el-button type="primary" icon="check" @click="submitForm('basicsForm')">保存</el-button>
+          </el-form>
+        </el-card>
+      </el-col>
     </el-row>
  </div>
 </template>
