@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <el-row>
-      <el-col :md="24" :lg="20">
+      <el-col :sm="24" :md="20">
         <el-card>
           <h3><i class="el-icon-fa-key icon-lg"></i> 修改密码</h3>
           <el-form class="margin-top" :model='editForm' ref='editForm' :rules='checkPass' label-width="100px" >
