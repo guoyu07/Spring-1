@@ -4,7 +4,6 @@
       <el-col :sm="24" :md="24" :lg="24">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
-
           <el-row type="flex" justify="space-between" v-if="$route.params.pkey === 'Storage'">
             <el-col>
               <el-upload
@@ -30,6 +29,7 @@
             <!-- header 表单填写 -->
             <div v-if="taskFormData.header">
               <div v-for="(task, index) in taskFormData.header" :key="index">
+                <h5>{{task.name}}</h5>
                 <span v-for="taskform in task.value" :key="taskform.id">
                   <form-body
                     v-if="showFormItem(taskform, postForm)"
@@ -159,7 +159,6 @@
                   <el-button class="margin-bottom" type="primary" icon="plus" size="small" :plain="true" @click="addTab(tabsValue)">新表单</el-button>
                 </el-row>
               </template>
-
              <!--  <el-upload
                 action="/api/upload_file/"
                 accept=".xls,.xlsx"
@@ -278,7 +277,17 @@
             }
           })
         }
-        this.$refs['postForm'].validate((valid) => {}) // 调用验证
+        // 验证searchbar一个符不符合规则
+        if (header) {
+          let key = `header.${id}`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        } else {
+          let key = `body.${index}.id`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        }
+        // this.$refs['postForm'].validateField((valid) => {}) // 调用验证
       },
       renderForm () {
         const renderFromData = {

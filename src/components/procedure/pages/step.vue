@@ -68,7 +68,7 @@
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
                     :header="true"
-                    :assignForm="assignForm"
+                    :post-form="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
@@ -572,7 +572,17 @@
           })
         }
         // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
-        this.$refs['assignForm'].validate((valid) => {}) // 调用验证
+        // 验证searchbar一个符不符合规则
+        if (header) {
+          let key = `header.${id}`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        } else {
+          let key = `body.${index}.id`
+          console.log(key)
+          this.$refs['postForm'].validateField(key)
+        }
+        // this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
       infoShowFunction (newVal) {
         const infoShow = []
@@ -609,7 +619,7 @@
               }
             }
           }
-
+          // 表单头部填写绑定
           this.taskForm.header.forEach((header, k) => {
             if (header) {
               header.value.map(value => {
@@ -779,7 +789,7 @@
           // console.log(res)
           this.taskData = res.data.data
           const message = res.data.data.message
-          res.data.data.message.map(list => {
+          message.map(list => {
             if (!this.path_list.includes(list.task_key)) {
               this.path_list.push(list.task_key)
             }
@@ -832,7 +842,7 @@
               let length = 0
               for (let i = 0; i < messages.length; i++) {
                 if (messages[i].task_key === key) {
-                  length = messages[i].form.body.length
+                  length = this.taskForm.body.body_list.length
                   break
                 } else if (messages[i].form.body.length !== 0) {
                   length = messages[i].form.body.length
