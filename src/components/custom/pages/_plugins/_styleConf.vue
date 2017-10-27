@@ -20,6 +20,14 @@
       </el-form-item>
       <el-form-item label="图标">
         <el-input v-model="icon" style="width: 320px"></el-input>
+        <el-tooltip placement="top">
+          <div slot="content">
+            使用 <a style="color: #50bfff" href="http://fontawesome.io/icons/" target="_blank">FontAwesome</a> 图标集，<br>
+            以 <code>fa-</code> 格式填写图标名。
+          </div>
+          <el-button type="text" icon="fa-info-circle"></el-button>
+        </el-tooltip>
+        <!-- <el-button type="text" icon="fa-info-circle"></el-button> -->
       </el-form-item>
       <el-form-item label="预览">
         <div class="m-entry__icon">

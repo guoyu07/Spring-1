@@ -2,7 +2,7 @@
   <div class="roles wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
-        <div>
+        <el-card>
           <h3 class="module-title"><i class="el-icon-fa-users"></i> 角色管理</h3>
           <el-alert
             v-if="!isQualified"
@@ -16,6 +16,7 @@
             <div class="search-block">
               <el-input
                 placeholder="根据角色名或其他信息搜索"
+                size="small"
                 icon="search"
                 v-model="search.key"
                 @change="onSearch()"
@@ -24,7 +25,7 @@
             </div>
             <div class="btn-block" v-show="isQualified">
               <!-- <el-button v-if="$store.state.userinfo.level === 0" :disabled="!roleSelection.length" icon="edit" type="primary" @click="editRoleData.visible = true">批量编辑</el-button> -->
-              <el-button :disabled="!isQualified" icon="plus" type="success" @click="addedRoleData.visible = true">添加角色</el-button>
+              <el-button :disabled="!isQualified" icon="plus" size="small" type="success" @click="addedRoleData.visible = true">添加角色</el-button>
             </div>
           </div>
           <el-table
@@ -41,7 +42,7 @@
             </el-table-column>
             <el-table-column  label="所属用户" inline-template>
                 <template>
-                  <el-tag v-for="user in row.users">{{user.nick}}</el-tag>
+                  <el-tag type="gray" v-for="user in row.users">{{user.nick}}</el-tag>
                 </template>
             </el-table-column>
             <el-table-column
@@ -50,12 +51,14 @@
               width="80"
               inline-template>
               <template>
-                <el-button type="primary" size="small" @click="toDetail(row.key)">查看</el-button>
+                <el-button size="small">
+                  <router-link :to="{ path: 'role-detail', query: { key: row.key } }">查看</router-link>
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
           <el-pagination
-            class="fr margin-top"
+            class="fr margin-top margin-bottom"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
@@ -64,7 +67,7 @@
             layout="total, sizes, prev, pager, next"
             :total="totalPage">
           </el-pagination>
-        </div>
+        </el-card>
       </el-col>
     </el-row>
     <el-dialog title="新建角色" size="tiny" v-model="addedRoleData.visible">
@@ -179,9 +182,6 @@
             console.log(this.roleList)
           }
         })
-      },
-      toDetail (key) {
-        this.$router.push({ path: 'role-detail', query: { key: key } })
       },
       handleSelectionChange (val) {
         console.log(val)

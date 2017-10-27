@@ -1,85 +1,94 @@
   <template>
   <div class="users wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
-        <div class="flex-box">
-          <h3 class="module-title">{{ userDetail.userId }}</h3>
-          <div class="btn-block">
-            <el-button :type="userDetail.status === '1' ? 'success' : 'danger'" size="small" @click="onToggleUser(userDetail)">{{ userDetail.status === '1' ? '启用' : '禁用' }}</el-button>
-          </div>
-        </div>
-        <el-row>
-          <el-col :sm="24" :md="18" :lg="12">
-            <el-tabs v-model="activeTab">
-              <el-tab-pane label="基本信息" name="userInfo">
-                <el-form :rules="userRules" ref="userRules" :model="userDetail" label-width="78px">
-                  <el-form-item label="用户 ID" prop="userId">
-                    <el-input v-model="userDetail.userId" disabled></el-input>
-                  </el-form-item>
-                  <el-form-item label="昵称" prop="nick">
-                    <el-input v-model="userDetail.nick"></el-input>
-                  </el-form-item>
-                  <el-form-item label="邮箱" prop="email">
-                    <el-input v-model="userDetail.email"></el-input>
-                  </el-form-item>
-                  <el-form-item label="手机" prop="phone">
-                    <el-input v-model="userDetail.phone"></el-input>
-                  </el-form-item>
-                  <el-form-item label="使用状态" prop="status">
-                    <el-select v-model="userDetail.status" disabled>
-                      <el-option label="使用中" value="0"></el-option>
-                      <el-option label="已禁用" value="1"></el-option>
-                    </el-select>
-                  </el-form-item>
-                </el-form>
-                <el-button @click="updateUserInfo({ userId: userDetail.userId, nick: userDetail.nick, email: userDetail.email, phone: userDetail.phone })" type="info">保存</el-button>
-                <el-button @click="cancel">取消</el-button>
-              </el-tab-pane>
-              <!-- 鉴定权限为超级管理理员 -->
-              <el-tab-pane label="修改密码" name="setPassword" :disabled="$store.state.userinfo.level !== 0">
-                <el-form :rules="userPassRules" ref="userDetail" :model="userDetail" label-width="78px">
-                  <el-form-item label="密码" prop="password">
-                    <el-input type="password" v-model="userDetail.password" auto-complete="off"></el-input>
-                  </el-form-item>
-                  <el-form-item label="确认密码" prop="checkPass">
-                    <el-input type="password" v-model="userDetail.checkPass" auto-complete="off"></el-input>
-                  </el-form-item>
-                  </el-form-item>
-                </el-form>
-                <el-button @click="updateUserInfo({ userId: userDetail.userId, password: userDetail.password })" type="info">保存</el-button>
-                <el-button @click="cancel">取消</el-button>
-              </el-tab-pane>
-              <!-- 不能修改自己的用户层级和角色 -->
-              <el-tab-pane label="修改角色" name="setRole">
-                <el-form label-width="78px">
-                  <el-form-item label="用户层级" prop="level">
-                    <!-- 仅超级管理理员可配置⽤用户层级 -->
-                    <el-select v-model="userDetail.level" placeholder="请选择用户层级" :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level !== 0" >
-                      <el-option label="超级管理员" value="0" style="display:none"></el-option>
-                      <el-option label="管理员" value="1"></el-option>
-                      <el-option label="普通" value="2"></el-option>
-                    </el-select>
-                  </el-form-item>
-                  <el-form-item label="所属角色" prop="groups">
-                    <!-- 仅管理理员/超级管理理员可配置 -->
-                    <el-checkbox-group v-model="userDetail.groups_key">
-                      <el-checkbox
-                        :ref="role.key"
-                        v-for="role in permittedRoleList"
-                        :label="role.key"
-                        :key="role.key"
-                        :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level > 1">
-                        {{role.name}}
-                     </el-checkbox>
-                    </el-checkbox-group>
-                  </el-form-item>
-                </el-form>
-<!--                 <el-button :disabled="userDetail.userId === $store.state.userinfo.userId" @click="updateUserInfo({ userId: userDetail.userId, level: userDetail.level, groups: userDetail.groups_key })" type="info">保存</el-button>
-                <el-button @click="cancel">取消</el-button> -->
-              </el-tab-pane>
-            </el-tabs>
-          </el-col>
-        </el-row>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card>
+          <h3>
+            <i class="el-icon-fa-user icon-lg"></i> {{userDetail.userId}} - {{ userDetail.nick }}
+            <el-button class="fr" type="danger" @click="deleteRole" size="small" v-show="isQualified">删除角色</el-button>
+          </h3>
+
+          <el-row>
+            <el-col :sm="24" :md="18" :lg="12">
+              <el-tabs type="card" class="margin-top margin-bottom" v-model="activeTab">
+                <el-tab-pane label="基本信息" name="userInfo">
+                  <el-form :rules="userRules" ref="userRules" :model="userDetail" label-width="78px">
+                    <el-form-item label="用户 ID" prop="userId">
+                      <el-input v-model="userDetail.userId" disabled></el-input>
+                    </el-form-item>
+                    <el-form-item label="用户名" prop="nick">
+                      <el-input v-model="userDetail.nick"></el-input>
+                    </el-form-item>
+                    <el-form-item label="邮箱" prop="email">
+                      <el-input v-model="userDetail.email"></el-input>
+                    </el-form-item>
+                    <el-form-item label="手机" prop="phone">
+                      <el-input v-model="userDetail.phone"></el-input>
+                    </el-form-item>
+                    <el-form-item label="使用状态" prop="status">
+                      <el-select v-model="userDetail.status" disabled>
+                        <el-option label="使用中" value="0"></el-option>
+                        <el-option label="已禁用" value="1"></el-option>
+                      </el-select>
+                    </el-form-item>
+                  </el-form>
+                  <el-button @click="updateUserInfo({ userId: userDetail.userId, nick: userDetail.nick, email: userDetail.email, phone: userDetail.phone })" type="primary" icon="check">保存</el-button>
+                  <el-button @click="cancel">返回</el-button>
+                </el-tab-pane>
+                <!-- 鉴定权限为超级管理理员 -->
+                <el-tab-pane label="修改密码" name="setPassword" :disabled="$store.state.userinfo.level !== 0">
+                  <el-form :rules="userPassRules" ref="userDetail" :model="userDetail" label-width="78px">
+                    <el-form-item label="密码" prop="password">
+                      <el-input type="password" v-model="userDetail.password" auto-complete="off"></el-input>
+                    </el-form-item>
+                    <el-form-item label="确认密码" prop="checkPass">
+                      <el-input type="password" v-model="userDetail.checkPass" auto-complete="off"></el-input>
+                    </el-form-item>
+                    </el-form-item>
+                  </el-form>
+                  <el-button @click="updateUserInfo({ userId: userDetail.userId, password: userDetail.password })" type="primary" icon="check">保存</el-button>
+                  <el-button @click="cancel">返回</el-button>
+                </el-tab-pane>
+                <!-- 不能修改自己的用户层级和角色 -->
+                <el-tab-pane label="修改角色" name="setRole">
+                  <el-form label-width="78px">
+                    <el-form-item label="用户层级" prop="level">
+                      <!-- 仅超级管理理员可配置⽤用户层级 -->
+                      <el-select v-model="userDetail.level" placeholder="请选择用户层级" :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level !== 0" >
+                        <el-option label="超级管理员" value="0" style="display:none"></el-option>
+                        <el-option label="管理员" value="1"></el-option>
+                        <el-option label="普通" value="2"></el-option>
+                      </el-select>
+                    </el-form-item>
+                    <el-form-item label="所属角色" prop="groups">
+                      <!-- 仅管理理员/超级管理理员可配置 -->
+                      <el-select v-model="userDetail.groups_key" multiple placeholder="暂无角色">
+                        <el-option
+                          v-for="role in permittedRoleList"
+                          :key="role.key"
+                          :label="role.name"
+                          :value="role.key"
+                          :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level > 1"></el-option>
+                      </el-select>
+                      <!-- <el-checkbox-group v-model="userDetail.groups_key">
+                        <el-checkbox
+                          :ref="role.key"
+                          v-for="role in permittedRoleList"
+                          :label="role.key"
+                          :key="role.key"
+                          :disabled="userDetail.userId === $store.state.userinfo.userId || $store.state.userinfo.level > 1">
+                          {{role.name}}
+                      </el-checkbox>
+                      </el-checkbox-group> -->
+                    </el-form-item>
+                  </el-form>
+  <!--                 <el-button :disabled="userDetail.userId === $store.state.userinfo.userId" @click="updateUserInfo({ userId: userDetail.userId, level: userDetail.level, groups: userDetail.groups_key })" type="info">保存</el-button>
+                  <el-button @click="cancel">取消</el-button> -->
+                </el-tab-pane>
+              </el-tabs>
+            </el-col>
+          </el-row>
+        </el-card>
       </el-col>
     </el-row>
   </div>
@@ -180,7 +189,7 @@
               }
               this.http.post('/user/', this.parseData(postData)).then((res) => {
                 if (res.status === 200) {
-                  this.$message('已新增')
+                  this.$message('已新增角色')
                 }
               })
             }
@@ -201,7 +210,7 @@
               }
               this.http.post('/user/', this.parseData(postData)).then((res) => {
                 if (res.status === 200) {
-                  this.$message('已删除')
+                  this.$message('已删除角色')
                 }
               })
             }
