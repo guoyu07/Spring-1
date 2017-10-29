@@ -96,8 +96,7 @@
                 @click="retractInfo(true)"
                 :icon="infoHideAll ? 'fa-angle-double-down' : 'fa-angle-double-up'">全部{{ infoHideAll ? '展开' : '收起' }}</el-button>
             </div>
-<!--             <el-button size="small" @click="increaseBody">增加body</el-button>
-             -->
+            <!-- <el-button size="small" @click="increaseBody">增加body</el-button> -->
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
@@ -465,7 +464,8 @@
       }
     },
     methods: {
-
+      increaseBody () {
+      },
       getAutoFillData () {
         if (this.taskFormAll.fill_form) {
           const renderFromData = {
@@ -956,7 +956,7 @@
           }
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
-          // console.log(res)
+          console.log(res)
           this.taskData = res.data.data
           const message = res.data.data.message
           res.data.data.paths.map(list => {

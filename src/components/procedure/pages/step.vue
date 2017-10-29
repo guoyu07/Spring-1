@@ -8,6 +8,7 @@
             <small>{{ taskData.pinstance && taskData.pinstance.pd.pname }}</small>
             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
+            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -91,7 +92,8 @@
               </el-button-group>
                <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
              </div>
-              <el-button
+<!--               <el-button size="small" @click="increaseBody()">增加body</el-button>
+ -->              <el-button
                 size="small"
                 type="text"
                 @click="retractInfo(true)"
@@ -444,6 +446,19 @@
       }
     },
     methods: {
+      increaseBody () {
+        let key = this.taskData.message.length - 1
+        if (this.taskData.message[key].form.body.length === 0) {
+          this.applyData.body.push({})
+          console.log('123')
+          this.renderBodyLabel()
+          this.renderTaskForm()
+          // let len = this.taskForm.body.body_list.length
+          // console.log(len)
+          // this.taskForm.body.body_list.push({})
+          // Object.assign(this.taskForm.body.body_list[len], this.taskForm.body.body_list[0])
+        }
+      },
       // 查找对应的cmdbip地址
       checkIp (index) {
         let name = this.applyData.body[index].ipscope.name
@@ -716,6 +731,7 @@
                   })
                 })
                 this.assignForm.body.push(newData)
+                console.log(newData)
               }
             })
           })
@@ -786,8 +802,9 @@
           }
         }
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
-          // console.log(res)
+          console.log(res)
           this.taskData = res.data.data
+          console.dir(this.taskData)
           const message = res.data.data.message
           message.map(list => {
             if (!this.path_list.includes(list.task_key)) {

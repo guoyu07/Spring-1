@@ -58,6 +58,7 @@
                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, false)">
                         <header-form-display
                           :item="applyData.header"
+                          :index="-1"
                           :form-item="valueheader">
                         </header-form-display>
                       </span>
@@ -352,7 +353,7 @@
             if (this.taskData.can_manage) {
               this.getPermittedUserList()
               this.getPermittedRoleList()
-              this.newAssignee = this.taskData.assign.userId
+              this.newAssignee = this.taskData.assign && this.taskData.assign.userId || this.$store.state.userinfo.userId
               // this.newAssignee = this.taskData.assign && this.taskData.assign.userId || ''
               this.newassignGroup = this.taskData.assign_group && this.taskData.assign_group.key || ''
             }

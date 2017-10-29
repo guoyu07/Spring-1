@@ -19,8 +19,8 @@
             remote
             :remote-method="filterList"
             >
-              <el-option  v-for="(option, optionIndex) in showOptionList"
-                          :key="optionIndex"
+              <el-option  v-for="(option, index) in showOptionList"
+                          :key="index"
                           :label="showLabel(option)"
                           :value="option">
                           <span>{{ showLabel(option) }}</span>
@@ -35,8 +35,8 @@
             :allow-create="strucData.value.allow_create"
             filterable
             >
-              <el-option  v-for="(option, optionIndex) in optionList"
-                          :key="optionIndex"
+              <el-option  v-for="(option, index) in optionList"
+                          :key="index"
                           :label="showLabel(option)"
                           :value="option">
                           <span>{{ showLabel(option) }}</span>
@@ -63,7 +63,7 @@
         :allow-create="strucData.value.allow_create"
         :disabled="strucData.readonly"
         multiple>
-          <el-option  v-for="(option, optionIndex) in optionList"
+          <el-option  v-for="(option, optionIndex) in showOptionList"
                       :key="optionIndex"
                       :label="showLabel(option)"
                       :value="option">
@@ -164,6 +164,8 @@
       this.renderOptions()
       // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
       this.$watch('vmodel.' + this.strucData.id, (newVal, oldVal) => {
+        console.log(this.strucData.id, newVal, oldVal)
+        this.rightForm(newVal, this.strucData.id)
         this.renderData()
       }, { deep: true })
     },
@@ -185,6 +187,12 @@
       }
     },
     methods: {
+      // 配置了默认值，可是为空返回格式不对
+      rightForm (value, id) {
+        if (!value && this.strucData.value.type === 'dicts') {
+          this.vmodel[id] = []
+        }
+      },
       filterList (query) {
         // console.log(query)
         if (query || query === 0) {
@@ -253,6 +261,8 @@
               }, 100)
             }
           }
+        } else {
+
         }
       },
       showLabel (option) { // 显示 show_key 的信息
