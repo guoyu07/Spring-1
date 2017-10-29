@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper" ref="wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3 class="form-title">
             <i class="el-icon-fa-server color-primary"></i> {{ taskData.ptask && taskData.ptask.tname }}
@@ -88,7 +88,7 @@
               <div>
               <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
-                <el-button size="small" @click="stickValue(tabIndex)">黏贴</el-button>
+                <el-button size="small" @click="stickValue(tabIndex)">粘贴</el-button>
               </el-button-group>
                <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
              </div>
@@ -224,7 +224,7 @@
                  <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom2 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'">查看IP</a>
                 <el-button-group style="position:absolute;right:15px;top:8px;z-index:1;width:90px">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
-                  <el-button size="small" @click="stickValue(index)">黏贴</el-button>
+                  <el-button size="small" @click="stickValue(index)">粘贴</el-button>
                 </el-button-group>
                 <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick"  :key="index">
                   <el-tab-pane :label="bodyLableName[index]">

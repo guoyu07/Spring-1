@@ -1,57 +1,57 @@
 <template>
 	<div class="users wrapper">
    <el-row>
-     <el-col :sm="24" :md="24" :lg="24">
-      <div class="flex-box1">
-    		<h3 class="module-title">{{usersName}}</h3>
-        <div class="btn-block">
-    	   <el-button type="danger" @click="deleteRole" size="small" v-show="isQualified">删除角色</el-button>
-        </div>
-      </div>
-        <h5 class='second-title'>成员列表</h5>
+     <el-col :sm="24" :md="24" :lg="20">
+      <el-card>
+        <h3>
+          <i class="el-icon-fa-users icon-lg"></i> {{roleName}}
+          <el-button class="fr" type="danger" @click="deleteRole" size="small" v-show="isQualified">删除角色</el-button>
+        </h3>
+        
         <div class="flex-box2">
           <div class="search-box">
-        		<el-input
-        		placeholder="根据⽤用户名或基本信息搜索"
-                        icon="search"
-                        v-model="search.key"
-                        @change="onSearch"></el-input>
-        		<el-select placeholder='所有用户层级' v-model='search.role1' clearable @change='onSearch'>
-        			<el-option v-for='user in usersLevel' :key='user.key' :label='user.label' :value='user.key' ></el-option>
-        		</el-select>
-        		<el-select placeholder='所有用户状态' v-model='search.role2' clearable @change='onSearch'>
-        			<el-option v-for='user in usersStatus' :key='user.key' :label='user.label' :value='user.key' ></el-option>
-        		</el-select>
-         </div>
-         <div class="btn-box" v-show="isQualified">
-      		<el-button type='primary' @click='deleteSelectedGroup' :disabled='!countSelection.length'>批量删除</el-button>
-      		<el-button type='success' @click="correlateUsers()">关联用户</el-button>
-         </div>
-      </div>
-    		<el-table :data="currentPageList" border @selection-change="handleSelectionChange" fit>
-    		    <el-table-column type='selection' width="50"></el-table-column>
-    			<el-table-column prop='userId' label="用户名" width="100">
-    			</el-table-column>
-    			<el-table-column label='昵称' prop='nick'width="100"></el-table-column>
-    			<el-table-column label='邮箱' prop='email' ></el-table-column>
-    			<el-table-column label='手机' prop='phone' ></el-table-column>
-    			<el-table-column label='用户层级' prop='level' :formatter='formatLevel' width="120"></el-table-column>
-    			<el-table-column label='用户状态'  inline-template width="100">
-    				<template>
-    				  <span :class="row.status ? 'text-danger' : ''">
+            <el-input
+              placeholder="根据⽤用户名或基本信息搜索"
+              size="small"
+              icon="search"
+              v-model="search.key"
+              @change="onSearch"></el-input>
+            <el-select placeholder="所有用户层级" size="small" v-model="search.role1" clearable @change="onSearch">
+              <el-option v-for="user in usersLevel" :key="user.key" :label="user.label" :value="user.key" ></el-option>
+            </el-select>
+            <el-select placeholder="所有用户状态" size="small" v-model="search.role2" clearable @change="onSearch">
+              <el-option v-for="user in usersStatus" :key="user.key" :label="user.label" :value="user.key" ></el-option>
+            </el-select>
+          </div>
+          <div class="btn-box" v-show="isQualified">
+            <el-button type="danger" size="small" @click="deleteSelectedGroup" :disabled="!countSelection.length">批量删除</el-button>
+            <el-button type="success" icon="fa-exchange" size="small" @click="correlateUsers()">关联用户</el-button>
+          </div>
+        </div>
+        <el-table :data="currentPageList" border @selection-change="handleSelectionChange" fit>
+            <el-table-column type="selection" width="50"></el-table-column>
+          <el-table-column prop="userId" label="用户名" width="100">
+          </el-table-column>
+          <el-table-column label="昵称" prop="nick"width="100"></el-table-column>
+          <el-table-column label="邮箱" prop="email" ></el-table-column>
+          <el-table-column label="手机" prop="phone" ></el-table-column>
+          <el-table-column label="用户层级" prop="level" :formatter="formatLevel" width="120"></el-table-column>
+          <el-table-column label="用户状态"  inline-template width="100">
+            <template>
+              <el-tag :type="row.status ? 'danger' : 'success'">
                 {{ row.status ? '已禁用' : '使用中' }}
-              </span>
-    				</template>
-    			</el-table-column>
-    			<el-table-column label='操作' inline-template v-if="isQualified" width="200">
-    				<template>
-    					<el-button type='danger' :disabled="row.userId != currentUser.userId && row.level < currentUser.level" size="small" @click="deleteRow(row.userId)">删除</el-button>
-              <el-button type='primary' :disabled="row.level !== 2" size="small" @click="upgrade(row.userId)">提高等级</el-button>
-    				</template>
-    			</el-table-column>
-    	    </el-table>
+              </el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" inline-template v-if="isQualified" width="200">
+            <template>
+              <el-button type="danger" size="small" :disabled="row.userId != currentUser.userId && row.level < currentUser.level" @click="deleteRow(row.userId)">删除</el-button>
+              <el-button size="small" :disabled="row.level !== 2" @click="upgrade(row.userId)">提高等级</el-button>
+            </template>
+          </el-table-column>
+          </el-table>
           <el-pagination
-            class="fr margin-top"
+            class="fr margin-top margin-bottom"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
@@ -60,20 +60,22 @@
             layout="total, sizes, prev, pager, next"
             :total="totalPage">
           </el-pagination>
-        <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
-          <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
-          <el-select v-model="usersToAdd" multiple filterable remote :remote-method="usersFilter">
-            <el-option v-for="user in usersFilterList" :key="user.userId" :label="user.userId" :value='user.userId'>
-              <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
-              <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
-            </el-option>
-          </el-select>
-          <span class="dialog-footer" slot="footer">
-            <el-button @click="confirmAddUser">确认加入</el-button>
-          </span>
-        </el-dialog>
+        </el-card>
       </el-col>
     </el-row>
+
+    <el-dialog title="加入用户" size="tiny" v-model="joinUserGroup">
+      <h5 class="sub-title" style="margin-top: 0"><i class="el-icon-information"></i> 勾选欲加入的用户：</h5>
+      <el-select v-model="usersToAdd" multiple filterable remote :remote-method="usersFilter">
+        <el-option v-for="user in usersFilterList" :key="user.userId" :label="user.userId" :value='user.userId'>
+          <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
+          <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+        </el-option>
+      </el-select>
+      <span class="dialog-footer" slot="footer">
+        <el-button @click="confirmAddUser">确认加入</el-button>
+      </span>
+    </el-dialog>
 	</div>
 
 </template>
@@ -94,7 +96,7 @@ export default {
         role1: '',
         role2: ''
       },
-      usersName: '',
+      roleName: '',
       countSelection: [],
       usersList: [],
       renderUsersList: [],
@@ -341,7 +343,7 @@ export default {
       }
       this.http.post('/user/', this.parseData(postData)).then((res) => {
         if (res.status === 200) {
-          this.usersName = res.data.data.name
+          this.roleName = res.data.data.name
           this.usersList = res.data.data.users
           this.renderUsersList = this.usersList
         }
@@ -396,9 +398,10 @@ export default {
     margin-top:10px;
   }
   .flex-box2 {
-     display: flex;
-  justify-content: space-between;
-       .search-box {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+    .search-box {
       display: flex;
       .el-input {
         width: 210px;

@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
           <el-row type="flex" justify="space-between" v-if="$route.params.pkey === 'Storage'">

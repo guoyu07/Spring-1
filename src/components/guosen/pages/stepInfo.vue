@@ -1,7 +1,7 @@
 <template>
   <div class="wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
+      <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <div class="flex-box">
             <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>

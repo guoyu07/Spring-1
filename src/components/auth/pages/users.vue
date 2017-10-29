@@ -1,8 +1,8 @@
 <template>
   <div class="users wrapper">
     <el-row>
-      <el-col :sm="24" :md="24" :lg="24">
-        <div>
+      <el-col :sm="24" :md="24" :lg="20">
+        <el-card class="box-card">
           <h3 class="module-title"><i class="el-icon-fa-user"></i> 用户管理</h3>
           <el-alert
             v-if="!isQualified"
@@ -17,10 +17,11 @@
               <el-input
                 placeholder="根据用户名/基本信息搜索"
                 icon="search"
+                size="small"
                 v-model="search.key"
                 @change="onSearch">
               </el-input>
-              <el-select v-model="search.role" @change="onSearch" clearable placeholder="角色">
+              <el-select v-model="search.role" size="small" @change="onSearch" clearable placeholder="角色">
                 <el-option
                   v-for="role in roleList.list"
                   :key="role.key"
@@ -28,20 +29,20 @@
                   :value="role.key">
                 </el-option>
               </el-select>
-              <el-select v-model="search.level" @change="onSearch" clearable placeholder="用户层级">
+              <el-select v-model="search.level" size="small" @change="onSearch" clearable placeholder="用户层级">
                 <el-option label="超级管理员" value="0"></el-option>
                 <el-option label="管理员" value="1"></el-option>
                 <el-option label="普通用户" value="2"></el-option>
               </el-select>
-              <el-select v-model="search.status" @change="onSearch" clearable placeholder="用户状态">
+              <el-select v-model="search.status" size="small" @change="onSearch" clearable placeholder="用户状态">
                 <el-option label="使用中" value="0"></el-option>
                 <el-option label="已禁用" value="1"></el-option>
               </el-select>
             </div>
             <!-- 仅超级管理理员/管理理员可批量编辑 及 添加用户 -->
             <div class="btn-block" v-if="$store.state.userinfo.level <= 1">
-              <el-button :disabled="!userSelection.length" icon="edit" type="primary" @click="editUserData.visible = true">批量编辑</el-button>
-              <el-button :disabled="!isQualified" icon="plus" type="success" @click="addUserData.visible = true">添加用户</el-button>
+              <el-button :disabled="!userSelection.length" icon="edit" size="small" @click="editUserData.visible = true">批量编辑</el-button>
+              <el-button :disabled="!isQualified" icon="plus" size="small" type="success" @click="addUserData.visible = true">添加用户</el-button>
             </div>
           </div>
           <el-table
@@ -73,7 +74,7 @@
               inline-template
               :context="_self">
               <template>
-                <el-tag v-for="group in row.groups" :key="group.name">{{group.name}}</el-tag>
+                <el-tag type="gray" v-for="group in row.groups" :key="group.name">{{group.name}}</el-tag>
                 <span v-if="!row.groups.length">无</span>
               </template>
             </el-table-column>
@@ -88,9 +89,9 @@
               label="用户状态"
               width="100">
                 <template>
-                  <span :class="row.status ? 'text-danger' : ''">
+                  <el-tag :type="row.status ? 'danger' : 'success'">
                     {{ row.status ? '已禁用' : '使用中' }}
-                  </span>
+                  </el-tag>
                 </template>
             </el-table-column>
             <!-- 仅超级管理理员/管理理员可进行操作？ -->
@@ -100,12 +101,14 @@
               width="80"
               inline-template>
               <template>
-                <el-button type="primary" size="small" @click="toDetail(row.userId)">查看</el-button>
+                <el-button size="small">
+                  <router-link :to="{ path: 'user-detail', query: { userId: row.userId } }">查看</router-link>
+                </el-button>
               </template>
             </el-table-column>
           </el-table>
           <el-pagination
-            class="fr margin-top"
+            class="fr margin-top margin-bottom"
             @size-change="handleSizeChange"
             @current-change="handleCurrentChange"
             :current-page.sync="currentPage"
@@ -114,7 +117,7 @@
             layout="total, sizes, prev, pager, next"
             :total="totalPage">
           </el-pagination>
-        </div>
+        </el-card>
       </el-col>
     </el-row>
 
@@ -378,9 +381,6 @@
         })
         this.totalPage = this.userSearchList.length
         this.handleCurrentChange()
-      },
-      toDetail (userId) {
-        this.$router.push({ path: 'user-detail', query: { userId: userId } })
       },
       onAddUser ({ nick, phone, userId, email, level, password, groups }) {
         let postData = {

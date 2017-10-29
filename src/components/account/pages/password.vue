@@ -1,23 +1,25 @@
 <template>
- <div class="wrapper">
+  <div class="wrapper">
     <el-row>
-     <el-col :md="12" :lg="12">
-      <h3><i class="el-icon-fa-key"></i> 修改密码</h3>
-      <el-form :model='editForm' ref='editForm' :rules='checkPass' label-width="100px" >
-	    <el-form-item label="旧密码" prop="old_pass">
-	  	 <el-input v-model="editForm.old_pass" type='password'  @keypress.native="capLock($event)">
-       </el-input><p v-if="isCap" class="capTip">大写已打开</p>
-	    </el-form-item>
-	    <el-form-item label="新密码" prop='new_pass'>
-	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.new_pass" type='password' @keypress.native="capLock($event)">  
-       </el-input><p v-if="isCap" class="capTip">大写已打开</p>
-	    </el-form-item>
-	    <el-form-item label="再次确认密码" prop='confirm_pass'>
-	  	 <el-input placeholder="请输入 6 至 20 位密码" v-model="editForm.confirm_pass" type='password' @keypress.native="capLock($event)">  
-       </el-input><p v-if="isCap" class="capTip">大写已打开</p>
-	    </el-form-item>
-	    <el-button type="primary" @click="submitForm('editForm')">保存</el-button>
-	  </el-form>
+      <el-col :sm="24" :md="20">
+        <el-card>
+          <h3><i class="el-icon-fa-key icon-lg"></i> 修改密码</h3>
+          <el-form class="margin-top" :model='editForm' ref='editForm' :rules='checkPass' label-width="100px" >
+            <el-form-item label="旧密码" prop="old_pass">
+              <el-input v-model="editForm.old_pass" type='password'  @keypress.native="capLock($event)"></el-input>
+              <p v-if="isCap" class="capTip">大写已打开</p>
+            </el-form-item>
+            <el-form-item label="新密码" prop='new_pass'>
+              <el-input placeholder="请输入 6—20 位密码" v-model="editForm.new_pass" type='password' @keypress.native="capLock($event)"></el-input>
+              <p v-if="isCap" class="capTip">大写已打开</p>
+            </el-form-item>
+            <el-form-item label="再次确认密码" prop='confirm_pass'>
+              <el-input placeholder="请输入 6—20 位密码" v-model="editForm.confirm_pass" type='password' @keypress.native="capLock($event)"></el-input>
+              <p v-if="isCap" class="capTip">大写已打开</p>
+            </el-form-item>
+            <el-button type="primary" icon="check" @click="submitForm('editForm')">保存</el-button>
+          </el-form>
+        </el-card>
      </el-col>
     </el-row>
  </div>
