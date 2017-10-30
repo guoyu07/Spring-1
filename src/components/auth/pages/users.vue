@@ -298,9 +298,6 @@
     },
 
     methods: {
-      check (row) {
-        console.log(row, '123')
-      },
       userlevel (val) {
         console.log(val)
         // this.editUserData.user.level = val ? (val + '') : ''

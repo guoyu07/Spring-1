@@ -5,7 +5,6 @@
         <el-card>
           <h3>
             <i class="el-icon-fa-user icon-lg"></i> {{userDetail.userId}} - {{ userDetail.nick }}
-            <el-button class="fr" type="danger" @click="deleteRole" size="small" v-show="isQualified">删除角色</el-button>
           </h3>
 
           <el-row>
@@ -170,51 +169,6 @@
               this.$message('用户层级已改变')
             }
           })
-        }
-      },
-      'userDetail.groups_key' (newVal, oldVal) {
-        // 新增操作
-        if (newVal.length > oldVal.length) {
-          for (let i = 0; i < newVal.length; i++) {
-            if (oldVal.indexOf(newVal[i]) < 0) {
-              let temp = newVal[i]
-              console.log(temp)
-              let postData = {
-                action: 'group/user',
-                method: 'post',
-                data: {
-                  key: temp,
-                  userId_list: [this.$route.query.userId]
-                }
-              }
-              this.http.post('/user/', this.parseData(postData)).then((res) => {
-                if (res.status === 200) {
-                  this.$message('已新增角色')
-                }
-              })
-            }
-          }
-        } else {
-          // 删除操作
-          for (let i = 0; i < oldVal.length; i++) {
-            if (newVal.indexOf(oldVal[i]) < 0) {
-              let temp = oldVal[i]
-              console.log(temp)
-              let postData = {
-                action: 'group/user',
-                method: 'delete',
-                data: {
-                  key: temp,
-                  userId_list: [this.$route.query.userId]
-                }
-              }
-              this.http.post('/user/', this.parseData(postData)).then((res) => {
-                if (res.status === 200) {
-                  this.$message('已删除角色')
-                }
-              })
-            }
-          }
         }
       }
     },

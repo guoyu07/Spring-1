@@ -446,6 +446,13 @@
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
     },
+    computed: {
+      // 是否允许增加
+      showAppend () {
+        let key = this.taskData.message.length - 1
+        return this.taskData.message[key].form.body.length
+      }
+    },
     watch: {
       'idcrackData': 'idcrackIsTaked',
       'taskForm': {
