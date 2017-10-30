@@ -86,7 +86,7 @@
                     <el-checkbox v-model="itemConf.need_submit">需要提交</el-checkbox>
                     <el-checkbox v-model="itemConf.readonly">只读</el-checkbox>
                     <el-checkbox v-if="itemConf.value.type === 'dict' || itemConf.value.type === 'dicts' || itemConf.value.type === 'search_bar'" v-model="itemConf.cmdb_need_check">是否检查／占用资源</el-checkbox>
-                    <el-checkbox v-if="itemConf.value.type === 'search_bar'" v-model="itemConf.respectively_show">单独显示 U 位</el-checkbox>
+                    <el-checkbox v-if="itemConf.value.type === 'search_bar'" v-model="itemConf.respectively_show">分表单单独显示</el-checkbox>
                     <el-checkbox v-if="['str', 'enum', 'enums', 'dict', 'dicts', 'users', 'orders', 'cascade'].includes(itemConf.value.type)" v-model="itemConf.isAlias">
                       <span v-show="itemConf.value.type === 'str'">长文本（textarea）</span>
                       <span v-show="itemConf.value.type === 'enum' || itemConf.value.type ==='dict'">单选框（radio）</span>
