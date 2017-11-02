@@ -56,9 +56,15 @@
               width="50">
             </el-table-column>
             <el-table-column
-              prop="userId"
               label="用户 ID"
-              width="100"></el-table-column>
+              width="100" inline-template>
+              <template>
+              <span v-if="$store.state.userinfo.level <= 1">
+                <router-link :to="{ path: 'user-detail', query: { userId: row.userId } }" class="link-block">{{row.userId}}</router-link>
+              </span>
+              <span v-else>{{row.userId}}</span>
+            </template>
+            </el-table-column>
             <el-table-column
               prop="nick"
               label="昵称"
@@ -93,18 +99,6 @@
                     {{ row.status ? '已禁用' : '使用中' }}
                   </el-tag>
                 </template>
-            </el-table-column>
-            <!-- 仅超级管理理员/管理理员可进行操作？ -->
-            <el-table-column
-              v-if="$store.state.userinfo.level <= 1"
-              label="操作"
-              width="80"
-              inline-template>
-              <template>
-                <el-button size="small">
-                  <router-link :to="{ path: 'user-detail', query: { userId: row.userId } }">查看</router-link>
-                </el-button>
-              </template>
             </el-table-column>
           </el-table>
           <el-pagination
@@ -423,6 +417,13 @@
   }
 </script>
 <style lang="less" scoped>
+  .link-block {
+    &:link {
+    text-decoration: none;
+    color: #1d90e6;
+    }
+    color: #1d90e6;
+  }
   .el-tag+.el-tag {
     margin-left: 10px;
   }

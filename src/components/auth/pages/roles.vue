@@ -34,7 +34,11 @@
             @selection-change="handleSelectionChange"
             >
             <!-- <el-table-column type="selection" width="50"></el-table-column> -->
-            <el-table-column prop="name" label="角色名"width="100"></el-table-column>
+            <el-table-column  label="角色名"width="100" inline-template>
+              <span>
+                <router-link :to="{ path: 'role-detail', query: { key: row.key } }" class="link-block">{{row.name}}</router-link>
+              </span>
+            </el-table-column>
             <el-table-column inline-template label="管理员">
             <template>
               <el-tag v-for="user in row.users" v-if="user.level<=1">{{user.nick}}</el-tag>
@@ -44,17 +48,6 @@
                 <template>
                   <el-tag type="gray" v-for="user in row.users">{{user.nick}}</el-tag>
                 </template>
-            </el-table-column>
-            <el-table-column
-              v-show="isQualified"
-              label="操作"
-              width="80"
-              inline-template>
-              <template>
-                <el-button size="small">
-                  <router-link :to="{ path: 'role-detail', query: { key: row.key } }">查看</router-link>
-                </el-button>
-              </template>
             </el-table-column>
           </el-table>
           <el-pagination
@@ -250,6 +243,13 @@
 </script>
 
 <style lang="less">
+  .link-block {
+    &:link {
+    text-decoration: none;
+    color: #1d90e6;
+    }
+    color: #1d90e6;
+  }
   .el-tag+.el-tag {
     margin-left: 10px;
   }

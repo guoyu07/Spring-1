@@ -86,14 +86,14 @@
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
               <!-- <div></div> -->
               <div>
+              <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加{{taskForm.body.body_list[0].name}}</el-button>
               <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
                 <el-button size="small" @click="stickValue(tabIndex)">粘贴</el-button>
               </el-button-group>
                <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
              </div>
-<!--               <el-button size="small" @click="increaseBody()">增加body</el-button>
- -->              <el-button
+              <el-button
                 size="small"
                 type="text"
                 @click="retractInfo(true)"
@@ -425,6 +425,13 @@
         }, { deep: true })
       }
     },
+    computed: {
+      // 是否允许增加
+      showAppend () {
+        let key = this.taskData.message.length - 1
+        return this.taskData.message[key].form.body.length
+      }
+    },
     watch: {
       'taskForm': {
         handler: 'renderBodyLabel',
@@ -447,17 +454,10 @@
     },
     methods: {
       increaseBody () {
-        let key = this.taskData.message.length - 1
-        if (this.taskData.message[key].form.body.length === 0) {
-          this.applyData.body.push({})
-          console.log('123')
-          this.renderBodyLabel()
-          this.renderTaskForm()
-          // let len = this.taskForm.body.body_list.length
-          // console.log(len)
-          // this.taskForm.body.body_list.push({})
-          // Object.assign(this.taskForm.body.body_list[len], this.taskForm.body.body_list[0])
-        }
+        this.applyData.body.push({})
+        this.renderBodyLabel()
+        let lastkey = this.assignForm.body.length - 1
+        this.assignForm.body = [ ...this.assignForm.body, JSON.parse(JSON.stringify(this.assignForm.body[lastkey])) ]
       },
       // 查找对应的cmdbip地址
       checkIp (index) {
@@ -591,11 +591,11 @@
         if (header) {
           let key = `header.${id}`
           console.log(key)
-          this.$refs['postForm'].validateField(key)
+          this.$refs['assignForm'].validateField(key)
         } else {
-          let key = `body.${index}.id`
+          let key = `body.${index}.${id}`
           console.log(key)
-          this.$refs['postForm'].validateField(key)
+          this.$refs['assignForm'].validateField(key)
         }
         // this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
@@ -1070,6 +1070,10 @@
   }
 </script>
 <style lang="less" scoped>
+.appendBody {
+  margin-bottom: 8px;
+  vertical-align: middle;
+}
 .checkIpButtom1 {
   &:link {
     text-decoration: none;

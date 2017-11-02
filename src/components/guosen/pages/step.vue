@@ -85,6 +85,8 @@
                 </span>
               </div>
             </div>
+            <div>
+            <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加{{taskForm.body.body_list[0].name}}</el-button>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
               <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
@@ -96,7 +98,8 @@
                 @click="retractInfo(true)"
                 :icon="infoHideAll ? 'fa-angle-double-down' : 'fa-angle-double-up'">全部{{ infoHideAll ? '展开' : '收起' }}</el-button>
             </div>
-            <!-- <el-button size="small" @click="increaseBody">增加body</el-button> -->
+            <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
+            </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
@@ -205,6 +208,7 @@
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
                 <div v-for="(data, index) in applyData.body" style="position:relative">
+                  <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom2 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'">查看IP</a>
                 <el-button-group style="position:absolute;right:15px;top:8px;z-index:1">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
                   <el-button size="small" @click="stickValue(index)">粘贴</el-button>
@@ -442,6 +446,13 @@
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
     },
+    computed: {
+      // 是否允许增加
+      showAppend () {
+        let key = this.taskData.message.length - 1
+        return this.taskData.message[key].form.body.length
+      }
+    },
     watch: {
       'idcrackData': 'idcrackIsTaked',
       'taskForm': {
@@ -465,6 +476,18 @@
     },
     methods: {
       increaseBody () {
+        this.applyData.body.push({})
+        this.renderBodyLabel()
+        let lastkey = this.assignForm.body.length - 1
+        this.assignForm.body = [ ...this.assignForm.body, JSON.parse(JSON.stringify(this.assignForm.body[lastkey])) ]
+      },
+      // 查找对应的cmdbip地址
+      checkIp (index) {
+        let name = this.applyData.body[index].ipscope.name
+        let cmdb = this.$store.state.userinfo._easyops_url
+        this.ipAdress = `${cmdb}/cmdb/resource/ipaddr/fallback?aq=%5B%5B"ipscope","contain","${name}"%5D%5D&page=1`
+        console.log(this.ipAdress)
+        return this.ipAdress
       },
       getAutoFillData () {
         if (this.taskFormAll.fill_form) {
@@ -1212,6 +1235,28 @@
   }
 </script>
 <style lang="less" scoped>
+.appendBody {
+  margin-bottom: 8px;
+  vertical-align: middle;
+}
+.checkIpButtom1 {
+  &:link {
+    text-decoration: none;
+    }
+  margin-left: 5px;
+  margin-bottom: 8px;
+  vertical-align: middle;
+
+}
+.checkIpButtom2 {
+  &:link {
+    text-decoration: none;
+    }
+  position:absolute;
+  right:110px;
+  top:8px;
+  z-index:1;
+}
 .excelDown {
   &:link {
     text-decoration: none;
