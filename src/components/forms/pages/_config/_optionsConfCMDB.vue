@@ -195,11 +195,24 @@
       }
     },
     mounted () {
-      if (this.isExternal) {
+      console.log(this.selectedPreset)
+      if (this.isExternal && !this.selectedPreset) {
         // 若是外键，默认选中 API 预设集第一个
         this.selectedPreset = this.optionPresets[0].list[0]
         eventHub.$on('cmdb-got-shown', this.modifyExternalKey)
         // eventHub.$on('cmdb-got-shown', this.modifyExternalKey)
+      } else {
+        console.log(this.itemConf.value.source.data.action)
+        this.optionPresets.forEach((presets) => {
+          console.log(presets.list)
+          presets.list.forEach((item) => {
+            if (item.action === this.itemConf.value.source.data.action) {
+              this.selectedPreset = item
+              return
+            }
+          })
+        })
+        console.log(this.selectedPreset)
       }
     },
     methods: {
