@@ -4,7 +4,10 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3><i class="el-icon-fa-folder-open icon-lg"></i> {{ $route.query.pkey === 'appAddCluster' ? '应用新增节点' : '应用上线'}}</h3>
-          <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link>
+          <!-- <router-link to="/system/apply" class="el-button el-button--primary margin-bottom">新建</router-link> -->
+          <el-button icon="plus" class="margin-bottom">
+            <router-link to="/system/apply">新应用</router-link>
+          </el-button>
           <el-table
             :data="onlinelist"
             border
