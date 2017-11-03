@@ -140,7 +140,7 @@
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
-                if (oldVal !== undefined) {
+                if (oldVal) {
                   this.vmodel[this.strucData.id] = ''
                 }
                 this.renderOptions()
@@ -164,7 +164,6 @@
       this.renderOptions()
       // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
       this.$watch('vmodel.' + this.strucData.id, (newVal, oldVal) => {
-        console.log(this.strucData.id, newVal, oldVal)
         this.rightForm(newVal, this.strucData.id)
         this.renderData()
       }, { deep: true })
