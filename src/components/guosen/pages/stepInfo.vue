@@ -1,5 +1,5 @@
 <template>
-  <div class="wrapper">
+  <div class="wrapper" ref="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
@@ -9,6 +9,18 @@
               <el-radio-button label="1">标签页</el-radio-button>
               <el-radio-button label="2">卡片式</el-radio-button>
             </el-radio-group> -->
+<!--             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button> -->
+            <div style="margin-bottom:8px">
+            <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
+            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
+            </div>
+<!--           <div class="step-progress" v-if="taskFormAll.show_progress">
+            <progress-wrap :progress="{
+             task: taskData.ptask.tkey,
+             pkey: taskData.pinstance.pkey,
+             taskList: taskData.pinstance.task_list
+             }"></progress-wrap>
+          </div> -->
             <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
               <el-form-item label="用户" :inline="true">
@@ -274,6 +286,7 @@
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import onAssign from './../../../mixins/onAssign'
+  import progressWrap from '../../_plugins/_progress'
 
   export default {
     mixins: [getPermittedUserList, getPermittedRoleList, onAssign],
@@ -332,6 +345,16 @@
       }
     },
     methods: {
+      createPdf () {
+        let newWindow = window.open('_blank')  // 打开新窗口
+        newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
+        newWindow.document.head.innerHTML = window.document.head.innerHTML // 向文档写入头部信息
+        newWindow.document.close() // 关闭document的输出流, 显示选定的数据
+        setTimeout(() => {
+          newWindow.print()  // 打印当前窗口
+        }, 100)
+        return true
+      },
       renderBodyLabel (val) {
         console.log(val[val.length - 1].form.form)
         this.bodyLabel(val[val.length - 1].form.form, this.assignForm, this.applyData, this.bodyLableName)
@@ -445,7 +468,8 @@
     },
     components: {
       headerFormDisplay,
-      formStructureDisplay
+      formStructureDisplay,
+      progressWrap
     }
   }
 </script>

@@ -67,6 +67,7 @@
                   {{row.columns.find(c => c.key_path === col.key_path).value.join('、')}}
                 </span>
                 <span v-else>{{row.columns.find(c => c.key_path === col.key_path) ? row.columns.find(c => c.key_path === col.key_path).value : ''}}
+                <span v-if="row.success_end"></span>
                 </span>
               </span>
             </template>
@@ -122,7 +123,10 @@
     mounted () {
       this.getFilterData(this.orderId)
     },
-
+    // watch: {
+    //   filteredTasks (val, oldval) {
+    //   }
+    // }
     methods: {
       getIsEnded () {
         this.isEnded = this.taskViewData.order.isend

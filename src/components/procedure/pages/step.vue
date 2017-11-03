@@ -86,7 +86,7 @@
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
               <!-- <div></div> -->
               <div>
-              <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加{{taskForm.body.body_list[0].name}}</el-button>
+              <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加body</el-button>
               <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
                 <el-button size="small" @click="stickValue(tabIndex)">粘贴</el-button>
@@ -429,7 +429,8 @@
       // 是否允许增加
       showAppend () {
         let key = this.taskData.message.length - 1
-        return this.taskData.message[key].form.body.length
+        console.log(key)
+        return this.taskData.message[key].form.body && this.taskData.message[key].form.body.length
       }
     },
     watch: {
@@ -821,6 +822,7 @@
           // console.log(taskKeyArr)
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
+          console.log(res.data.data.action)
           this.applyData.action = res.data.data.action
           this.renderTaskForm()
         })

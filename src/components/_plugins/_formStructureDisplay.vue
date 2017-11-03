@@ -12,7 +12,11 @@
           <span v-if="formItem.value.type === 'dict'">
             {{ item && item[formItem.id][formItem.value.source.res.show_key[0]] }}
           </span>
-
+          <span v-else-if="formItem.value.type === 'enums'">
+            <span v-for="(span, spanindex) in item && item[formItem.id]">
+              {{span}}
+            </span>
+          </span>
           <span v-else-if="formItem.value.type === 'dicts'">
             <span v-for="(span, spanindex) in item && item[formItem.id]">
               {{ span[formItem.value.source.res.show_key[0]] }}

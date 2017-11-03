@@ -41,6 +41,7 @@
       </span>
     </span>
     <el-input-number
+      :debounce="800"
       v-else-if="formItem.value.type === 'int'"
       v-model="item[formItem.id]"
       :min="formItem.range.min ? formItem.range.min : -99999999999"

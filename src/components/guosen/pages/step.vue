@@ -49,7 +49,7 @@
               </div>
             </div>
             <!-- header 表单填写 -->
-            <div v-if="taskForm.header">
+          <div v-if="taskForm.header">
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
@@ -63,7 +63,7 @@
                     :message="applyData"
                     :header="true">
                   </form-body>
-                  <!-- {{showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'}} -->
+<!--                   {{showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'}} -->
                   <search-bar
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
                     :hosts="assignForm.header"
@@ -84,9 +84,9 @@
                   </header-table>
                 </span>
               </div>
-            </div>
+            </div>  
             <div>
-            <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加{{taskForm.body.body_list[0].name}}</el-button>
+            <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加body</el-button>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
               <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>

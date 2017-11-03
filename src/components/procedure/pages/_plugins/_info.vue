@@ -1,14 +1,22 @@
 <template>
-  <div>
+  <div class="wrapper" ref="wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <div class="flex-box">
             <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
-            <!-- <el-radio-group class="fr" v-model="bodyStyle">
-              <el-radio-button label="1">标签页</el-radio-button>
-              <el-radio-button label="2">卡片式</el-radio-button>
-            </el-radio-group> -->
+<!--             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button> -->
+            <div style="margin-bottom:8px;">
+            <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
+            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
+            </div>
+<!--           <div class="step-progress" v-if="taskFormAll.show_progress">
+            <progress-wrap :progress="{
+             task: taskData.ptask.tkey,
+             pkey: taskData.pinstance.pkey,
+             taskList: taskData.pinstance.task_list
+             }"></progress-wrap>
+          </div> -->
             <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
               <el-form-item label="处理人" :inline="true">
@@ -239,47 +247,6 @@
                         </div>
                       </div>
                     </div>
-                    <!-- body 表单填写 -->
-                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
-                      <div v-for="taskFormData in taskForm.body.body_list">
-                          <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
-                            <div class="form-block" v-for="formBlock in taskFormData.attr_list">
-                              <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
-                              <span v-for="formItem in formBlock.value">
-                                <!-- {{isEdting}} -->
-                                <form-body
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
-                                  :item="assignForm.body[index]"
-                                  :form-item="formItem"
-                                  :whole="assignForm"
-                                  :index="index"
-                                  :isEditing="isEditing"
-                                  :message="applyData"
-                                  keep-alive>
-                                </form-body>
-                                <search-bar
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
-                                  :index="index"
-                                  :post-form="assignForm"
-                                  :hosts="assignForm.body[index]"
-                                  :attr-list="formItem"
-                                  :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
-                                  @on-hosts-change="onHostsChange">
-                                </search-bar>
-                                <body-table
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
-                                  :form-data="formItem"
-                                  :item="assignForm.body[index]"
-                                  :post-form="assignForm"
-                                  :message-data="applyData"
-                                  :index="index"
-                                  :bodyTable="true">
-                                </body-table>
-                              </span>
-                            </div>
-                          </div>
-                      </div>
-                    </div>
                   </el-tab-pane>
                 </el-tabs>
               </div>
@@ -303,6 +270,7 @@
   import getPermittedUserList from './../../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../../mixins/getPermittedRoleList'
   import onAssign from './../../../../mixins/onAssign'
+  import progressWrap from '../../../_plugins/_progress'
 
   export default {
     mixins: [getPermittedUserList, getPermittedRoleList, onAssign],
@@ -368,6 +336,16 @@
       }
     },
     methods: {
+      createPdf () {
+        let newWindow = window.open('_blank')  // 打开新窗口
+        newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
+        newWindow.document.head.innerHTML = window.document.head.innerHTML // 向文档写入头部信息
+        newWindow.document.close() // 关闭document的输出流, 显示选定的数据
+        setTimeout(() => {
+          newWindow.print()  // 打印当前窗口
+        }, 100)
+        return true
+      },
       renderBodyLabel (val) {
         console.log(val[val.length - 1].form.form)
         this.bodyLabel(val[val.length - 1].form.form, this.assignForm, this.applyData, this.bodyLableName)
@@ -496,7 +474,8 @@
     },
     components: {
       headerFormDisplay,
-      formStructureDisplay
+      formStructureDisplay,
+      progressWrap
     }
   }
 </script>
