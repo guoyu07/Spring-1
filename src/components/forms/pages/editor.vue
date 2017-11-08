@@ -58,6 +58,9 @@
   .information-popover {
     color: @textColor;
   }
+  .mgr {
+    margin-right: 12px;
+  }
 </style>
 <template>
   <div class="editor-content wrapper" v-if="formConfig && formConfig.form">
@@ -76,61 +79,35 @@
               </el-form-item>
               <br>
               <el-form-item label="操作按钮" v-if="$route.query.tkey !== 'start'">
-                <el-checkbox-group v-model="checkedActions" @change="actionChange">
-                  <el-checkbox v-for="(ac, index) of actions" :key="index" :label="ac.type"></el-checkbox>
-                </el-checkbox-group>
-              </el-form-item>
-              <template v-if="formConfig.action.find(_ => _.type === 'target') || checkedActions.includes('target')">
-                <br>
-                <el-form-item label="下载 URL">
-                  <el-popover
-                    placement="right"
-                    width="200"
-                    trigger="focus">
-                    <code class="information-popover"><i class="el-icon-information"></i> /download/XX?tid=XX</code>
-                    <el-input slot="reference" size="small" v-model="selectedTarget.url"></el-input>
+                <template v-for="button in formConfig.action">
+                  <el-popover>
+                    <action-conf
+                      :selected-action="button"
+                      :action-defs="actionDefList"
+                      :form-actions="formConfig.action"></action-conf>
+                    <el-button
+                      size="small"
+                      icon="fa-cog"
+                      slot="reference"
+                      class="mgr"
+                      >{{button.name}}</el-button>
                   </el-popover>
-                </el-form-item>
-                <el-form-item label="按钮名称">
-                  <el-input size="small" v-model="selectedTarget.name"></el-input>
-                </el-form-item>
-              </template>
-              <template v-if="formConfig.action.find(_ => _.type === 'auto') || checkedActions.includes('auto')">
+                </template>
+                <!-- <el-button
+                  v-for="button in formConfig.action"
+                  icon="fa-cog"
+                  @click="onActionConf(button)">{{button.name}}</el-button> -->
                 <br>
-                <el-form-item label="自动触发">
-                  <el-select
-                    v-model="selectedAuto"
-                    :value-key="name">
-                    <el-option
-                      v-for="(ac, index) of actionDefList"
-                      :key="index"
-                      :label="ac.name"
-                      :value="ac"></el-option>
-                  </el-select>
-                </el-form-item>
-                <!-- <el-form-item label="按钮名称">
-                  <el-input v-model="selectedAuto.name"></el-input>
-                </el-form-item> -->
-                <br>
-              </template>
-              <template v-if="formConfig.action.find(_ => _.type === 'manual') || checkedActions.includes('manual')">
-                <br>
-                <el-form-item label="手动触发">
-                  <el-select
-                    v-model="selectedManual"
-                    value-key="name">
-                    <el-option
-                      v-for="(ac, index) of actionDefList"
-                      :key="index"
-                      :label="ac.name"
-                      :value="ac"></el-option>
-                  </el-select>
-                </el-form-item>
-                <!-- <el-form-item label="按钮名称">
-                  <el-input v-model="selectedManual.name"></el-input>
-                </el-form-item> -->
-                <br>
-              </template>
+                <el-dropdown @command="onAddAction">
+                  <el-button size="small">添加按钮<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item command="target">链接</el-dropdown-item>
+                    <el-dropdown-item command="auto">自动</el-dropdown-item>
+                    <el-dropdown-item command="manual">手动</el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </el-form-item>
+              <br>
 
               <el-form-item width="100%" label="额外配置">
                 <el-checkbox v-model="formConfig.show_progress">显示进度条</el-checkbox>
@@ -276,6 +253,7 @@
 </template>
 <script>
 import formConf from './_config/_formConf' // 配置字段的表单
+import actionConf from './_config/_actionConf'
 
 import getPresetList from './../../../mixins/getPresetList'
 import getOptionPresets from './../../../mixins/getOptionPresets'
@@ -285,10 +263,11 @@ export default {
 
   data () {
     return {
-      selectedAuto: {},
-      selectedManual: {},
-      loading: true,
+      // selectedAuto: null,
+      // selectedManual: null,
+      // loading: true,
       fieldsets: [],
+      selectedAction: null,
       id: '',
       // 操作按钮
       actions: [
@@ -296,7 +275,7 @@ export default {
         { name: '', id: '', desc: '', type: 'auto' },
         { name: '', id: '', desc: '', type: 'manual' }
       ],
-      checkedActions: [],
+      // checkedActions: [],
       actionDefList: [],
       formConfig: null,
       editBody: null,
@@ -305,10 +284,10 @@ export default {
       submitting: false
     }
   },
-  watch: {
-    'selectedManual': 'assignForm',
-    'selectedAuto': 'assignForm'
-  },
+  // watch: {
+  //   'selectedManual': 'assignForm',
+  //   'selectedAuto': 'assignForm'
+  // },
   computed: {
     selectedTarget () {
       return this.formConfig.action.find(_ => _.type === 'target') || {}
@@ -356,28 +335,46 @@ export default {
         this.$set(this.formConfig.form.body.count, 'type', 'static')
         this.formConfig.form.body.body_list = [this.formConfig.form.body.body_list]
       }
-      if (this.$route.query.tkey !== 'start') this.getActionDef()
-      this.initActions()
+      if (this.$route.query.tkey !== 'start') {
+        this.getActionDef()
+        // this.initActions()
+      }
       this.initiateFieldsets()
     })
   },
   methods: {
-    assignForm () {
-      if (this.selectedManual) {
-        let val = this.selectedManual
-        Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
-        console.log(Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } }))
-      }
-      if (this.selectedAuto) {
-        console.log(Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } }))
-        let val = this.selectedAuto
-        Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } })
+    onAddAction (command) {
+      switch (command) {
+        case 'target':
+          this.formConfig.action.push({
+            name: '新链接按钮',
+            type: 'target',
+            url: ''
+          })
+          break
+        case 'auto':
+          this.formConfig.action.push({
+            name: '新自动按钮',
+            id: '',
+            type: 'auto',
+            preset: {},
+            desc: ''
+          })
+          break
+        case 'manual':
+          this.formConfig.action.push({
+            name: '新手动按钮',
+            id: '',
+            type: 'manual',
+            preset: {},
+            desc: ''
+          })
+          break
+        default:
+          break
       }
     },
-    onLoadedForms () {
-      console.log('loaded')
-      this.loading = false
-    },
+
     getActionDef () {
       let postData = {
         action: 'action/define/list',
@@ -386,21 +383,29 @@ export default {
       }
       this.http.post('/form/', this.parseData(postData)).then(res => {
         this.actionDefList = res.data.data.list
-        console.log(this.actionDefList)
+        // console.log(this.actionDefList)
+        // this.formConfig.action.forEach((ac) => {
+        //   let preset = this.actionDefList.find(def => def.id === ac.id) || {}
+        //   console.log(preset)
+        //   Object.assign(ac, { preset })
+        // })
       })
     },
 
-    initActions () {
-      // fuck this shit
-      if (this.formConfig.action.find(_ => _.type === 'manual')) {
-        this.actions.find(_ => _.type === 'manual').name = this.formConfig.action.find(_ => _.type === 'manual').name
-      }
-      if (this.formConfig.action.find(_ => _.type === 'auto')) {
-        this.actions.find(_ => _.type === 'auto').name = this.formConfig.action.find(_ => _.type === 'auto').name
-      }
-      // 拿到 actions 的 name
-      this.checkedActions = this.formConfig.action.map(item => item.type)
-    },
+    // initActions () {
+    //   // fuck this shit
+    //   if (this.formConfig.action.find(_ => _.type === 'manual')) {
+    //     this.actions.find(_ => _.type === 'manual').name = this.formConfig.action.find(_ => _.type === 'manual').name
+    //   }
+    //   if (this.formConfig.action.find(_ => _.type === 'auto')) {
+    //     this.actions.find(_ => _.type === 'auto').name = this.formConfig.action.find(_ => _.type === 'auto').name
+    //   }
+    //   // 拿到 actions 的 name
+    //   this.checkedActions = this.formConfig.action.map(item => item.type)
+    //   this.selectedAuto = this.formConfig.action.find(item => item.type === 'auto') || null
+    //   this.selectedManual = this.formConfig.action.find(item => item.type === 'manual') || null
+    // },
+
     initiateFieldsets () {
       this.fieldsets = []
       for (let body of this.formConfig.form.body.body_list) {
@@ -410,10 +415,10 @@ export default {
       // console.log(this.fieldsets)
     },
     // 选择功能按钮 action
-    actionChange (arr) {
-      this.formConfig.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
-      // console.log(this.formConfig.action)
-    },
+    // actionChange (arr) {
+    //   this.formConfig.action = this.actions.filter(item => arr.indexOf(item.type) !== -1)
+    //   // console.log(this.formConfig.action)
+    // },
     // 确认完成
     onSubmit () {
       const postData = {
@@ -502,7 +507,8 @@ export default {
     }
   },
   components: {
-    formConf
+    formConf,
+    actionConf
   }
 }
 </script>
