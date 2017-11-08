@@ -51,12 +51,13 @@
     methods: {
       initPreset () {
         this.preset = this.actionDefs.find((def) => {
-          return this.formActions.some(ac => ac.id === def.id && ac.type === this.selectedAction.type)
+          return this.formActions.some(ac => ac.id === def.id && ac.name === this.selectedAction.name)
         })
       },
 
       onActionChange (button) {
         let { id, desc } = this.preset
+        console.log(`${this.selectedAction.name} - ${id}`)
         Object.assign(this.selectedAction, { id, desc })
       }
     }

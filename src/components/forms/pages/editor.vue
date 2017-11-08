@@ -288,30 +288,6 @@ export default {
   //   'selectedManual': 'assignForm',
   //   'selectedAuto': 'assignForm'
   // },
-  computed: {
-    selectedTarget () {
-      return this.formConfig.action.find(_ => _.type === 'target') || {}
-    }
-    // selectedAuto: {
-    //   set (val) {
-    //     Object.assign(this.formConfig.action.find(_ => _.type === 'auto'), { ...val, ...{ type: 'auto' } })
-    //   },
-    //   get () {
-    //     return this.formConfig.action.find(_ => _.type === 'auto') ? this.formConfig.action.find(_ => _.type === 'auto') : {}
-    //   }
-    // }
-    // selectedManual: {
-    //   set (val) {
-    //     console.log(val)
-    //     Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } })
-    //     console.log(Object.assign(this.formConfig.action.find(_ => _.type === 'manual'), { ...val, ...{ type: 'manual' } }))
-
-    //   },
-    //   get () {
-    //     return this.formConfig.action.find(_ => _.type === 'manual') ? this.formConfig.action.find(_ => _.type === 'manual') : {}
-    //   }
-    // }
-  },
   activated () {
     this.getPresetList()
     this.getOptionPresets()
@@ -329,6 +305,7 @@ export default {
     this.http.post('/form/', this.parseData(postData)).then((res) => {
       // console.log(res)
       this.formConfig = res.data.data
+      console.log(this.formConfig.action.find(ac => ac.name === 'Daaa').id)
       // body 类型：从 obj 修改为 arr
       const bodyIsArr = Array.isArray(this.formConfig.form.body.body_list)
       if (!bodyIsArr) {
@@ -431,9 +408,9 @@ export default {
       // this.formConfig.action.find(_ => _.type !== 'target').name = this.selectedTrigger.name
       // console.log(this.formConfig.action.find(_ => _.type !== 'target'))
       // this.$set(this.formConfig.action, 'target', this.selectedTarget)
-      if (!this.selectedTarget) {
-        Object.assign(this.formConfig.action.find(_ => _.type === 'target'), this.selectedTarget)
-      }
+      // if (!this.selectedTarget) {
+      //   Object.assign(this.formConfig.action.find(_ => _.type === 'target'), this.selectedTarget)
+      // }
 
       // console.log(this.formConfig)
       this.submitting = true
