@@ -450,7 +450,7 @@
       // 是否允许增加
       showAppend () {
         let key = this.taskData.message.length - 1
-        return this.taskData.message[key].form.body.length
+        return this.taskData.message[key].form.body && this.taskData.message[key].form.body.length
       }
     },
     watch: {

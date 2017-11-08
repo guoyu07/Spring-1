@@ -58,6 +58,8 @@
     <template v-else-if="strucData.value.type === 'dicts'">
       <el-select
         filterable
+        remote
+        :remote-method="filterList"
         v-if="!strucData.isAlias"
         v-model="vmodel[strucData.id]"
         :allow-create="strucData.value.allow_create"
