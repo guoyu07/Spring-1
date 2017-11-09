@@ -51,7 +51,8 @@ export default {
           filters,
           order,
           page: this.currentPage,
-          page_size: this.currentSize
+          page_size: this.currentSize,
+          ext_query: this.orderQueries
         }
       }
       if (needCache && this.pagesCache[`${this.currentPage}-${this.currentSize}`]) {

@@ -8,6 +8,41 @@
         </el-button>
       </h3>
       <div class="order-search">
+        <el-row>
+          <el-col :lg="18" :md="20" :sm="24">
+            <el-form label-width="100px" :inline="true" label-position="left">
+              <el-form-item label="流程名称">
+                <el-input
+                  v-model="orderQueries['pinstance.pd.pname']"
+                  size="small"></el-input>
+              </el-form-item>
+              <el-form-item>
+                <el-button
+                  type="text"
+                  :icon="isAdvanceSearch ? 'fa-angle-up' : 'fa-angle-down'"
+                  @click="isAdvancedSearch = !isAdvancedSearch">{{ isAdvancedSearch ? '收起' : '更多搜索' }}</el-button>
+              </el-form-item>
+            </el-form>
+            <el-form label-width="100px" :inline="true" label-position="left">
+              <div :class="{ 'collapsed': !isAdvancedSearch }">
+                <el-form-item
+                  v-for="field in filterData.show"
+                  v-if="field.key_path.indexOf('time') < 0 && field.label !== '流程名称'"
+                  :label="field.label">
+                  <el-input
+                    v-model="orderQueries[field.key_path]"
+                    size="small"></el-input>
+                </el-form-item>
+              </div>
+              <el-form-item>
+                <el-button size="small" @click="orderQueries = {}">重置</el-button>
+                <el-button type="info" icon="search" size="small" @click="getFilteredTasks(false)">搜索</el-button>
+              </el-form-item>
+            </el-form>
+          </el-col>
+        </el-row>
+      </div>
+      <!-- <div class="order-search">
         <div :class="{ 'order-search--basic': true, 'collapsed': isAdvancedSearch }">
           <el-row :gutter="12">
             <el-col :span="10">
@@ -20,11 +55,6 @@
                 type="text"
                 icon="fa-angle-down"
                 @click="isAdvancedSearch = !isAdvancedSearch">高级搜索</el-button>
-            </el-col>
-            <el-col :span="6" :offset="4">
-              <el-button class="fr" type="text" icon="edit" style="margin-bottom: 12px" v-show="filterData.can_edit">
-                <router-link :to="{ path: `/orders/queues/${orderId}/edit` }">编辑列表</router-link>
-              </el-button>
             </el-col>
           </el-row>
         </div>
@@ -45,7 +75,7 @@
             </el-col>
           </el-row>
         </div>
-      </div>
+      </div> -->
 
       <div v-if="filteredTasks.list && filteredTasks.list.length">
         <el-table
@@ -109,6 +139,7 @@
         isEnded: '',
         isAssignee: '',
         isGuosen: '',
+        orderQueries: {},
         taskViewData: {
           visible: false,
           order: {}
@@ -230,29 +261,16 @@
 
 <style lang="less" scoped>
   .order-search {
-    display: none;
+    // display: none;
     margin: 12px 0;
 
-    &--basic {
-      display: block;
-
-      &.collapsed {
-        display: none;
-      }
+    .el-form-item {
+      margin-bottom: 6px;
     }
 
-    &--advanced {
-      display: none;
-
-      &.loomed {
-        display: block;
-      }
-
-      .el-form {
-        &-item {
-          margin-bottom: 12px;
-        }
-      }
+    .collapsed {
+      height: 0;
+      overflow: hidden;
     }
   }
 
