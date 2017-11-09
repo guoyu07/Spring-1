@@ -58,6 +58,8 @@
     <template v-else-if="strucData.value.type === 'dicts'">
       <el-select
         filterable
+        remote
+        :remote-method="filterList"
         v-if="!strucData.isAlias"
         v-model="vmodel[strucData.id]"
         :allow-create="strucData.value.allow_create"
@@ -108,10 +110,15 @@
       }
     },
     created () {
+      let Deduplication = []
       this.keyPaths = []
       for (const para of this.strucData.value.source.data.params) {
         if (para.value.key_path) {
           this.keyPaths.push(para.value.key_path.split('.')[0])
+          let key = para.value.type + para.value.key_path.split('.')[0]
+          if (Deduplication.indexOf(key) === -1) {
+            Deduplication.push(para.value.type + para.value.key_path.split('.')[0])
+          } else { return false }
           if (para.value.type === 'form_header') {
             this.$watch('whole.header.' + para.value.key_path, (newVal, oldVal) => {
               if (!this.isEditing && !this.vmodel[this.strucData.id]) {

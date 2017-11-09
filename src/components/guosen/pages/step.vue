@@ -449,8 +449,17 @@
     computed: {
       // 是否允许增加
       showAppend () {
-        let key = this.taskData.message.length - 1
-        return this.taskData.message[key].form.body.length
+        let tkey = this.taskData.ptask.tkey
+        console.log(tkey)
+        let tIndex = ''
+        this.taskData.message.map((info, index) => {
+          if (info.task_key === tkey) {
+            tIndex = index - 1
+            return tIndex
+          }
+        })
+        console.log(tIndex)
+        return this.taskData.message[tIndex].form.body && this.taskData.message[tIndex].form.body.length
       }
     },
     watch: {
