@@ -36,12 +36,12 @@
                   <p class="h5">{{taskheader.tname}}</p>
                   <div v-for="taskformheader in taskheader.form.form.header">
                     <span v-for="valueheader in taskformheader.value">
-                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
+<!--                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
                         <header-form-display
                           :item="applyData.header"
                           :form-item="valueheader">
                         </header-form-display>
-                      </span>
+                      </span> -->
                     </span>
                   </div>
                 </div>
@@ -1072,6 +1072,12 @@
   }
 </script>
 <style lang="less" scoped>
+.excelDown {
+  &:link {
+    text-decoration: none;
+  }
+  margin-right: -4px;
+}
 .appendBody {
   margin-bottom: 8px;
   vertical-align: middle;

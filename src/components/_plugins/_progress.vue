@@ -127,8 +127,7 @@
 
   .progressWarp {
     // width: 86%;
-    margin: 0 auto;
-    display: flex;
+    margin: 0 15px;
     position: relative;
     min-height: 150px;
     padding-top: 20px;
