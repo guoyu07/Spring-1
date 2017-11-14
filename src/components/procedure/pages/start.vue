@@ -192,6 +192,10 @@
     data () {
       return {
         toCopy: false,
+        middleForm: {
+          header: {},
+          body: []
+        },
         postForm: {
           header: {},
           body: []
@@ -287,7 +291,6 @@
           console.log(key)
           this.$refs['postForm'].validateField(key)
         }
-        // this.$refs['postForm'].validateField((valid) => {}) // 调用验证
       },
       renderForm () {
         const renderFromData = {
@@ -310,8 +313,15 @@
               }
               if (item.show.type === 'form_header') {
                 this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                  this.setDataType(item, this.postForm.header)
-                  if (!this.showFormItem(item, this.postForm)) {
+                  // this.setDataType(item, this.postForm.header)
+
+                  if (this.showFormItem(item, this.postForm)) {
+                    console.log(item.name)
+                    if (!item.default.value) {
+                      this.setDataType(item, this.postForm.header)
+                    }
+                    // delete this.postForm.header[item.id]
+                  } else {
                     delete this.postForm.header[item.id]
                   }
                 })
@@ -631,7 +641,9 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        document.body.scrollTop = anchor.offsetTop
+        console.log(anchor.offsetParent.offsetTop)
+        console.log(document.body.scrollTop)
+        document.documentElement.scrollTop = anchor.offsetParent.offsetTop
       },
       onUploadExcel (res, file, fileList) {
         console.log(res.data[0])

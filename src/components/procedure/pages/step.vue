@@ -36,12 +36,12 @@
                   <p class="h5">{{taskheader.tname}}</p>
                   <div v-for="taskformheader in taskheader.form.form.header">
                     <span v-for="valueheader in taskformheader.value">
-<!--                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
+                      <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, taskData.ptask.tkey)">
                         <header-form-display
                           :item="applyData.header"
                           :form-item="valueheader">
                         </header-form-display>
-                      </span> -->
+                      </span>
                     </span>
                   </div>
                 </div>
@@ -1041,10 +1041,11 @@
       cancel () {
         this.$router.go(-1) // 跳转历史的上一页
       },
-      goAnchor (selector) { // 锚点
+      goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        // console.log(anchor)
-        document.body.scrollTop = anchor.offsetTop
+        console.log(anchor.offsetParent.offsetTop)
+        console.log(document.body.scrollTop)
+        document.documentElement.scrollTop = anchor.offsetParent.offsetTop
       },
       retractInfo (index) { // 展开收起历史信息
         const selector = this.$el.querySelectorAll('.history-block')
@@ -1072,12 +1073,6 @@
   }
 </script>
 <style lang="less" scoped>
-.excelDown {
-  &:link {
-    text-decoration: none;
-  }
-  margin-right: -4px;
-}
 .appendBody {
   margin-bottom: 8px;
   vertical-align: middle;

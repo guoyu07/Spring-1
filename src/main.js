@@ -115,7 +115,7 @@ Vue.prototype.parseData = parseData
 */
 const getPathResult = (result, path, k, kindex) => {
   if (!result) {
-    // console.log('找不到result')
+    console.log('找不到result')
     return false
   }
   let _result = result
