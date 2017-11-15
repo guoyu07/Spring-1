@@ -9,7 +9,7 @@
             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
             <!-- <el-button v-if="routerInfo.name === '现场管理'" class="not-print fr" type="info"  icon="fa-print" @click="createExcel">导出excel</el-button> -->
-            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
+            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel</span></a>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -446,23 +446,8 @@
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
     },
-    computed: {
-      // 是否允许增加
-      showAppend () {
-        let tkey = this.taskData.ptask.tkey
-        console.log(tkey)
-        let tIndex = ''
-        this.taskData.message.map((info, index) => {
-          if (info.task_key === tkey) {
-            tIndex = index - 1
-            return tIndex
-          }
-        })
-        console.log(tIndex)
-        return this.taskData.message[tIndex].form.body && this.taskData.message[tIndex].form.body.length
-      }
-    },
     watch: {
+      'taskFormAll.form': 'showAppend',
       'idcrackData': 'idcrackIsTaked',
       'taskForm': {
         handler: 'renderBodyLabel',
@@ -484,6 +469,35 @@
       }
     },
     methods: {
+      showAppend () {
+      // 判断前一个是否有body决定显示与否
+        let tkey = this.taskData.ptask.tkey
+        let tIndex = ''
+        this.taskData.message.map((info, index) => {
+          if (info.task_key === tkey) {
+            tIndex = index - 1
+          }
+        })
+        if (tIndex === '') { tIndex = this.taskData.message.length - 1 }
+        // 判断继承方式以及可增加个数 权重更高
+        let tType = this.taskFormAll.form.body.count.type
+        if (tType === 'message_header') {
+          console.log('1')
+          return true
+        } else if (tType === 'form_header') {
+          console.log('2')
+          return true
+        } else if (tType === 'static') {
+          console.log('3')
+          let {min} = this.taskFormAll.form.body.count
+          let {max} = this.taskFormAll.form.body.count
+          console.log(min, max)
+          console.log(this.taskData.message[tIndex].form.body)
+          return this.taskData.message[tIndex].form.body && this.taskData.message[tIndex].form.body.length
+        } else {
+          return this.taskData.message[tIndex].form.body && this.taskData.message[tIndex].form.body.length
+        }
+      },
       increaseBody () {
         this.applyData.body.push({})
         this.renderBodyLabel()
@@ -1214,8 +1228,9 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        // console.log(anchor)
-        document.body.scrollTop = anchor.offsetTop
+        console.log(anchor.offsetParent.offsetTop)
+        console.log(document.body.scrollTop)
+        document.documentElement.scrollTop = anchor.offsetParent.offsetTop
       },
       retractInfo (index) {
         const selector = this.$el.querySelectorAll('.history-block')
@@ -1255,7 +1270,6 @@
   margin-left: 5px;
   margin-bottom: 8px;
   vertical-align: middle;
-
 }
 .checkIpButtom2 {
   &:link {

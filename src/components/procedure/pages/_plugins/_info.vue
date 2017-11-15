@@ -7,8 +7,9 @@
             <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
 <!--             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button> -->
             <div style="margin-bottom:8px;">
-            <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
-            <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载excel表格</span></a>
+            <el-button  type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
+            <a  class="el-button   el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span>下载Excel</span></a>
+            <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             </div>
 <!--           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -17,8 +18,9 @@
              taskList: taskData.pinstance.task_list
              }"></progress-wrap>
           </div> -->
-            <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
-            <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
+          </div>
+          <div style="border:1px solid #ccc;margin-bottom:15px"></div>
+            <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true" style="display:flex;justify-content:flex-end;margin-bottom:-5px">
               <el-form-item label="处理人" :inline="true">
                 <el-select
                   v-model="newAssignee"
@@ -52,9 +54,8 @@
                   </el-option>
                 </el-select>
               </el-form-item>
-              <el-button :loading="assignViewLoading" type="info" @click="onAssign($route.query.tid, newAssignee, newassignGroup)">指派</el-button>
+              <el-button :loading="assignViewLoading" type="info" @click="onAssign($route.query.tid, newAssignee, newassignGroup)" style="height:36px">指派</el-button>
             </el-form>
-          </div>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
@@ -480,6 +481,11 @@
   }
 </script>
 <style lang="less" scoped>
+.excelDown {
+  &:link {
+    text-decoration: none;
+  }
+}
 .el-tag {
   font-size: 14px;
   & +.el-tag {

@@ -13,7 +13,7 @@
             <el-form label-width="100px" :inline="true" label-position="left">
               <el-form-item label="流程名称">
                 <el-input
-                  v-model="orderQueries['pinstance.pd.pname']"
+                  v-model="orderQueries[filterData.show.find(_ => _.label === '流程名称').key_path]"
                   size="small"></el-input>
               </el-form-item>
               <el-form-item>
