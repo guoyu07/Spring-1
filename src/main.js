@@ -226,7 +226,7 @@ Vue.prototype.setDataType = (original, goalData) => {
     // console.log(original.name)
     Vue.prototype.$set(goalData, original.id, [])
   } else if (original.value.type === 'str' || original.value.type === 'enum' || original.value.type === 'date' || original.value.type === 'datetime') {
-    Vue.prototype.$set(goalData, original.id, '')
+    Vue.prototype.$set(goalData, original.id)
   } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
     Vue.prototype.$set(goalData, original.id, null)
   } else if (original.value.type === 'int') {
@@ -243,6 +243,33 @@ Vue.prototype.setDataType = (original, goalData) => {
   }
 }
 
+// /**
+//  * @method setDataType 根据表单定义生成双向绑定的数据
+//  * @param {object} original 表单定义
+//  * @param {object} goalData 需要提交的表单
+//  * @return {object} 根据表单定义的类型生成各种类型初始化的值
+// */
+// Vue.prototype.setMiddleDataType = (original, goalData) => {
+//   if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums') {
+//     // console.log(original.name)
+//     Vue.prototype.$set(goalData, original.id, [])
+//   } else if (original.value.type === 'str' || original.value.type === 'enum' || original.value.type === 'date' || original.value.type === 'datetime') {
+//     Vue.prototype.$set(goalData, original.id + '_' + original._timeStamp, '')
+//   } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
+//     Vue.prototype.$set(goalData, original.id, null)
+//   } else if (original.value.type === 'int') {
+//     Vue.prototype.$set(goalData, original.id, 0)
+//   } else if (original.value.type === 'users' && original.isAlias) {
+//     Vue.prototype.$set(goalData, original.id, { group: null, user: null })
+//   } else if (original.value.type === 'table') {
+//     Vue.prototype.$set(goalData, original.id, [])
+//     Vue.prototype.$set(goalData[original.id], 0, {})
+//     let data = goalData[original.id][0]
+//     original.value.attr_list.map(item => {
+//       Vue.prototype.setMiddleDataType(item, data)
+//     })
+//   }
+// }
 /**
  * @method setNewDataType 根据表单定义生成对应初始化数据，不一定用于双向绑定
  * @param {object} original 表单定义

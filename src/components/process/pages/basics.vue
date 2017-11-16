@@ -1,21 +1,19 @@
 <style lang="less" scoped>
   @import url("./../../../assets/css/variables.less");
-  .sub-title {
-    margin-top: 0;
-
-    i {
-      width: 14px;
-    }
-  }
-
-  .el-collapse-item__wrap {
-    div {
-      .el-row:not(:last-of-type) {
-        .el-checkbox-group {
-          border-bottom: 1px dashed @borderColor;
-        }
+  .search-box {
+      display: flex;
+      .el-input {
+        width: 210px;
+        height: 36px;
+        margin-right: 10px;
+      }
+      .el-select {
+        width: 140px;
+        margin-right: 10px;
       }
     }
+  .el-tag+.el-tag {
+    margin-left: 10px;
   }
 </style>
 
@@ -25,206 +23,105 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3><i class="el-icon-fa-circle-o icon-lg"></i> 流程基本管理</h3>
-          <el-alert
-            title="在此处为流程指派管理员用户／用户组、启动候选人／候选组。"
-            type="info"
-            show-icon
-            style="margin-bottom: 12px"></el-alert>
-          <el-table
-            :data="permittedProcessList"
-            border
-            v-loading.body="permittedProcessLoading"
-            @expand="adminData.isCheckable = false">
-            <el-table-column type="expand">
-              <template scope="scope">
-                <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 特权类型：</h5>
-                <el-collapse accordion @change="onAccordionChange">
-                  <el-collapse-item title="特权用户">
-                    <el-row v-if="!isOnlyAdmin">
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 管理员用户（{{scope.row.users.length || '0'}}）</h5>
-                          <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
-                          <el-tooltip content="移除管理员用户" placement="top" class="fr" v-if="scope.row.users.length">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              style="margin-left: 6px;"
-                              :class="{ empty: !adminData.isCheckable }"
-                              @click="onRemove(scope.row.pkey, { adminType: 'user', operationType: 'admin' }); currentProcess = scope.row">{{adminData.isCheckable ? '移除所选' : ''}}</el-button>
-                          </el-tooltip>
-                          <el-tooltip content="加入管理员用户" placement="top" class="fr">
-                            <el-button
-                              icon="plus"
-                              type="success"
-                              size="small"
-                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.users, type: 'user' }); currentProcess = scope.row">
-                            </el-button>
-                          </el-tooltip>
-                        </div>
-                        <el-checkbox-group v-model="adminData.toRemove" :class="{ uncheckable: !adminData.isCheckable }">
-                          <el-checkbox v-for="user in scope.row.users" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row>
-
-                    <el-row>
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 启动候选人用户（{{scope.row.start_users.length || '0'}}）</h5>
-                          <el-button v-if="initiatorData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="initiatorData.isCheckable = false">取消</el-button>
-                          <el-tooltip content="移除启动候选人用户" placement="top" class="fr" v-if="scope.row.start_users.length">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              style="margin-left: 6px;"
-                              :class="{ empty: !initiatorData.isCheckable }"
-                              @click="onRemove(scope.row.pkey, { initiatorType: 'user', operationType: 'initiator' }); currentProcess = scope.row">{{initiatorData.isCheckable ? '移除所选' : ''}}</el-button>
-                          </el-tooltip>
-                          <el-tooltip content="加入启动候选人用户" placement="top" class="fr">
-                            <el-button
-                              icon="plus"
-                              type="success"
-                              size="small"
-                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_users, type: 'user' }); currentProcess = scope.row">
-                            </el-button>
-                          </el-tooltip>
-                        </div>
-                        <el-checkbox-group v-model="initiatorData.toRemove" :class="{ uncheckable: !initiatorData.isCheckable }">
-                          <el-checkbox v-for="user in scope.row.start_users" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row>
-                  </el-collapse-item>
-
-                  <el-collapse-item title="特权用户组（角色）">
-                    <el-row v-if="!isOnlyAdmin">
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 管理员用户组（角色）（{{scope.row.groups.length || '0'}}）</h5>
-                          <el-button v-if="adminData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="adminData.isCheckable = false">取消</el-button>
-                          <el-tooltip content="移除管理员用户组（角色）" placement="top" class="fr" v-if="scope.row.groups.length">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              style="margin-left: 6px;"
-                              :class="{ empty: !adminData.isCheckable }"
-                              @click="onRemove(scope.row.pkey, { adminType: 'group', operationType: 'admin' })">{{adminData.isCheckable ? '移除所选' : ''}}</el-button>
-                          </el-tooltip>
-                          <el-tooltip content="加入管理员用户组（角色）" placement="top" class="fr">
-                            <el-button
-                              icon="plus"
-                              type="success"
-                              size="small"
-                              @click="Object.assign(adminData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.groups, type: 'group' }); currentProcess = scope.row">
-                            </el-button>
-                          </el-tooltip>
-                        </div>
-                        <el-checkbox-group v-model="adminData.toRemove" :class="{ uncheckable: !adminData.isCheckable }">
-                          <el-checkbox v-for="group in scope.row.groups" :key="group.key" :label="group.key">{{group.name}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row>
-
-                    <el-row>
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 启动候选组（角色）（{{scope.row.start_groups.length || '0'}}）</h5>
-                          <el-button v-if="initiatorData.isCheckable" class="fr cancel-btn" type="text" size="small" @click="initiatorData.isCheckable = false">取消</el-button>
-                          <el-tooltip content="移除启动候选组（角色）" placement="top" class="fr" v-if="scope.row.start_groups.length">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              :class="{ empty: !initiatorData.isCheckable }"
-                              @click="onRemove(scope.row.pkey, { initiatorType: 'group', operationType: 'initiator' })">{{initiatorData.isCheckable ? '移除所选' : ''}}</el-button>
-                          </el-tooltip>
-                          <el-tooltip content="加入启动候选组（角色）" placement="top" class="fr">
-                            <el-button
-                              icon="plus"
-                              type="success"
-                              size="small"
-                              @click="Object.assign(initiatorData, { visible: true, pkey: scope.row.pkey, alreadyThere: scope.row.start_groups, type: 'group' }); currentProcess = scope.row">
-                            </el-button>
-                          </el-tooltip>
-                        </div>
-                        <el-checkbox-group v-model="initiatorData.toRemove" :class="{ uncheckable: !initiatorData.isCheckable }">
-                          <el-checkbox v-for="group in scope.row.start_groups" :key="group.key" :label="group.key">{{group.name}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row>
-                  </el-collapse-item>
-                </el-collapse>
-              </template>
+          <div class="flex-box">
+            <div class="search-box">
+              <el-input
+                    placeholder="流程名称"
+                    icon="search"
+                    size="small"
+                    v-model="search.pname"
+                    @change="onSearch">
+              </el-input>
+              <el-select v-model="search.category" size="small" @change="onSearch" clearable placeholder="流程分类">
+                <el-option
+                  v-for="item in categoryList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>     
+            </div>
+            <div class="bth-block" v-show="isQualified">
+              <el-button type="primary" size="small" @click="dialogVisible=true">批量操作</el-button>
+            </div>
+          </div>
+          <el-table :data="currentPageList" border @selection-change='handleSelection'>
+            <el-table-column type="selection"></el-table-column>
+            <el-table-column label="流程名称" prop="pname"></el-table-column>
+            <el-table-column label="流程分类" prop="category"></el-table-column>
+            <el-table-column inline-template label="管理员">
+            <template>
+              <div>
+              <el-select v-if="row.editingUser" multiple v-model="row.users">
+                <el-option v-for="user in permittedUserList"
+                           :key="user.userId"
+                           :label="user.nick"
+                           :value="user"
+                ></el-option>
+              </el-select>
+              <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false)"></i>
+              <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false)"></i>
+              <span v-for="user in row.users" v-show="!row.editingUser">{{user.nick}} </span>
+              <i class="el-icon-edit text-info fr" v-show="!row.editingUser" @click="showContainer(row, true, false)"></i>
+              </div>
+            </template>
             </el-table-column>
-            <el-table-column
-              prop="pname"
-              label="可管理的流程"></el-table-column>
+            <el-table-column  label="管理组" inline-template>
+                <template>
+                  <div>
+                  <el-select v-if="row.editingGroup" multiple v-model="row.groups">
+                    <el-option v-for="group in permittedRoleList"
+                           :key="group.key"
+                           :label="group.name"
+                           :value="group"
+                    ></el-option>
+                  </el-select>
+                  <i v-show="row.editingGroup" class="el-icon-check text-success" @click="onEdit(row, false, true)"></i>
+                  <i v-show="row.editingGroup" class="el-icon-close text-error" @click="onCancelEdit(row, false, true)"></i>
+                  <el-tag type="gray" v-for="group in row.groups" @click="controllUsers(row)" v-show="!row.editingGroup">{{group.name}}</el-tag>
+                  <i class="el-icon-edit text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true)"></i>
+                  </div>
+                </template>
+            </el-table-column>
           </el-table>
+          <el-pagination
+            class="fr margin-top margin-bottom"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-size="+currentPageSize"
+            layout="total, sizes, prev, pager, next"
+            :total="totalPage">
+          </el-pagination>
         </el-card>
       </el-col>
     </el-row>
-
-    <el-dialog :title="adminData.type === 'user' ? '加入管理员用户' : '加入管理员用户组（角色）'" v-model="adminData.visible" @close="adminData.toAdd = []">
-      <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为管理员的{{adminData.type === 'user' ? '用户' : '用户组（角色）'}}：</h5>
-      <el-select v-model="adminData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
-        <template v-if="adminData.type === 'user'">
-          <el-option
-            v-for="user in permittedUserList"
-            :key="user.userId"
-            :label="`${user.nick} - ${user.email}`"
-            :value="user.userId"
-            :disabled="currentProcess && currentProcess.users.some(u => u.userId === user.userId)"></el-option>
-        </template>
-        <template v-if="adminData.type === 'group'">
-          <el-option
-            v-for="role in permittedRoleList"
-            :key="role.key"
-            :label="role.name"
-            :value="role.key"
-            :disabled="currentProcess && currentProcess.groups.some(r => r.key === role.key)"></el-option>
-        </template>
-      </el-select>
-      <!-- <el-checkbox-group v-model="adminData.toAdd">
-        <el-checkbox v-if="adminData.type === 'user'" v-for="user in permittedUserList" :label="user.userId">{{user.code}}</el-checkbox>
-        <el-checkbox v-if="adminData.type === 'group'" v-for="role in permittedRoleList" :label="role.key">{{role.name}}</el-checkbox>
-      </el-checkbox-group> -->
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="onAdd(adminData.pkey, { adminType: adminData.type, operationType: 'admin' })" size="small" icon="check" type="success" :loading="adminData.loading">确认加入</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog :title="initiatorData.type === 'user' ? '加入启动候选人用户' : '加入启动候选组（角色）'" v-model="initiatorData.visible" @close="initiatorData.toAdd = []">
-      <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{initiatorData.type === 'user' ? '启动候选人的用户' : '启动候选组的角色'}}：</h5>
-      <el-select v-model="initiatorData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
-        <template v-if="initiatorData.type === 'user'">
-          <el-option
-            v-for="user in permittedUserList"
-            :key="user.userId"
-            :label="`${user.nick} - ${user.email}`"
-            :value="user.userId"
-            :disabled="currentProcess && currentProcess.start_users.some(u => u.userId === user.userId)"></el-option>
-        </template>
-        <template v-if="initiatorData.type === 'group'">
-          <el-option
-            v-for="role in permittedRoleList"
-            :key="role.key"
-            :label="role.name"
-            :value="role.key"
-            :disabled="currentProcess && currentProcess.start_groups.some(r => r.key === role.key)"></el-option>
-        </template>
-      </el-select>
-      <!-- <el-checkbox-group v-model="initiatorData.toAdd">
-        <el-checkbox v-if="initiatorData.type === 'user'" v-for="user in permittedUserList" :label="user.userId">{{user.code}}</el-checkbox>
-        <el-checkbox v-if="initiatorData.type === 'group'" v-for="role in permittedRoleList" :label="role.key">{{role.name}}</el-checkbox>
-      </el-checkbox-group> -->
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="onAdd(initiatorData.pkey, { initiatorType: initiatorData.type, operationType: 'initiator' })" size="small" icon="check" type="success" :loading="initiatorData.loading">确认加入</el-button>
-      </span>
-    </el-dialog>
+  <el-dialog :visible.sync="dialogVisible" :model="simplifiedData" title="批量编辑" size="tiny">
+      <el-form   label-width="72px">
+        <el-form-item label="管理员" prop="simplifiedUsersId">
+          <el-select v-model="simplifiedData.simplifiedUsersId" multiple  placeholder="请选择管理员">
+             <el-option v-for="user in permittedUserList"
+                   :key="user.userId"
+                   :label="user.nick"
+                   :value="user.userId"
+             ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="管理组" prop="simplifiedGroupsKey">
+          <el-select v-model="simplifiedData.simplifiedGroupsKey" multiple placeholder="请选择管理组">
+            <el-option v-for="group in permittedRoleList"
+               :key="group.key"
+               :label="group.name"
+               :value="group.key"
+        ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+     <span class="dialog-footer" slot="footer">
+      <el-button type="success" @click="onIncreased">确定增加</el-button>
+     </span>
+  </el-dialog>
   </div>
 </template>
 
@@ -236,154 +133,201 @@
   export default {
     mixins: [getPermittedRoleList, getPermittedUserList, getPermittedProcessList],
 
-    computed: {
-      isOnlyAdmin () {
-        return !this.$store.state.userinfo.superadmin && this.$store.state.userinfo.admin
-      }
-    },
-
     data () {
       return {
-        currentProcess: null,
-        adminData: {
-          loading: false,
-          visible: false,
-          isCheckable: false,
-          action: 'process/admin',
-          type: '', // 是操作用户还是用户组
-          pkey: '', // 要增删管理员的流程
-          toAdd: [],  // 待加入的管理员
-          toRemove: []  // 待移除的管理员
-        },
-        initiatorData: {
-          loading: false,
-          visible: false,
-          isCheckable: false,
-          action: 'process/start',
-          type: '',
-          pkey: '',
-          toAdd: [],
-          toRemove: []
+        dialogVisible: false,
+        totalPage: 0,
+        currentPage: 1,
+        currentPageSize: 10,
+        currentPageList: [],
+        processSearchList: '',
+        processList: '',
+        search: { pname: '', category: '' },
+        categoryList: [],
+        simplifiedData: {
+          simplifiedUsersId: [],
+          simplifiedProcess: [],
+          simplifiedGroupsKey: []
         }
       }
     },
-
+    watch: {
+      'permittedProcessList': 'renderList'
+    },
     created () {
+      this.getCategoryList(false, false)
       this.getPermittedProcessList()
       this.getPermittedUserList()
       this.getPermittedRoleList()
     },
-
+    computed: {
+      isQualified () {
+        return (this.$store.state.userinfo.superadmin === true)
+      }
+    },
     methods: {
-      onAccordionChange () {
-        // 伸缩手风琴时，取消勾选状态，并清空待加入和待移除队列
-        Object.assign(this.adminData, { isCheckable: false, toAdd: [], toRemove: [] })
-        Object.assign(this.initiatorData, { isCheckable: false, toAdd: [], toRemove: [] })
-      },
-
-      onAdd (pkey, { adminType = '', initiatorType = '', operationType = '' }) {
-        const _operationRelations = {
-          'admin': this.adminData,
-          'initiator': this.initiatorData
-        }
-
-        _operationRelations[operationType].loading = true
-        let data
-        let { toAdd } = _operationRelations[operationType]
-        console.log(toAdd)
-        adminType === 'user' || initiatorType === 'user' ? data = { pkey, users: toAdd } : data = { pkey, groups: toAdd }
+      onIncreased () {
         let postData = {
-          action: _operationRelations[operationType].action,
-          method: 'POST',
-          data
+          action: 'process/admin',
+          method: 'post',
+          data: {
+            pkey_list: this.simplifiedData.simplifiedProcess,
+            users: this.simplifiedData.simplifiedUsersId,
+            groups: this.simplifiedData.simplifiedGroupsKey
+          }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          console.log(res)
+          this.dialogVisible = false
+          this.getPermittedProcessList()
+          this.simplifiedData.simplifiedGroupsKey = []
+          this.simplifiedData.simplifiedProcess = []
+          this.simplifiedData.simplifiedUsersId = []
+        })
+      },
+      handleSelection (val) {
+        console.log(val)
+        this.simplifiedData.simplifiedProcess = val.map(_ => _.pkey)
+      },
+      onCancelEdit (row, users, groups) {
+        if (users) {
+          row.users = row.tempUsers
+          row.editingUser = false
+        }
+        if (groups) {
+          row.groups = row.tempGroups
+          row.editingGroup = false
+        }
+      },
+      onEdit (row, users, groups) {
+        let usersId, tempUsersId, tempGroupsKey, groupsKey
+        console.log(row)
+        if (users) {
+          usersId = row.users.map(_ => {
+            return _.userId
+          })
+          tempUsersId = row.tempUsers.map(_ => {
+            return _.userId
+          })
+        } else if (groups) {
+          groupsKey = row.groups.map(_ => {
+            return _.key
+          })
+          tempGroupsKey = row.tempGroups.map(_ => {
+            return _.key
+          })
+        }
+        let postData = {
+          action: 'process/admin',
+          method: 'delete',
+          data: {
+            pkey: row.pkey,
+            users: users ? tempUsersId : '',
+            groups: groups ? tempGroupsKey : ''
+          }
         }
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.$message.success('加入成功！')
-            console.log(res)
-            // Object.assign(_operationRelations[operationType], { visible: false, loading: false })
-            _operationRelations[operationType].loading = false
-            _operationRelations[operationType].visible = false
-            if (adminType === 'user' || initiatorType === 'user') {
-              toAdd.map(userid => {
-                const toAddUser = this.permittedUserList.find(user => {
-                  return user.userId === userid
-                })
-                operationType === 'admin' ? this.currentProcess.users.push(toAddUser) : this.currentProcess.start_users.push(toAddUser)
-              })
-            } else {
-              toAdd.map(key => {
-                const toAddRole = this.permittedRoleList.find(role => {
-                  return role.key === key
-                })
-                operationType === 'admin' ? this.currentProcess.groups.push(toAddRole) : this.currentProcess.start_groups.push(toAddRole)
-              })
+            let postData = {
+              action: 'process/admin',
+              method: 'POST',
+              data: {
+                pkey: row.pkey,
+                users: users ? usersId : '',
+                groups: groups ? groupsKey : ''
+              }
             }
-            // this.getPermittedProcessList()
+            this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+              if (res.status === 200) {
+                console.log(res.data.data)
+                row.editingUser = false
+                row.editingGroup = false
+              }
+            })
           }
         })
       },
-
-      onRemove (pkey, { adminType = '', initiatorType = '', operationType = '' }) {
-        const _operationRelations = {
-          'admin': this.adminData,
-          'initiator': this.initiatorData
-        }
-
-        // 设定 adminData || initiatorData 的 type 属性
-        _operationRelations[operationType].type = adminType || initiatorType
-        if (!_operationRelations[operationType].isCheckable) {
-          _operationRelations[operationType].isCheckable = true
-          return
-        }
-
-        let operateeTypeCode
-        _operationRelations[operationType].type === 'user' ? operateeTypeCode = '用户' : operateeTypeCode = '用户组（角色）'  // 暂时写死此条件，虽不严谨
-
-        if (!_operationRelations[operationType].toRemove.length) {
-          this.$message.warning(`请选择${operateeTypeCode}！`)
-          return
-        }
-        this.$confirm(`此操作将移除该流程下作为的所选${operateeTypeCode}，是否继续？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let data
-          let { toRemove } = _operationRelations[operationType]
-          adminType === 'user' || initiatorType === 'user' ? data = { pkey, users: toRemove } : data = { pkey, groups: toRemove }
-          console.log(data)
-          let postData = {
-            action: _operationRelations[operationType].action,
-            method: 'DELETE',
-            data
-          }
-          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-            if (res.status === 200) {
-              this.$message.success('移除成功！')
-              Object.assign(_operationRelations[operationType], { visible: false, isCheckable: false })
-              if (adminType === 'user' || initiatorType === 'user') {
-                const arr = operationType === 'admin' ? this.currentProcess.users : this.currentProcess.start_users
-                toRemove.map(userid => {
-                  arr.map((user, index) => {
-                    if (user.userId === userid) {
-                      arr.splice(index, 1)
-                    }
-                  })
-                })
-              } else {
-                const arr = operationType === 'admin' ? this.currentProcess.groups : this.currentProcess.start_groups
-                toRemove.map(key => {
-                  arr.map((user, index) => {
-                    if (user.key === key) {
-                      arr.splice(index, 1)
-                    }
-                  })
-                })
-              }
-              // this.getPermittedProcessList()
-            }
+      // 展开选择框
+      showContainer (row, users, groups) {
+        if (users) {
+          row.editingUser = true
+          let usersList = row.users.map(user => {
+            user = this.permittedUserList.find(_ => {
+              return _.userId === user.userId
+            })
+            return user
           })
+          Object.assign(row.users, usersList)
+          row.tempUsers = usersList
+          console.log(row)
+        }
+        if (groups) {
+          row.editingGroup = true
+          let groupList = row.groups.map(group => {
+            group = this.permittedRoleList.find(_ => {
+              return _.key === group.key
+            })
+            return group
+          })
+          Object.assign(row.groups, groupList)
+          row.tempGroups = groupList
+          console.log(row)
+        }
+      },
+      onSearch () {
+        this.processSearchList = this.permittedProcessList.filter(processe => {
+          for (const id in processe) {
+            if (['pname'].includes(id)) {
+              console.log(processe[id])
+              console.log(this.search.pname)
+              if (processe[id].includes(this.search.pname)) {
+                return true
+              }
+            }
+          }
+        })
+        .filter(val => {
+          for (let id in val) {
+            if (id === 'category') {
+              if (val[id] === this.search.category || this.search.category === '') {
+                return true
+              }
+            }
+          }
+        })
+        this.totalPage = this.processSearchList.length
+        this.handleCurrentChange(1)
+      },
+      renderList (newVal, oldVal) {
+        this.totalPage = newVal.length
+        this.handleCurrentChange(1)
+      },
+      handleCurrentChange (val) {
+        this.currentPage = val
+        const offset = (this.currentPage - 1) * this.currentPageSize
+        let array = (this.search.pname || this.search.category) ? this.processSearchList : this.permittedProcessList
+        console.log(offset + this.currentPageSize)
+        console.log(array)
+        this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+      },
+      handleSizeChange (val) {
+        this.currentPageSize = val
+        this.handleCurrentChange(1)
+      },
+      getCategoryList (includePds, pdDetail) {
+        let postData = {
+          action: 'process/category',
+          method: 'GET',
+          data: {
+            include_pds: includePds,
+            pd_detail: pdDetail
+          }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            console.log(res.data.data)
+            this.categoryList = res.data.data.list
+          }
         })
       }
     }

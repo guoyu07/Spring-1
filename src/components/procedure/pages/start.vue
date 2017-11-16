@@ -192,10 +192,6 @@
     data () {
       return {
         toCopy: false,
-        middleForm: {
-          header: {},
-          body: []
-        },
         postForm: {
           header: {},
           body: []
@@ -313,15 +309,8 @@
               }
               if (item.show.type === 'form_header') {
                 this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
-                  // this.setDataType(item, this.postForm.header)
-
-                  if (this.showFormItem(item, this.postForm)) {
-                    console.log(item.name)
-                    if (!item.default.value) {
-                      this.setDataType(item, this.postForm.header)
-                    }
-                    // delete this.postForm.header[item.id]
-                  } else {
+                  this.setDataType(item, this.postForm.header)
+                  if (!this.showFormItem(item, this.postForm)) {
                     delete this.postForm.header[item.id]
                   }
                 })
