@@ -4,10 +4,14 @@
       <el-col :md="16">
         <el-row :gutter="12">
           <el-col :span="12">
-            <el-card></el-card>
+            <el-card>
+              <pie-chart order-type="handle"></pie-chart>
+            </el-card>
           </el-col>
           <el-col :span="12">
-            <el-card></el-card>
+            <el-card>
+              <pie-chart order-type="claim"></pie-chart>
+            </el-card>
           </el-col>
         </el-row>
         <el-row :gutter="12">
@@ -38,6 +42,7 @@
 
 <script>
   import TableList from './_plugins/_tableList'
+  import PieChart from './_plugins/_pieChart'
 
   export default {
     data () {
@@ -88,7 +93,8 @@
     },
 
     components: {
-      TableList
+      TableList,
+      PieChart
     }
   }
 </script>
