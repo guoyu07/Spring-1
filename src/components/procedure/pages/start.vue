@@ -287,7 +287,6 @@
           console.log(key)
           this.$refs['postForm'].validateField(key)
         }
-        // this.$refs['postForm'].validateField((valid) => {}) // 调用验证
       },
       renderForm () {
         const renderFromData = {
@@ -631,7 +630,9 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        document.body.scrollTop = anchor.offsetTop
+        console.log(anchor.offsetParent.offsetTop)
+        console.log(document.body.scrollTop)
+        document.documentElement.scrollTop = anchor.offsetParent.offsetTop
       },
       onUploadExcel (res, file, fileList) {
         console.log(res.data[0])

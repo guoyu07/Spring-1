@@ -11,10 +11,11 @@
         <el-row>
           <el-col :lg="18" :md="20" :sm="24">
             <el-form label-width="100px" :inline="true" label-position="left">
-              <el-form-item label="流程名称">
+              <el-form-item label="流程单号">
                 <el-input
-                  v-model="orderQueries[filterData.show.find(_ => _.label === '流程名称').key_path]"
+                  v-model="orderQueries[filterData.show.find(_ => _.label === '流程单号').key_path]"
                   size="small"></el-input>
+                <el-input style="display:none"></el-input>
               </el-form-item>
               <el-form-item>
                 <el-button
@@ -27,11 +28,17 @@
               <div :class="{ 'collapsed': !isAdvancedSearch }">
                 <el-form-item
                   v-for="field in filterData.show"
-                  v-if="field.key_path.indexOf('time') < 0 && field.label !== '流程名称'"
+                  v-if="field.key_path.indexOf('time') < 0 && field.label !== '流程单号' && field.label !== '正常结束'"
                   :label="field.label">
                   <el-input
                     v-model="orderQueries[field.key_path]"
                     size="small"></el-input>
+                </el-form-item>
+                <el-form-item label="正常结束" v-if="filterData.show.find(_ => _.label === '正常结束')">
+                  <el-select v-model="orderQueries[filterData.show.find(_ => _.label === '正常结束').key_path]" style="width:168px">
+                   <el-option  key="是" label="是" value="是"></el-option>
+                   <el-option  key="否" label="否" value="否"></el-option>
+                  </el-select>
                 </el-form-item>
               </div>
               <el-form-item>

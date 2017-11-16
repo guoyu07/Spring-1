@@ -314,6 +314,8 @@
               this.whole[this.formItem.id] = this.formItem.default.value
             } else {
               if (this.header) {
+                console.log('true')
+                console.log(this.formItem.default.value)
                 this.whole.header[this.formItem.id] = this.formItem.default.value
               } else {
                 this.whole.body[this.index][this.formItem.id] = this.formItem.default.value

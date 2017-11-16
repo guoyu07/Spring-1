@@ -22,6 +22,8 @@ export default {
           if (this.permittedProcessList.length) {
             for (let i = 0; i < this.permittedProcessList.length; i++) {
               this.$set(this.permittedProcessList[i], 'editing', false)
+              this.$set(this.permittedProcessList[i], 'editingUser', false)
+              this.$set(this.permittedProcessList[i], 'editingGroup', false)
             }
           }
           this.permittedProcessListBuffer = JSON.stringify(this.permittedProcessList)
