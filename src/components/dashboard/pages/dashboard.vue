@@ -1,5 +1,16 @@
 <template>
   <div class="wrapper">
+    <el-row :gutter="16">
+      <el-col :span="24">
+        <el-card>
+          <el-row>
+            <el-col :md="16" :sm="24">
+              <counter-widget></counter-widget>
+            </el-col>
+          </el-row>
+        </el-card>
+      </el-col>
+    </el-row>
     <el-row :gutter="12">
       <el-col :md="16">
         <el-row :gutter="12">
@@ -16,7 +27,9 @@
         </el-row>
         <el-row :gutter="12">
           <el-col :span="24">
-            <el-card></el-card>
+            <el-card>
+              <line-chart></line-chart>
+            </el-card>
           </el-col>
         </el-row>
       </el-col>
@@ -43,6 +56,8 @@
 <script>
   import TableList from './_plugins/_tableList'
   import PieChart from './_plugins/_pieChart'
+  import LineChart from './_plugins/_lineChart'
+  import CounterWidget from './_plugins/_counterWidget'
 
   export default {
     data () {
@@ -73,7 +88,8 @@
     },
 
     created () {
-      this.getTableList('待处理').then(() => this.getTableList('待认领'))
+      this.getTableList('待处理')
+        .then(() => this.getTableList('待认领'))
     },
 
     methods: {
@@ -94,7 +110,9 @@
 
     components: {
       TableList,
-      PieChart
+      PieChart,
+      LineChart,
+      CounterWidget
     }
   }
 </script>

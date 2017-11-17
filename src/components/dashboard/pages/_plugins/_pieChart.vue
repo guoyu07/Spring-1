@@ -1,7 +1,7 @@
 <template>
   <!-- <div :id="`chart-${orderType}`" style="width: 100%; height: 400px;"></div> -->
   <chart
-    style="width: 100%; height: 400px"
+    style="width: 100%; height: 360px"
     :options="chartData"
     auto-resize></chart>
 </template>
@@ -71,13 +71,13 @@
     },
 
     methods: {
-      async getChartData (type) {
+      getChartData (type) {
         let postData = {
           action: `dashboard/${type}/report`,
           method: 'GET',
           data: {}
         }
-        this.http.post('/report/', this.parseData(postData)).then(async (res) => {
+        this.http.post('/report/', this.parseData(postData)).then((res) => {
           let result = res.data.data.list
           this.chartData.legend.data = result.map(_ => _.pname)
           this.chartData.series[0].data = result.map(_ => ({ value: _.count, name: _.pname }))
