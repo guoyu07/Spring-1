@@ -42,7 +42,7 @@
               </el-select>     
             </div>
           </div>
-          <el-table :data="currentPageList" border @selection-change='handleSelection' @expand="check">
+          <el-table :data="currentPageList" border  >
             <el-table-column type="expand">
               <template scope="props">
                 <el-table :data="props.row.task_list">
@@ -57,10 +57,10 @@
                                    :value="user"
                         ></el-option>
                       </el-select>
-                      <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false)"></i>
-                      <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false)"></i>
+                      <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false, false)"></i>
+                      <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false, false)"></i>
                       <span v-for="user in row.users" v-show="!row.editingUser">{{user.nick}} </span>
-                      <i class="el-icon-edit text-info fr" v-if="!row.editingUser" @click="showContainer(row, true, false)"></i>
+                      <i class="el-icon-edit text-info fr" v-if="!row.editingUser" @click="showContainer(row, true, false, false)"></i>
                       </div>
                     </template>
                   </el-table-column>
@@ -74,14 +74,30 @@
                              :value="group"
                       ></el-option>
                     </el-select>
-                    <i v-show="row.editingGroup" class="el-icon-check text-success" @click="onEdit(row, false, true)"></i>
-                    <i v-show="row.editingGroup" class="el-icon-close text-error" @click="onCancelEdit(row, false, true)"></i>
-                    <el-tag type="gray" v-for="group in row.groups" @click="controllUsers(row)" v-show="!row.editingGroup">{{group.name}}</el-tag>
-                    <i class="el-icon-edit text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true)"></i>
+                    <i v-show="row.editingGroup" class="el-icon-check text-success" @click="onEdit(row, false, true, false)"></i>
+                    <i v-show="row.editingGroup" class="el-icon-close text-error" @click="onCancelEdit(row, false, true, false)"></i>
+                    <el-tag type="gray" v-for="group in row.groups"  v-show="!row.editingGroup">{{group.name}}</el-tag>
+                    <i class="el-icon-edit text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true, false)"></i>
                     </div>
                   </template>
                   </el-table-column>
-                  <el-table-column label="受指派人"></el-table-column>
+                  <el-table-column label="受指派人" inline-template>
+                    <template>
+                      <div>
+                      <el-select v-if="row.editingAssign"  v-model="row.assign" clearable>
+                        <el-option v-for="user in permittedUserList"
+                                   :key="user.userId"
+                                   :label="user.nick"
+                                   :value="user"
+                        ></el-option>
+                      </el-select>
+                      <i v-show="row.editingAssign" class="el-icon-check text-success" @click="onEdit(row, false, false, true)"></i>
+                      <i v-show="row.editingAssign" class="el-icon-close text-error" @click="onCancelEdit(row, false, false, true)"></i>
+                      <span  v-if="!row.editingAssign" >{{row.hasOwnProperty('assign') ? row.assign.nick:''}}</span>
+                      <i class="el-icon-edit text-info fr" v-if="!row.editingAssign && row.hasOwnProperty('assign')" @click="showContainer(row, false, false, true)"></i>
+                      </div>
+                    </template>
+                  </el-table-column>
                 </el-table>
               </template>
             </el-table-column>
@@ -101,31 +117,6 @@
         </el-card>
       </el-col>
     </el-row>
-  <el-dialog :visible.sync="dialogVisible" :model="simplifiedData" title="批量编辑" size="tiny">
-      <el-form   label-width="72px">
-        <el-form-item label="管理员" prop="simplifiedUsersId">
-          <el-select v-model="simplifiedData.simplifiedUsersId" multiple  placeholder="请选择管理员">
-             <el-option v-for="user in permittedUserList"
-                   :key="user.userId"
-                   :label="user.nick"
-                   :value="user.userId"
-             ></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="管理组" prop="simplifiedGroupsKey">
-          <el-select v-model="simplifiedData.simplifiedGroupsKey" multiple placeholder="请选择管理组">
-            <el-option v-for="group in permittedRoleList"
-               :key="group.key"
-               :label="group.name"
-               :value="group.key"
-        ></el-option>
-          </el-select>
-        </el-form-item>
-      </el-form>
-     <span class="dialog-footer" slot="footer">
-      <el-button type="success" @click="onIncreased">确定增加</el-button>
-     </span>
-  </el-dialog>
   </div>
 </template>
 
@@ -147,12 +138,7 @@
         processSearchList: '',
         processList: '',
         search: { pname: '', category: '' },
-        categoryList: [],
-        simplifiedData: {
-          simplifiedUsersId: [],
-          simplifiedProcess: [],
-          simplifiedGroupsKey: []
-        }
+        categoryList: []
       }
     },
     watch: {
@@ -165,43 +151,13 @@
       this.getPermittedRoleList()
     },
     computed: {
+
       isQualified () {
         return (this.$store.state.userinfo.superadmin === true)
       }
     },
     methods: {
-      check (row) {
-        row.task_list.map(_ => {
-          // _.push({editingUser: false, editingGroup: false})
-          _.editingUser = false
-          _.editingGroup = false
-        })
-        console.log(row.task_list)
-      },
-      onIncreased () {
-        let postData = {
-          action: 'process/admin',
-          method: 'post',
-          data: {
-            pkey_list: this.simplifiedData.simplifiedProcess,
-            users: this.simplifiedData.simplifiedUsersId,
-            groups: this.simplifiedData.simplifiedGroupsKey
-          }
-        }
-        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-          console.log(res)
-          this.dialogVisible = false
-          this.getPermittedProcessList()
-          this.simplifiedData.simplifiedGroupsKey = []
-          this.simplifiedData.simplifiedProcess = []
-          this.simplifiedData.simplifiedUsersId = []
-        })
-      },
-      handleSelection (val) {
-        console.log(val)
-        this.simplifiedData.simplifiedProcess = val.map(_ => _.pkey)
-      },
-      onCancelEdit (row, users, groups) {
+      onCancelEdit (row, users, groups, assign) {
         if (users) {
           row.users = row.tempUsers
           row.editingUser = false
@@ -210,9 +166,13 @@
           row.groups = row.tempGroups
           row.editingGroup = false
         }
+        if (assign) {
+          row.assign = row.tempAssign
+          row.editingAssign = false
+        }
       },
-      onEdit (row, users, groups) {
-        let usersId, tempUsersId, tempGroupsKey, groupsKey
+      onEdit (row, users, groups, assign) {
+        let usersId, tempUsersId, tempGroupsKey, groupsKey, tempAssignId, assignId
         console.log(row)
         if (users) {
           usersId = row.users.map(_ => {
@@ -228,25 +188,37 @@
           tempGroupsKey = row.tempGroups.map(_ => {
             return _.key
           })
+        } else if (assign) {
+          if (row.assign) {
+            console.log(row)
+            assignId = row.assign.userId
+          }
+          if (row.tempAssign) {
+            tempAssignId = row.tempAssign.userId
+          }
         }
         let postData = {
-          action: 'process/admin',
+          action: 'process/task',
           method: 'delete',
           data: {
             pkey: row.pkey,
+            tkey: row.tkey,
             users: users ? tempUsersId : '',
-            groups: groups ? tempGroupsKey : ''
+            groups: groups ? tempGroupsKey : '',
+            assign: assign ? tempAssignId : ''
           }
         }
         this.http.post('/activiti/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
             let postData = {
-              action: 'process/admin',
+              action: 'process/task',
               method: 'POST',
               data: {
                 pkey: row.pkey,
+                tkey: row.tkey,
                 users: users ? usersId : '',
-                groups: groups ? groupsKey : ''
+                groups: groups ? groupsKey : '',
+                assign: assign ? assignId : ''
               }
             }
             this.http.post('/activiti/', this.parseData(postData)).then((res) => {
@@ -254,20 +226,17 @@
                 console.log(res.data.data)
                 row.editingUser = false
                 row.editingGroup = false
+                row.editingAssign = false
               }
             })
           }
         })
       },
       // 展开选择框
-      showContainer (row, users, groups) {
+      showContainer (row, users, groups, assign) {
         if (users) {
           console.log(row)
-          this.$set(row, 'editingUser', true)
-          this.$nextTick(() => {
-            this.$forceUpdate()
-          })
-          // row.editingUser = true
+          row.editingUser = true
           let usersList = row.users.map(user => {
             user = this.permittedUserList.find(_ => {
               return _.userId === user.userId
@@ -289,6 +258,17 @@
           Object.assign(row.groups, groupList)
           row.tempGroups = groupList
           console.log(row)
+        }
+        if (assign) {
+          row.editingAssign = true
+          if (row.assign) {
+            let assign = this.permittedUserList.find(_ => {
+              return _.userId === row.assign.userId
+            })
+            console.log(Array.isArray(assign))
+            Object.assign(row.assign, assign)
+            row.tempAssign = assign
+          }
         }
       },
       onSearch () {

@@ -20,10 +20,15 @@ export default {
         if (res.status === 200) {
           this.permittedProcessList = res.data.data.list
           if (this.permittedProcessList.length) {
-            for (let i = 0; i < this.permittedProcessList.length; i++) {
+            for (var i = 0; i < this.permittedProcessList.length; i++) {
               this.$set(this.permittedProcessList[i], 'editing', false)
               this.$set(this.permittedProcessList[i], 'editingUser', false)
               this.$set(this.permittedProcessList[i], 'editingGroup', false)
+              for (let j = 0; j < this.permittedProcessList[i].task_list.length; j++) {
+                this.$set(this.permittedProcessList[i].task_list[j], 'editingUser', false)
+                this.$set(this.permittedProcessList[i].task_list[j], 'editingGroup', false)
+                this.$set(this.permittedProcessList[i].task_list[j], 'editingAssign', false)
+              }
             }
           }
           this.permittedProcessListBuffer = JSON.stringify(this.permittedProcessList)
