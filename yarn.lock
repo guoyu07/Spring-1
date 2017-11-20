@@ -1586,11 +1586,11 @@ ecc-jsbn@~0.1.1:
   dependencies:
     jsbn "~0.1.0"
 
-echarts@^3.7.0:
-  version "3.7.0"
-  resolved "https://registry.yarnpkg.com/echarts/-/echarts-3.7.0.tgz#79d21b2a7be18a43f6a3f19f8c0ec07c2cf4a3dc"
+echarts@^3.8.2, echarts@^3.8.5:
+  version "3.8.5"
+  resolved "https://registry.yarnpkg.com/echarts/-/echarts-3.8.5.tgz#58e4a51d2743c6fb75257b0dc0a9cf9f5378ac0e"
   dependencies:
-    zrender "^3.6.0"
+    zrender "3.7.4"
 
 editorconfig@^0.13.2:
   version "0.13.2"
@@ -2920,6 +2920,10 @@ lodash.camelcase@^3.0.1:
   dependencies:
     lodash._createcompounder "^3.0.0"
 
+lodash.debounce@^4.0.8:
+  version "4.0.8"
+  resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+
 lodash.deburr@^3.0.0:
   version "3.2.0"
   resolved "https://registry.yarnpkg.com/lodash.deburr/-/lodash.deburr-3.2.0.tgz#6da8f54334a366a7cf4c4c76ef8d80aa1b365ed5"
@@ -3010,10 +3014,6 @@ lodash.restparam@^3.0.0:
   version "3.6.1"
   resolved "https://registry.yarnpkg.com/lodash.restparam/-/lodash.restparam-3.6.1.tgz#936a4e309ef330a7645ed4145986c85ae5b20805"
 
-lodash.throttle@^4.0.0:
-  version "4.1.1"
-  resolved "https://registry.yarnpkg.com/lodash.throttle/-/lodash.throttle-4.1.1.tgz#c23e91b710242ac70c37f1e1cda9274cc39bf2f4"
-
 lodash.toplainobject@^3.0.0:
   version "3.0.0"
   resolved "https://registry.yarnpkg.com/lodash.toplainobject/-/lodash.toplainobject-3.0.0.tgz#28790ad942d293d78aa663a07ecf7f52ca04198d"
@@ -3079,10 +3079,6 @@ lru-cache@^4.0.1:
 macaddress@^0.2.8:
   version "0.2.8"
   resolved "https://registry.yarnpkg.com/macaddress/-/macaddress-0.2.8.tgz#5904dc537c39ec6dbefeae902327135fa8511f12"
-
-material-colors@^1.0.0:
-  version "1.2.5"
-  resolved "https://registry.yarnpkg.com/material-colors/-/material-colors-1.2.5.tgz#5292593e6754cb1bcc2b98030e4e0d6a3afc9ea1"
 
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
@@ -4528,10 +4524,6 @@ tiny-svg@^0.1.0, tiny-svg@^0.1.1:
   version "0.1.1"
   resolved "https://registry.yarnpkg.com/tiny-svg/-/tiny-svg-0.1.1.tgz#185c8eaf70875432fdff98dc1790a9bfaf65feab"
 
-tinycolor2@^1.1.2:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/tinycolor2/-/tinycolor2-1.4.1.tgz#f4fad333447bc0b07d4dc8e9209d8f39a8ac77e8"
-
 to-arraybuffer@^1.0.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/to-arraybuffer/-/to-arraybuffer-1.0.1.tgz#7d229b1fcc637e466ca081180836a7aabff83f43"
@@ -4725,13 +4717,12 @@ vue-codemirror@^3.0.5:
   dependencies:
     codemirror "^5.25.0"
 
-vue-color@^2.4.0:
-  version "2.4.0"
-  resolved "https://registry.yarnpkg.com/vue-color/-/vue-color-2.4.0.tgz#ba1ae247ad58ea6428a1c3fd5a35c0ec46f21a75"
+vue-echarts@^2.5.1:
+  version "2.5.1"
+  resolved "https://registry.yarnpkg.com/vue-echarts/-/vue-echarts-2.5.1.tgz#7616fc6d3bde559bd76aa47790b11a3c9ff5e784"
   dependencies:
-    lodash.throttle "^4.0.0"
-    material-colors "^1.0.0"
-    tinycolor2 "^1.1.2"
+    echarts "^3.8.2"
+    lodash.debounce "^4.0.8"
 
 vue-hot-reload-api@^2.0.1:
   version "2.1.0"
@@ -4966,6 +4957,6 @@ yauzl@2.4.1:
   dependencies:
     fd-slicer "~1.0.1"
 
-zrender@^3.6.0:
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/zrender/-/zrender-3.6.0.tgz#b8f4de98200c2c90785b90695680a1f12b4c71ba"
+zrender@3.7.4:
+  version "3.7.4"
+  resolved "https://registry.yarnpkg.com/zrender/-/zrender-3.7.4.tgz#f847d53948481ef6d42906d1ea9aeec7acbefdf2"
