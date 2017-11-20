@@ -102,7 +102,7 @@ const routes = [{
     }]
   }, {
     path: '/auth',
-    component: require('./components/auth/index'),
+    componepnt: require('./components/auth/index'),
     meta: {
       sidebar: SidebarConf.Accounts
     },

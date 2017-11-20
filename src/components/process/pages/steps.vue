@@ -1,187 +1,131 @@
 <style lang="less" scoped>
   @import url("./../../../assets/css/variables.less");
-  .sub-title {
-    margin-top: 0;
-
-    i {
-      width: 14px;
-    }
-  }
-
-  .el-collapse-item__wrap {
-    div {
-      .el-row:not(:last-of-type) {
-        .el-checkbox-group {
-          border-bottom: 1px dashed @borderColor;
-        }
+  .search-box {
+      display: flex;
+      .el-input {
+        width: 210px;
+        height: 36px;
+        margin-right: 10px;
+      }
+      .el-select {
+        width: 140px;
+        margin-right: 10px;
       }
     }
+  .el-tag+.el-tag {
+    margin-left: 10px;
   }
 </style>
 
 <template>
-  <div class="steps wrapper">
+  <div class="processes wrapper">
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
-          <h3><i class="el-icon-fa-circle-o-notch icon-lg"></i> 流程环节管理</h3>
-          <el-alert
-            title="在此处为流程指派各环节的候选人、候选组及受指派人。"
-            type="info"
-            show-icon
-            style="margin-bottom: 12px"></el-alert>
-          <el-table
-            :data="permittedProcessList"
-            border
-            v-loading.body="permittedProcessLoading">
+          <h3><i class="el-icon-fa-circle-o icon-lg"></i> 环节权限管理</h3>
+          <div class="flex-box">
+            <div class="search-box">
+              <el-input
+                    placeholder="流程名称"
+                    icon="search"
+                    size="small"
+                    v-model="search.pname"
+                    @change="onSearch">
+              </el-input>
+              <el-select v-model="search.category" size="small" @change="onSearch" clearable placeholder="流程分类">
+                <el-option
+                  v-for="item in categoryList"
+                  :key="item.key"
+                  :label="item.name"
+                  :value="item.name">
+                </el-option>
+              </el-select>     
+            </div>
+          </div>
+          <el-table :data="currentPageList" border @selection-change='handleSelection' @expand="check">
             <el-table-column type="expand">
-              <template scope="scope">
-                <h5 class="sub-title"><i class="el-icon-fa-flag-o"></i> 流程环节：</h5>
-                <el-collapse accordion @change="onAccordionChange">
-                  <el-collapse-item v-for="task in scope.row.task_list" :key="task.tkey" :title="task.tname" v-if="task.tkey !== 'start'">
-                    <el-row>
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user"></i> 候选人（{{task.users.length || '0'}}）</h5>
-                          <el-button v-if="candidateData.isUserCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isUserCheckable = false">取消</el-button>
-                          <el-tooltip content="移除候选人" placement="top" class="fr" v-if="task.users.length">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              style="margin-left: 6px;"
-                              :class="{ empty: !candidateData.isUserCheckable }"
-                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'user');currentTask = task">{{candidateData.isUserCheckable ? '移除所选' : ''}}</el-button>
-                          </el-tooltip>
-                          <el-tooltip content="加入候选人" placement="top" class="fr">
-                            <el-button
-                              icon="plus"
-                              type="success"
-                              size="small"
-                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'user' }); currentTask = task">
-                            </el-button>
-                          </el-tooltip>
-                        </div>
-                        <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isUserCheckable }">
-                          <el-checkbox v-for="user in task.users" :key="user.userId" :label="user.userId">{{user.nick}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row>
-
-                    <el-row>
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-users"></i> 候选组（{{task.groups.length || '0'}}）</h5>
-                          <el-button v-if="candidateData.isGroupCheckable" class="fr cancel-btn" type="text" size="small" @click="candidateData.isGroupCheckable = false">取消</el-button>
-                          <el-tooltip content="移除候选组" placement="top" class="fr" v-if="task.groups.length">
-                            <el-button
-                              icon="minus"
-                              type="danger"
-                              size="small"
-                              style="margin-left: 6px;"
-                              :class="{ empty: !candidateData.isGroupCheckable }"
-                              @click="onRemoveCandidate(scope.row.pkey, task.tkey, 'group');currentTask = task">{{candidateData.isGroupCheckable ? '移除所选' : ''}}</el-button>
-                          </el-tooltip>
-                          <el-tooltip content="加入候选组" placement="top" class="fr">
-                            <el-button
-                              icon="plus"
-                              type="success"
-                              size="small"
-                              @click="Object.assign(candidateData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey, type: 'group' }); currentTask = task">
-                            </el-button>
-                          </el-tooltip>
-                        </div>
-                        <el-checkbox-group v-model="candidateData.toRemove" :class="{ uncheckable: !candidateData.isGroupCheckable }">
-                          <el-checkbox v-for="group in task.groups" :key="group.key" :label="group.key">{{group.name}}</el-checkbox>
-                        </el-checkbox-group>
-                      </el-col>
-                    </el-row>
-
-                    <el-row>
-                      <el-col :span="20" :offset="2">
-                        <div class="btn-area clear">
-                          <h5 class="sub-title fl"><i class="el-icon-fa-user-secret"></i> 受指派人：<span style="color: #1f2d3d; font-size: 14px; font-weight: normal;">{{task.assign || '无'}}</span></h5>
-                          <el-button
-                            icon="minus"
-                            type="danger"
-                            size="small"
-                            style="margin-left: 6px;"
-                            class="fr"
-                            @click="prepareRemoveAssignee(scope.row.pkey, task.tkey, task.assign)">
-                          </el-button>
-                          <el-button
-                            :icon="task.assign ? 'edit' : 'plus'"
-                            type="success"
-                            class="fr"
-                            :plain="task.assign ? true : false"
-                            size="small"
-                            @click="Object.assign(assigneeData, { visible: true, pkey: scope.row.pkey, tkey: task.tkey }); currentTask = task">
-                          </el-button>
-                        </div>
-                      </el-col>
-                    </el-row>
-                  </el-collapse-item>
-                </el-collapse>
+              <template scope="props">
+                <el-table :data="props.row.task_list">
+                  <el-table-column label="环节名称" prop="tname"></el-table-column>
+                  <el-table-column label="候选人" inline-template>
+                    <template>
+                      <div>
+                      <el-select v-if="row.editingUser" multiple v-model="row.users">
+                        <el-option v-for="user in permittedUserList"
+                                   :key="user.userId"
+                                   :label="user.nick"
+                                   :value="user"
+                        ></el-option>
+                      </el-select>
+                      <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false)"></i>
+                      <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false)"></i>
+                      <span v-for="user in row.users" v-show="!row.editingUser">{{user.nick}} </span>
+                      <i class="el-icon-edit text-info fr" v-if="!row.editingUser" @click="showContainer(row, true, false)"></i>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <el-table-column label="候选组" inline-template>
+                  <template>
+                    <div>
+                    <el-select v-if="row.editingGroup" multiple v-model="row.groups">
+                      <el-option v-for="group in permittedRoleList"
+                             :key="group.key"
+                             :label="group.name"
+                             :value="group"
+                      ></el-option>
+                    </el-select>
+                    <i v-show="row.editingGroup" class="el-icon-check text-success" @click="onEdit(row, false, true)"></i>
+                    <i v-show="row.editingGroup" class="el-icon-close text-error" @click="onCancelEdit(row, false, true)"></i>
+                    <el-tag type="gray" v-for="group in row.groups" @click="controllUsers(row)" v-show="!row.editingGroup">{{group.name}}</el-tag>
+                    <i class="el-icon-edit text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true)"></i>
+                    </div>
+                  </template>
+                  </el-table-column>
+                  <el-table-column label="受指派人"></el-table-column>
+                </el-table>
               </template>
             </el-table-column>
-            <el-table-column
-              prop="pname"
-              label="可管理的流程"></el-table-column>
+            <el-table-column label="可管理的流程" prop="pname"></el-table-column>
+            <el-table-column label="流程分类" prop="category"></el-table-column>
           </el-table>
+          <el-pagination
+            class="fr margin-top margin-bottom"
+            @size-change="handleSizeChange"
+            @current-change="handleCurrentChange"
+            :current-page.sync="currentPage"
+            :page-sizes="[10, 20, 30, 50, 100]"
+            :page-size="+currentPageSize"
+            layout="total, sizes, prev, pager, next"
+            :total="totalPage">
+          </el-pagination>
         </el-card>
       </el-col>
     </el-row>
-
-    <el-dialog :title="candidateData.type === 'user' ? '加入候选人' : '加入候选组（角色）'" v-model="candidateData.visible" @close="candidateData.toAdd = []">
-      <h5 class="sub-title"><i class="el-icon-information"></i> 勾选欲加入为{{candidateData.type === 'user' ? '候选人' : '候选组'}}的{{candidateData.type === 'user' ? '用户' : '角色'}}：</h5>
-      <el-select v-model="candidateData.toAdd" filterable multiple placeholder="可搜索" style="width: 80%">
-        <template v-if="candidateData.type === 'user'">
-          <el-option
-            v-for="user in permittedUserList"
-            :key="user.userId"
-            :label="`${user.nick} - ${user.email}`"
-            :value="user.userId"
-            :disabled="currentTask.users.some(u => u.userId === user.userId)"></el-option>
-        </template>
-        <template v-if="candidateData.type === 'group'">
-          <el-option
-            v-for="role in permittedRoleList"
-            :key="role.key"
-            :label="role.name"
-            :value="role.key"
-            :disabled="currentTask.groups.some(r => r.key === role.key)"></el-option>
-        </template>
-      </el-select>
-      <!-- <el-checkbox-group v-model="candidateData.toAdd">
-        <el-checkbox v-if="candidateData.type === 'user'" v-for="user in permittedUserList" :label="user.userId">{{user.code}}</el-checkbox>
-        <el-checkbox v-if="candidateData.type === 'group'" v-for="role in permittedRoleList" :label="role.key">{{role.name}}</el-checkbox>
-      </el-checkbox-group> -->
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="onAddCandidate(candidateData)" size="small" icon="check" type="success" :loading="candidateData.loading">确认加入</el-button>
-      </span>
-    </el-dialog>
-
-    <el-dialog title="指定受指派人" v-model="assigneeData.visible">
-      <h5 class="sub-title"><i class="el-icon-information"></i> 选中欲指定为受指派人的用户：</h5>
-      <el-select v-model="assigneeData.assignee" filterable placeholder="可搜索" :disabled="assigneeData.initiator" style="width: 80%">
-        <el-option
-          v-for="user in permittedUserList"
-          :key="user.userId"
-          :label="`${user.nick} - ${user.email}`"
-          :value="user.userId"
-          :disabled="currentTask && currentTask.assignee && currentTask.assignee.userId === user.userId"></el-option>
-      </el-select>
-      <!-- <el-radio-group v-model="assigneeData.assignee">
-        <el-radio v-for="user in permittedUserList" :label="user.userId" :disabled="assigneeData.initiator">{{user.code}}</el-radio>
-      </el-radio-group> -->
-      <b class="sub-title" style="display: block; margin: 12px 0 6px;">或：</b>
-      <el-checkbox-group v-model="assigneeData.initiator">
-        <el-checkbox label="申请人">指派给申请人</el-checkbox>
-      </el-checkbox-group>
-      <span class="dialog-footer" slot="footer">
-        <el-button @click="onChangeAssignee(assigneeData)" size="small" icon="check" type="success" :loading="assigneeData.loading">确定</el-button>
-      </span>
-    </el-dialog>
+  <el-dialog :visible.sync="dialogVisible" :model="simplifiedData" title="批量编辑" size="tiny">
+      <el-form   label-width="72px">
+        <el-form-item label="管理员" prop="simplifiedUsersId">
+          <el-select v-model="simplifiedData.simplifiedUsersId" multiple  placeholder="请选择管理员">
+             <el-option v-for="user in permittedUserList"
+                   :key="user.userId"
+                   :label="user.nick"
+                   :value="user.userId"
+             ></el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item label="管理组" prop="simplifiedGroupsKey">
+          <el-select v-model="simplifiedData.simplifiedGroupsKey" multiple placeholder="请选择管理组">
+            <el-option v-for="group in permittedRoleList"
+               :key="group.key"
+               :label="group.name"
+               :value="group.key"
+        ></el-option>
+          </el-select>
+        </el-form-item>
+      </el-form>
+     <span class="dialog-footer" slot="footer">
+      <el-button type="success" @click="onIncreased">确定增加</el-button>
+     </span>
+  </el-dialog>
   </div>
 </template>
 
@@ -195,164 +139,212 @@
 
     data () {
       return {
-        currentTask: null,
-        candidateData: {
-          visible: false,
-          loading: false,
-          isUserCheckable: false,
-          isGroupCheckable: false,
-          type: '', // user || group
-          pkey: '',
-          tkey: '',
-          toAdd: [],
-          toRemove: []
-        },
-        assigneeData: {
-          visible: false,
-          loading: false,
-          isCheckable: false,
-          pkey: '',
-          tkey: '',
-          assignee: '',
-          initiator: false,
-          action: ''
+        dialogVisible: false,
+        totalPage: 0,
+        currentPage: 1,
+        currentPageSize: 10,
+        currentPageList: [],
+        processSearchList: '',
+        processList: '',
+        search: { pname: '', category: '' },
+        categoryList: [],
+        simplifiedData: {
+          simplifiedUsersId: [],
+          simplifiedProcess: [],
+          simplifiedGroupsKey: []
         }
       }
     },
-
+    watch: {
+      'permittedProcessList': 'renderList'
+    },
     created () {
+      this.getCategoryList(false, false)
       this.getPermittedProcessList()
       this.getPermittedUserList()
       this.getPermittedRoleList()
     },
-
+    computed: {
+      isQualified () {
+        return (this.$store.state.userinfo.superadmin === true)
+      }
+    },
     methods: {
-      onAccordionChange () {
-        Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false, toAdd: [], toRemove: [] })
+      check (row) {
+        row.task_list.map(_ => {
+          // _.push({editingUser: false, editingGroup: false})
+          _.editingUser = false
+          _.editingGroup = false
+        })
+        console.log(row.task_list)
       },
-
-      onAddCandidate ({ pkey, tkey, type = '' }) {
-        let data
-        let { toAdd } = this.candidateData
-        console.log(toAdd, this.candidateData)
-        type === 'user' ? data = { pkey, tkey, users: toAdd } : data = { pkey, tkey, groups: toAdd }
+      onIncreased () {
         let postData = {
-          action: 'process/task',
-          method: 'POST',
-          data
-        }
-        this.candidateData.loading = true
-        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            Object.assign(this.candidateData, { loading: false, visible: false })
-            this.$message.success('加入成功！')
-            if (type === 'user') {
-              toAdd.map(userid => {
-                const toAddUser = this.permittedUserList.find(user => {
-                  return user.userId === userid
-                })
-                this.currentTask.users.push(toAddUser)
-              })
-            } else {
-              toAdd.map(key => {
-                const toAddRole = this.permittedRoleList.find(role => {
-                  return role.key === key
-                })
-                this.currentTask.groups.push(toAddRole)
-              })
-            }
-            // this.getPermittedProcessList()
+          action: 'process/admin',
+          method: 'post',
+          data: {
+            pkey_list: this.simplifiedData.simplifiedProcess,
+            users: this.simplifiedData.simplifiedUsersId,
+            groups: this.simplifiedData.simplifiedGroupsKey
           }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          console.log(res)
+          this.dialogVisible = false
+          this.getPermittedProcessList()
+          this.simplifiedData.simplifiedGroupsKey = []
+          this.simplifiedData.simplifiedProcess = []
+          this.simplifiedData.simplifiedUsersId = []
         })
       },
-
-      onRemoveCandidate (pkey, tkey, type) {
-        let isCheckableKey = `is${type.charAt(0).toUpperCase() + type.slice(1)}Checkable`
-        if (!this.candidateData[isCheckableKey]) {
-          this.candidateData[isCheckableKey] = true
-          return
+      handleSelection (val) {
+        console.log(val)
+        this.simplifiedData.simplifiedProcess = val.map(_ => _.pkey)
+      },
+      onCancelEdit (row, users, groups) {
+        if (users) {
+          row.users = row.tempUsers
+          row.editingUser = false
         }
-
-        let typeCode
-        type === 'user' ? typeCode = '候选人' : typeCode = '候选组'
-
-        if (!this.candidateData.toRemove.length) {
-          this.$message.warning(`请选择${typeCode}！`)
-          return
+        if (groups) {
+          row.groups = row.tempGroups
+          row.editingGroup = false
         }
-
-        this.$confirm(`此操作将移除所选的${typeCode}，是否继续？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          let data
-          let { toRemove } = this.candidateData
-          type === 'user' ? data = { pkey, tkey, users: toRemove } : data = { pkey, tkey, groups: toRemove }
-          let postData = {
-            action: 'process/task',
-            method: 'DELETE',
-            data
+      },
+      onEdit (row, users, groups) {
+        let usersId, tempUsersId, tempGroupsKey, groupsKey
+        console.log(row)
+        if (users) {
+          usersId = row.users.map(_ => {
+            return _.userId
+          })
+          tempUsersId = row.tempUsers.map(_ => {
+            return _.userId
+          })
+        } else if (groups) {
+          groupsKey = row.groups.map(_ => {
+            return _.key
+          })
+          tempGroupsKey = row.tempGroups.map(_ => {
+            return _.key
+          })
+        }
+        let postData = {
+          action: 'process/admin',
+          method: 'delete',
+          data: {
+            pkey: row.pkey,
+            users: users ? tempUsersId : '',
+            groups: groups ? tempGroupsKey : ''
           }
-          this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-            if (res.status === 200) {
-              Object.assign(this.candidateData, { isUserCheckable: false, isGroupCheckable: false })
-              this.$message.success('移除成功！')
-              // this.getPermittedProcessList()
-              if (type === 'user') {
-                let arr = this.currentTask.users
-
-                toRemove.map(userid => {
-                  arr.map((user, index) => {
-                    console.log(user, userid)
-                    if (user.userId === userid) {
-                      arr.splice(index, 1)
-                      this.candidateData.toRemove = []
-                    }
-                  })
-                })
-              } else {
-                let arr = this.currentTask.groups
-                toRemove.map(key => {
-                  arr.map((role, index) => {
-                    if (role.key === key) {
-                      arr.splice(index, 1)
-                      this.candidateData.toRemove = []
-                    }
-                  })
-                })
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            let postData = {
+              action: 'process/admin',
+              method: 'POST',
+              data: {
+                pkey: row.pkey,
+                users: users ? usersId : '',
+                groups: groups ? groupsKey : ''
               }
             }
-          })
-        })
-      },
-
-      onChangeAssignee ({ pkey, tkey, assignee, initiator }) {
-        if (initiator) assignee = '申请人'
-        let postData = {
-          action: 'process/task',
-          method: 'POST',
-          data: { pkey, tkey, assign: assignee }
-        }
-        this.assigneeData.loading = true
-        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
-          if (res.status === 200) {
-            Object.assign(this.assigneeData, { visible: false, loading: false })
-            this.$message.success('操作成功！')
-            // this.getPermittedProcessList()
-            this.currentTask.assign = assignee
+            this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+              if (res.status === 200) {
+                console.log(res.data.data)
+                row.editingUser = false
+                row.editingGroup = false
+              }
+            })
           }
         })
       },
-
-      prepareRemoveAssignee (pkey, tkey, assignee) {
-        this.$confirm(`此操作将移除已有的受指派人：${assignee}，是否继续？`, '提示', {
-          confirmButtonText: '确定',
-          cancelButtonText: '取消',
-          type: 'warning'
-        }).then(() => {
-          Object.assign(this.assigneeData, { assignee: -1, pkey, tkey })
-          this.onChangeAssignee(this.assigneeData)
+      // 展开选择框
+      showContainer (row, users, groups) {
+        if (users) {
+          console.log(row)
+          this.$set(row, 'editingUser', true)
+          this.$nextTick(() => {
+            this.$forceUpdate()
+          })
+          // row.editingUser = true
+          let usersList = row.users.map(user => {
+            user = this.permittedUserList.find(_ => {
+              return _.userId === user.userId
+            })
+            return user
+          })
+          Object.assign(row.users, usersList)
+          row.tempUsers = usersList
+          console.log(row)
+        }
+        if (groups) {
+          row.editingGroup = true
+          let groupList = row.groups.map(group => {
+            group = this.permittedRoleList.find(_ => {
+              return _.key === group.key
+            })
+            return group
+          })
+          Object.assign(row.groups, groupList)
+          row.tempGroups = groupList
+          console.log(row)
+        }
+      },
+      onSearch () {
+        this.processSearchList = this.permittedProcessList.filter(processe => {
+          for (const id in processe) {
+            if (['pname'].includes(id)) {
+              console.log(processe[id])
+              console.log(this.search.pname)
+              if (processe[id].includes(this.search.pname)) {
+                return true
+              }
+            }
+          }
+        })
+        .filter(val => {
+          for (let id in val) {
+            if (id === 'category') {
+              if (val[id] === this.search.category || this.search.category === '') {
+                return true
+              }
+            }
+          }
+        })
+        this.totalPage = this.processSearchList.length
+        this.handleCurrentChange(1)
+      },
+      renderList (newVal, oldVal) {
+        this.totalPage = newVal.length
+        this.handleCurrentChange(1)
+      },
+      handleCurrentChange (val) {
+        this.currentPage = val
+        const offset = (this.currentPage - 1) * this.currentPageSize
+        let array = (this.search.pname || this.search.category) ? this.processSearchList : this.permittedProcessList
+        console.log(offset + this.currentPageSize)
+        console.log(array)
+        this.currentPageList = (offset + this.currentPageSize >= array.length) ? array.slice(offset, array.length) : array.slice(offset, offset + this.currentPageSize)
+      },
+      handleSizeChange (val) {
+        this.currentPageSize = val
+        this.handleCurrentChange(1)
+      },
+      getCategoryList (includePds, pdDetail) {
+        let postData = {
+          action: 'process/category',
+          method: 'GET',
+          data: {
+            include_pds: includePds,
+            pd_detail: pdDetail
+          }
+        }
+        this.http.post('/activiti/', this.parseData(postData)).then((res) => {
+          if (res.status === 200) {
+            console.log(res.data.data)
+            this.categoryList = res.data.data.list
+          }
         })
       }
     }

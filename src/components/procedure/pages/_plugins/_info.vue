@@ -19,7 +19,7 @@
              }"></progress-wrap>
           </div> -->
           </div>
-          <div style="border:1px solid #ccc;margin-bottom:15px"></div>
+          <div style="border:1px solid #ccc;margin-bottom:15px" v-if="taskData.can_manage && $route.query.filter === '指派'"></div>
             <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true" style="display:flex;justify-content:flex-end;margin-bottom:-5px">
               <el-form-item label="处理人" :inline="true">
                 <el-select

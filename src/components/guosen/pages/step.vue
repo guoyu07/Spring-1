@@ -201,7 +201,7 @@
                     </div>
                   </div>
                   <div class="clear">
-                    <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data)" class="margin-bottom">机柜预览图</el-button>
+                    <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data, index)" class="margin-bottom">机柜预览图</el-button>
                   </div>
                 </el-tab-pane>
               </el-tabs>
@@ -312,7 +312,7 @@
                       </div>
                     </div>
                     <div class="clear">
-                      <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data)" class="margin-bottom">机柜预览图</el-button>
+                      <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data, index)" class="margin-bottom">机柜预览图</el-button>
                     </div>
                   </el-tab-pane>
                 </el-tabs>
@@ -483,13 +483,10 @@
         // 判断继承方式以及可增加个数 权重更高
         let tType = this.taskFormAll.form.body.count.type
         if (tType === 'message_header') {
-          console.log('1')
           return true
         } else if (tType === 'form_header') {
-          console.log('2')
           return true
         } else if (tType === 'static') {
-          console.log('3')
           let {min} = this.taskFormAll.form.body.count
           let {max} = this.taskFormAll.form.body.count
           console.log(min, max)
@@ -602,18 +599,29 @@
           }
         }
       },
-      getPreview (data) {
+      getPreview (data, index) {
+        console.log(data)
         let idcrackData = {}
-        if (this.taskData.pinstance.pkey === 'host_machine') {
-          idcrackData.ipscopeId = this.applyData.body[0].esxi_ipscope.instanceId
-          idcrackData.type = 'esxi'
-        } else {
-          idcrackData.ipscopeId = data.sc_ip_info[0].ipscope.instanceId
-        }
-        const postHeadvData = {
-          action: 'idcrack/list',
+        let postHeadvData = {
+          action: '',
           method: 'GET',
           data: idcrackData
+        }
+        if (this.taskData.pinstance.pkey === 'host_machine') {
+          idcrackData.ipscopeId = this.applyData.body[index].esxi_ipscope.instanceId
+          idcrackData.vmware_type = this.applyData.header.vmware_type
+          postHeadvData.action = 'esxi/rack/list'
+        } else if (this.taskData.pinstance.pkey === 'host') {
+          postHeadvData.action = 'idcrack/list'
+          idcrackData.ipscopeId = data.sc_ip_info[0].ipscope.instanceId
+          // idcrackData.host_gigatbitcard =
+          idcrackData.network_cards = this.applyData.header.network_cards
+          idcrackData.idcId = this.applyData.header.idc.instanceId
+        } else {
+          postHeadvData.action = 'idcrack/list'
+          idcrackData.ipscopeId = this.applyData.body[index].sc_ip_info[0].ipscope.instanceId
+          idcrackData.network_cards = this.applyData.body[index].network_cards
+          idcrackData.idcId = this.applyData.header.idc.instanceId
         }
         this.http.post('/data/', this.parseData(postHeadvData))
         .then((response) => {

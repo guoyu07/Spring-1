@@ -188,7 +188,7 @@
       },
 
       getIsGuosen () {
-        if (this.filterName === '已完成') {
+        if (this.filterName === '已结束' || this.filterName === '已完成') {
           this.isGuosen = ['host', 'host_my', 'host_machine'].includes(this.processViewData.order.pkey)
         } else {
           this.isGuosen = ['host', 'host_my', 'host_machine'].includes(this.taskViewData.order.pinstance.pkey)
@@ -210,7 +210,9 @@
       check (row, colIndex) {
         console.log(row, colIndex)
         if (!colIndex) {
-          if (this.filterName === '已完成') {
+          if (this.filterName === '已结束') {
+            this.turnTofinishTask(row)
+          } else if (this.filterName === '已完成') {
             this.turnTofinishTask(row)
           } else {
             this.turnToUnfinishTask(row)
@@ -243,6 +245,7 @@
       },
 
       onViewProcess (order) {
+        console.log(order)
         Object.assign(this.processViewData, { order })
         this.getIsGuosen()
       },
