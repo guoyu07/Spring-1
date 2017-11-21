@@ -61,9 +61,11 @@
               </el-select>
               <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false)"></i>
               <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false)"></i>
+              <div>
               <span v-for="user in row.users" v-show="!row.editingUser">{{user.nick}} </span>
-              <i class="el-icon-edit text-info fr" v-show="!row.editingUser" @click="showContainer(row, true, false)"></i>
               </div>
+              </div>               
+              <i  style="top:50%;transform:translateY(-50%);position:relative" class="el-icon-edit text-info fr" v-show="!row.editingUser" @click="showContainer(row, true, false)"></i>
             </template>
             </el-table-column>
             <el-table-column  label="管理组" inline-template>

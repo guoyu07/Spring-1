@@ -115,7 +115,6 @@ Vue.prototype.parseData = parseData
 */
 const getPathResult = (result, path, k, kindex) => {
   if (!result) {
-    console.log('找不到result')
     return false
   }
   let _result = result
@@ -152,6 +151,9 @@ const getPathResult = (result, path, k, kindex) => {
         // console.log('找不到_result')
         return false
       }
+      // if (Array.isArray(_result[_path[i]])) {
+      //   _result = _result[_path[]]
+      // }
       if (Object.prototype.toString.call(_result[_path[i]])) { // 为对象时
         if (_result[_path[i]] !== undefined) { // 读取不到值时 return false
           _result = _result[_path[i]]
@@ -230,7 +232,7 @@ Vue.prototype.setDataType = (original, goalData) => {
   } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
     Vue.prototype.$set(goalData, original.id, null)
   } else if (original.value.type === 'int') {
-    Vue.prototype.$set(goalData, original.id, 0)
+    Vue.prototype.$set(goalData, original.id, 1)
   } else if (original.value.type === 'users' && original.isAlias) {
     Vue.prototype.$set(goalData, original.id, { group: null, user: null })
   } else if (original.value.type === 'table') {
@@ -243,33 +245,6 @@ Vue.prototype.setDataType = (original, goalData) => {
   }
 }
 
-// /**
-//  * @method setDataType 根据表单定义生成双向绑定的数据
-//  * @param {object} original 表单定义
-//  * @param {object} goalData 需要提交的表单
-//  * @return {object} 根据表单定义的类型生成各种类型初始化的值
-// */
-// Vue.prototype.setMiddleDataType = (original, goalData) => {
-//   if (original.value.type === 'arr' || original.value.type === 'dicts' || original.value.type === 'cascade' || original.value.type === 'search_bar' || original.value.type === 'enums') {
-//     // console.log(original.name)
-//     Vue.prototype.$set(goalData, original.id, [])
-//   } else if (original.value.type === 'str' || original.value.type === 'enum' || original.value.type === 'date' || original.value.type === 'datetime') {
-//     Vue.prototype.$set(goalData, original.id + '_' + original._timeStamp, '')
-//   } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
-//     Vue.prototype.$set(goalData, original.id, null)
-//   } else if (original.value.type === 'int') {
-//     Vue.prototype.$set(goalData, original.id, 0)
-//   } else if (original.value.type === 'users' && original.isAlias) {
-//     Vue.prototype.$set(goalData, original.id, { group: null, user: null })
-//   } else if (original.value.type === 'table') {
-//     Vue.prototype.$set(goalData, original.id, [])
-//     Vue.prototype.$set(goalData[original.id], 0, {})
-//     let data = goalData[original.id][0]
-//     original.value.attr_list.map(item => {
-//       Vue.prototype.setMiddleDataType(item, data)
-//     })
-//   }
-// }
 /**
  * @method setNewDataType 根据表单定义生成对应初始化数据，不一定用于双向绑定
  * @param {object} original 表单定义
@@ -445,6 +420,7 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
     const _keyPath = keyPath[0]
     if (taskform.show.op === 'eq') {
       if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) + '' === taskform.show.value) {
+        console.log('12345')
         return true
       }
     } else if (taskform.show.op === 'neq') {
@@ -452,6 +428,7 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
         return true
       }
     } else if (taskform.show.op === 'reg') {
+      console.log('111')
       if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path).includes(taskform.show.value)) {
         return true
       }

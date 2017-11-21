@@ -3,10 +3,12 @@
     <el-row>
       <el-col :sm="24" :md="24" :lg="20">
         <el-card>
+         <div class="flex-box">
           <h3>
             <i class="el-icon-fa-user icon-lg"></i> {{userDetail.userId}} - {{ userDetail.nick }}
           </h3>
-
+          <el-button @click="onToggleUser(userDetail.nick, userDetail.userId, userDetail.status)">{{userDetail.status ? '启用' : '禁用'}}</el-button>
+        </div>
           <el-row>
             <el-col :sm="24" :md="18" :lg="12">
               <el-tabs type="card" class="margin-top margin-bottom" v-model="activeTab">
@@ -192,8 +194,8 @@
           }
         })
       },
-      onToggleUser ({ nick, userId, status }) {
-        this.$confirm(`确定${status ? '禁用' : '启用'}用户 ${nick} 吗？`, '提示', {
+      onToggleUser (nick, userId, status) {
+        this.$confirm(`确定${status ? '启用' : '禁用'}用户 ${nick} 吗？`, '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
           type: 'warning'
