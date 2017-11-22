@@ -126,6 +126,8 @@
               }
               if (oldVal !== undefined) {
                 this.vmodel[this.strucData.id] = ''
+                this.showOptionList = []
+                this.optionList = []
               }
               this.renderOptions()
             })
@@ -137,19 +139,25 @@
                 }
                 if (oldVal !== undefined) {
                   this.vmodel[this.strucData.id] = ''
+                  this.showOptionList = []
+                  this.optionList = []
                 }
                 this.renderOptions()
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
-                console.log(newVal, oldVal)
+                console.log(para.value.key_path, newVal, oldVal)
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
+                  console.log(this.strucData.id)
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
                 if (oldVal) {
                   this.vmodel[this.strucData.id] = ''
+                  this.showOptionList = []
+                  this.optionList = []
                 }
+                console.log(newVal)
                 this.renderOptions()
               })
             }
@@ -344,6 +352,7 @@
               } else {
                 const keyPath = para.value.key_path.split('.')
                 if (keyPath.length && !this.getPathResult(this.whole.body[this.index], keyPath[0])) {
+                  console.log(para.id, params[para.id])
                   return false
                 }
                 // console.log(this.whole, this.index, para.value.key_path)

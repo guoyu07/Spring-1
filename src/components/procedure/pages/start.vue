@@ -76,7 +76,7 @@
                               <h5>{{formBlock.name}}</h5>
                               <span v-for="formItem in formBlock.value" :key="formItem.id">
                                 <form-body
-                                  v-if="showFormItem(formItem, postForm)"
+                                  v-if="showFormItem(formItem, postForm, false, false, false, index)"
                                   :item="postForm.body[index]"
                                   :form-item="formItem"
                                   :whole="postForm"
@@ -317,7 +317,7 @@
               }
             })
           })
-          this.taskFormData.body.body_list.forEach(body => {
+          this.taskFormData.body.body_list.forEach((body, k) => {
             if (body.show.type) {
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
@@ -326,12 +326,13 @@
                       this.$set(this.postForm, 'body', [{}]) // 初始化表单数据
                       bodyList.attr_list.map(group => {
                         group.value.map(value => {
-                          // if (this.showFormItem(value, this.postForm)) {
-                          //   this.setDataType(value, this.postForm.body[0])
-                          // }
+                          if (this.showFormItem(value, this.postForm)) {
+                            this.setDataType(value, this.postForm.body[0])
+                          }
                           if (value.show.type) {
                             if (value.show.type === 'form_header') {
                               this.$watch('postForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                                console.log(newVal, oldVal)
                                 if (this.showFormItem(value, this.postForm)) {
                                   console.log('set', value.name)
                                   this.setDataType(value, this.postForm.body[0])
@@ -340,6 +341,16 @@
                                     console.log('delete', value.name)
                                     delete this.postForm.body[0][value.id]
                                   }
+                                }
+                              })
+                            } else if (value.show.type === 'form_body') {
+                              this.$watch('postForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
+                                console.log(newVal, oldVal)
+                                if (this.showFormItem(value, this.postForm, false, false, false, k)) {
+                                  this.setDataType(value, this.postForm.body[k])
+                                } else {
+                                  delete this.postForm.body[k][value.id]
+                                  return false
                                 }
                               })
                             }
@@ -391,7 +402,29 @@
               body.attr_list.map(group => {
                 group.value.map(value => {
                   if (value.need_submit) {
-                    this.setDataType(value, this.postForm.body[0])
+                    console.log(value, this.postForm, k)
+                    console.log(this.showFormItem(value, this.postForm, false, false, false, k))
+                    if (this.showFormItem(value, this.postForm)) {
+                      this.setDataType(value, this.postForm.body[k])
+                    }
+                    if (value.show.type === 'form_header') {
+                      this.$watch('postForm.header.' + value.show.key_path, (newVal, oldVal) => {
+                        if (this.showFormItem(value, this.assignForm)) {
+                          this.setDataType(value, this.assignForm.body[k])
+                        } else {
+                          delete this.assignForm.body[k][value.id]
+                        }
+                      })
+                    } else if (value.show.type === 'form_body') {
+                      this.$watch('postForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
+                        console.log(newVal, oldVal)
+                        if (this.showFormItem(value, this.postForm, false, false, false, k)) {
+                          this.setDataType(value, this.postForm.body[k])
+                        } else {
+                          delete this.postForm.body[k][value.id]
+                        }
+                      })
+                    }
                   }
                 })
               })
