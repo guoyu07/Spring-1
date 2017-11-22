@@ -45,13 +45,10 @@
          pkey: taskViewData.order.pinstance.pkey,
          taskList: taskViewData.order.pinstance.task_list
          }"></progress-wrap>
-        <h5 class="sub-title" v-if="taskViewData.order.pinstance.history_list.length"><i class="el-icon-information"></i> 完整历史步骤（{{ taskViewData.order.pinstance.history_list.length }}）</h5>
-        <el-collapse v-if="taskViewData.order.pinstance.history_list.length" class="history-list">
+        <h5 class="sub-title" v-if="taskViewData.order.pinstance.history_list.length"><i class="el-icon-information"></i> 历史步骤（{{ taskViewData.order.pinstance.history_list.length }}）</h5>
+        <!-- <el-collapse v-if="taskViewData.order.pinstance.history_list.length" class="history-list">
           <el-collapse-item v-for="(task, key) in taskViewData.order.pinstance.history_list" :title="(key + 1).toString() + '. ' + task.name" :key="key">
             <el-form label-position="left" label-width="90px" inline class="expanded-form">
-              <el-form-item v-if="task.task_key" label="任务 Key">
-                <code>{{task.task_key}}</code>
-              </el-form-item>
               <el-form-item v-if="task.operator" label="操作者">
                 <span>{{task.operator.nick}}</span>
               </el-form-item>
@@ -63,7 +60,16 @@
               </el-form-item>
             </el-form>
           </el-collapse-item>
-        </el-collapse>
+        </el-collapse> -->
+        <el-steps
+          finish-status="success"
+          style="margin: 16px 0 12px"
+          :active="taskViewData.order.pinstance.history_list.length + 1">
+          <el-step
+            v-for="(task, key) in taskViewData.order.pinstance.history_list"
+            :title="task.name"
+            :description="`${task.operator.nick} ${task.time}`"></el-step>
+        </el-steps>
       </el-col>
     </el-row>
     <span class="dialog-footer" slot="footer">
