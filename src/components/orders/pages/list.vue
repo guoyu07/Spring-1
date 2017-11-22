@@ -229,8 +229,8 @@
           if (res.status === 200) {
             this.filterData = res.data.data
             this.filterName = this.filterData.name
-            this.getFilteredTasks()
             this.$nextTick(() => {
+              this.getFilteredTasks()
               this.resetMessageState()
             })
           }
