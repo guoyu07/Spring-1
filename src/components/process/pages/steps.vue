@@ -1,19 +1,29 @@
 <style lang="less" scoped>
   @import url("./../../../assets/css/variables.less");
   .search-box {
-      display: flex;
-      .el-input {
-        width: 210px;
-        height: 36px;
-        margin-right: 10px;
-      }
-      .el-select {
-        width: 140px;
-        margin-right: 10px;
-      }
+    display: flex;
+
+    .el-input {
+      width: 210px;
+      height: 36px;
+      margin-right: 10px;
     }
+
+    .el-select {
+      width: 140px;
+      margin-right: 10px;
+    }
+  }
+
   .el-tag+.el-tag {
-    margin-left: 10px;
+    margin-left: 6px;
+  }
+
+  .el-icon-edit.align {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 16px;
   }
 </style>
 
@@ -42,7 +52,7 @@
               </el-select>     
             </div>
           </div>
-          <el-table :data="currentPageList" border  >
+          <el-table :data="currentPageList" border>
             <el-table-column type="expand">
               <template scope="props">
                 <el-table :data="props.row.task_list">
@@ -60,7 +70,7 @@
                       <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false, false)"></i>
                       <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false, false)"></i>
                       <span v-for="user in row.users" v-show="!row.editingUser">{{user.nick}} </span>
-                      <i class="el-icon-edit text-info fr" v-if="!row.editingUser" @click="showContainer(row, true, false, false)"></i>
+                      <i class="el-icon-edit align text-info fr" v-if="!row.editingUser" @click="showContainer(row, true, false, false)"></i>
                       </div>
                     </template>
                   </el-table-column>
@@ -77,7 +87,7 @@
                     <i v-show="row.editingGroup" class="el-icon-check text-success" @click="onEdit(row, false, true, false)"></i>
                     <i v-show="row.editingGroup" class="el-icon-close text-error" @click="onCancelEdit(row, false, true, false)"></i>
                     <el-tag type="gray" v-for="group in row.groups"  v-show="!row.editingGroup">{{group.name}}</el-tag>
-                    <i class="el-icon-edit text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true, false)"></i>
+                    <i class="el-icon-edit align text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true, false)"></i>
                     </div>
                   </template>
                   </el-table-column>
@@ -94,7 +104,7 @@
                       <i v-show="row.editingAssign" class="el-icon-check text-success" @click="onEdit(row, false, false, true)"></i>
                       <i v-show="row.editingAssign" class="el-icon-close text-error" @click="onCancelEdit(row, false, false, true)"></i>
                       <span  v-if="!row.editingAssign" >{{row.hasOwnProperty('assign') ? row.assign.nick:''}}</span>
-                      <i class="el-icon-edit text-info fr" v-if="!row.editingAssign && row.hasOwnProperty('assign')" @click="showContainer(row, false, false, true)"></i>
+                      <i class="el-icon-edit align text-info fr" v-if="!row.editingAssign && row.hasOwnProperty('assign')" @click="showContainer(row, false, false, true)"></i>
                       </div>
                     </template>
                   </el-table-column>

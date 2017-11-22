@@ -13,7 +13,13 @@
       }
     }
   .el-tag+.el-tag {
-    margin-left: 10px;
+    margin-left: 6px;
+  }
+  .el-icon-edit.align {
+    position: absolute;
+    transform: translateY(-50%);
+    top: 50%;
+    right: 16px;
   }
 </style>
 
@@ -65,7 +71,7 @@
               <span v-for="user in row.users" v-show="!row.editingUser">{{user.nick}} </span>
               </div>
               </div>               
-              <i  style="top:50%;transform:translateY(-50%);position:relative" class="el-icon-edit text-info fr" v-show="!row.editingUser" @click="showContainer(row, true, false)"></i>
+              <i class="el-icon-edit align text-info fr" v-show="!row.editingUser" @click="showContainer(row, true, false)"></i>
             </template>
             </el-table-column>
             <el-table-column  label="管理组" inline-template>
@@ -81,7 +87,7 @@
                   <i v-show="row.editingGroup" class="el-icon-check text-success" @click="onEdit(row, false, true)"></i>
                   <i v-show="row.editingGroup" class="el-icon-close text-error" @click="onCancelEdit(row, false, true)"></i>
                   <el-tag type="gray" v-for="group in row.groups" @click="controllUsers(row)" v-show="!row.editingGroup">{{group.name}}</el-tag>
-                  <i class="el-icon-edit text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true)"></i>
+                  <i class="el-icon-edit align text-info fr" v-show="!row.editingGroup" @click="showContainer(row, false, true)"></i>
                   </div>
                 </template>
             </el-table-column>
