@@ -95,12 +95,21 @@
                     <template>
                       <div>
                       <el-select v-if="row.editingAssign"  v-model="row.assign" clearable>
+                        <el-option
+                          key="author"
+                          :label="props.row.author.nick"
+                          :value="props.row.author"></el-option>
                         <el-option v-for="user in permittedUserList"
                                    :key="user.userId"
                                    :label="user.nick"
                                    :value="user"
                         ></el-option>
                       </el-select>
+                      <el-button
+                        v-show="row.editingAssign"
+                        size="mini"
+                        style="margin-bottom: 4px"
+                        @click="row.assign = props.row.author">设为申请人</el-button>
                       <i v-show="row.editingAssign" class="el-icon-check text-success" @click="onEdit(row, false, false, true)"></i>
                       <i v-show="row.editingAssign" class="el-icon-close text-error" @click="onCancelEdit(row, false, false, true)"></i>
                       <span  v-if="!row.editingAssign" >{{row.hasOwnProperty('assign') ? row.assign.nick:''}}</span>
