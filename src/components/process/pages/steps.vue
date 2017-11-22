@@ -97,8 +97,8 @@
                       <el-select v-if="row.editingAssign"  v-model="row.assign" clearable>
                         <el-option
                           key="author"
-                          :label="props.row.author.nick"
-                          :value="props.row.author"></el-option>
+                          label="申请人"
+                          value="申请人"></el-option>
                         <el-option v-for="user in permittedUserList"
                                    :key="user.userId"
                                    :label="user.nick"
@@ -109,10 +109,10 @@
                         v-show="row.editingAssign"
                         size="mini"
                         style="margin-bottom: 4px"
-                        @click="row.assign = props.row.author">设为申请人</el-button>
+                        @click="row.assign = '申请人'">设为申请人</el-button>
                       <i v-show="row.editingAssign" class="el-icon-check text-success" @click="onEdit(row, false, false, true)"></i>
                       <i v-show="row.editingAssign" class="el-icon-close text-error" @click="onCancelEdit(row, false, false, true)"></i>
-                      <span  v-if="!row.editingAssign" >{{row.hasOwnProperty('assign') ? row.assign.nick:''}}</span>
+                      <span  v-if="!row.editingAssign" >{{row.assign === '申请人' ? '申请人' : row.hasOwnProperty('assign') ? row.assign.nick : ''}}</span>
                       <i class="el-icon-edit align text-info fr" v-if="!row.editingAssign && row.hasOwnProperty('assign')" @click="showContainer(row, false, false, true)"></i>
                       </div>
                     </template>
@@ -209,11 +209,12 @@
           })
         } else if (assign) {
           if (row.assign) {
-            console.log(row)
-            assignId = row.assign.userId
+            // console.log(row)
+            row.assign === '申请人' ? assignId = row.assign : assignId = row.assign.userId
+            // assignId = row.assign.userId
           }
           if (row.tempAssign) {
-            tempAssignId = row.tempAssign.userId
+            row.assign === '申请人' ? tempAssignId = '申请人' : tempAssignId = row.tempAssign.userId
           }
         }
         let postData = {
