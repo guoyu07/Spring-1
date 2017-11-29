@@ -25,9 +25,9 @@
               v-if="isEditing"
               title="驳回信息"
               type="error"
+              :description="edtingInfo"
               class="margin-bottom"
               :closable="false"
-              :description="edtingInfo"
               show-icon></el-alert>
             <!-- <p v-if="isEditing" class="edtingInfo">驳回信息：{{edtingInfo}}</p> -->
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
@@ -50,12 +50,11 @@
               </div>
             </div>
             <!-- header 表单填写 -->
-          <div v-if="taskForm.header" ref="header">
+            <div v-if="taskForm.header">
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
-                    :data-class="taskform.id"
-                    v-if="showFormItem(taskform, assignForm, applyData)"
+                    v-if="showFormItem(taskform, assignForm, applyData) && !isEmptyObj(assignForm.header)"
                     :item="assignForm.header"
                     :form-item="taskform"
                     :whole="assignForm"
@@ -65,49 +64,47 @@
                     :message="applyData"
                     :header="true">
                   </form-body>
-<!--                   {{showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'}} -->
                   <search-bar
-                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
                     :hosts="assignForm.header"
                     :attr-list="taskform"
                     :limit="getLimitQuantity(taskform, assignForm, applyData)"
                     :message="applyData"
                     :header="true"
-                    :postForm="assignForm"
+                    :post-form="assignForm"
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
-                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
                     :form-data="taskform"
                     :item="assignForm.header"
                     :messageData="applyData"
-                    :postForm="assignForm"
-                    :postFormName="'assignForm'">
+                    :assignForm="assignForm"
+                    :assignFormName="'assignForm'">
                   </header-table>
                 </span>
               </div>
-            </div>  
-            <div>
-            <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加body</el-button>
+            </div>
             <div v-if="applyData.body && applyData.body.length" class="flex-box">
-              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;width:90px">
+              <!-- <div></div> -->
+              <div>
+              <el-button size="small" @click="increaseBody()" v-if="!showAppend" class="appendBody">增加body</el-button>
+              <el-button-group v-if="taskForm.body && taskForm.body.style === 1" style="margin-bottom:8px;">
                 <el-button size="small" @click="copyValue(tabIndex)">复制</el-button>
                 <el-button size="small" @click="stickValue(tabIndex)">粘贴</el-button>
               </el-button-group>
+               <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
+             </div>
               <el-button
                 size="small"
                 type="text"
                 @click="retractInfo(true)"
                 :icon="infoHideAll ? 'fa-angle-double-down' : 'fa-angle-double-up'">全部{{ infoHideAll ? '展开' : '收起' }}</el-button>
             </div>
-            <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom1 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'&&taskForm.body && taskForm.body.style === 1">查看IP</a>
-            </div>
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
-              <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
-                <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]" :ref="'body'+index">
+              <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length" >
+                <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                     <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'fa-angle-up' : 'fa-angle-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
@@ -118,6 +115,7 @@
                             <p v-if="task.form.form.header.length || taskbody.attr_list.length" class="h5">{{task.tname}}{{taskData.message[index].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
+                              <p class="h5">{{task.tname}}{{taskData.message[index].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                               <div v-for="taskformheader in task.form.form.header">
                                 <span v-for="valueheader in taskformheader.value">
                                   <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
@@ -139,6 +137,23 @@
                               :current-task="taskData.ptask.tkey"
                               :history-task="task.tkey">
                             </form-structure-display>
+                          </div>
+                          <div v-else>
+                            <!-- header 信息显示 -->
+                            <div v-if="task.form.form.header.length >= 1">
+                              <p class="h5">{{task.tname}}{{taskData.message[index].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
+                              <div v-for="taskformheader in task.form.form.header">
+                                <span v-for="valueheader in taskformheader.value">
+                                  <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
+                                    <header-form-display
+                                      :index="index"
+                                      :item="applyData.header"
+                                      :form-item="valueheader">
+                                    </header-form-display>
+                                  </span>
+                                </span>
+                              </div>
+                            </div>
                           </div>
                         </div>
                       </div>
@@ -170,18 +185,15 @@
                             <span v-for="formItem in formBlock.value">
                               <!-- {{isEdting}} -->
                               <form-body
-                                :data-class="formItem.id"
-                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && !isEmptyObj(assignForm.body[index])"
                                 :item="assignForm.body[index]"
                                 :form-item="formItem"
                                 :whole="assignForm"
                                 :index="index"
                                 :isEditing="isEditing"
-                                :message="applyData"
-                                keep-alive>
+                                :message="applyData">
                               </form-body>
                               <search-bar
-                                :data-class="formItem.id"
                                 v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                                 :index="index"
                                 :post-form="assignForm"
@@ -192,7 +204,6 @@
                                 @on-hosts-change="onHostsChange">
                               </search-bar>
                               <body-table
-                                :data-class="formItem.id"
                                 v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                                 :form-data="formItem"
                                 :item="assignForm.body[index]"
@@ -206,22 +217,19 @@
                         </div>
                     </div>
                   </div>
-                  <div class="clear">
-                    <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data, index)" class="margin-bottom">机柜预览图</el-button>
-                  </div>
                 </el-tab-pane>
               </el-tabs>
             </template>
             <template v-if="taskForm.body && taskForm.body.style === 2">
               <div v-if="applyData.body && applyData.body.length">
                 <div v-for="(data, index) in applyData.body" style="position:relative">
-                  <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom2 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'">查看IP</a>
-                <el-button-group style="position:absolute;right:15px;top:8px;z-index:1">
+                 <a  :href="ipAdress" @click="checkIp(index)" target="_blank" class="checkIpButtom2 el-button el-button--default el-button--small el-button--info is-plain" v-if="taskData.pinstance.pkey === 'ipaddr_apply'&&taskData.ptask.tkey === 'approve'">查看IP</a>
+                <el-button-group style="position:absolute;right:15px;top:8px;z-index:1;width:90px">
                   <el-button size="small" @click="copyValue(index)">复制</el-button>
                   <el-button size="small" @click="stickValue(index)">粘贴</el-button>
                 </el-button-group>
                 <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick"  :key="index">
-                  <el-tab-pane :label="bodyLableName[index]" :ref="'body' + index">
+                  <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                       <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'fa-angle-up' : 'fa-angle-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
@@ -276,7 +284,7 @@
                       </div>
                     </div>
                     <!-- body 表单填写 -->
-                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0" >
+                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
                       <div v-for="taskFormData in taskForm.body.body_list">
                           <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
                             <div class="form-block" v-for="formBlock in taskFormData.attr_list">
@@ -284,8 +292,7 @@
                               <span v-for="formItem in formBlock.value">
                                 <!-- {{isEdting}} -->
                                 <form-body
-                                  :data-class="formItem.id"
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
+                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && !isEmptyObj(assignForm.body[index])"
                                   :item="assignForm.body[index]"
                                   :form-item="formItem"
                                   :whole="assignForm"
@@ -295,7 +302,6 @@
                                   keep-alive>
                                 </form-body>
                                 <search-bar
-                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                                   :index="index"
                                   :post-form="assignForm"
@@ -306,7 +312,6 @@
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
                                 <body-table
-                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                                   :form-data="formItem"
                                   :item="assignForm.body[index]"
@@ -320,15 +325,12 @@
                           </div>
                       </div>
                     </div>
-                    <div class="clear">
-                      <el-button v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" type="primary" icon="search" size="small" @click="getPreview(data, index)" class="margin-bottom">机柜预览图</el-button>
-                    </div>
                   </el-tab-pane>
                 </el-tabs>
-              </div>
+                </div>
               </div>
               <div class="anchorNav">
-                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
+                <a href="javascript:void(0)" v-for="(data, index) in applyData.body" :key="index" @click="goAnchor('#anchor-'+index)"> {{ index + 1 }} </a>
               </div>
             </template>
             <!-- 按钮区域 -->
@@ -351,11 +353,11 @@
       </el-col>
     </el-row>
     <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData"></task-dialog>
- <!--    <el-dialog
+<!--     <el-dialog
       title="工作流"
       v-model="showHistory">
       <el-collapse v-if="taskData && taskData.pinstance">
-        <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :key="key" :title="(key + 1).toString() + '. ' + task.name">
+        <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :key="index" :title="(key + 1).toString() + '. ' + task.name">
           <el-form label-position="left" label-width="90px" inline class="expanded-form">
             <el-form-item v-if="task.task_key" label="任务 Key：">
               <code>{{task.task_key}}</code>
@@ -370,39 +372,6 @@
         </el-collapse-item>
       </el-collapse>
     </el-dialog> -->
-    <!-- 机柜图预览 -->
-    <div v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
-      <h5 class="cabinet-title">
-        <span>机柜预览</span>
-      </h5>
-      <span class="close-btn" >
-        <el-button type="text" size="small" icon="close" @click="closePreview"></el-button>
-      </span>
-      <div class="paginate-btn clearfix">
-        <el-button type="primary" size="mini" icon="arrow-left" :disabled="previewPage === 1" class="fl" @click="prevPreview">上一页</el-button>
-        <span class="preview-indicator"><span class="current-page">{{previewPage}}</span>/<span class="total-page">{{pageNum}}</span></span>
-        <el-button type="primary" size="mini" :disabled="previewPage === pageNum || pageNum === 0" class="fr" @click="nextPreview">下一页<i class="el-icon-arrow-right el-icon--right"></i></el-button>
-      </div>
-      <el-row :gutter="10">
-        <el-col :sm="6" class="idcrack-view" v-for="idcrack in idcrackData" :key="idcrack.code">
-          <!-- {{ idcrack.code }} -->
-          {{idcrack.code}}
-          <p v-for="(n, nindex) in idcrack.u_info.jgUHeight" class="idcrack-view__span" :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - nindex)) }">
-            {{idcrack.u_info.jgUHeight - nindex}}
-          </p>
-          <!-- <table class="el-table__body table-condensed table-cabinet text-navy">
-            <caption>{{ idcrack.code }}</caption>
-            <tbody>
-              <tr v-for="(nindex, n) in idcrack.u_info.jgUHeight">
-                <td :class="{ 'occupied': idcrack.isTaked.includes((idcrack.u_info.jgUHeight - n)) }">
-                  U{{idcrack.u_info.jgUHeight - n}}
-                </td>
-              </tr>
-            </tbody>
-          </table> -->
-        </el-col>
-      </el-row>
-    </div>
   </div>
 </template>
 <script>
@@ -440,25 +409,32 @@
         path_list: [],
         submitLoading: false,
         infoShow: {},
-        infoHideAll: true,
+        infoHideAll: false,
         hostList: [],
         copyObj: {},
-        previewShown: false,
-        idcrackData: [],
-        previewPage: 1,
-        pageNum: 1,
-        idcrackList: [],
-        idcrackTaked: [],
-        hostMachineIdcrackList: []
+        ipAdress: ''
       }
     },
     created () {
       this.routerInfo = this.$route.params // 取得本实例的id及当前步骤
       this.renderInstanceDetail()
+      if (this.taskData.pinstance && this.taskData.pinstance.pkey === 'host_apply' && this.taskData.ptask.tkey === 'start') {
+        this.$watch('assignForm.body', (val, oldVal) => {
+          for (const data of val) {
+            data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
+          }
+        }, { deep: true })
+      }
+    },
+    computed: {
+      // 是否允许增加
+      showAppend () {
+        let key = this.taskData.message.length - 1
+        console.log(key)
+        return this.taskData.message[key].form.body && this.taskData.message[key].form.body.length
+      }
     },
     watch: {
-      'taskFormAll.form': 'showAppend',
-      'idcrackData': 'idcrackIsTaked',
       'taskForm': {
         handler: 'renderBodyLabel',
         deep: true
@@ -479,32 +455,6 @@
       }
     },
     methods: {
-      showAppend () {
-      // 判断前一个是否有body决定显示与否
-        let tkey = this.taskData.ptask.tkey
-        let tIndex = ''
-        this.taskData.message.map((info, index) => {
-          if (info.task_key === tkey) {
-            tIndex = index - 1
-          }
-        })
-        if (tIndex === '') { tIndex = this.taskData.message.length - 1 }
-        // 判断继承方式以及可增加个数 权重更高
-        let tType = this.taskFormAll.form.body.count.type
-        if (tType === 'message_header') {
-          return true
-        } else if (tType === 'form_header') {
-          return true
-        } else if (tType === 'static') {
-          let {min} = this.taskFormAll.form.body.count
-          let {max} = this.taskFormAll.form.body.count
-          console.log(min, max)
-          console.log(this.taskData.message[tIndex].form.body)
-          return this.taskData.message[tIndex].form.body && this.taskData.message[tIndex].form.body.length
-        } else {
-          return this.taskData.message[tIndex].form.body && this.taskData.message[tIndex].form.body.length
-        }
-      },
       increaseBody () {
         this.applyData.body.push({})
         this.renderBodyLabel()
@@ -519,6 +469,7 @@
         console.log(this.ipAdress)
         return this.ipAdress
       },
+      // 自动填充已给项
       getAutoFillData () {
         if (this.taskFormAll.fill_form) {
           const renderFromData = {
@@ -535,10 +486,8 @@
               let list = res.data.data.body[i]
               Object.assign(this.assignForm.body[i], list)
             }
-            for (let i = 0; i < res.data.data.header.length; i++) {
-              let list = res.data.data.header[i]
-              Object.assign(this.assignForm.header[i], list)
-            }
+          }).catch((err) => {
+            console.log(err)
           })
         }
       },
@@ -566,8 +515,6 @@
         copyValues = copyValues.map((val) => {
           return val.id
         })
-        console.log(copyValues)
-        console.log(this.assignForm.body[index])
         // 把复制内容整合成一个对象
         let list = {}
         Object.assign(list, this.assignForm.body[index])
@@ -584,6 +531,8 @@
         })
       },
       stickValue (index) {
+        console.log(index)
+        console.log(this.copyObj)
         Object.assign(this.assignForm.body[index], this.copyObj)
       },
       createPdf () {
@@ -595,74 +544,6 @@
           newWindow.print()  // 打印当前窗口
         }, 100)
         return true
-      },
-      idcrackIsTaked () {
-        for (const item of this.idcrackData) {
-          item.isTaked = []
-          for (const ed of item.u_info.assetList) {
-            for (let i = 0; i < item.u_info.jgUHeight; i++) {
-              if (i >= ed.beginU && i <= ed.endU) {
-                item.isTaked.push(i)
-              }
-            }
-          }
-        }
-      },
-      getPreview (data, index) {
-        console.log(data)
-        let idcrackData = {}
-        let postHeadvData = {
-          action: '',
-          method: 'GET',
-          data: idcrackData
-        }
-        if (this.taskData.pinstance.pkey === 'host_machine') {
-          idcrackData.ipscopeId = this.applyData.body[index].esxi_ipscope.instanceId
-          idcrackData.vmware_type = this.applyData.header.vmware_type
-          postHeadvData.action = 'esxi/rack/list'
-        } else if (this.taskData.pinstance.pkey === 'host') {
-          postHeadvData.action = 'idcrack/list'
-          idcrackData.ipscopeId = data.sc_ip_info[0].ipscope.instanceId
-          // idcrackData.host_gigatbitcard =
-          idcrackData.network_cards = this.applyData.header.network_cards
-          idcrackData.idcId = this.applyData.header.idc.instanceId
-        } else {
-          postHeadvData.action = 'idcrack/list'
-          idcrackData.ipscopeId = this.applyData.body[index].sc_ip_info[0].ipscope.instanceId
-          idcrackData.network_cards = this.applyData.body[index].network_cards
-          idcrackData.idcId = this.applyData.header.idc.instanceId
-        }
-        this.http.post('/data/', this.parseData(postHeadvData))
-        .then((response) => {
-          console.log(response)
-          this.idcrackList = response.data.data.list
-          this.previewShown = !this.previewShown
-          this.pageNum = Math.ceil(this.idcrackList.length / 4)
-          this.idcrackData = this.idcrackList.slice(0, 4)
-        })
-        // this.$store.dispatch('idcrack_data', {
-        //   idcrackData: this.optionList
-        // })
-        // this.previewShown = !this.previewShown
-        // this.pageNum = Math.ceil(this.$store.state.idcrackData.length / 4)
-        // this.idcrackData = this.$store.state.idcrackData.slice(0, 4)
-      },
-      closePreview () {
-        this.previewShown = !this.previewShown
-      },
-      nextPreview () {
-        const page = this.previewPage + 1
-        if (this.previewPage !== this.pageNum) {
-          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
-          this.previewPage = page
-        }
-      },
-      prevPreview () {
-        const page = this.previewPage > 1 ? this.previewPage - 1 : 1
-        if (this.previewPage !== 1) {
-          this.idcrackData = this.idcrackList.slice((page - 1) * 4, page * 4)
-          this.previewPage = page
-        }
       },
       onHostsChange (val, index, id, header) {
         // console.log(val)
@@ -698,8 +579,7 @@
               bodyList.attr_list.map(list => {
                 list.value.map(item => {
                   if (this.showFormItem(item, this.assignForm, this.applyData, true, true, index)) {
-                    if (item.id === id) {
-                       // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
+                    if (item.id === id) { // onHostsChange 可以传一个 id header 出来，直接分header赋值给对应id
                       this.assignForm.body[index][item.id] = val
                     }
                   }
@@ -708,15 +588,16 @@
             }
           })
         }
-        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中// 验证searchbar一个符不符合规则
+        // ④外层调用组件方注册变更方法，将组件内的数据变更，同步到组件外的数据状态中
+        // 验证searchbar一个符不符合规则
         if (header) {
           let key = `header.${id}`
           console.log(key)
-          this.$refs['postForm'].validateField(key)
+          this.$refs['assignForm'].validateField(key)
         } else {
-          let key = `body.${index}.id`
+          let key = `body.${index}.${id}`
           console.log(key)
-          this.$refs['postForm'].validateField(key)
+          this.$refs['assignForm'].validateField(key)
         }
         // this.$refs['assignForm'].validate((valid) => {}) // 调用验证
       },
@@ -730,7 +611,7 @@
       renderBodyLabel (val) {
         this.bodyLabel(this.taskForm, this.assignForm, this.applyData, this.bodyLableName)
       },
-      renderTaskForm () { // 渲染表单数据（当前处理表单就是要填什么）
+      renderTaskForm () { // 渲染当前表单数据
         const renderFromData = {
           action: 'task/form/group',
           method: 'GET',
@@ -742,7 +623,6 @@
           this.taskForm = res.data.data.form
           this.taskFormAll = res.data.data
           // 渲染 body 个数
-          // 当前表单的body是上一步header拆出来的（特殊）
           if (this.applyData.body.length === 0) {
             if (this.taskForm.body.count.type === 'message_header') { // 从历史信息的 header 读取 body 的个数
               this.renderBodyLength(this.applyData.header)
@@ -756,11 +636,12 @@
               }
             }
           }
+          // 表单头部填写绑定
           this.taskForm.header.forEach((header, k) => {
             if (header) {
               header.value.map(value => {
                 if (value.need_submit) {
-                  if (this.showFormItem(value, this.assignForm)) {
+                  if (this.showFormItem(value, this.assignForm, this.applyData)) {
                     this.setDataType(value, this.assignForm.header)
                     if (value.show.type === 'form_header') {
                       this.$watch('assignForm.header.' + value.show.key_path, (newVal, oldVal) => {
@@ -772,7 +653,6 @@
                       })
                     }
                   } else {
-                    // console.log(value.name)
                     this.setDataType(value, this.assignForm.header)
                   }
                 }
@@ -829,7 +709,7 @@
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
-                      if (this.showFormItem(value, this.assignForm, this.applyData, true, true, k)) {
+                      if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
                         this.setNewDataType(value, newData)
                       }
                       if (value.show.type === 'form_header') {
@@ -842,9 +722,10 @@
                         })
                       } else if (value.show.type === 'form_body') {
                         this.$watch('assignForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
-                          if (this.showFormItem(value, this.assignForm, this.applyData, true, true, k)) {
-                            console.log(value.id, this.showFormItem(value, this.assignForm, this.applyData, true, true, k))
+                          if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
                             this.setDataType(value, this.assignForm.body[k])
+                          } else {
+                            delete this.assignForm.body[k][value.id]
                           }
                         })
                       }
@@ -852,132 +733,34 @@
                   })
                 })
                 this.assignForm.body.push(newData)
+                console.log(newData)
               }
             })
-            // U 位默认值
-            if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host') {
-              // console.log(this.assignForm.body[k])
-              this.$watch('assignForm.body.' + k + '.idcrack', (newVal, oldVal) => {
-                // console.log(newVal)
-                // console.log(newVal, oldVal, this.applyData.body)
-                const uHeight = newVal.u_info.jgUHeight
-                // 整理出一个未被占用的 U位 列表
-                let untakedData = []
-                for (let i = 1; i <= uHeight; i++) {
-                  if (newVal.u_info.assetList.length !== 0) {
-                    if (newVal.u_info.assetList.every(list => { return i < list.beginU || i > list.endU })) {
-                      untakedData.push(i)
-                    }
-                  }
-                }
-                // console.log(untakedData)
-                // 整理出被当前其他表单占用的 U位
-                let formTakedData = []
-                this.assignForm.body.map((body, bodyk) => {
-                  if (body.idcracku && body.idcrack && (body.idcrack.instanceId === newVal.instanceId)) {
-                    let eU
-                    if (this.taskData.pinstance.pkey === 'host') {
-                      eU = body.idcracku + +this.applyData.header.host_list[bodyk].u_num - 1
-                      // console.log(eU, body.idcracku, this.applyData.header.host_list[bodyk].u_num)
-                    } else if (this.taskData.pinstance.pkey === 'host_my') {
-                      eU = body.idcracku + +this.applyData.body[bodyk].host.u_num - 1
-                    }
-                    // console.log(eU)
-                    for (let tU = body.idcracku; tU <= eU; tU++) {
-                      if (!formTakedData.includes(tU)) {
-                        formTakedData.push(tU)
-                      }
-                    }
-                  }
-                })
-                // console.log(formTakedData)
-                if (formTakedData.length !== 0) {
-                  const untakedDataLenght = untakedData.length
-                  for (let i = 0; i <= untakedDataLenght; i++) {
-                    let Uend
-                    if (this.taskData.pinstance.pkey === 'host') {
-                      Uend = untakedData[i] + +this.applyData.header.host_list[k].u_num - 1
-                    } else if (this.taskData.pinstance.pkey === 'host_my') {
-                      Uend = untakedData[i] + +this.applyData.body[k].host.u_num - 1
-                    }
-                    if (!formTakedData.includes(untakedData[i]) && !formTakedData.includes(Uend)) {
-                      this.assignForm.body[k].idcracku = untakedData[i]
-                      console.log(k, untakedData[i])
-                      return false
-                    }
-                  }
-                } else {
-                  this.assignForm.body[k].idcracku = untakedData[0]
-                  // console.log(k, untakedData[0])
-                }
-              })
-            }
           })
-          // 宿主机 U 位默认值
-          // if (this.taskData.ptask.tkey === 'cabinet' && this.taskData.pinstance.pkey === 'host_machine') {
-          //   const UData = {
-          //     action: 'get/racku',
-          //     method: 'GET',
-          //     data: {
-          //       ipscopeId: this.applyData.body[0].esxi_ipscope.instanceId,
-          //       host_u: this.applyData.header.hosts[0].u_num,
-          //       host_num: this.applyData.header.hosts.length,
-          //       vmware_type: this.applyData.header.vmware_type
-          //     }
-          //   }
-          //   this.http.post('/data/', this.parseData(UData)).then((res) => {
-          //     const resData = res.data.data.list
-          //     resData.map(list => {
-          //       if (!this.isEmptyObj(list._default)) {
-          //         for (const i in list._default) {
-          //           // const index = i - 1
-          //           this.assignForm.body[i].idcracku = list._default[i]
-          //           this.assignForm.body[i].idcrack = list
-          //         }
-          //       }
-          //     })
-          //   })
-          // }
-          // 主机名
-          // if (this.taskData.ptask.tkey === 'confirm1') {
-          //   const postHeadvData = {
-          //     action: 'recommend_hostname_list',
-          //     method: 'get',
-          //     data: {
-          //       tid: this.$route.params.tid
-          //     }
-          //   }
-          //   this.http.post('/data/', this.parseData(postHeadvData))
-          //   .then((response) => {
-          //     response.data.data.list.map((list, index) => {
-          //       this.assignForm.body[index].hostname = list
-          //     })
-          //   })
-          // }
           // 判断是否为驳回信息
-          let newDataBody
+          let newDataBody = []
           for (var message of this.taskData.message) {
             if (message.task_key === this.taskData.ptask.tkey) {
               this.isEditing = true
               this.edtingInfo = this.taskData.message[this.taskData.message.length - 1].form.value
               this.assignForm.header = Object.assign({}, this.assignForm.header, message.form.header)
-              if (!message.form.body) return false
-              newDataBody = message.form.body.map((body, bodyindex) => {
-                let data = {}
-                for (const key in this.assignForm.body[bodyindex]) {
-                  // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
-                  if (body[key]) {
-                    data[key] = body[key]
-                  } else {
-                    data[key] = this.assignForm.body[bodyindex][key]
+              setTimeout(() => {
+                message.form.body.map((body, bodyindex) => {
+                  let data = {}
+                  for (const key in this.assignForm.body[bodyindex]) {
+                    // 这里是过滤掉当前需要提交的表单的字段之外的字段 可能驳回信息在某个步骤改变值，连同下面的字段也改变
+                    if (body[key]) {
+                      data[key] = body[key]
+                    } else {
+                      data[key] = this.assignForm.body[bodyindex][key]
+                    }
                   }
-                }
-                return data
-                // return Object.assign({}, this.assignForm.body[bodyindex], body)
-              })
-              this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
-                return Object.assign({}, body, newDataBody[bodyindex])
-              })
+                  newDataBody.push(data)
+                })
+                this.assignForm.body = this.assignForm.body.map((body, bodyindex) => {
+                  return Object.assign({}, body, newDataBody[bodyindex])
+                })
+              }, 100)
               return false
             }
           }
@@ -985,7 +768,9 @@
       },
       renderBodyLength (data) {
         this.applyData.body = []
+        console.log(data, this.taskForm.body.count.key_path)
         const keyData = this.getPathResult(data, this.taskForm.body.count.key_path)
+        console.log(keyData)
         if (Array.isArray(keyData)) {
           // this.applyData.body.length = keyData.length
           const num = keyData.length
@@ -1021,13 +806,14 @@
         this.http.post('/flow/', this.parseData(postData)).then((res) => {
           console.log(res)
           this.taskData = res.data.data
+          console.dir(this.taskData)
           const message = res.data.data.message
-          res.data.data.paths.map(list => {
-            list.map(path => {
-              if (!this.path_list.includes(path.tkey)) {
-                this.path_list.push(path.tkey)
-              }
-            })
+          message.map(list => {
+            if (!this.path_list.includes(list.task_key)) {
+              this.path_list.push(list.task_key)
+            }
+            // list.map(path => {
+            // })
           })
           const taskKeyArr = this.path_list.filter(item => item !== 'start')
           if (this.path_list.includes(this.taskData.ptask.tkey)) {
@@ -1037,18 +823,12 @@
           // console.log(taskKeyArr)
           this.applyData = this.getTaskInfo(message, taskKeyArr)
           // console.log(this.applyData)
+          console.log(res.data.data.action)
           this.applyData.action = res.data.data.action
           this.renderTaskForm()
-          if (this.taskData.pinstance.pkey === 'host_apply' && this.taskData.ptask.tkey === 'start') {
-            this.$watch('assignForm.body', (val, oldVal) => {
-              for (const data of val) {
-                data.score = (data.cpu * 1 + data.localStorage * 1 + data.hardDisk / 20) + ''
-              }
-            }, { deep: true })
-          }
         })
       },
-      renderForm () { // 渲染表单数据
+      renderForm () { // 渲染历史表单数据
         const renderFromData = {
           action: 'task/form/groups',
           method: 'GET',
@@ -1059,33 +839,14 @@
         }
         // this.loading = true
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
+          // console.log(res)
           this.form = res.data.data.list
         })
       },
       handleClick (tab, event) {
         this.tabIndex = tab.index
-        // console.log(this.tabIndex)
       },
       onSubmit (assignForm) {
-        if (this.$refs['header']) {
-          let headerKeys = Array.from(this.$refs['header'].querySelectorAll('[data-class]')).map(_ => _.dataset.class)
-          Object.keys(this.assignForm.header).map(val => {
-            if (!headerKeys.includes(val)) {
-              this.$delete(this.assignForm.header, val)
-            }
-          })
-        }
-        for (let i = 0; i < this.assignForm.body.length; i++) {
-          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => _.$vnode.elm.dataset.class).map(val => val.$vnode.elm.dataset.class)
-          console.log(bodykeys)
-          Object.keys(this.assignForm.body[i]).map(val => {
-            if (!bodykeys.includes(val)) {
-              console.log(val)
-              this.$delete(this.assignForm.body[i], val)
-            }
-          })
-        }
-        console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -1093,7 +854,27 @@
         }).then(() => {
           this.$refs['assignForm'].validate((valid) => {
             if (valid) {
-              this.postMethod(this.routerInfo.tid, this.assignForm)
+              // 退回多步后body个数要重新正确校验
+              let postForm = {}
+              Object.assign(postForm, this.assignForm)
+              let key = this.taskData.ptask.tkey
+              let messages = this.taskData.message
+              let length = 0
+              for (let i = 0; i < messages.length; i++) {
+                if (messages[i].task_key === key) {
+                  length = this.taskForm.body.body_list.length
+                  break
+                } else if (messages[i].form.body.length !== 0) {
+                  length = messages[i].form.body.length
+                  break
+                }
+              }
+              if (length === 0) {
+                postForm.body = []
+              }
+              console.log(this.assignForm)
+              console.log(postForm)
+              this.postMethod(this.routerInfo.tid, postForm)
               // console.dir(this.assignForm)
             } else {
               console.log('error submit!!')
@@ -1101,7 +882,8 @@
               return false
             }
           })
-        }).catch(() => {
+        }).catch((err) => {
+          console.log(err)
           this.$message({
             type: 'info',
             message: '已取消审批'
@@ -1110,7 +892,7 @@
       },
       postMethod (id, data) {
         this.submitLoading = true
-        let postFormData = {
+        let assignFormData = {
           header: {},
           body: []
         }
@@ -1121,11 +903,11 @@
                 if (item.id === headerid) {
                   if (Array.isArray(data.header[headerid])) {
                     if (item.required || data.header[headerid].length !== 0) {
-                      postFormData.header[headerid] = data.header[headerid]
+                      assignFormData.header[headerid] = data.header[headerid]
                     }
                   } else if (data.header[headerid] || (typeof data.header[headerid] === 'number' && data.header[headerid] === 0)) {
                     // 整型为 0 时可以提交
-                    postFormData.header[headerid] = data.header[headerid]
+                    assignFormData.header[headerid] = data.header[headerid]
                   }
                 }
               }
@@ -1133,7 +915,7 @@
           })
         })
         data.body.map((body, bodyIndex) => {
-          postFormData.body[bodyIndex] = {}
+          assignFormData.body[bodyIndex] = {}
           this.taskForm.body.body_list.map(bodyList => {
             if (this.showBodyList(bodyList, this.assignForm, this.applyData, bodyIndex)) {
               bodyList.attr_list.map(list => {
@@ -1143,11 +925,11 @@
                       if (item.id === bodyid) {
                         if (Array.isArray(body[bodyid])) {
                           if (item.required || body[bodyid].length !== 0) {
-                            postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                            assignFormData.body[bodyIndex][bodyid] = body[bodyid]
                           }
                         } else if (body[bodyid] || (typeof body[bodyid] === 'number' && body[bodyid] === 0)) {
                           // 整型为 0 时可以提交
-                          postFormData.body[bodyIndex][bodyid] = body[bodyid]
+                          assignFormData.body[bodyIndex][bodyid] = body[bodyid]
                         }
                       }
                     }
@@ -1157,13 +939,12 @@
             }
           })
         })
-        console.log(postFormData)
         const postData = {
           action: 'task',
           method: 'POST',
           data: {
             tid: id,
-            form: postFormData // 通过审批 需要判断一下登录的账号的角色身份
+            form: assignFormData // 通过审批 需要判断一下登录的账号的角色身份
               // pass: "流程走向控制变量,整型(可选,默认为0)"
           }
         }
@@ -1225,7 +1006,7 @@
               type: 'success',
               message: '提交成功!'
             })
-            this.$router.replace('/menu') // 分配成功跳转工单管理
+            // this.$router.replace('/menu') // 分配成功跳转工单管理
           }
         })
       },
@@ -1267,7 +1048,7 @@
         console.log(document.body.scrollTop)
         document.documentElement.scrollTop = anchor.offsetParent.offsetTop
       },
-      retractInfo (index) {
+      retractInfo (index) { // 展开收起历史信息
         const selector = this.$el.querySelectorAll('.history-block')
         const leng = selector.length
         if (index === true) {
@@ -1275,13 +1056,12 @@
             this.infoShow[i] = this.infoHideAll
           }
         } else {
-          console.log(this.infoShow[index])
+          // console.log(this.infoShow[index])
           this.infoShow[index] = !this.infoShow[index]
         }
       }
     },
     components: {
-      // searchFormStructure,
       headerFormDisplay,
       formStructureDisplay,
       formBody,
@@ -1315,14 +1095,11 @@
   top:8px;
   z-index:1;
 }
-.excelDown {
-  &:link {
-    text-decoration: none;
-  }
-  margin-right: -4px;
-}
 .el-tag {
   font-size: 14px;
+  & +.el-tag {
+    margin-left: 10px;
+  }
 }
 .advance-search-form .el-form-item {
   margin-bottom: 18px;
@@ -1474,24 +1251,6 @@
   color: #fff;
   &:hover {
     text-decoration: none;
-  }
-}
-.idcrack-view {
-  .idcrack-view__span {
-    border: 1px solid #ccc;
-    margin-bottom: 0;
-    padding: 2px 0;
-    line-height: 15px;
-    & + .idcrack-view__span {
-      border-top: none;
-    }
-    &.occupied {
-      background-color: #b5bbc8;
-      color: #fff;
-      text-shadow: 1px 1px 4px rgba(0,0,0,.3);
-      font-weight: bold;
-      background-image: repeating-linear-gradient(45deg, transparent, transparent 4px, rgba(255,255,255,.3) 4px, rgba(255,255,255,.3) 8px);
-    }
   }
 }
 </style>

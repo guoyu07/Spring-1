@@ -420,7 +420,6 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
     const _keyPath = keyPath[0]
     if (taskform.show.op === 'eq') {
       if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path, index) + '' === taskform.show.value) {
-        console.log('12345')
         return true
       }
     } else if (taskform.show.op === 'neq') {
@@ -428,7 +427,6 @@ Vue.prototype.showFormItem = (taskform, postForm, messageData, historyTask, curr
         return true
       }
     } else if (taskform.show.op === 'reg') {
-      console.log('111')
       if (Vue.prototype.getPathResult(compareVariable, _keyPath) && Vue.prototype.getPathResult(compareVariable, taskform.show.key_path).includes(taskform.show.value)) {
         return true
       }

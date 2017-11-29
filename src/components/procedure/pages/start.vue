@@ -27,11 +27,12 @@
 
           <el-form label-position="right" ref="postForm" :model="postForm" :inline="true" label-width="105px">
             <!-- header 表单填写 -->
-            <div v-if="taskFormData.header">
+            <div v-if="taskFormData.header" ref="header">
               <div v-for="(task, index) in taskFormData.header" :key="index">
                 <h5>{{task.name}}</h5>
                 <span v-for="taskform in task.value" :key="taskform.id">
                   <form-body
+                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, postForm)"
                     :item="postForm.header"
                     :form-item="taskform"
@@ -40,6 +41,7 @@
                     :header="true">
                   </form-body>
                   <search-bar
+                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, postForm) && taskform.value.type==='search_bar'"
                     :hosts="postForm.header"
                     :attr-list="taskform"
@@ -49,6 +51,7 @@
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
+                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, postForm) && taskform.value.type==='table'"
                     :form-data="taskform"
                     :item="postForm.header"
@@ -68,14 +71,15 @@
                   <el-checkbox style="margin-left:15px;" v-model="toCopy">复制当前表单</el-checkbox>
                 </div>
                 <el-tabs v-model="tabsValue" type="border-card" class="margin-bottom" @tab-remove="removeTab" @tab-click="handleClick">
-                  <el-tab-pane v-for="(data, index) in postForm.body" :key="index" :label="bodyLableName[index]" :name="index + ''" :closable="isClosable">
-                    <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
+                  <el-tab-pane v-for="(data, index) in postForm.body" :key="index" :label="bodyLableName[index]" :name="index + ''" :closable="isClosable" :ref="'body'+index">
+                    <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0" >
                       <div v-for="bodyList in taskFormData.body.body_list" :key="bodyList.name">
                           <div v-if="showBodyList(bodyList, postForm, applyData, index)">
                             <div class="form-block" v-for="formBlock in bodyList.attr_list" :key="formBlock.name">
                               <h5>{{formBlock.name}}</h5>
                               <span v-for="formItem in formBlock.value" :key="formItem.id">
                                 <form-body
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, postForm, false, false, false, index)"
                                   :item="postForm.body[index]"
                                   :form-item="formItem"
@@ -84,6 +88,7 @@
                                   :index="+index">
                                 </form-body>
                                 <search-bar
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
                                   :index="index"
                                   :hosts="postForm.body[index]"
@@ -94,6 +99,7 @@
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
                                 <body-table
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
                                   :form-data="formItem"
                                   :item="postForm.body[index]"
@@ -114,7 +120,7 @@
                 <div class="tab-wrap" v-for="(data, index) in postForm.body" :key="index" :id="'anchor-'+index">
                   <el-button size="small" @click="addTab(tabsValue, index)" icon="fa-copy" class="add-tab">复制当前表单</el-button>
                   <el-tabs type="border-card" class="margin-bottom" @tab-remove="removeTab(index)" @tab-click="handleClick" :closable="isClosable">
-                    <el-tab-pane :label="bodyLableName[index]">
+                    <el-tab-pane :label="bodyLableName[index]" :ref="'body' + index">
                       <div v-if="taskFormData.body && taskFormData.body.body_list.length !== 0">
                         <div v-for="bodyList in taskFormData.body.body_list" :key="bodyList.name">
                             <div v-if="showBodyList(bodyList, postForm, applyData, index)">
@@ -122,6 +128,7 @@
                                 <h5>{{formBlock.name}}</h5>
                                 <span v-for="formItem in formBlock.value" :key="formItem.id">
                                   <form-body
+                                    :data-class="formItem.id"
                                     v-if="showFormItem(formItem, postForm)"
                                     :item="postForm.body[index]"
                                     :form-item="formItem"
@@ -130,6 +137,7 @@
                                     :index="+index">
                                   </form-body>
                                   <search-bar
+                                    :data-class="formItem.id"
                                     v-if="showFormItem(formItem, postForm) && formItem.value.type==='search_bar'"
                                     :index="index"
                                     :hosts="postForm.body[index]"
@@ -139,6 +147,7 @@
                                     @on-hosts-change="onHostsChange">
                                   </search-bar>
                                   <body-table
+                                    :data-class="formItem.id"
                                     v-if="showFormItem(formItem, postForm) && formItem.value.type==='table'"
                                     :form-data="formItem"
                                     :item="postForm.body[index]"
@@ -310,9 +319,6 @@
               if (item.show.type === 'form_header') {
                 this.$watch('postForm.header.' + item.show.key_path, (newVal, oldVal) => {
                   this.setDataType(item, this.postForm.header)
-                  if (!this.showFormItem(item, this.postForm)) {
-                    delete this.postForm.header[item.id]
-                  }
                 })
               }
             })
@@ -321,6 +327,7 @@
             if (body.show.type) {
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
+                  console.log(newVal, oldVal)
                   this.taskFormData.body.body_list.map(bodyList => {
                     if (this.showBodyList(bodyList, this.postForm)) {
                       this.$set(this.postForm, 'body', [{}]) // 初始化表单数据
@@ -332,25 +339,18 @@
                           if (value.show.type) {
                             if (value.show.type === 'form_header') {
                               this.$watch('postForm.header.' + value.show.key_path, (newVal, oldVal) => {
-                                console.log(newVal, oldVal)
                                 if (this.showFormItem(value, this.postForm)) {
                                   console.log('set', value.name)
                                   this.setDataType(value, this.postForm.body[0])
-                                } else {
-                                  if (this.postForm.body[0]) {
-                                    console.log('delete', value.name)
-                                    delete this.postForm.body[0][value.id]
-                                  }
                                 }
                               })
                             } else if (value.show.type === 'form_body') {
                               this.$watch('postForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
-                                console.log(newVal, oldVal)
-                                if (this.showFormItem(value, this.postForm, false, false, false, k)) {
-                                  this.setDataType(value, this.postForm.body[k])
-                                } else {
-                                  delete this.postForm.body[k][value.id]
-                                  return false
+                                if (newVal || (!newVal && oldVal)) {
+                                  console.log(value.id)
+                                  if (this.showFormItem(value, this.postForm, false, false, false, k)) {
+                                    this.setDataType(value, this.postForm.body[k])
+                                  }
                                 }
                               })
                             }
@@ -402,17 +402,13 @@
               body.attr_list.map(group => {
                 group.value.map(value => {
                   if (value.need_submit) {
-                    console.log(value, this.postForm, k)
-                    console.log(this.showFormItem(value, this.postForm, false, false, false, k))
                     if (this.showFormItem(value, this.postForm)) {
                       this.setDataType(value, this.postForm.body[k])
                     }
                     if (value.show.type === 'form_header') {
                       this.$watch('postForm.header.' + value.show.key_path, (newVal, oldVal) => {
-                        if (this.showFormItem(value, this.assignForm)) {
-                          this.setDataType(value, this.assignForm.body[k])
-                        } else {
-                          delete this.assignForm.body[k][value.id]
+                        if (this.showFormItem(value, this.postForm)) {
+                          this.setDataType(value, this.postForm.body[k])
                         }
                       })
                     } else if (value.show.type === 'form_body') {
@@ -420,8 +416,6 @@
                         console.log(newVal, oldVal)
                         if (this.showFormItem(value, this.postForm, false, false, false, k)) {
                           this.setDataType(value, this.postForm.body[k])
-                        } else {
-                          delete this.postForm.body[k][value.id]
                         }
                       })
                     }
@@ -519,6 +513,24 @@
         })
       },
       onSubmit () {
+        // 避免ID相同导致关系不清在提交表单前才对数据进行删减
+        if (this.$refs['header']) {
+          let headerKeys = Array.from(this.$refs['header'].querySelectorAll('[data-class]')).map(_ => _.dataset.class)
+          Object.keys(this.postForm.header).map(val => {
+            if (!headerKeys.includes(val)) {
+              this.$delete(this.postForm.header, val)
+            }
+          })
+        }
+        for (let i = 0; i < this.postForm.body.length; i++) {
+          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => _.$vnode.elm.dataset.class).map(val => val.$vnode.elm.dataset.class)
+          console.log(bodykeys)
+          Object.keys(this.postForm.body[i]).map(val => {
+            if (!bodykeys.includes(val)) {
+              this.$delete(this.postForm.body[i], val)
+            }
+          })
+        }
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
           cancelButtonText: '取消',
@@ -635,7 +647,6 @@
             }
           }
         }
-        console.log(postFormData)
         this.http.post('/flow/', this.parseData(postData))
           .then((res) => {
             this.submitLoading = false
