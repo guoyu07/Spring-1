@@ -54,17 +54,17 @@
         <el-form>
           <el-row>
             <el-col :span="24">
-              <el-input id="userId" :autofocus="autoFocus" @keyup.enter.native="submit" placeholder="请输入用户名" icon="fa-user-o" auto-complete="off" v-model="credentials.username" ref="username"></el-input>
+              <el-input id="userId" :autofocus="autoFocus" @keyup.enter.native="submit(0)" placeholder="请输入用户名" icon="fa-user-o" auto-complete="off" v-model="credentials.username" ref="username"></el-input>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-input @keyup.enter.native="submit" placeholder="请输入密码" type="password" icon="fa-lock" auto-complete="off" v-model="credentials.password"></el-input>
+              <el-input @keyup.enter.native="submit" placeholder="请输入密码" type="password" icon="fa-lock" auto-complete="off" v-model="credentials.password" id="password"></el-input>
             </el-col>
           </el-row>
           <el-row>
             <el-col :span="24">
-              <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit">登 录</el-button>
+              <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit(1)">登 录</el-button>
             </el-col>
           </el-row>
         </el-form>
@@ -106,18 +106,24 @@
     },
 
     methods: {
-      submit () {
-        const credentials = {
-          action: 'login',
-          method: 'POST',
-          data: {
-            userId: this.credentials.username,
-            password: this.credentials.password
+       // 接受一个索引，最后一个发请求否则跳转下一个
+      submit (index) {
+        let inputContainer = document.getElementsByTagName('input')
+        if (index) {
+          const credentials = {
+            action: 'login',
+            method: 'POST',
+            data: {
+              userId: this.credentials.username,
+              password: this.credentials.password
+            }
           }
+          // 传入组件的上下文、验证信息及跳转目地
+          // 以便 auth.login 发起登录请求
+          auth.login(this, credentials, '/menu')
+        } else {
+          inputContainer[index + 1].focus()
         }
-        // 传入组件的上下文、验证信息及跳转目地
-        // 以便 auth.login 发起登录请求
-        auth.login(this, credentials, '/menu')
       }
     },
     created () {

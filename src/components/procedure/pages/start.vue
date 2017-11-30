@@ -18,10 +18,10 @@
               </el-upload>
             </el-col>
             <el-col style="text-align: right;">
-              <el-button icon="fa-download">
+<!--               <el-button icon="fa-download">
                 <a href="/api/data/?action=download/import/server/excel" target="_blank">示例文件</a>
-              </el-button>
-              <!-- <a class="el-button el-button--info is-plain" href="/api/data/?action=download/import/server/excel" target="_blank">示例文件</a> -->
+              </el-button> -->
+              <a class="el-button el-button--info is-plain" href="/api/data/?action=download/import/server/excel" target="_blank"><i class="el-icon-fa-download"></i> 示例文件</a>
             </el-col>
           </el-row>
 

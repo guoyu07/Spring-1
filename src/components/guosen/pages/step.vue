@@ -144,8 +144,8 @@
                       </div>
                       <div v-else>
                         <!-- header 信息显示 -->
-                        <div v-if="task.form.form.header.length >= 1">
                           <p class="h5">{{task.tname}}{{taskData.message[index].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
+                        <div v-if="task.form.form.header.length >= 1">
                           <div v-for="taskformheader in task.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
