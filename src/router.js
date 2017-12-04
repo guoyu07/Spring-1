@@ -190,6 +190,16 @@ const routes = [{
         isEdit: false
       }
     }]
+  }, {
+    path: '/orders-export',
+    component: require('./components/ordersExport/index'),
+    meta: {
+      sidebar: SidebarConf.Process
+    },
+    children: [{
+      path: '/orders-export/print/:pkey',
+      component: resolve => require(['./components/ordersExport/pages/print'], resolve)
+    }]
   }, { // 定义表单，提交给数据库存储，删
     path: '/forms',
     component: require('./components/forms/index'),

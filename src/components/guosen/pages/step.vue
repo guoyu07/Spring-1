@@ -10,7 +10,7 @@
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
             <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span style="font-weight:normal">下载excel表格</span></a>
             </div>
-            <small class="fl" style="margin-left:20px;color:#ccc">{{taskData.assign ? '当前处理人：' : '当前处理组：'}}{{taskData.assign ? taskData.assign.nick : taskDAt.assign_group}}</small>
+            <small class="fl" style="margin-left:20px;color:#ccc">{{taskData.assign ? '当前处理人：' : '当前处理组：'}}{{taskData.assign ? taskData.assign.nick : taskData.assign_group}}</small>
           </h3>
           <div class="step-progress" v-if="taskFormAll.show_progress">
             <progress-wrap :progress="{
@@ -50,10 +50,11 @@
               </div>
             </div>
             <!-- header 表单填写 -->
-          <div v-if="taskForm.header">
+          <div v-if="taskForm.header" ref="header">
               <div v-for="task in taskForm.header">
                 <span v-for="taskform in task.value">
                   <form-body
+                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, assignForm, applyData)"
                     :item="assignForm.header"
                     :form-item="taskform"
@@ -66,6 +67,7 @@
                   </form-body>
 <!--                   {{showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'}} -->
                   <search-bar
+                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='search_bar'"
                     :hosts="assignForm.header"
                     :attr-list="taskform"
@@ -76,6 +78,7 @@
                     @on-hosts-change="onHostsChange">
                   </search-bar>
                   <header-table
+                    :data-class="taskform.id"
                     v-if="showFormItem(taskform, assignForm, applyData) && taskform.value.type==='table'"
                     :form-data="taskform"
                     :item="assignForm.header"
@@ -104,7 +107,7 @@
             <!-- taskForm.body.body_list.length !== 0 && -->
             <template v-if="taskForm.body && taskForm.body.style === 1">
               <el-tabs class="margin-bottom" type="border-card" @tab-click="handleClick" v-if="applyData.body && applyData.body.length">
-                <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
+                <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]" :ref="'body'+index">
                   <!-- body 信息显示 -->
                   <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                     <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'fa-angle-up' : 'fa-angle-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
@@ -141,8 +144,8 @@
                       </div>
                       <div v-else>
                         <!-- header 信息显示 -->
-                        <div v-if="task.form.form.header.length >= 1">
                           <p class="h5">{{task.tname}}{{taskData.message[index].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
+                        <div v-if="task.form.form.header.length >= 1">
                           <div v-for="taskformheader in task.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
                               <span v-if="showFormItem(valueheader, assignForm, applyData, task.tkey, taskData.ptask.tkey)">
@@ -167,6 +170,7 @@
                             <span v-for="formItem in formBlock.value">
                               <!-- {{isEdting}} -->
                               <form-body
+                                :data-class="formItem.id"
                                 v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
                                 :item="assignForm.body[index]"
                                 :form-item="formItem"
@@ -177,6 +181,7 @@
                                 keep-alive>
                               </form-body>
                               <search-bar
+                                :data-class="formItem.id"
                                 v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                                 :index="index"
                                 :post-form="assignForm"
@@ -187,6 +192,7 @@
                                 @on-hosts-change="onHostsChange">
                               </search-bar>
                               <body-table
+                                :data-class="formItem.id"
                                 v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                                 :form-data="formItem"
                                 :item="assignForm.body[index]"
@@ -215,7 +221,7 @@
                   <el-button size="small" @click="stickValue(index)">粘贴</el-button>
                 </el-button-group>
                 <el-tabs :id="'anchor-'+index" class="margin-bottom" type="border-card" @tab-click="handleClick"  :key="index">
-                  <el-tab-pane :label="bodyLableName[index]">
+                  <el-tab-pane :label="bodyLableName[index]" :ref="'body' + index">
                     <!-- body 信息显示 -->
                     <div class="history-block" :class="infoShow[index] ? 'show' : 'hidden'">
                       <el-button class="history-btn" size="small" type="text" :icon="infoShow[index] ? 'fa-angle-up' : 'fa-angle-down'" @click="retractInfo(index)">{{ infoShow[index] ? '收起' : '展开' }}</el-button>
@@ -270,7 +276,7 @@
                       </div>
                     </div>
                     <!-- body 表单填写 -->
-                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
+                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0" >
                       <div v-for="taskFormData in taskForm.body.body_list">
                           <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
                             <div class="form-block" v-for="formBlock in taskFormData.attr_list">
@@ -278,6 +284,7 @@
                               <span v-for="formItem in formBlock.value">
                                 <!-- {{isEdting}} -->
                                 <form-body
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
                                   :item="assignForm.body[index]"
                                   :form-item="formItem"
@@ -288,6 +295,7 @@
                                   keep-alive>
                                 </form-body>
                                 <search-bar
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                                   :index="index"
                                   :post-form="assignForm"
@@ -298,6 +306,7 @@
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
                                 <body-table
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                                   :form-data="formItem"
                                   :item="assignForm.body[index]"
@@ -820,7 +829,7 @@
                 body.attr_list.map(group => {
                   group.value.map(value => {
                     if (value.need_submit) {
-                      if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                      if (this.showFormItem(value, this.assignForm, this.applyData, true, true, k)) {
                         this.setNewDataType(value, newData)
                       }
                       if (value.show.type === 'form_header') {
@@ -833,10 +842,9 @@
                         })
                       } else if (value.show.type === 'form_body') {
                         this.$watch('assignForm.body.' + k + '.' + value.show.key_path, (newVal, oldVal) => {
-                          if (this.showFormItem(value, this.assignForm, this.applyData, true, false, k)) {
+                          if (this.showFormItem(value, this.assignForm, this.applyData, true, true, k)) {
+                            console.log(value.id, this.showFormItem(value, this.assignForm, this.applyData, true, true, k))
                             this.setDataType(value, this.assignForm.body[k])
-                          } else {
-                            delete this.assignForm.body[k][value.id]
                           }
                         })
                       }
@@ -1059,6 +1067,29 @@
         // console.log(this.tabIndex)
       },
       onSubmit (assignForm) {
+        if (this.$refs['header']) {
+          let headerKeys = Array.from(this.$refs['header'].querySelectorAll('[data-class]')).map(_ => _.dataset.class)
+          Object.keys(this.assignForm.header).map(val => {
+            if (!headerKeys.includes(val)) {
+              this.$delete(this.assignForm.header, val)
+            }
+          })
+        }
+        for (let i = 0; i < this.assignForm.body.length; i++) {
+          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => {
+            if (_.$vnode.elm.dataset && _.$vnode.elm.dataset.class) {
+              return true
+            } else {
+              return false
+            }
+          }).map(val => val.$vnode.elm.dataset.class)
+          console.log(bodykeys)
+          Object.keys(this.assignForm.body[i]).map(val => {
+            if (!bodykeys.includes(val)) {
+              this.$delete(this.assignForm.body[i], val)
+            }
+          })
+        }
         console.log(this.assignForm)
         this.$confirm('确定提交?', '提示', {
           confirmButtonText: '确定',
