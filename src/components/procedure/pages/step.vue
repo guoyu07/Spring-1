@@ -280,6 +280,7 @@
                               <span v-for="formItem in formBlock.value">
                                 <!-- {{isEdting}} -->
                                 <form-body
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && !isEmptyObj(assignForm.body[index])"
                                   :item="assignForm.body[index]"
                                   :form-item="formItem"
@@ -290,6 +291,7 @@
                                   keep-alive>
                                 </form-body>
                                 <search-bar
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
                                   :index="index"
                                   :post-form="assignForm"
@@ -300,6 +302,7 @@
                                   @on-hosts-change="onHostsChange">
                                 </search-bar>
                                 <body-table
+                                  :data-class="formItem.id"
                                   v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
                                   :form-data="formItem"
                                   :item="assignForm.body[index]"
@@ -816,7 +819,13 @@
           })
         }
         for (let i = 0; i < this.assignForm.body.length; i++) {
-          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => _.$vnode.elm.dataset.class).map(val => val.$vnode.elm.dataset.class)
+          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => {
+            if (_.$vnode.elm.dataset && _.$vnode.elm.dataset.class) {
+              return true
+            } else {
+              return false
+            }
+          }).map(val => val.$vnode.elm.dataset.class)
           console.log(bodykeys)
           Object.keys(this.assignForm.body[i]).map(val => {
             if (!bodykeys.includes(val)) {

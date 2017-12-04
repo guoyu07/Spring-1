@@ -111,12 +111,10 @@
             routesArr.push(tempValue)
           }
         }
-        console.log(routesArr.indexOf(this.$route.path) > -1)
         if (routesArr.indexOf(this.$route.path) > -1) {
           return this.$route.path
         } else {
           var reg = /^\/\w*/
-          console.log(this.$route.path.match(reg)[0])
           return this.$route.path.match(reg)[0]
         }
       },

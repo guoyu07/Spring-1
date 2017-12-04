@@ -1076,11 +1076,16 @@
           })
         }
         for (let i = 0; i < this.assignForm.body.length; i++) {
-          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => _.$vnode.elm.dataset.class).map(val => val.$vnode.elm.dataset.class)
+          let bodykeys = this.$refs['body' + i][0].$children.filter(_ => {
+            if (_.$vnode.elm.dataset && _.$vnode.elm.dataset.class) {
+              return true
+            } else {
+              return false
+            }
+          }).map(val => val.$vnode.elm.dataset.class)
           console.log(bodykeys)
           Object.keys(this.assignForm.body[i]).map(val => {
             if (!bodykeys.includes(val)) {
-              console.log(val)
               this.$delete(this.assignForm.body[i], val)
             }
           })

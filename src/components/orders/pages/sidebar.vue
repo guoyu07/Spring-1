@@ -33,6 +33,9 @@
     <router-link :to="{ path: '/orders/queues/custom/new' }">
       <el-button class="order-sidebar__plus" type="text" size="small" icon="plus">新队列</el-button>
     </router-link>
+    <router-link :to="{ path: '/orders-export'}">
+      <el-button>工单导出</el-button>
+    </router-link>
   </div>
 </template>
 
