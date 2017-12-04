@@ -35,6 +35,10 @@
             </el-select>
           </el-row>
 
+          <line-chart
+            :time-query="timeQuery"
+            :selected-user="selectedUserOrGroup"></line-chart>
+
           <user-table
             v-if="userOrRole === 'user'"
             :statistics="statistics"
@@ -55,19 +59,22 @@
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import getProcessList from './../../../mixins/getProcessList'
+  import timeQueryMixin from './../../../mixins/timeQuery'
   import timeQuery from './_plugins/_timeQuery'
+  import lineChart from './_plugins/_lineChart'
   import userTable from './_plugins/_userTable'
   import groupTable from './_plugins/_groupTable'
+  // import _ from './../../../utils/_'
 
   export default {
-    mixins: [getPermittedRoleList, getPermittedUserList, getProcessList],
+    mixins: [getPermittedRoleList, getPermittedUserList, getProcessList, timeQueryMixin],
 
     data () {
       return {
         timeQuery: {
-          type: 'before',
-          time: 1,
-          unit: 'h',
+          type: '',
+          time: 0,
+          unit: '',
           s_date: '',
           e_date: ''
         },
@@ -87,6 +94,9 @@
       this.getPermittedRoleList()
       this.getPermittedUserList()
       this.getProcessList()
+      // this.$nextTick(() => {
+        // this.initializeSelectedUser()
+      // })
     },
 
     methods: {
@@ -96,9 +106,7 @@
 
       onTimeQueryChange (args) {
         this.timeQuery = args.val
-        if (this._validateTimequery()) {
-          this.getUserStatistics()
-        }
+        this.getListByTimeQuery(this.getUserStatistics)
       },
 
       getUserStatistics (pkey = null) {
@@ -113,33 +121,27 @@
           method: 'GET',
           data: params
         }
-        if (!this._validateTimequery || !params.userId && !params.group_key) return
+        if (!params.userId && !params.group_key) return
         this.http.post('/report/', this.parseData(postData)).then((res) => {
           if (res.status === 200) {
-            this.statistics = this.userOrRole === 'user' ? [{ ...res.data.data, ...{ userName: this.selectedUserOrGroup.nick, userId: this.selectedUserOrGroup.userId, groups: this.selectedUserOrGroup.groups } }] : [{ ...res.data.data, ...{ groupName: this.selectedUserOrGroup.name, users: this.selectedUserOrGroup.users, tags: this.selectedUserOrGroup.tags } }]
+            this.statistics = this.userOrRole === 'user'
+              ? [{ ...res.data.data, ...{ userName: this.selectedUserOrGroup.nick, userId: this.selectedUserOrGroup.userId, groups: this.selectedUserOrGroup.groups } }]
+              : [{ ...res.data.data, ...{ groupName: this.selectedUserOrGroup.name, users: this.selectedUserOrGroup.users, tags: this.selectedUserOrGroup.tags } }]
           }
         })
       },
 
       onSelectProcess (args) {
         this.getUserStatistics(args.val.pkey)
-      },
-
-      _validateTimequery () {
-        switch (this.timeQuery.type) {
-          case 'range':
-            if (this.timeQuery.s_date && this.timeQuery.e_date) return true
-            break
-          case 'before':
-          case 'after':
-            if (this.timeQuery.time) return true
-            break
-          default:
-            return false
-        }
       }
     },
 
-    components: { timeQuery, userTable, groupTable }
+    components: { timeQuery, lineChart, userTable, groupTable }
   }
 </script>
+
+<style>
+.el-tag + .el-tag {
+  margin-left: 6px;
+}
+</style>

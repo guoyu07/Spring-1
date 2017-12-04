@@ -2,14 +2,14 @@
   <el-table :data="statistics" :default-expand-all="true">
     <el-table-column type="expand">
       <template scope="props">
-        <el-select v-model="selectedProcess" size="small" placeholder="选择流程…" class="margin-bottom" value-key="pname" @change="onSelectProcess">
+        <!-- <el-select v-model="selectedProcess" size="small" placeholder="选择流程…" class="margin-bottom" value-key="pname" @change="onSelectProcess">
           <el-option
             v-for="process in processList"
             :key="process.name"
             :label="process.pname"
             :value="process">
           </el-option>
-        </el-select>
+        </el-select> -->
         <el-table :data="props.row.list" stripe border>
           <el-table-column
             label="环节名称"
