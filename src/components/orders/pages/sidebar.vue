@@ -33,8 +33,8 @@
     <router-link :to="{ path: '/orders/queues/custom/new' }">
       <el-button class="order-sidebar__plus" type="text" size="small" icon="plus">新队列</el-button>
     </router-link>
-    <router-link :to="{ path: '/orders-export'}">
-      <el-button>工单导出</el-button>
+    <router-link :to="{ path: '/orders-export/print/Storage' }">
+      <el-button class="order-sidebar__export" type="text" size="small">工单导出</el-button>
     </router-link>
   </div>
 </template>
@@ -145,7 +145,13 @@
     border-right: 1px solid @borderColor;
     overflow-y: scroll;
     transition: all .3s ease;
-
+    a{
+      &:hover,
+      &:link,
+      &:active {
+        text-decoration: none
+      }
+    }
     &__title {
       margin: 12px;
       font-size: 15px;
@@ -202,13 +208,15 @@
 
       .filter-close {
         opacity: 0;
-
         &:hover {
           color: @danger;
         }
       }
     }
-
+    &__export {
+      display: block;
+      margin-left: 12px
+    }
     &__plus {
       margin-left: 12px;
     }
