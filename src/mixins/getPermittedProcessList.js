@@ -28,6 +28,7 @@ export default {
                 this.$set(this.permittedProcessList[i].task_list[j], 'editingUser', false)
                 this.$set(this.permittedProcessList[i].task_list[j], 'editingGroup', false)
                 this.$set(this.permittedProcessList[i].task_list[j], 'editingAssign', false)
+                this.$set(this.permittedProcessList[i].task_list[j], 'editingTime', false)
               }
             }
           }
