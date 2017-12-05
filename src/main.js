@@ -232,7 +232,7 @@ Vue.prototype.setDataType = (original, goalData) => {
   } else if (original.value.type === 'dict' || (original.value.type === 'users' && !original.isAlias)) {
     Vue.prototype.$set(goalData, original.id, null)
   } else if (original.value.type === 'int') {
-    Vue.prototype.$set(goalData, original.id, 1)
+    Vue.prototype.$set(goalData, original.id, 0)
   } else if (original.value.type === 'users' && original.isAlias) {
     Vue.prototype.$set(goalData, original.id, { group: null, user: null })
   } else if (original.value.type === 'table') {
