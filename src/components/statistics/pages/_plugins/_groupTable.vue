@@ -23,6 +23,24 @@
             :context="_self">
             <span>{{ _convertTime(row.avg_duration) }}</span>
           </el-table-column>
+          <el-table-column
+            label="标准工时"
+            inline-template
+            :context="_self">
+            <span>{{ _convertTime(row.s_avg_duration) }}</span>
+          </el-table-column>
+          <el-table-column
+            label="总耗时"
+            inline-template
+            :context="_self">
+            <span>{{ _convertTime(row.total_duration) }}</span>
+          </el-table-column>
+          <el-table-column
+            label="合计标准工时"
+            inline-template
+            :context="_self">
+            <span>{{ _convertTime(row.s_total_duration) }}</span>
+          </el-table-column>
         </el-table>
       </template>
     </el-table-column>

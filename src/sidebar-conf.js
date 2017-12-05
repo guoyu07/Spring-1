@@ -149,16 +149,16 @@ const SidebarConf = {
         path: '/statistics/process',
         icon: 'fa-sitemap'
       }, {
-        name: '事件统计',
-        path: '/statistics/event',
-        icon: 'fa-bullhorn'
-      }, {
-        name: '用户统计',
+        name: '个人统计',
         path: '/statistics/user',
         icon: 'fa-user-circle-o'
       }, {
-        name: '自定义统计',
-        path: '/statistics/custom',
+        name: '工作量统计',
+        path: '/statistics/work',
+        icon: 'fa-clock-o'
+      }, {
+        name: '标准工时配置',
+        path: '/statistics/config',
         icon: 'fa-gear'
       }]
     }]

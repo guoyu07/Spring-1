@@ -36,19 +36,20 @@
           </el-row>
 
           <line-chart
+            v-show="this.userOrRole === 'user'"
             :time-query="timeQuery"
             :selected-user="selectedUserOrGroup"></line-chart>
 
+          <el-row type="flex" justify="end" style="margin: 12px 0;">
+            <el-button icon="fa-upload" type="primary" size="small">导出个人统计</el-button>
+          </el-row>
+
           <user-table
             v-if="userOrRole === 'user'"
-            :statistics="statistics"
-            :processes="processList"
-            @on-select-process="onSelectProcess"></user-table>
+            :statistics="statistics"></user-table>
           <group-table
             v-else
-            :statistics="statistics"
-            :processes="processList"
-            @on-select-process="onSelectProcess"></group-table>
+            :statistics="statistics"></group-table>
         </el-card>
       </el-col>
     </el-row>
@@ -94,6 +95,7 @@
       this.getPermittedRoleList()
       this.getPermittedUserList()
       this.getProcessList()
+      this.selectedUserOrGroup = this.$store.state.userinfo
       // this.$nextTick(() => {
         // this.initializeSelectedUser()
       // })
@@ -102,6 +104,8 @@
     methods: {
       onSelectType (command) {
         this.userOrRole = command
+        this.selectedUserOrGroup = {}
+        this.statistics = []
       },
 
       onTimeQueryChange (args) {
@@ -111,13 +115,12 @@
 
       getUserStatistics (pkey = null) {
         let params = {
-          pkey: pkey,
           userId: this.userOrRole === 'user' ? this.selectedUserOrGroup.userId : '',
           group_key: this.userOrRole === 'group' ? this.selectedUserOrGroup.key : '',
           time_query: this.timeQuery
         }
         let postData = {
-          action: 'task/report',
+          action: 'process/task/report',
           method: 'GET',
           data: params
         }
@@ -129,10 +132,6 @@
               : [{ ...res.data.data, ...{ groupName: this.selectedUserOrGroup.name, users: this.selectedUserOrGroup.users, tags: this.selectedUserOrGroup.tags } }]
           }
         })
-      },
-
-      onSelectProcess (args) {
-        this.getUserStatistics(args.val.pkey)
       }
     },
 

@@ -54,6 +54,12 @@
       }
     },
 
+    watch: {
+      selectedUser (newVal) {
+        this.getChartData()
+      }
+    },
+
     created () {
       this.getChartData()
     },

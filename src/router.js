@@ -232,6 +232,9 @@ const routes = [{
     }, {
       path: 'user',
       component: resolve => require(['./components/statistics/pages/user'], resolve)
+    }, {
+      path: 'config',
+      component: resolve => require(['./components/statistics/pages/config'], resolve)
     }]
   }]
 }, {
