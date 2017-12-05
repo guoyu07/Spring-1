@@ -213,7 +213,9 @@
         isClosable: true,
         bodyLableName: [],
         Editdata: {},
-        submitLoading: false
+        submitLoading: false,
+        startTime: '',
+        endTime: ''
       }
     },
     computed: {
@@ -222,6 +224,8 @@
       }
     },
     created () {
+      this.startTime = new Date()
+      console.log(this.startTime)
       this.renderForm()
     },
     watch: {
@@ -626,6 +630,9 @@
         // console.log(postFormData)
         let postData
         let { pid, pkey, tkey, tid } = this.$route.params
+        this.endTime = new Date()
+        let durationTime = this.endTime - this.startTime
+        console.log(durationTime)
         if (this.isEditing && this.$route.params.pkey !== 'Storage') {
           postData = {
             action: 'modify/form/data',
@@ -643,7 +650,8 @@
             method: 'POST',
             data: {
               pkey: this.$route.params.pkey,
-              form: postFormData
+              form: postFormData,
+              duration: durationTime
             }
           }
         }
