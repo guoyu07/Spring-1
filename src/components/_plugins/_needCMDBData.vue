@@ -53,6 +53,7 @@
       <div  v-if="showDescription && showOptionList.length === 1" class="showDescription" >
       {{showOptionList[0].describ}}
       </div>
+      <!-- <a v-if="showHref" ><a/> -->
       </template>
     </template>
     <template v-else-if="strucData.value.type === 'dicts'">
@@ -146,9 +147,7 @@
               })
             } else {
               this.$watch('whole.body.' + this.index + '.' + para.value.key_path, (newVal, oldVal) => {
-                console.log(para.value.key_path, newVal, oldVal)
                 if (!this.isEditing && !this.vmodel[this.strucData.id]) {
-                  console.log(this.strucData.id)
                   this.setDataType(this.strucData, this.vmodel)
                   // console.log(this.vmodel[this.strucData.id], this.strucData.name)
                 }
@@ -157,7 +156,6 @@
                   this.showOptionList = []
                   this.optionList = []
                 }
-                console.log(newVal)
                 this.renderOptions()
               })
             }
@@ -194,10 +192,11 @@
       }
     },
     computed: {
+      showHref () {
+        return this.params.object_id === 'ipaddr'
+      },
       showDescription () {
-        if (this.params.object_id === 'activitiHostType') {
-          return true
-        } else { return false }
+        return this.params.object_id === 'activitiHostType'
       }
     },
     methods: {
@@ -352,7 +351,6 @@
               } else {
                 const keyPath = para.value.key_path.split('.')
                 if (keyPath.length && !this.getPathResult(this.whole.body[this.index], keyPath[0])) {
-                  console.log(para.id, params[para.id])
                   return false
                 }
                 // console.log(this.whole, this.index, para.value.key_path)

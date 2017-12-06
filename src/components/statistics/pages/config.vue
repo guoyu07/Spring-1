@@ -50,7 +50,7 @@
           <el-table :data="currentPageList" border >
             <el-table-column type="expand">
               <template scope="props">
-                <el-row type="flex" >
+                <el-row>
                   <el-col :sm="24" :md="24" :lg="16">
                     <el-table :data="props.row.task_list" >
                       <el-table-column label="环节名称" prop="tname"></el-table-column>

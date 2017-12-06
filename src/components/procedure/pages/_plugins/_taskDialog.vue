@@ -45,7 +45,7 @@
           </el-collapse-item>
         </el-collapse> -->
         <el-steps
-          finish-status="success"
+          finish-status="finish"
           style="margin: 16px 0 12px"
           :active="taskViewData.order.pinstance.history_list.length + 1">
           <el-step

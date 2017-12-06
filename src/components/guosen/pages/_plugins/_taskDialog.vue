@@ -56,15 +56,17 @@
             </el-form>
           </el-collapse-item>
         </el-collapse> -->
+      <div class="stepsContainer">
         <el-steps
-          finish-status="success"
-          style="margin: 16px 0 12px"
+          class="steps"
+          finish-status="finish"
           :active="taskViewData.order.pinstance.history_list.length + 1">
           <el-step
             v-for="(task, key) in taskViewData.order.pinstance.history_list"
             :title="task.name"
             :description="`${task.operator.nick} ${task.time}`"></el-step>
         </el-steps>
+      </div>
       </el-col>
     </el-row>
     </span>
@@ -78,3 +80,12 @@
     }
   }
 </script>
+<style lang="less" scoped>
+.stepsContainer {
+  overflow-x:auto;
+  margin: 16px 0 12px;
+  .steps {
+    min-width:1000px;
+  }
+}
+</style>
