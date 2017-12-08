@@ -30,11 +30,12 @@
         </div>
       </draggable>
     </template>
+    
     <router-link :to="{ path: '/orders/queues/custom/new' }">
       <el-button class="order-sidebar__plus" type="text" size="small" icon="plus">新队列</el-button>
     </router-link>
     <router-link :to="{ path: '/orders-export/print/Storage' }">
-      <el-button class="order-sidebar__export" type="text" size="small">工单导出</el-button>
+      <el-button class="order-sidebar__export" type="text" size="small" icon="document">工单导出</el-button>
     </router-link>
   </div>
 </template>

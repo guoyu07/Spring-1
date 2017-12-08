@@ -8,8 +8,8 @@
       <el-form label-width="80px" label-position="top">
         <el-form-item label="时间类型">
           <el-select v-model="timeQueryBuffer.type" size="small">
-            <el-option label="超过 ${time} 之前" value="before"></el-option>
-            <el-option label="在过去 ${time} 之内" value="after"></el-option>
+            <el-option label="在过去 ${time} 之内" value="before"></el-option>
+            <el-option label="超过 ${time} 之前" value="after"></el-option>
             <el-option label="在 ${start} 和 ${end} 之间" value="range"></el-option>
           </el-select>
         </el-form-item>

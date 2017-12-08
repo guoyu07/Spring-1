@@ -1,10 +1,11 @@
 <template>
   <div :class="{ 'order-list': true, collapsed: !isExpanded }">
     <el-card class="box-card">
+      <time-query :time-query="timeQuery" @change-timequery="onTimeQueryChange"></time-query>
       <h3>
-        <i class="el-icon-fa-calendar-o icon-lg"></i>导出{{topic}}工单
+        <i class="el-icon-fa-calendar-o icon-lg"></i> 导出{{topic}}工单
       </h3>
-        <a  class="el-button fl exceldown" :href="'/api/data?action=export_process_to_excel&&pids='+pids"><i class="el-icon-fa-file-excel-o"></i><span style="font-weight:normal">导出工单</span></a>
+        <a class="el-button fl exceldown" :href="'/api/data?action=export_process_to_excel&&pids='+pids"><i class="el-icon-upload2"></i><span style="font-weight:normal">导出工单</span></a>
       <el-table :data="filterOrderList" border @selection-change='handleSelectionChange'>
         <el-table-column type="selection"></el-table-column>
         <el-table-column v-for="(col, colIndex) in filterShowFields"  :label="col.label"  inline-template>
@@ -19,15 +20,25 @@
 
 <script>
   import getFilterShowFields from './../../../mixins/getFilterShowFields'
+  import timeQuery from './../../_plugins/_timeQuery'
+  import timeQueryMixin from './../../../mixins/timeQuery'
 
   export default {
-    mixins: [getFilterShowFields],
+    mixins: [getFilterShowFields, timeQueryMixin],
+    components: { timeQuery },
     props: {
       isExpanded: Boolean
     },
     data () {
       return {
         topic: '',
+        timeQuery: {
+          type: 'after',
+          time: 1,
+          unit: 'w',
+          s_date: '',
+          e_date: ''
+        },
         filterOrderList: [],
         chosenList: [],
         category: [],
@@ -125,6 +136,12 @@
         this.chosenList = list
         this.pids = this.chosenList.map(val => val.pid)
       },
+
+      onTimeQueryChange (args) {
+        this.timeQuery = args.val
+        this.getListByTimeQuery(this.getFilterProcessesList(this.$route.params.pkey))
+      },
+
       // 加载列表
       getFilterProcessesList (pkey) {
         let postData = {
@@ -137,6 +154,11 @@
                 type: 'pname',
                 key: 'pd__pkey',
                 filter: [{key: pkey}]
+              }, {
+                label: '任务创建时间',
+                type: 'time',
+                key: 'ctime',
+                filter: this.timeQuery
               }],
             order: '',
             page: 1

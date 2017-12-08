@@ -4,7 +4,7 @@
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
           <time-query :time-query="timeQuery" @change-timequery="onTimeQueryChange"></time-query>
-          <h3><i class="el-icon-fa-users icon-lg"></i> 用户统计</h3>
+          <h3><i class="el-icon-fa-users icon-lg"></i> 个人统计</h3>
           <el-row class="margin-bottom">
             <el-dropdown @command="onSelectType">
               <el-button :plain="true">{{userOrRole === 'user' ? '用户' : '群组'}}<i class="el-icon-caret-bottom el-icon--right"></i></el-button>
@@ -61,7 +61,7 @@
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import getProcessList from './../../../mixins/getProcessList'
   import timeQueryMixin from './../../../mixins/timeQuery'
-  import timeQuery from './_plugins/_timeQuery'
+  import timeQuery from './../../_plugins/_timeQuery'
   import lineChart from './_plugins/_lineChart'
   import userTable from './_plugins/_userTable'
   import groupTable from './_plugins/_groupTable'
@@ -73,9 +73,9 @@
     data () {
       return {
         timeQuery: {
-          type: '',
-          time: 0,
-          unit: '',
+          type: 'after',
+          time: 1,
+          unit: 'w',
           s_date: '',
           e_date: ''
         },
