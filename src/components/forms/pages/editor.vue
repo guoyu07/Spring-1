@@ -79,6 +79,9 @@
               </el-form-item>
               <br>
               <el-form-item label="操作按钮" v-if="$route.query.tkey !== 'start'">
+                <el-tag
+                  type="danger"
+                  v-show="!formConfig.action.length">暂无</el-tag>
                 <template v-for="button in formConfig.action">
                   <el-popover>
                     <action-conf
@@ -115,6 +118,22 @@
                 <el-checkbox
                    v-if="$route.query.tkey !== 'start'"
                    v-model="formConfig.fill_form">自动填充表单</el-checkbox>
+                <el-checkbox v-model="hasExcel">Excel 上下载</el-checkbox>
+              </el-form-item>
+
+              <el-form-item v-if="this.hasExcel" label="Excel 上下载">
+                <template v-for="(button, key) in this.formConfig.form.upload_excel">
+                  <el-popover>
+                    <excel-conf
+                      :button="button"
+                      :name="key"></excel-conf>
+                    <el-button
+                      size="small"
+                      icon="fa-cog"
+                      slot="reference"
+                      class="mgr">{{button.name}}</el-button>
+                  </el-popover>
+                </template>
               </el-form-item>
 
               <!-- <template v-if="formConfig.action.find(_ => _.type !== 'target')">
@@ -254,6 +273,7 @@
 <script>
 import formConf from './_config/_formConf' // 配置字段的表单
 import actionConf from './_config/_actionConf'
+import excelConf from './_config/_excelConf'
 
 import getPresetList from './../../../mixins/getPresetList'
 import getOptionPresets from './../../../mixins/getOptionPresets'
@@ -266,6 +286,9 @@ export default {
       // selectedAuto: null,
       // selectedManual: null,
       // loading: true,
+      hasExcelInitially: false,
+      hasExcel: false,
+      excelConfBuffer: '',
       fieldsets: [],
       selectedAction: null,
       id: '',
@@ -305,7 +328,10 @@ export default {
     this.http.post('/form/', this.parseData(postData)).then((res) => {
       // console.log(res)
       this.formConfig = res.data.data
-      console.log(this.formConfig.action.find(ac => ac.name === 'Daaa').id)
+      this.hasExcelInitially = !!this.formConfig.form.upload_excel
+      this.hasExcel = !!this.formConfig.form.upload_excel
+      this.excelConfBuffer = JSON.stringify(this.formConfig.form.upload_excel)
+      // console.log(this.formConfig.action.find(ac => ac.name === 'Daaa').id)
       // body 类型：从 obj 修改为 arr
       const bodyIsArr = Array.isArray(this.formConfig.form.body.body_list)
       if (!bodyIsArr) {
@@ -318,6 +344,26 @@ export default {
       }
       this.initiateFieldsets()
     })
+  },
+  watch: {
+    hasExcel (val) {
+      if (val) {
+        this.hasExcelInitially
+        ? this.formConfig.form.upload_excel = JSON.parse(this.excelConfBuffer)
+        : this.formConfig.form.upload_excel = {
+          upload: {
+            name: '上传 Excel',
+            action: ''
+          },
+          download: {
+            name: '下载 Excel',
+            action: ''
+          }
+        }
+      } else {
+        this.$delete(this.formConfig.form, 'upload_excel')
+      }
+    }
   },
   methods: {
     onAddAction (command) {
@@ -346,6 +392,18 @@ export default {
             preset: {},
             desc: ''
           })
+          break
+        case 'upload':
+          this.formConfig.upload_excel.upload = {
+            name: '新上传按钮',
+            action: ''
+          }
+          break
+        case 'download':
+          this.formConfig.upload_excel.download = {
+            name: '新下载按钮',
+            action: ''
+          }
           break
         default:
           break
@@ -485,7 +543,8 @@ export default {
   },
   components: {
     formConf,
-    actionConf
+    actionConf,
+    excelConf
   }
 }
 </script>
