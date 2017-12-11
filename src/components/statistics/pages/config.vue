@@ -57,11 +57,16 @@
                       <el-table-column label="标准工时配置" inline-template>
                         <template>
                           <div >
-                          <el-input v-if="row.editingTime"  v-model="row.standard_duration">
+                           <div v-if="row.editingTime"  v-model="row.standard_duration">
+                             <el-input-number size="small" v-model="row.hour" class="timePicker" :min="0" :max="60"></el-input-number>时
+                             <el-input-number size="small" v-model="row.minute" class="timePicker" :min="0" :max="59"></el-input-number>分
+                             <el-input-number size="small" v-model="row.second" class="timePicker" :min="0" :max="59"></el-input-number>秒
+                           </div>
+                         <!--  <el-input v-if="row.editingTime"  v-model="row.standard_duration"> -->
                           </el-input>
                           <i v-show="row.editingTime" class="el-icon-check text-success" @click="onEdit(row)"></i>
                           <i v-show="row.editingTime" class="el-icon-close text-error" @click="onCancelEdit(row)"></i>
-                          <span v-show="!row.editingTime">{{row.standard_duration}} </span>
+                          <span v-if="!row.editingTime">{{timeCalculation(row.standard_duration, row)}}</span>
                           <i class="el-icon-edit align text-info fr" v-if="!row.editingTime" @click="showContainer(row)"></i>
                           </div>
                         </template>
@@ -106,7 +111,11 @@
         processSearchList: '',
         processList: '',
         search: { pname: '', category: '' },
-        categoryList: []
+        categoryList: [],
+        hour: '',
+        minute: '',
+        second: '',
+        ms: ''
       }
     },
     watch: {
@@ -123,6 +132,17 @@
       }
     },
     methods: {
+      timeCalculation (ms, row) {
+        console.log(row)
+        let hour = Math.floor(ms / 1000 / 60 / 60)
+        row.hour = hour
+        let minute = Math.floor(ms / 1000 / 60 % 60)
+        row.minute = minute
+        let second = Math.floor(ms / 1000 % 60)
+        row.second = second
+        console.log(hour, minute, second)
+        return hour + '时' + minute + '分' + second + '秒'
+      },
       onCancelEdit (row) {
         row.standard_duration = row.tempTime
         row.editingTime = false
@@ -130,6 +150,7 @@
       onEdit (row) {
         let durationTime
         console.log(row)
+        row.standard_duration = row.hour * 60 * 60 * 1000 + row.minute * 60 * 1000 + row.second * 1000
         durationTime = row.standard_duration
         let postData = {
           action: 'process/task',

@@ -351,25 +351,6 @@
       </el-col>
     </el-row>
     <task-dialog v-if="taskViewData.visible" :task-view-data="taskViewData"></task-dialog>
- <!--    <el-dialog
-      title="工作流"
-      v-model="showHistory">
-      <el-collapse v-if="taskData && taskData.pinstance">
-        <el-collapse-item v-for="(task, key) in taskData.pinstance.history_list" :key="key" :title="(key + 1).toString() + '. ' + task.name">
-          <el-form label-position="left" label-width="90px" inline class="expanded-form">
-            <el-form-item v-if="task.task_key" label="任务 Key：">
-              <code>{{task.task_key}}</code>
-            </el-form-item>
-            <el-form-item v-if="task.operator" label="操作者：">
-              <span>{{task.operator.nick}}</span>
-            </el-form-item>
-            <el-form-item v-if="task.time" label="处理时间：">
-              <span>{{task.time}}</span>
-            </el-form-item>
-          </el-form>
-        </el-collapse-item>
-      </el-collapse>
-    </el-dialog> -->
     <!-- 机柜图预览 -->
     <div v-if="taskData.ptask && taskData.ptask.tkey === 'cabinet'" class="cabinet-preview" :class="{'shown': previewShown}">
       <h5 class="cabinet-title">
@@ -1268,13 +1249,10 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        console.log(anchor.offsetParent.offsetTop)
-        console.log(document.compatMode)
-        if (document.compatMode !== 'CSS1Compat') {
-          document.documentElement.scrollTop = anchor.offsetParent.offsetTop
-        } else {
-          document.body.scrollTop = anchor.offsetParent.offsetTop
-        }
+        // console.log(anchor.offsetParent.offsetTop)
+        // console.log(document.compatMode)
+        document.body.scrollTop = anchor.offsetParent.offsetTop
+        document.documentElement.scrollTop = anchor.offsetParent.offsetTop
       },
       retractInfo (index) {
         const selector = this.$el.querySelectorAll('.history-block')

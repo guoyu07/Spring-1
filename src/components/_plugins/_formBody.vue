@@ -314,11 +314,12 @@
               this.whole[this.formItem.id] = this.formItem.default.value
             } else {
               if (this.header) {
-                console.log('true')
-                console.log(this.formItem.default.value)
                 this.whole.header[this.formItem.id] = this.formItem.default.value
               } else {
-                this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
+                console.log('did mounted')
+                this.$nextTick(() => {
+                  this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
+                })
               }
             }
           } else if (this.formItem.default.type === 'form_header') {
@@ -630,24 +631,6 @@
     // top: 24px;
     // left: 0;
   }
-  .dz-remove {
-    display: inline-block;
-    font: normal normal normal 14px/1 FontAwesome;
-    font-size: inherit;
-    text-rendering: auto;
-    -webkit-font-smoothing: antialiased;
-    &::before {
-      content: "\f014";
-      color: #fff;
-      font-size: 24px;
-    }
-  }
-</style>
-position: absolute;
-    // top: 24px;
-    // left: 0;
-  }
-
   .dz-remove {
     display: inline-block;
     font: normal normal normal 14px/1 FontAwesome;

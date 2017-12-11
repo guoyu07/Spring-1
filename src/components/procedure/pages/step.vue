@@ -1030,13 +1030,8 @@
       },
       goAnchor (selector) {
         const anchor = this.$el.querySelector(selector)
-        console.log(anchor.offsetParent.offsetTop)
-        console.log(document.body.scrollTop)
-        if (document.compatMode !== 'CSS1Compat') {
-          document.documentElement.scrollTop = anchor.offsetParent.offsetTop
-        } else {
-          document.body.scrollTop = anchor.offsetParent.offsetTop
-        }
+        document.documentElement.scrollTop = anchor.offsetParent.offsetTop
+        document.body.scrollTop = anchor.offsetParent.offsetTop
       },
       retractInfo (index) { // 展开收起历史信息
         const selector = this.$el.querySelectorAll('.history-block')

@@ -225,7 +225,6 @@
     },
     created () {
       this.startTime = new Date()
-      console.log(this.startTime)
       this.renderForm()
     },
     watch: {

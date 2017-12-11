@@ -29,6 +29,9 @@ export default {
                 this.$set(this.permittedProcessList[i].task_list[j], 'editingGroup', false)
                 this.$set(this.permittedProcessList[i].task_list[j], 'editingAssign', false)
                 this.$set(this.permittedProcessList[i].task_list[j], 'editingTime', false)
+                this.$set(this.permittedProcessList[i].task_list[j], 'hour', 0)
+                this.$set(this.permittedProcessList[i].task_list[j], 'minute', 0)
+                this.$set(this.permittedProcessList[i].task_list[j], 'second', 0)
               }
             }
           }

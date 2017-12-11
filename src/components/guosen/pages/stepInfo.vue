@@ -4,23 +4,19 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <div class="flex-box">
-            <h3 class="form-title"><i class="el-icon-fa-server"></i> {{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
-            <!-- <el-radio-group class="fr" v-model="bodyStyle">
-              <el-radio-button label="1">标签页</el-radio-button>
-              <el-radio-button label="2">卡片式</el-radio-button>
-            </el-radio-group> -->
-<!--             <el-button type="info" :plain="true" icon="fa-history" class="fr" v-if="taskFormAll.show_history" @click="onViewTask(taskData)">工作流</el-button> -->
-            <div style="margin-bottom:8px">
+            <div>
+            <h3 class="form-title"><i class="el-icon-fa-server"></i> {{allData.pnum}}-{{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
+            <div v-for="(cur, index) in allData.current_tasks" v-if="allData.current_tasks">
+              <small  v-if="cur.assign || cur.assign_group" style="margin-left:20px;color:#ccc" >{{cur.tname}}-{{cur.assign ? '当前处理人：' : '当前处理组：'}}{{cur.assign ? cur.assign.nick : cur.assign_group.name}}</small>
+              <small v-else style="margin-left:20px;color:#ccc">{{cur.tname}}-当前处理：无</small>
+            </div>
+            </div>
+            <div>
+             <!--  <i class="el-icon-fa-server color-primary"></i> {{taskData.pinstance && taskData.pinstance.pnum}}-{{ taskData.pinstance && taskData.pinstance.pd.pname }}-{{ taskData.ptask && taskData.ptask.tname }} -->
+            <el-button type="info" :plain="true" icon="fa-history" class="fr"  @click="onViewTask(allData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
             <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span style="font-weight:normal">下载excel表格</span></a>
             </div>
-<!--           <div class="step-progress" v-if="taskFormAll.show_progress">
-            <progress-wrap :progress="{
-             task: taskData.ptask.tkey,
-             pkey: taskData.pinstance.pkey,
-             taskList: taskData.pinstance.task_list
-             }"></progress-wrap>
-          </div> -->
             <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             <el-form v-if="taskData.can_manage && $route.query.filter === '指派'" :inline="true">
               <el-form-item label="用户" :inline="true">
@@ -48,12 +44,20 @@
               <el-button :loading="assignViewLoading" type="info" @click="onAssign($route.query.tid, newAssignee, newcandidateGroup)">指派</el-button>
             </el-form>
           </div>
+          <el-steps
+              finish-status="finish"
+              style="margin: 16px 0 12px"
+              :active="finishTaskindex">
+              <el-step
+                v-for="(task, key) in allData.task_list"
+                :title="task.tname"></el-step>
+            </el-steps>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" class="advance-search-form" :inline="true">
             <!-- 表头信息显示 只要出现了 body 这些信息放body里 -->
             <div class="history-block" v-if="!isEmptyObj(applyData.header) && applyData.body && !applyData.body.length">
-              <div v-for="taskheader in form">
+              <div v-for="(taskheader, kindex) in form">
                 <div v-if="taskheader.form.form.header.length >= 1">
-                  <p class="h5">{{taskheader.tname}}</p>
+                  <p class="h5">{{taskheader.tname}}{{allData.message[kindex].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                   <div v-for="taskformheader in taskheader.form.form.header">
                     <span v-for="valueheader in taskformheader.value">
                       <span v-if="showFormItem(valueheader, assignForm, applyData, taskheader.tkey, false)">
@@ -72,11 +76,11 @@
                 <el-tab-pane v-for="(data, index) in applyData.body" :key="index" :label="bodyLableName[index]">
                   <!-- body 信息显示 -->
                   <div class="history-block">
-                    <div v-for="task in form">
+                    <div v-for="(task, kindex) in form">
                       <div v-if="task.form.form.body.body_list.length">
                         <div v-for="taskbody in task.form.form.body.body_list">
                           <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
-                            <p class="h5">{{task.tname}}</p>
+                            <p v-if="task.form.form.header.length" class="h5">{{task.tname}}{{taskData.message[kindex].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                             <!-- header 信息显示 -->
                             <div v-if="task.form.form.header.length >= 1">
                               <div v-for="taskformheader in task.form.form.header">
@@ -105,7 +109,7 @@
                       </div>
                       <div v-else>
                         <!-- header 信息显示 -->
-                        <p class="h5">{{task.tname}}</p>
+                        <p class="h5">{{task.tname}}{{allData.message[kindex].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                         <div v-if="task.form.form.header.length >= 1">
                           <div v-for="taskformheader in task.form.form.header">
                             <span v-for="valueheader in taskformheader.value">
@@ -122,47 +126,6 @@
                       </div>
                     </div>
                   </div>
-                  <!-- body 表单填写 -->
-                  <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
-                    <div v-for="taskFormData in taskForm.body.body_list">
-                        <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
-                          <div class="form-block" v-for="formBlock in taskFormData.attr_list">
-                            <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
-                            <span v-for="formItem in formBlock.value">
-                              <!-- {{isEdting}} -->
-                              <form-body
-                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
-                                :item="assignForm.body[index]"
-                                :form-item="formItem"
-                                :whole="assignForm"
-                                :index="index"
-                                :isEditing="isEditing"
-                                :message="applyData"
-                                keep-alive>
-                              </form-body>
-                              <search-bar
-                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
-                                :index="index"
-                                :post-form="assignForm"
-                                :hosts="assignForm.body[index]"
-                                :attr-list="formItem"
-                                :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
-                                @on-hosts-change="onHostsChange">
-                              </search-bar>
-                              <body-table
-                                v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
-                                :form-data="formItem"
-                                :item="assignForm.body[index]"
-                                :post-form="assignForm"
-                                :message-data="applyData"
-                                :index="index"
-                                :bodyTable="true">
-                              </body-table>
-                            </span>
-                          </div>
-                        </div>
-                    </div>
-                  </div>
                 </el-tab-pane>
               </el-tabs>
             </template>
@@ -172,11 +135,11 @@
                   <el-tab-pane :label="bodyLableName[index]">
                     <!-- body 信息显示 -->
                     <div class="history-block">
-                      <div v-for="task in form">
+                      <div v-for="(task, kindex) in form">
                         <div v-if="task.form.form.body.body_list.length">
                           <div v-for="taskbody in task.form.form.body.body_list">
                             <div v-if="showBodyList(taskbody, assignForm, applyData, index, true, false)">
-                              <p v-if="task.form.form.header.length || taskbody.attr_list.length" class="h5">{{task.tname}}</p>
+                              <p class="h5">{{task.tname}}{{allData.message[kindex].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                               <!-- header 信息显示 -->
                               <div v-if="task.form.form.header.length >= 1">
                                 <div v-for="taskformheader in task.form.form.header">
@@ -206,7 +169,7 @@
                         <div v-else>
                           <!-- header 信息显示 -->
                           <div v-if="task.form.form.header.length >= 1">
-                            <p class="h5">{{task.tname}}</p>
+                            <p class="h5">{{task.tname}}{{allData.message[kindex].operator.nick === $store.state.userinfo.nick ? '-已参与' : ''}}</p>
                             <div v-for="taskformheader in task.form.form.header">
                               <span v-for="valueheader in taskformheader.value">
                                 <span v-if="showFormItem(valueheader, assignForm, applyData, true, false)">
@@ -220,47 +183,6 @@
                             </div>
                           </div>
                         </div>
-                      </div>
-                    </div>
-                    <!-- body 表单填写 -->
-                    <div v-if="taskForm.body && taskForm.body.body_list.length !== 0">
-                      <div v-for="taskFormData in taskForm.body.body_list">
-                          <div v-if="showBodyList(taskFormData, assignForm, applyData, index)">
-                            <div class="form-block" v-for="formBlock in taskFormData.attr_list">
-                              <h5 v-if="formBlock.name">{{formBlock.name}}</h5>
-                              <span v-for="formItem in formBlock.value">
-                                <!-- {{isEdting}} -->
-                                <form-body
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index)"
-                                  :item="assignForm.body[index]"
-                                  :form-item="formItem"
-                                  :whole="assignForm"
-                                  :index="index"
-                                  :isEditing="isEditing"
-                                  :message="applyData"
-                                  keep-alive>
-                                </form-body>
-                                <search-bar
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='search_bar'"
-                                  :index="index"
-                                  :post-form="assignForm"
-                                  :hosts="assignForm.body[index]"
-                                  :attr-list="formItem"
-                                  :limit="getLimitQuantity(formItem, assignForm, applyData, index)"
-                                  @on-hosts-change="onHostsChange">
-                                </search-bar>
-                                <body-table
-                                  v-if="showFormItem(formItem, assignForm, applyData, true, true, index) && formItem.value.type==='table'"
-                                  :form-data="formItem"
-                                  :item="assignForm.body[index]"
-                                  :post-form="assignForm"
-                                  :message-data="applyData"
-                                  :index="index"
-                                  :bodyTable="true">
-                                </body-table>
-                              </span>
-                            </div>
-                          </div>
                       </div>
                     </div>
                   </el-tab-pane>
@@ -277,10 +199,12 @@
         </el-card>
       </el-col>
     </el-row>
+    <process-dialog v-if="taskViewData.visible" :task-view-data="taskViewData"></process-dialog>
   </div>
 </template>
 <script>
   // import searchFormStructure from '../../_plugins/_searchFormStructure'
+  import processDialog from './_plugins/_processDialog'
   import headerFormDisplay from '../../_plugins/_headerFormDisplay'
   import formStructureDisplay from '../../_plugins/_formStructureDisplay'
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
@@ -292,15 +216,14 @@
     mixins: [getPermittedUserList, getPermittedRoleList, onAssign],
     data () {
       return {
+        taskViewData: {
+          visible: false,
+          order: {}
+        },
         routerInfo: {},
         applyData: {},
         form: {},
         taskForm: {},
-        showTaskForm: [],
-        assignForm: {
-          header: {},
-          body: []
-        },
         index: 0,
         path_list: [],
         hostList: [],
@@ -310,7 +233,8 @@
         taskData: {},
         newAssignee: '',
         newcandidateGroup: [],
-        assignViewLoading: false
+        assignViewLoading: false,
+        finishTaskindex: 0
       }
     },
     created () {
@@ -342,9 +266,25 @@
       'form': {
         handler: 'renderBodyLabel',
         deep: true
+      },
+      'allData': {
+        handler: 'curTask',
+        deep: true
       }
     },
     methods: {
+      curTask () {
+        if (this.allData.current_tasks && this.allData.current_tasks.length) {
+          for (let i = 0; i < this.allData.task_list.length; i++) {
+            console.log(this.allData.task_list[i].tkey.includes(this.allData.current_tasks[0].tkey))
+            if (this.allData.task_list[i].tkey.includes(this.allData.current_tasks[0].tkey)) {
+              this.finishTaskindex = i
+            }
+          }
+        } else {
+          this.finishTaskindex = this.allData.history_list.length
+        }
+      },
       createPdf () {
         let newWindow = window.open('_blank')  // 打开新窗口
         newWindow.document.write(this.$refs.wrapper.innerHTML) // 向文档写入HTML表达式或者JavaScript代码
@@ -464,12 +404,17 @@
             message: '取消认领'
           })
         })
+      },
+      onViewTask (order) {
+        console.log(order)
+        Object.assign(this.taskViewData, { visible: true, order })
       }
     },
     components: {
       headerFormDisplay,
       formStructureDisplay,
-      progressWrap
+      progressWrap,
+      processDialog
     }
   }
 </script>
