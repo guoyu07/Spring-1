@@ -113,6 +113,7 @@
     created () {
       let Deduplication = []
       this.keyPaths = []
+      // watch 其他项进行请求
       for (const para of this.strucData.value.source.data.params) {
         if (para.value.key_path) {
           this.keyPaths.push(para.value.key_path.split('.')[0])
@@ -182,14 +183,14 @@
       }, { deep: true })
     },
     watch: {
-      // 'vmodel': { // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
-      //   handler: 'renderData',
-      //   deep: true
-      // },
-      'optionList': { // 监控数据加载
+      'vmodel': { // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
         handler: 'renderData',
         deep: true
       }
+      // 'optionList': { // 监控数据加载
+      //   handler: 'renderData',
+      //   deep: true
+      // }
     },
     computed: {
       showHref () {
@@ -237,12 +238,15 @@
         if (this.vmodel[this.strucData.id]) {
           // type 为 dicts 时
           if (Array.isArray(this.vmodel[this.strucData.id])) {
+            console.log('dicts')
             this.filterList('')
+            console.log(this.strucData.id)
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
                   if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
                     // item = option
+                    console.log(option[this.strucData.value.source.res.show_key[0]])
                     this.vmodel[this.strucData.id][itemindex] = option
                   } else {
                     if (!this.optionList.includes(item)) {

@@ -51,7 +51,7 @@
             <el-table-column type="expand">
               <template scope="props">
                 <el-row>
-                  <el-col :sm="24" :md="24" :lg="16">
+                  <el-col :sm="24" :md="24" :lg="24">
                     <el-table :data="props.row.task_list" >
                       <el-table-column label="环节名称" prop="tname"></el-table-column>
                       <el-table-column label="标准工时配置" inline-template>

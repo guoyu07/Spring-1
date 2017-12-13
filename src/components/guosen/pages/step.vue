@@ -19,6 +19,23 @@
              taskList: taskData.pinstance.task_list
              }"></progress-wrap>
           </div>
+          <el-row type="flex" justify="space-between" v-if="uploadExcel">
+            <el-col>
+              <el-upload
+                action="/api/upload_file/"
+                accept=".xls,.xlsx"
+                :on-success="onUploadExcel"
+                :on-change="excelFileChange"
+                :file-list="excelList"
+                class="margin-bottom">
+                <el-button icon="fa-file-excel-o" type="primary">上传入库单</el-button>
+                <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
+              </el-upload>
+            </el-col>
+            <el-col style="text-align: right;">
+              <upLoadExcelButton :download="uploadExcel.download"></upLoadExcelButton>
+            </el-col>
+          </el-row>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <el-alert
@@ -396,6 +413,8 @@
   import bodyTable from '../../_plugins/_bodyTable'
   import headerTable from '../../_plugins/_headerTable'
   import progressWrap from '../../_plugins/_progress'
+  import upLoadExcelButton from '../../_plugins/_upLoadExcelButton'
+
   export default {
     data () {
       return {
@@ -430,7 +449,8 @@
         pageNum: 1,
         idcrackList: [],
         idcrackTaked: [],
-        hostMachineIdcrackList: []
+        hostMachineIdcrackList: [],
+        uploadExcel: ''
       }
     },
     created () {
@@ -460,6 +480,28 @@
       }
     },
     methods: {
+      onUploadExcel (res, file, fileList) {
+        console.log(res.data[0])
+        let postData = {
+          action: 'form/data/with/excel',
+          method: 'POST',
+          data: {
+            file_name: res.data[0].file_name,
+            action: this.uploadExcel.upload.action
+          }
+        }
+        this.http.post('/api/data/', postData).then((res) => {
+          if (res.status === 200) {
+            // console.log(res.data.data)
+            this.assignForm.body = res.data.data.body
+            // setTimeout(() => {
+            //   // this.postForm.body = this.postForm.body.map((body, bodyindex) => {
+            //   //   return Object.assign({}, body, res.data.data.body[bodyindex])
+            //   // })
+            // }, 100)
+          }
+        })
+      },
       showAppend () {
       // 判断前一个是否有body决定显示与否
         let tkey = this.taskData.ptask.tkey
@@ -1276,7 +1318,8 @@
       bodyTable,
       headerTable,
       progressWrap,
-      taskDialog
+      taskDialog,
+      upLoadExcelButton
     }
   }
 </script>

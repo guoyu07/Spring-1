@@ -48,7 +48,6 @@ export default {
     })
     // router.replace('/login')
     this.authenticated = false
-      // 发射 login 事件
     eventHub.$emit('logout')
   },
 
