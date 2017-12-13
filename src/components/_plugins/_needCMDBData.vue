@@ -183,14 +183,14 @@
       }, { deep: true })
     },
     watch: {
-      'vmodel': { // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
+      // 'vmodel': { // 监控上传Excel文档时或者有默认值或者驳回信息的值时，填入对应的值
+      //   handler: 'renderData',
+      //   deep: true
+      // },
+      'optionList': { // 监控数据加载
         handler: 'renderData',
         deep: true
       }
-      // 'optionList': { // 监控数据加载
-      //   handler: 'renderData',
-      //   deep: true
-      // }
     },
     computed: {
       showHref () {
@@ -246,8 +246,15 @@
                 this.optionList.map(option => {
                   if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
                     // item = option
-                    console.log(option[this.strucData.value.source.res.show_key[0]])
+                    console.log(option)
                     this.vmodel[this.strucData.id][itemindex] = option
+                    // this.showOptionList.map(showOption => {
+                    //   if (showOption[this.strucData.value.source.res.show_key[0]] !== item[this.strucData.value.source.res.show_key[0]]) {
+                    //     this.showOptionList.push(option)
+                    //   }
+                    // })
+                   // showlist一开始没包含option暂时直接push
+                    this.showOptionList.push(option)
                   } else {
                     if (!this.optionList.includes(item)) {
                       this.optionList.push(item)

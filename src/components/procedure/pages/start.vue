@@ -14,7 +14,7 @@
                 :on-change="excelFileChange"
                 :file-list="excelList"
                 class="margin-bottom">
-                <el-button icon="fa-file-excel-o" type="primary">上传入库单</el-button>
+                <el-button icon="fa-file-excel-o" type="primary">{{uploadExcel.upload.name}}</el-button>
                 <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
               </el-upload>
             </el-col>
@@ -241,9 +241,6 @@
       }
     },
     methods: {
-      onFillForm (val) {
-        console.log(val)
-      },
       excelFileChange (file, fileList) {
         this.excelList = fileList.slice(-1)
       },
@@ -703,11 +700,12 @@
           if (res.status === 200) {
             // console.log(res.data.data)
             this.postForm.body = res.data.data.body
+            this.postForm.header = res.data.data.header
             // setTimeout(() => {
-            //   // this.postForm.body = this.postForm.body.map((body, bodyindex) => {
-            //   //   return Object.assign({}, body, res.data.data.body[bodyindex])
-            //   // })
-            // }, 100)
+            //   this.postForm.body = this.postForm.body.map((body, bodyindex) => {
+            //     return Object.assign({}, body, res.data.data.body[bodyindex])
+            //   })
+            // }, 500)
             this.$refs['postForm'].validate((valid) => {
               if (valid) {
                 // this.$message.success('成功')

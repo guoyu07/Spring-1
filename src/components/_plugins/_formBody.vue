@@ -316,7 +316,6 @@
               if (this.header) {
                 this.whole.header[this.formItem.id] = this.formItem.default.value
               } else {
-                console.log('did mounted')
                 this.$nextTick(() => {
                   this.whole.body[this.index][this.formItem.id] = this.formItem.default.value
                 })

@@ -10,7 +10,7 @@
 	    <el-button icon="fa-file-excel-o" type="primary">{{upload.name}}</el-button>
 	    <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
 	  </el-upload> -->
-	  <a v-if="download" class="el-button el-button--info is-plain" :href="'/api/data/?action='+download.action" target="_blank"><i class="el-icon-fa-download"></i> {{download.name}}</a>
+	  <a v-if="download" class="el-button el-button--info is-plain" :href="'/api/data/?action=download_excel_template&file_name='+download.action" target="_blank"><i class="el-icon-fa-download"></i> {{download.name}}</a>
   </div>
 </template>
 <script>
