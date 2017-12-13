@@ -3,7 +3,7 @@
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
-          <time-query :time-query="timeQuery" @change-timequery="onTimeQueryChange"></time-query>
+          <time-query  @change-timequery="onTimeQueryChange"></time-query>
           <h3><i class="el-icon-fa-sitemap icon-lg"></i> 流程统计</h3>
           <!-- <el-select v-model="selectedProcess" placeholder="请先选择流程…" class="margin-bottom" value-key="pname">
             <el-option
@@ -67,13 +67,7 @@
 
     data () {
       return {
-        timeQuery: {
-          type: 'after',
-          time: 1,
-          unit: 'w',
-          s_date: '',
-          e_date: ''
-        },
+        timeQuery: {},
         statistics: []
       }
     },
@@ -105,8 +99,8 @@
         })
       },
 
-      onTimeQueryChange (args) {
-        this.timeQuery = args.val
+      onTimeQueryChange ({ timeQuery }) {
+        this.timeQuery = timeQuery
         this.getListByTimeQuery(this.getProcessStatistics)
       }
     },

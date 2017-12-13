@@ -3,7 +3,7 @@
     <el-row>
       <el-col :md="24" :lg="20">
         <el-card class="box-card" v-loading.body="loading">
-          <time-query :time-query="timeQuery" @change-timequery="onTimeQueryChange"></time-query>
+          <time-query @change-timequery="onTimeQueryChange"></time-query>
           <h3><i class="el-icon-fa-users icon-lg"></i> 个人统计</h3>
           <el-row class="margin-bottom">
             <el-dropdown @command="onSelectType">
@@ -72,13 +72,7 @@
 
     data () {
       return {
-        timeQuery: {
-          type: 'after',
-          time: 1,
-          unit: 'w',
-          s_date: '',
-          e_date: ''
-        },
+        timeQuery: {},
         userOrRole: 'user',
         selectedUserOrGroup: {},
         statistics: []
@@ -108,8 +102,9 @@
         this.statistics = []
       },
 
-      onTimeQueryChange (args) {
-        this.timeQuery = args.val
+      onTimeQueryChange ({ timeQuery }) {
+        console.log(timeQuery)
+        this.timeQuery = timeQuery
         this.getListByTimeQuery(this.getUserStatistics)
       },
 
