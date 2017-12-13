@@ -122,7 +122,7 @@
               </el-form-item>
 
               <el-form-item v-if="this.hasExcel" label="Excel 上下载">
-                <template v-for="(button, key) in this.formConfig.form.upload_excel">
+                <template v-for="(button, key) in this.formConfig.upload_excel">
                   <el-popover>
                     <excel-conf
                       :button="button"
@@ -328,9 +328,9 @@ export default {
     this.http.post('/form/', this.parseData(postData)).then((res) => {
       // console.log(res)
       this.formConfig = res.data.data
-      this.hasExcelInitially = !!this.formConfig.form.upload_excel
-      this.hasExcel = !!this.formConfig.form.upload_excel
-      this.excelConfBuffer = JSON.stringify(this.formConfig.form.upload_excel)
+      this.hasExcelInitially = !!this.formConfig.upload_excel
+      this.hasExcel = !!this.formConfig.upload_excel
+      this.excelConfBuffer = JSON.stringify(this.formConfig.upload_excel)
       // console.log(this.formConfig.action.find(ac => ac.name === 'Daaa').id)
       // body 类型：从 obj 修改为 arr
       const bodyIsArr = Array.isArray(this.formConfig.form.body.body_list)
@@ -349,8 +349,8 @@ export default {
     hasExcel (val) {
       if (val) {
         this.hasExcelInitially
-        ? this.formConfig.form.upload_excel = JSON.parse(this.excelConfBuffer)
-        : this.formConfig.form.upload_excel = {
+        ? this.formConfig.upload_excel = JSON.parse(this.excelConfBuffer)
+        : this.formConfig.upload_excel = {
           upload: {
             name: '上传 Excel',
             action: ''
