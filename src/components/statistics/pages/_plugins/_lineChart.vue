@@ -10,6 +10,7 @@
   import 'echarts/lib/chart/line'
   import 'echarts/lib/component/title'
   import 'echarts/lib/component/legend'
+  import 'echarts/lib/component/dataZoom'
   import 'echarts/lib/component/tooltip'
 
   export default {
@@ -44,11 +45,24 @@
           xAxis: {
             type: 'category',
             boundaryGap: false,
+            splitLine: {
+              show: true
+            },
             data: []
           },
           yAxis: {
+            splitLine: {
+              show: true
+            },
             type: 'value'
           },
+          dataZoom: [{
+            type: 'slider',
+            show: true,
+            xAxisIndex: [0],
+            start: 1,
+            end: 100
+          }],
           series: []
         }
       }
@@ -56,6 +70,10 @@
 
     watch: {
       selectedUser (newVal) {
+        this.getChartData()
+      },
+
+      timeQuery (newVal) {
         this.getChartData()
       }
     },
