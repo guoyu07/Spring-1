@@ -4,8 +4,9 @@
       <el-col :sm="24" :md="24" :lg="20">
         <el-card class="box-card">
           <h3 class="form-title">{{ $route.params.pname }}</h3>
-          <el-row type="flex" justify="space-between" v-if="$route.params.pkey === 'Storage'">
+          <el-row type="flex" justify="space-between" v-if="uploadExcel">
             <el-col>
+            <!-- <upLoadExcelButton :upload="uploadExcel.upload" @fill-form="onFillForm"></upLoadExcelButton> -->
               <el-upload
                 action="/api/upload_file/"
                 accept=".xls,.xlsx"
@@ -13,15 +14,12 @@
                 :on-change="excelFileChange"
                 :file-list="excelList"
                 class="margin-bottom">
-                <el-button icon="fa-file-excel-o" type="primary">上传入库单</el-button>
+                <el-button icon="fa-file-excel-o" type="primary">{{uploadExcel.upload.name}}</el-button>
                 <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
               </el-upload>
             </el-col>
             <el-col style="text-align: right;">
-<!--               <el-button icon="fa-download">
-                <a href="/api/data/?action=download/import/server/excel" target="_blank">示例文件</a>
-              </el-button> -->
-              <a class="el-button el-button--info is-plain" href="/api/data/?action=download/import/server/excel" target="_blank"><i class="el-icon-fa-download"></i> 示例文件</a>
+              <upLoadExcelButton :download="uploadExcel.download"></upLoadExcelButton>
             </el-col>
           </el-row>
 
@@ -196,6 +194,7 @@
   import searchBar from '../../_plugins/_searchBar'
   import headerTable from '../../_plugins/_headerTable'
   import bodyTable from '../../_plugins/_bodyTable'
+  import upLoadExcelButton from '../../_plugins/_upLoadExcelButton'
 
   export default {
     data () {
@@ -215,7 +214,8 @@
         Editdata: {},
         submitLoading: false,
         startTime: '',
-        endTime: ''
+        endTime: '',
+        uploadExcel: {}
       }
     },
     computed: {
@@ -314,6 +314,7 @@
         this.http.post('/form/', this.parseData(renderFromData)).then((res) => {
           // console.log(res)
           this.taskFormData = res.data.data.form
+          this.uploadExcel = res.data.data.upload_excel
           this.taskFormData.header.map(group => {
             group.value.map(item => {
               if (this.showFormItem(item, this.postForm)) {
@@ -688,19 +689,23 @@
       onUploadExcel (res, file, fileList) {
         console.log(res.data[0])
         let postData = {
-          action: 'import_server',
+          action: 'form/data/with/excel',
           method: 'POST',
-          data: { file_name: res.data[0].file_name }
+          data: {
+            file_name: res.data[0].file_name,
+            action: this.uploadExcel.upload.action
+          }
         }
         this.http.post('/api/data/', postData).then((res) => {
           if (res.status === 200) {
             // console.log(res.data.data)
             this.postForm.body = res.data.data.body
+            this.postForm.header = res.data.data.header
             // setTimeout(() => {
-            //   // this.postForm.body = this.postForm.body.map((body, bodyindex) => {
-            //   //   return Object.assign({}, body, res.data.data.body[bodyindex])
-            //   // })
-            // }, 100)
+            //   this.postForm.body = this.postForm.body.map((body, bodyindex) => {
+            //     return Object.assign({}, body, res.data.data.body[bodyindex])
+            //   })
+            // }, 500)
             this.$refs['postForm'].validate((valid) => {
               if (valid) {
                 // this.$message.success('成功')
@@ -728,7 +733,8 @@
       bodyTable,
       headerTable,
       formBody,
-      searchBar
+      searchBar,
+      upLoadExcelButton
     }
   }
 </script>

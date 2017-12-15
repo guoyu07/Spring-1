@@ -14,6 +14,9 @@ const routes = [{
   path: '/login',
   component: require('./components/login')
 }, {
+  path: '/sso',
+  component: require('./components/sso')
+}, {
   path: '/',
   component: require('./components/home'),
   redirect: { path: '/menu' },

@@ -19,6 +19,23 @@
              taskList: taskData.pinstance.task_list
              }"></progress-wrap>
           </div>
+           <el-row type="flex" justify="space-between" v-if="uploadExcel">
+            <el-col>
+              <el-upload
+                action="/api/upload_file/"
+                accept=".xls,.xlsx"
+                :on-success="onUploadExcel"
+                :on-change="excelFileChange"
+                :file-list="excelList"
+                class="margin-bottom">
+                <el-button icon="fa-file-excel-o" type="primary">上传入库单</el-button>
+                <div class="el-upload__tip" slot="tip">只能上传 Excel 文档</div>
+              </el-upload>
+            </el-col>
+            <el-col style="text-align: right;">
+              <upLoadExcelButton :download="uploadExcel.download"></upLoadExcelButton>
+            </el-col>
+          </el-row>
           <el-form ref="assignForm" :model="assignForm" label-width="100px" :inline="true">
             <!-- 驳回信息 -->
             <el-alert
@@ -356,6 +373,7 @@
   import bodyTable from '../../_plugins/_bodyTable'
   import headerTable from '../../_plugins/_headerTable'
   import progressWrap from '../../_plugins/_progress'
+  import upLoadExcelButton from '../../_plugins/_upLoadExcelButton'
 
   export default {
     data () {
@@ -385,7 +403,8 @@
         infoHideAll: false,
         hostList: [],
         copyObj: {},
-        ipAdress: ''
+        ipAdress: '',
+        uploadExcel: ''
       }
     },
     created () {
@@ -428,6 +447,25 @@
       }
     },
     methods: {
+      onUploadExcel (res, file, fileList) {
+        console.log(res.data[0])
+        let postData = {
+          action: 'form/data/with/excel',
+          method: 'POST',
+          data: {
+            file_name: res.data[0].file_name,
+            action: this.uploadExcel.upload.action
+          }
+        }
+        this.http.post('/api/data/', postData).then((res) => {
+          if (res.status === 200) {
+            for (let i = 0; i < res.data.data.body.length; i++) {
+              let list = res.data.data.body[i]
+              Object.assign(this.assignForm.body[i], list)
+            }
+          }
+        })
+      },
       increaseBody () {
         this.applyData.body.push({})
         this.renderBodyLabel()
@@ -453,8 +491,6 @@
             }
           }
           this.http.post('/data/', this.parseData(renderFromData)).then((res) => {
-            console.log(res.data.data)
-            console.log(this.assignForm)
             for (let i = 0; i < res.data.data.body.length; i++) {
               let list = res.data.data.body[i]
               Object.assign(this.assignForm.body[i], list)
@@ -594,6 +630,7 @@
         }
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
           this.taskForm = res.data.data.form
+          this.uploadExcel = res.data.data.form.upload_excel
           this.taskFormAll = res.data.data
           // 渲染 body 个数
           if (this.applyData.body.length === 0) {
@@ -810,6 +847,7 @@
         this.tabIndex = tab.index
       },
       onSubmit (assignForm) {
+        // 把多余项删除
         if (this.$refs['header']) {
           let headerKeys = Array.from(this.$refs['header'].querySelectorAll('[data-class]')).map(_ => _.dataset.class)
           Object.keys(this.assignForm.header).map(val => {
@@ -826,7 +864,6 @@
               return false
             }
           }).map(val => val.$vnode.elm.dataset.class)
-          console.log(bodykeys)
           Object.keys(this.assignForm.body[i]).map(val => {
             if (!bodykeys.includes(val)) {
               this.$delete(this.assignForm.body[i], val)
@@ -1054,7 +1091,8 @@
       bodyTable,
       headerTable,
       progressWrap,
-      taskDialog
+      taskDialog,
+      upLoadExcelButton
     }
   }
 </script>

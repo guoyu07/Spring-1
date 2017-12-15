@@ -113,6 +113,7 @@
     created () {
       let Deduplication = []
       this.keyPaths = []
+      // watch 其他项进行请求
       for (const para of this.strucData.value.source.data.params) {
         if (para.value.key_path) {
           this.keyPaths.push(para.value.key_path.split('.')[0])
@@ -237,13 +238,23 @@
         if (this.vmodel[this.strucData.id]) {
           // type 为 dicts 时
           if (Array.isArray(this.vmodel[this.strucData.id])) {
+            console.log('dicts')
             this.filterList('')
+            console.log(this.strucData.id)
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
                   if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
                     // item = option
+                    console.log(option)
                     this.vmodel[this.strucData.id][itemindex] = option
+                    // this.showOptionList.map(showOption => {
+                    //   if (showOption[this.strucData.value.source.res.show_key[0]] !== item[this.strucData.value.source.res.show_key[0]]) {
+                    //     this.showOptionList.push(option)
+                    //   }
+                    // })
+                   // showlist一开始没包含option暂时直接push
+                    this.showOptionList.push(option)
                   } else {
                     if (!this.optionList.includes(item)) {
                       this.optionList.push(item)

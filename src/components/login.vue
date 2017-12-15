@@ -7,7 +7,10 @@
     overflow: hidden;
     background-color: #1a252f;
   }
-
+  .ssoLogin {
+    display:flex;
+    justify-content:flex-end
+  }
   .login-warp {
     width: @width;
     height: @height;
@@ -45,6 +48,7 @@
 
 <template>
   <div id="canvas">
+    <a href="/api/sso_login/" class="ssoLogin">sso登陆</a>
     <transition name="zoomInDown">
       <div class="login-warp">
         <el-row>
