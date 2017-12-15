@@ -154,8 +154,8 @@ const SidebarConf = {
         icon: 'fa-user-circle-o'
       }, {
         name: '工作量统计',
-        path: '/statistics/work',
-        icon: 'fa-clock-o'
+        path: '/statistics/workload',
+        icon: 'fa-hourglass'
       }, {
         name: '标准工时配置',
         path: '/statistics/config',

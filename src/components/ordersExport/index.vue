@@ -3,13 +3,13 @@
     <span :class="{ 'orders-toggle': true, collapsed: !isExpanded }" @click="onToggleSidebar">
       <i :class="isExpanded ? 'el-icon-fa-angle-left' : 'el-icon-fa-angle-right'"></i>
     </span>
-    <sidebar :is-expanded="isExpanded"></sidebar>
+    <sidebar :is-expanded="isExpanded" route="/orders-export/print/"></sidebar>
     <router-view :is-expanded="isExpanded" class="order-view"></router-view>
   </div>
 </template>
 
 <script>
-  import sidebar from './pages/sidebar.vue'
+  import sidebar from '../_plugins/_processSidebar'
 
   export default {
     data () {
