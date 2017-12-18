@@ -60,12 +60,15 @@
                   <el-table-column label="候选人" inline-template>
                     <template>
                       <div>
-                      <el-select v-if="row.editingUser" multiple v-model="row.users">
-                        <el-option v-for="user in permittedUserList"
+                      <el-select v-if="row.editingUser" multiple v-model="row.users" filterable remote :remote-method="filterUsers">
+                        <el-option v-for="user in usersFilterList"
                                    :key="user.userId"
                                    :label="user.nick"
                                    :value="user"
-                        ></el-option>
+                        >
+                         <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
+                         <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+                      </el-option>
                       </el-select>
                       <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false, false)"></i>
                       <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false, false)"></i>
@@ -77,7 +80,7 @@
                   <el-table-column label="候选组" inline-template>
                   <template>
                     <div>
-                    <el-select v-if="row.editingGroup" multiple v-model="row.groups">
+                    <el-select v-if="row.editingGroup" multiple v-model="row.groups" filterable >
                       <el-option v-for="group in permittedRoleList"
                              :key="group.key"
                              :label="group.name"
@@ -94,16 +97,19 @@
                   <el-table-column label="受指派人" inline-template>
                     <template>
                       <div>
-                      <el-select v-if="row.editingAssign"  v-model="row.assign" clearable>
+                      <el-select v-if="row.editingAssign"  v-model="row.assign" clearable filterable remote :remote-method="filterUsers">
                         <el-option
                           key="author"
                           label="申请人"
                           value="申请人"></el-option>
-                        <el-option v-for="user in permittedUserList"
+                        <el-option v-for="user in usersFilterList"
                                    :key="user.userId"
                                    :label="user.nick"
                                    :value="user"
-                        ></el-option>
+                        >
+                         <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
+                         <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+                       </el-option>
                       </el-select>
                       <el-button
                         v-show="row.editingAssign"
@@ -157,7 +163,8 @@
         processSearchList: '',
         processList: '',
         search: { pname: '', category: '' },
-        categoryList: []
+        categoryList: [],
+        usersFilterList: []
       }
     },
     watch: {
@@ -176,6 +183,15 @@
       }
     },
     methods: {
+      filterUsers (query) {
+        if (query !== '') {
+          this.usersFilterList = this.permittedUserList.filter(item => {
+            return item.userId.includes(query) || item.nick.includes(query)
+          })
+        } else {
+          this.usersFilterList = this.permittedUserList
+        }
+      },
       onCancelEdit (row, users, groups, assign) {
         if (users) {
           row.users = row.tempUsers
@@ -256,6 +272,8 @@
       showContainer (row, users, groups, assign) {
         if (users) {
           console.log(row)
+          // 先赋予选项
+          this.usersFilterList = this.permittedUserList
           row.editingUser = true
           let usersList = row.users.map(user => {
             user = this.permittedUserList.find(_ => {
@@ -280,6 +298,8 @@
           console.log(row)
         }
         if (assign) {
+          // 先赋予选项
+          this.usersFilterList = this.permittedUserList
           row.editingAssign = true
           if (row.assign) {
             let assign = this.permittedUserList.find(_ => {

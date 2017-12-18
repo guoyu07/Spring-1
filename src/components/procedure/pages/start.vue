@@ -6,7 +6,6 @@
           <h3 class="form-title">{{ $route.params.pname }}</h3>
           <el-row type="flex" justify="space-between" v-if="uploadExcel">
             <el-col>
-            <!-- <upLoadExcelButton :upload="uploadExcel.upload" @fill-form="onFillForm"></upLoadExcelButton> -->
               <el-upload
                 action="/api/upload_file/"
                 accept=".xls,.xlsx"
@@ -327,7 +326,22 @@
               }
             })
           })
+          // body 个数动态配置
+          if (this.taskFormData.body.count.type === 'form_header') {
+            let prefix = this.taskFormData.body.count
+            this.$watch('postForm.header.' + prefix.key_path, (newVal, oldVal) => {
+              console.log(newVal.length, oldVal.length)
+              if (newVal.length > oldVal.length) {
+                // 有默认值的关系所以第一次选中不用加body
+                if (newVal.length !== 1) {
+                  // 加减能正常执行还未解决
+                  this.addTab()
+                }
+              } else { if (newVal.length) this.removeTab() }
+            })
+          }
           this.taskFormData.body.body_list.forEach((body, k) => {
+            // body显示条件配置
             if (body.show.type) {
               if (body.show.type === 'form_header') {
                 this.$watch('postForm.header.' + body.show.key_path, (newVal, oldVal) => {
@@ -465,6 +479,7 @@
           }
         })
         this.tabsValue = activeName + ''
+        console.log(targetName)
         this.postForm.body.splice(targetName, 1)
       },
       addTab (targetName, index) {
@@ -501,20 +516,22 @@
             }
           })
         }
-        // console.log(newData)
-        this.$refs['postForm'].validate((valid) => {
-          if (valid) {
-            if (that.postForm.body.length < this.taskFormData.body.count.max) {
-              console.log(newData)
-              that.postForm.body.push(newData)
-              this.tabsValue = that.postForm.body.length - 1 + ''
+        if (!targetName) {
+          this.postForm.body.push(newData)
+        } else {
+          this.$refs['postForm'].validate((valid) => {
+            if (valid) {
+              if (that.postForm.body.length < this.taskFormData.body.count.max) {
+                that.postForm.body.push(newData)
+                this.tabsValue = that.postForm.body.length - 1 + ''
+              } else {
+                that.$message.warning(`最多只能增加${this.taskFormData.body.count.max}个设备！`)
+              }
             } else {
-              that.$message.warning(`最多只能增加${this.taskFormData.body.count.max}个设备！`)
+              that.$message.warning('请填写完整当前表单')
             }
-          } else {
-            that.$message.warning('请填写完整当前表单')
-          }
-        })
+          })
+        }
       },
       onSubmit () {
         // 避免ID相同导致关系不清在提交表单前才对数据进行删减

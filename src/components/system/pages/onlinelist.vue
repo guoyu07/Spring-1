@@ -13,7 +13,7 @@
             border
             style="width: 100%; min-width: 460px">
             <el-table-column
-              prop="pid"
+              prop="pnum"
               label="工单号">
             </el-table-column>
             <el-table-column
@@ -119,7 +119,7 @@
             list.message.map(item => {
               if (item.task_key === 'start') {
                 this.onlinelist[k] = item.form
-                this.onlinelist[k].pid = list.pinstance.pid
+                this.onlinelist[k].pnum = list.pinstance.pnum
                 this.onlinelist[k].tid = list.tid
                 this.onlinelist[k].tname = list.ptask.tname
               }

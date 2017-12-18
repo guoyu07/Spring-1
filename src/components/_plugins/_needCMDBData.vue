@@ -238,15 +238,12 @@
         if (this.vmodel[this.strucData.id]) {
           // type 为 dicts 时
           if (Array.isArray(this.vmodel[this.strucData.id])) {
-            console.log('dicts')
             this.filterList('')
-            console.log(this.strucData.id)
             this.vmodel[this.strucData.id].map((item, itemindex) => {
               if (item[this.strucData.value.source.res.show_key[0]]) {
                 this.optionList.map(option => {
                   if (option[this.strucData.value.source.res.show_key[0]] === item[this.strucData.value.source.res.show_key[0]]) {
                     // item = option
-                    console.log(option)
                     this.vmodel[this.strucData.id][itemindex] = option
                     // this.showOptionList.map(showOption => {
                     //   if (showOption[this.strucData.value.source.res.show_key[0]] !== item[this.strucData.value.source.res.show_key[0]]) {

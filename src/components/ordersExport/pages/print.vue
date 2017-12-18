@@ -32,13 +32,7 @@
     data () {
       return {
         topic: '',
-        timeQuery: {
-          type: 'after',
-          time: 1,
-          unit: 'w',
-          s_date: '',
-          e_date: ''
-        },
+        timeQuery: {},
         filterOrderList: [],
         chosenList: [],
         category: [],
@@ -137,8 +131,8 @@
         this.pids = this.chosenList.map(val => val.pid)
       },
 
-      onTimeQueryChange (args) {
-        this.timeQuery = args.val
+      onTimeQueryChange ({ timeQuery }) {
+        this.timeQuery = timeQuery
         this.getListByTimeQuery(this.getFilterProcessesList(this.$route.params.pkey))
       },
 

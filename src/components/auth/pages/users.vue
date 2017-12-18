@@ -21,7 +21,7 @@
                 v-model="search.key"
                 @change="onSearch">
               </el-input>
-              <el-select v-model="search.role" size="small" @change="onSearch" clearable placeholder="角色">
+              <el-select v-model="search.role" size="small" @change="onSearch" clearable placeholder="角色" filterable>
                 <el-option
                   v-for="role in roleList.list"
                   :key="role.key"

@@ -6,10 +6,8 @@
           <div class="flex-box">
             <div>
             <h3 class="form-title"><i class="el-icon-fa-server"></i> {{allData.pnum}}-{{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
-            <div v-for="(cur, index) in allData.current_tasks" v-if="allData.current_tasks">
-              <small  v-if="cur.assign || cur.assign_group" style="margin-left:20px;color:#ccc" >{{cur.tname}}-{{cur.assign ? '当前处理人：' : '当前处理组：'}}{{cur.assign ? cur.assign.nick : cur.assign_group.name}}</small>
-              <small v-else style="margin-left:20px;color:#ccc">{{cur.tname}}-当前处理：无</small>
-            </div>
+            <small ></small>
+            <small  style="margin-left:20px;color:#ccc" v-for="(cur, index) in allData.current_tasks">{{cur.assign ? '当前处理人：' : '当前处理组：'}}{{cur.assign ? cur.assign.nick : cur.assign_group.name}}</small>
             </div>
             <div>
              <!--  <i class="el-icon-fa-server color-primary"></i> {{taskData.pinstance && taskData.pinstance.pnum}}-{{ taskData.pinstance && taskData.pinstance.pd.pname }}-{{ taskData.ptask && taskData.ptask.tname }} -->
@@ -355,15 +353,14 @@
     },
     methods: {
       curTask () {
-        if (this.allData.current_tasks && this.allData.current_tasks.length) {
+        if (this.allData.current_tasks.length) {
           for (let i = 0; i < this.allData.task_list.length; i++) {
             console.log(this.allData.task_list[i].tkey.includes(this.allData.current_tasks[0].tkey))
             if (this.allData.task_list[i].tkey.includes(this.allData.current_tasks[0].tkey)) {
               this.finishTaskindex = i
+              return i
             }
           }
-        } else {
-          this.finishTaskindex = this.allData.history_list.length
         }
       },
       createPdf () {

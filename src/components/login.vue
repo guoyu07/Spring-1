@@ -8,8 +8,13 @@
     background-color: #1a252f;
   }
   .ssoLogin {
-    display:flex;
-    justify-content:flex-end
+    font-size:20px;
+    display:block;
+    float:right;
+    margin-right:10px;
+    margin-top:10px;
+    &:link, &:visited, &:hover, &active {color:white; text-decoration:none}
+
   }
   .login-warp {
     width: @width;
@@ -48,7 +53,6 @@
 
 <template>
   <div id="canvas">
-    <a href="/api/sso_login/" class="ssoLogin">sso登陆</a>
     <transition name="zoomInDown">
       <div class="login-warp">
         <el-row>
@@ -69,6 +73,9 @@
           <el-row>
             <el-col :span="24">
               <el-button class="fw login-btn" type="primary" icon="fa-send" @click="submit(1)">登 录</el-button>
+              <div>
+               <a href="/api/sso_login/" class="ssoLogin">>>>sso登陆</a>
+              </div>
             </el-col>
           </el-row>
         </el-form>
