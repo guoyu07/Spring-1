@@ -6,7 +6,7 @@
       </h4>
       <ul  class="order-sidebar__list">
         <li class="order-sidebar__item" v-for="list in lists.list" :class="{ active: $route.params.pkey === list.key }">
-          <router-link :to="{ path: `/orders-export/print/${list.key}` }">
+          <router-link :to="{ path: `${route}${list.key}` }">
             <span class="filter-name">{{list.label}}</span>
             <span style="padding-right: 14px;">
 <!--               <i class="filter-number">{{filter.count}}</i> -->
@@ -21,7 +21,8 @@
 <script>
   export default {
     props: {
-      isExpanded: Boolean
+      isExpanded: Boolean,
+      route: String
     },
 
     data () {
@@ -58,7 +59,7 @@
 </script>
 
 <style lang="less" scoped>
-  @import url("./../../../assets/css/variables.less");
+  @import url("../../assets/css/variables.less");
 
   .order-sidebar {
     position: fixed;

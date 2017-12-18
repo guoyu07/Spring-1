@@ -7,7 +7,7 @@
       <el-input size="small" v-model="button.name"></el-input>
     </el-form-item>
     <el-form-item
-      label="Action">
+      label="文件名">
       <el-input size="small" v-model="button.action"></el-input>
     </el-form-item>
   </el-form>

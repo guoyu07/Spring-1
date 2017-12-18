@@ -78,7 +78,7 @@
       }
     },
 
-    created () {
+    mounted () {
       this.getChartData()
     },
 
@@ -88,7 +88,7 @@
           action: 'dashboard/recently/report',
           method: 'GET',
           data: {
-            userId: this.selectedUser.userId,
+            userId: this.selectedUser && this.selectedUser.userId,
             time_query: this.timeQuery
           }
         }

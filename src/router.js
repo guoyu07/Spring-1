@@ -236,6 +236,13 @@ const routes = [{
       path: 'user',
       component: resolve => require(['./components/statistics/pages/user'], resolve)
     }, {
+      path: 'workload',
+      component: resolve => require(['./components/statistics/pages/workload'], resolve),
+      children: [{
+        path: '/workload/:pkey',
+        component: resolve => require(['./components/statistics/pages/_plugins/_workloadView'], resolve)
+      }]
+    }, {
       path: 'config',
       component: resolve => require(['./components/statistics/pages/config'], resolve)
     }]
