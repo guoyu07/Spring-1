@@ -131,7 +131,8 @@
                                     :form-item="formItem"
                                     :whole="postForm"
                                     :is-editing="isEditing"
-                                    :index="+index">
+                                    :index="+index"
+                                    :tempSave="tempSave">
                                   </form-body>
                                   <search-bar
                                     :data-class="formItem.id"
@@ -218,6 +219,9 @@
       }
     },
     computed: {
+      tempSave () {
+        return this.taskFormData.body && this.taskFormData.body.count.type === 'static'
+      },
       isEditing () {
         return !!this.$route.params.tid || this.$route.params.pkey === 'Storage'
       }

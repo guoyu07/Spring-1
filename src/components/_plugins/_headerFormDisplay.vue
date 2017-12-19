@@ -79,7 +79,7 @@
                 <span v-else>{{ Object.assign({}, scope.row.header)[col.id] }}</span>
               </span>
               <span v-else-if="col.value.type === 'dicts'">
-                <span v-for="span in Object.assign({}, scope.row.header)[col.id]">{{span.name}}</span>
+                <span v-for="span in Object.assign({}, scope.row)[col.id]">{{span.name}} | </span>
               </span>
               <span v-else-if="col.value.type === 'enums'">
                 <span v-for="span in Object.assign({}, scope.row.header)[col.id]">{{span}}</span>

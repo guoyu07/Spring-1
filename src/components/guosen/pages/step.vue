@@ -764,6 +764,7 @@
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
           this.taskForm = res.data.data.form
           this.taskFormAll = res.data.data
+          this.uploadExcel = res.data.data.upload_excel
           // 渲染 body 个数
           // 当前表单的body是上一步header拆出来的（特殊）
           if (this.applyData.body.length === 0) {

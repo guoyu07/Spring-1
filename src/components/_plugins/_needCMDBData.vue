@@ -96,7 +96,8 @@
       tableIndex: { type: Number },
       bodyTable: { type: Boolean },
       headerTable: { type: Boolean },
-      isEditing: { type: Boolean }
+      isEditing: { type: Boolean },
+      tempSave: { type: Boolean }
     },
     data () {
       return {
@@ -395,10 +396,21 @@
           method: this.strucData.value.source.data.method,
           data: params
         }
+        // // 如果是有缓存复制的新表就不发请求直接拿缓存
+        // if (this.index !== 0 && this.tempSave === true) {
+        //   this.showOptionList = JSON.parse(window.sessionStorage.getItem(`body.0.${this.strucData.id}`))
+        //   return false
+        // }
         // 如果没有设置action或者method，不发请求
         if (!postHeadvData.action || !postHeadvData.method) {
           this.optionList = []
-          if (this.vmodel[this.strucData.id]) {
+          // 数组的情况下和对象的情况要分开
+          if (Array.isArray(this.vmodel[this.strucData.id])) {
+            this.vmodel[this.strucData.id].forEach((val) => {
+              this.optionList.push(val)
+            })
+            this.showOptionList = this.optionList
+          } else if (this.vmodel[this.strucData.id]) {
             this.optionList.push(this.vmodel[this.strucData.id])
             this.showOptionList = this.optionList
           }
@@ -414,6 +426,10 @@
                 this.vmodel[this.strucData.id] = null
               }
             }
+            // 缓存
+            // if (this.index === 0 && this.tempSave === true) {
+            //   window.sessionStorage.setItem(`body.${this.index}.${this.strucData.id}`, JSON.stringify(this.optionList))
+            // }
             this.filterList('')
             // this.vmodel[this.strucData.id] 有值时不配置默认值，编辑状态下是会配置默认值的
             if (this.strucData.default && this.strucData.default.type && !this.vmodel[this.strucData.id]) {

@@ -164,7 +164,8 @@
       :index="index"
       :table-index="tableIndex"
       :body-table="bodyTable"
-      :header-table="headerTable">
+      :header-table="headerTable"
+      :tempSave="tempSave">
     </need-cmdb-data>
     <member-select
       v-else-if="formItem.value.type === 'users'"
@@ -219,7 +220,8 @@
       bodyTable: { type: Boolean },
       valueId: { type: String },
       tableIndex: { type: Number },
-      isEditing: { type: Boolean }
+      isEditing: { type: Boolean },
+      tempSave: { type: Boolean }
     },
     data () {
       return {

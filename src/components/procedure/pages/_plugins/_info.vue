@@ -6,14 +6,17 @@
           <div class="flex-box">
             <div>
             <h3 class="form-title"><i class="el-icon-fa-server"></i> {{allData.pnum}}-{{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
-            <small ></small>
-            <small  style="margin-left:20px;color:#ccc" v-for="(cur, index) in allData.current_tasks">{{cur.assign ? '当前处理人：' : '当前处理组：'}}{{cur.assign ? cur.assign.nick : cur.assign_group.name}}</small>
+            <div v-for="(cur, index) in allData.current_tasks" v-if="allData.current_tasks">
+              <small  v-if="cur.assign || cur.assign_group" style="margin-left:20px;color:#ccc" >{{cur.tname}}-{{cur.assign ? '当前处理人：' : '当前处理组：'}}{{cur.assign ? cur.assign.nick : cur.assign_group.name}}</small>
+              <small v-else-if="!query" style="margin-left:20px;color:#ccc">{{cur.tname}}-当前处理：无</small>
+            </div>
             </div>
             <div>
              <!--  <i class="el-icon-fa-server color-primary"></i> {{taskData.pinstance && taskData.pinstance.pnum}}-{{ taskData.pinstance && taskData.pinstance.pd.pname }}-{{ taskData.ptask && taskData.ptask.tname }} -->
             <el-button type="info" :plain="true" icon="fa-history" class="fr"  @click="onViewTask(allData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
             <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span style="font-weight:normal">下载excel表格</span></a>
+            <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             </div>
           </div>
           <div style="border:1px solid #ccc;margin-bottom:15px" v-if="taskData.can_manage && $route.query.filter === '指派'"></div>
