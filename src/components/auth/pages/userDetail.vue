@@ -7,7 +7,7 @@
           <h3>
             <i class="el-icon-fa-user icon-lg"></i> {{userDetail.userId}} - {{ userDetail.nick }}
           </h3>
-          <el-button @click="onToggleUser(userDetail.nick, userDetail.userId, userDetail.status)">{{userDetail.status ? '启用' : '禁用'}}</el-button>
+          <el-button @click="onToggleUser(userDetail.nick, userDetail.userId, userDetail.status)">{{+userDetail.status ? '启用' : '禁用'}}</el-button>
         </div>
           <el-row>
             <el-col :sm="24" :md="18" :lg="12">
@@ -63,7 +63,7 @@
                     </el-form-item>
                     <el-form-item label="所属角色" prop="groups">
                       <!-- 仅管理理员/超级管理理员可配置 -->
-                      <el-select v-model="userDetail.groups_key" multiple placeholder="暂无角色">
+                      <el-select v-model="userDetail.groups_key" multiple placeholder="暂无角色" filterable>
                         <el-option
                           v-for="role in permittedRoleList"
                           :key="role.key"

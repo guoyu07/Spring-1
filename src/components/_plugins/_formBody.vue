@@ -164,7 +164,8 @@
       :index="index"
       :table-index="tableIndex"
       :body-table="bodyTable"
-      :header-table="headerTable">
+      :header-table="headerTable"
+      :tempSave="tempSave">
     </need-cmdb-data>
     <member-select
       v-else-if="formItem.value.type === 'users'"
@@ -219,7 +220,8 @@
       bodyTable: { type: Boolean },
       valueId: { type: String },
       tableIndex: { type: Number },
-      isEditing: { type: Boolean }
+      isEditing: { type: Boolean },
+      tempSave: { type: Boolean }
     },
     data () {
       return {
@@ -322,24 +324,44 @@
               }
             }
           } else if (this.formItem.default.type === 'form_header') {
-            this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
-              // console.log(this.formItem.default.key_path)
-              const val = this.getPathResult(this.whole.header, this.formItem.default.key_path, this.index)
-              if (!val || newVal === oldVal) return false
-              if (this.headerTable || this.bodyTable) {
-                this.whole[this.formItem.id] = val
-              } else {
-                if (this.header) {
-                  // console.log(val, newVal, oldVal)
-                  this.whole.header[this.formItem.id] = val
+            // header是数组的情况下需要自行拆开设置watch
+            let holePaths = this.formItem.default.key_path.split('.')
+            let attr = holePaths.shift()
+            //  数组情况下()
+            if (Array.isArray(this.whole.header[attr])) {
+              this.$watch('whole.header.' + attr, (newVal, oldVal) => {
+                if (newVal.length) {
+                  this.whole.body.map((body, bodyindex) => {
+                    this.whole.body[bodyindex][this.formItem.id] = holePaths.reduce((sum, val) => {
+                      return sum[val]
+                    }, newVal[bodyindex])
+                  })
                 } else {
                   this.whole.body.map((body, bodyindex) => {
-                    const bodyVal = this.getPathResult(this.whole.header, this.formItem.default.key_path, bodyindex)
-                    this.whole.body[bodyindex][this.formItem.id] = bodyVal
+                    this.whole.body[bodyindex][this.formItem.id] = ''
                   })
                 }
-              }
-            }, {deep: true})
+              })
+            } else {
+              this.$watch('whole.header.' + this.formItem.default.key_path, (newVal, oldVal) => {
+                // console.log(this.formItem.default.key_path)
+                const val = this.getPathResult(this.whole.header, this.formItem.default.key_path, this.index)
+                if (!val || newVal === oldVal) return false
+                if (this.headerTable || this.bodyTable) {
+                  this.whole[this.formItem.id] = val
+                } else {
+                  if (this.header) {
+                    // console.log(val, newVal, oldVal)
+                    this.whole.header[this.formItem.id] = val
+                  } else {
+                    this.whole.body.map((body, bodyindex) => {
+                      const bodyVal = this.getPathResult(this.whole.header, this.formItem.default.key_path, bodyindex)
+                      this.whole.body[bodyindex][this.formItem.id] = bodyVal
+                    })
+                  }
+                }
+              }, {deep: true})
+            }
           } else if (this.formItem.default.type === 'form_body') {
             if (this.headerTable || this.bodyTable) {
               this.$watch('whole.' + this.formItem.default.key_path, (newVal, oldVal) => {

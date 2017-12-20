@@ -8,7 +8,7 @@
             <h3 class="form-title"><i class="el-icon-fa-server"></i> {{allData.pnum}}-{{ routerInfo.name ? routerInfo.name : '信息展示' }}</h3>
             <div v-for="(cur, index) in allData.current_tasks" v-if="allData.current_tasks">
               <small  v-if="cur.assign || cur.assign_group" style="margin-left:20px;color:#ccc" >{{cur.tname}}-{{cur.assign ? '当前处理人：' : '当前处理组：'}}{{cur.assign ? cur.assign.nick : cur.assign_group.name}}</small>
-              <small v-else style="margin-left:20px;color:#ccc">{{cur.tname}}-当前处理：无</small>
+              <small v-else-if="!query" style="margin-left:20px;color:#ccc">{{cur.tname}}-当前处理：无</small>
             </div>
             </div>
             <div>
@@ -16,6 +16,7 @@
             <el-button type="info" :plain="true" icon="fa-history" class="fr"  @click="onViewTask(allData)">工作流</el-button>
             <el-button class="not-print fr" type="info" :plain="true" icon="fa-print" @click="createPdf">打印</el-button>
             <a  class="el-button  fr el-button--info is-plain excelDown" :href="'/api/data?action=export_process_to_excel&&pids='+routerInfo.pid"><i class="el-icon-fa-file-excel-o"></i><span style="font-weight:normal">下载excel表格</span></a>
+            <el-button v-if="taskData.can_claim && $route.query.filter === '待认领'" type="info" @click="onClaim">认领</el-button>
             </div>
           </div>
           <div style="border:1px solid #ccc;margin-bottom:15px" v-if="taskData.can_manage && $route.query.filter === '指派'"></div>
@@ -355,15 +356,14 @@
     },
     methods: {
       curTask () {
-        if (this.allData.current_tasks && this.allData.current_tasks.length) {
+        if (this.allData.current_tasks.length) {
           for (let i = 0; i < this.allData.task_list.length; i++) {
             console.log(this.allData.task_list[i].tkey.includes(this.allData.current_tasks[0].tkey))
             if (this.allData.task_list[i].tkey.includes(this.allData.current_tasks[0].tkey)) {
               this.finishTaskindex = i
+              return i
             }
           }
-        } else {
-          this.finishTaskindex = this.allData.history_list.length
         }
       },
       createPdf () {

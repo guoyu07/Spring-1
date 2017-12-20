@@ -58,12 +58,15 @@
             <el-table-column inline-template label="管理员">
             <template>
               <div>
-              <el-select v-if="row.editingUser" multiple v-model="row.users">
-                <el-option v-for="user in permittedUserList"
+              <el-select v-if="row.editingUser" multiple v-model="row.users" filterable remote :remote-method="filterUsers">
+                <el-option v-for="user in usersFilterList"
                            :key="user.userId"
                            :label="user.nick"
                            :value="user"
-                ></el-option>
+                >
+                <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
+                <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+              </el-option>
               </el-select>
               <i v-show="row.editingUser" class="el-icon-check text-success" @click="onEdit(row, true, false)"></i>
               <i v-show="row.editingUser" class="el-icon-close text-error" @click="onCancelEdit(row, true, false)"></i>
@@ -77,7 +80,7 @@
             <el-table-column  label="管理组" inline-template>
                 <template>
                   <div>
-                  <el-select v-if="row.editingGroup" multiple v-model="row.groups">
+                  <el-select v-if="row.editingGroup" multiple v-model="row.groups" filterable>
                     <el-option v-for="group in permittedRoleList"
                            :key="group.key"
                            :label="group.name"
@@ -108,16 +111,19 @@
   <el-dialog :visible.sync="dialogVisible" :model="simplifiedData" title="批量编辑" size="tiny">
       <el-form   label-width="72px">
         <el-form-item label="管理员" prop="simplifiedUsersId">
-          <el-select v-model="simplifiedData.simplifiedUsersId" multiple  placeholder="请选择管理员">
-             <el-option v-for="user in permittedUserList"
+          <el-select v-model="simplifiedData.simplifiedUsersId" multiple  placeholder="请选择管理员" filterable remote :remote-method="filterUsers">
+             <el-option v-for="user in usersFilterList"
                    :key="user.userId"
                    :label="user.nick"
                    :value="user.userId"
-             ></el-option>
+             >
+             <div class="fl" style="width:100%">{{user.nick}} - {{user.userId}}</div>
+            <div class="fl" style="color: #8492a6; font-size:13px">{{user.email}}</div>
+           </el-option>
           </el-select>
         </el-form-item>
         <el-form-item label="管理组" prop="simplifiedGroupsKey">
-          <el-select v-model="simplifiedData.simplifiedGroupsKey" multiple placeholder="请选择管理组">
+          <el-select v-model="simplifiedData.simplifiedGroupsKey" multiple placeholder="请选择管理组" filterable>
             <el-option v-for="group in permittedRoleList"
                :key="group.key"
                :label="group.name"
@@ -156,7 +162,8 @@
           simplifiedUsersId: [],
           simplifiedProcess: [],
           simplifiedGroupsKey: []
-        }
+        },
+        usersFilterList: []
       }
     },
     watch: {
@@ -174,6 +181,15 @@
       }
     },
     methods: {
+      filterUsers (query) {
+        if (query !== '') {
+          this.usersFilterList = this.permittedUserList.filter(item => {
+            return item.userId.includes(query) || item.nick.includes(query)
+          })
+        } else {
+          this.usersFilterList = this.permittedUserList
+        }
+      },
       onIncreased () {
         let postData = {
           action: 'process/admin',
@@ -258,6 +274,8 @@
       // 展开选择框
       showContainer (row, users, groups) {
         if (users) {
+          // 先赋予选项
+          this.usersFilterList = this.permittedUserList
           row.editingUser = true
           let usersList = row.users.map(user => {
             user = this.permittedUserList.find(_ => {

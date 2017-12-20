@@ -459,6 +459,10 @@
         }
         this.http.post('/api/data/', postData).then((res) => {
           if (res.status === 200) {
+            if (res.data.data.header) {
+              let headerData = res.data.data.header
+              Object.assign(this.assignForm.header, headerData)
+            }
             for (let i = 0; i < res.data.data.body.length; i++) {
               let list = res.data.data.body[i]
               Object.assign(this.assignForm.body[i], list)
@@ -630,7 +634,7 @@
         }
         this.http.post('/flow/', this.parseData(renderFromData)).then((res) => {
           this.taskForm = res.data.data.form
-          this.uploadExcel = res.data.data.form.upload_excel
+          this.uploadExcel = res.data.data.upload_excel
           this.taskFormAll = res.data.data
           // 渲染 body 个数
           if (this.applyData.body.length === 0) {
