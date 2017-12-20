@@ -108,6 +108,13 @@ module.exports = {
     })
   },
 
+  store_process_names: ({ commit }, processNames) => {
+    return new Promise((resolve, reject) => {
+      commit(types.STORE_PROCESS_NAMES, processNames)
+      resolve()
+    })
+  },
+
   remove_apicache: ({
     commit
   }) => {

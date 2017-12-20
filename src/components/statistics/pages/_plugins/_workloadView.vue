@@ -126,6 +126,7 @@
             time_query: this.timeQuery
           }
         }
+        console.log(postData.data)
         this.http.post('/report/', this.parseData(postData)).then((res) => {
           this.statistics = res.data.data.list
         })

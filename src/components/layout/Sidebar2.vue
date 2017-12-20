@@ -94,7 +94,9 @@
   </div>
 </template>
 <script>
+  import getProcessName from './../../mixins/getProcessNames'
   export default {
+    mixins: [getProcessName],
     data () {
       return {
         router: true

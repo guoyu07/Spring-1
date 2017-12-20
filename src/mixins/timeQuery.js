@@ -7,7 +7,13 @@ export default {
           break
         case 'before':
         case 'after':
-          if (this.timeQuery.time && this.timeQuery.unit) return true
+          if (this.timeQuery.time >= 0 && this.timeQuery.unit) return true
+          break
+        case 'week':
+          if (this.timeQuery.time >= 0) return true
+          break
+        case 'month':
+          if (this.timeQuery.time >= 0) return true
           break
         default:
           return false
@@ -17,7 +23,7 @@ export default {
     getListByTimeQuery (cb) {
       // this.timeQuery = args.val
       if (this._validateTimeQuery()) {
-        // console.log('pass')
+        console.log('Time query validated')
         cb()
       }
     }

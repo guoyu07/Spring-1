@@ -33,3 +33,6 @@ export const UPDATE_APICACHE = 'UPDATE_APICACHE'
 
 // 清空API数据缓存
 export const REMOVE_APICACHE = 'REMOVE_APICACHE'
+
+// 储存工单名称列表
+export const STORE_PROCESS_NAMES = 'STORE_PROCESS_NAMES'

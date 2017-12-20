@@ -41,7 +41,7 @@
             :selected-user="selectedUserOrGroup"></line-chart>
 
           <el-row type="flex" justify="end" style="margin: 12px 0;">
-            <el-button icon="fa-upload" type="primary" size="small">导出个人统计</el-button>
+            <el-button icon="fa-upload" type="primary" size="small" @click="exportExcel">导出个人统计</el-button>
           </el-row>
 
           <user-table
@@ -57,10 +57,12 @@
 </template>
 
 <script>
+  // import FileSaver from 'file-saver'
   import getPermittedUserList from './../../../mixins/getPermittedUserList'
   import getPermittedRoleList from './../../../mixins/getPermittedRoleList'
   import getProcessList from './../../../mixins/getProcessList'
   import timeQueryMixin from './../../../mixins/timeQuery'
+  import fileSaverMixin from './../../../mixins/fileSaver'
   import timeQuery from './../../_plugins/_timeQuery'
   import lineChart from './_plugins/_lineChart'
   import userTable from './_plugins/_userTable'
@@ -68,7 +70,7 @@
   // import _ from './../../../utils/_'
 
   export default {
-    mixins: [getPermittedRoleList, getPermittedUserList, getProcessList, timeQueryMixin],
+    mixins: [getPermittedRoleList, getPermittedUserList, getProcessList, timeQueryMixin, fileSaverMixin],
 
     data () {
       return {
@@ -106,6 +108,10 @@
         console.log(timeQuery)
         this.timeQuery = timeQuery
         this.getListByTimeQuery(this.getUserStatistics)
+      },
+
+      exportExcel () {
+        this.downloadTempFile(this.timeQuery)
       },
 
       getUserStatistics (pkey = null) {

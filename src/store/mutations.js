@@ -86,5 +86,9 @@ export default {
 
   [types.REMOVE_APICACHE] (state) {
     state.apiCache = {}
+  },
+
+  [types.STORE_PROCESS_NAMES] (state, { processNames }) {
+    state.processNames = processNames
   }
 }

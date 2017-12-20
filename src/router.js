@@ -200,6 +200,9 @@ const routes = [{
       sidebar: SidebarConf.Process
     },
     children: [{
+      path: '/orders-export/print',
+      redirect: { path: `/orders-export/print/${store.state.processNames[0].list[0].key}` }
+    }, {
       path: '/orders-export/print/:pkey',
       component: resolve => require(['./components/ordersExport/pages/print'], resolve)
     }]
@@ -238,6 +241,7 @@ const routes = [{
     }, {
       path: 'workload',
       component: resolve => require(['./components/statistics/pages/workload'], resolve),
+      redirect: { path: `/workload/${store.state.processNames[0].list[0].key}` },
       children: [{
         path: '/workload/:pkey',
         component: resolve => require(['./components/statistics/pages/_plugins/_workloadView'], resolve)

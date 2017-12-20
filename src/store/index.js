@@ -11,6 +11,7 @@ const state = {
   userinfo: {},
   idcrackData: [],
   editingProcesses: [],
+  processNames: [],
   messages: [],
   socket: {
     connected: false,
