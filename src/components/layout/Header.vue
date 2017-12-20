@@ -238,9 +238,9 @@
           <router-link class="link-block" :to="{ path: '/auth/basics' }">流程管理</router-link>
         </el-menu-item>
       </el-submenu>
-      <!-- <el-menu-item index="3">
+      <el-menu-item index="3">
         <router-link class="link-block" :to="{ path: '/statistics' }">统计中心</router-link>
-      </el-menu-item> -->
+      </el-menu-item>
     </el-menu>
     <el-menu class="right" mode="horizontal">
       <el-menu-item index="8" class="screenfull" @click="onScreenFull">
