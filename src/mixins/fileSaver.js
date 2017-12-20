@@ -25,11 +25,11 @@ export default {
     //   a.click()
     //   window.URL.revokeObjectURL(url)
     // }
-    downloadTempFile (timeQuery) {
+    downloadTempFile (action, { pkey, timeQuery, userId }) {
       let postData = {
-        action: 'process/task/report/to/excel',
+        action,
         method: 'GET',
-        data: { time_query: timeQuery }
+        data: { time_query: timeQuery, userId, pkey }
       }
       this.http.post('/report/', this.parseData(postData)).then((res) => {
         // let fileName =

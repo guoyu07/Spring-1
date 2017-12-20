@@ -40,7 +40,8 @@
             :time-query="timeQuery"
             :selected-user="selectedUserOrGroup"></line-chart>
 
-          <el-row type="flex" justify="end" style="margin: 12px 0;">
+          <el-row type="flex" justify="end" style="margin: 12px 0;"
+            v-if="userOrRole === 'user'">
             <el-button icon="fa-upload" type="primary" size="small" @click="exportExcel">导出个人统计</el-button>
           </el-row>
 
@@ -111,7 +112,7 @@
       },
 
       exportExcel () {
-        this.downloadTempFile(this.timeQuery)
+        this.downloadTempFile('process/task/report/to/excel', { timeQuery: this.timeQuery, userId: this.selectedUserOrGroup.userId })
       },
 
       getUserStatistics (pkey = null) {

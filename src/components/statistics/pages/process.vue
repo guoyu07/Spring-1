@@ -15,7 +15,7 @@
           </el-select> -->
           <!-- <small class="process-desc"><i class="el-icon-information"></i> 此处仅为你可管理的流程</small> -->
           <el-row type="flex" justify="end" style="margin: 20px 0 12px;">
-            <el-button icon="fa-upload" type="primary" size="small">导出流程统计</el-button>
+            <el-button icon="fa-upload" type="primary" size="small" @click="exportExcel">导出流程统计</el-button>
           </el-row>
           <el-table :data="statistics" border>
             <el-table-column
@@ -58,12 +58,13 @@
 <script>
   // import getProcessList from './../../../mixins/getProcessList'
   import timeQueryMixin from './../../../mixins/timeQuery'
+  import fileSaverMixin from './../../../mixins/fileSaver'
   import timeQuery from './../../_plugins/_timeQuery'
   import translateTime from './../../../mixins/translateTime'
   // import _ from './../../../utils/_'
 
   export default {
-    mixins: [timeQueryMixin, translateTime],
+    mixins: [timeQueryMixin, translateTime, fileSaverMixin],
 
     data () {
       return {
@@ -83,6 +84,10 @@
     },
 
     methods: {
+      exportExcel () {
+        this.downloadTempFile('process/task/report/to/excel', { timeQuery: this.timeQuery })
+      },
+
       getProcessStatistics () {
         let postData = {
           action: 'process/task/report',

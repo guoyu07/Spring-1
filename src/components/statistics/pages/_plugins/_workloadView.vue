@@ -9,7 +9,7 @@
           <line-chart :time-query="timeQuery"></line-chart>
 
           <el-row type="flex" justify="end" style="margin: 12px 0;">
-            <el-button icon="fa-upload" type="primary" size="small">导出工作量统计</el-button>
+            <el-button icon="fa-upload" type="primary" size="small" @click="exportExcel">导出工作量统计</el-button>
           </el-row>
 
           <el-table
@@ -79,12 +79,13 @@
   // import getProcessList from './../../../mixins/getProcessList'
   import timeQueryMixin from './../../../../mixins/timeQuery'
   import translateTime from './../../../../mixins/translateTime'
+  import fileSaverMixin from './../../../../mixins/fileSaver'
   import timeQuery from './../../../_plugins/_timeQuery'
   import lineChart from './../_plugins/_lineChart'
   // import _ from './../../../utils/_'
 
   export default {
-    mixins: [timeQueryMixin, translateTime],
+    mixins: [timeQueryMixin, translateTime, fileSaverMixin],
 
     data () {
       return {
@@ -115,6 +116,10 @@
         console.log(timeQuery)
         this.timeQuery = timeQuery
         this.getListByTimeQuery(this.getWorkload)
+      },
+
+      exportExcel () {
+        this.downloadTempFile('process/task/report/annotate/to/excel', { timeQuery: this.timeQuery, pkey: this.pkey })
       },
 
       getWorkload () {
